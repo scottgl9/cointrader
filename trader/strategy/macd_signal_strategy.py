@@ -2,7 +2,7 @@ from trader import OrderBookGDAX
 from trader import AccountGDAX
 from trader.indicator import MACD, DiffWindow
 from trader import OrderHandler
-from trader import gdax
+from trader.account import gdax
 
 
 class macd_signal_strategy:

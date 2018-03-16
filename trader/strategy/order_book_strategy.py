@@ -1,10 +1,10 @@
 from trader import OrderBookGDAX
 from trader import AccountGDAX
-from trader.indicator import MACD, QUAD, EMA, DiffWindow
+from trader.indicator import QUAD, EMA, DiffWindow
 from trader import OrderHandler
-from trader import gdax
-from datetime import timedelta, datetime
-import aniso8601
+from trader.account import gdax
+from datetime import datetime
+
 
 # STRATEGY
 # - if price is near the bottom of the band, and MACD trending downward, set buy limit order slightly above price

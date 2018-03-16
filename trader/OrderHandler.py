@@ -1,8 +1,7 @@
 # Place, track, and manage orders
 import sys
-import inspect
 from inspect import currentframe, getsourcefile
-import trader.gdax as gdax
+import trader.account.gdax as gdax
 from collections import OrderedDict
 import uuid
 

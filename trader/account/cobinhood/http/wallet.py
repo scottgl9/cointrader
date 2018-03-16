@@ -1,8 +1,8 @@
 """ wallet """
 import time
 import requests
-from trader.cobinhood.configuration import Config
-from trader.cobinhood.common import logger, Authorization
+from trader.account.cobinhood import Config
+from trader.account.cobinhood import logger, Authorization
 
 BASE_URL = '%s/wallet' % Config.BASE_URL
 

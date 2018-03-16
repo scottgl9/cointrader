@@ -2,7 +2,7 @@ from trader import OrderBookGDAX
 from trader import AccountGDAX
 from trader import OrderHandler
 from trader.indicator import SMMA, EMA
-from trader import gdax
+from trader.account import gdax
 
 
 class smma_of_diff(object):

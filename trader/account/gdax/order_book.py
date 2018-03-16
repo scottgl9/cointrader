@@ -8,8 +8,8 @@ from bintrees import RBTree
 from decimal import Decimal
 import pickle
 
-from trader.gdax.public_client import PublicClient
-from trader.gdax.websocket_client import WebsocketClient
+from trader.account.gdax.public_client import PublicClient
+from trader.account.gdax.websocket_client import WebsocketClient
 
 class OrderBook(WebsocketClient):
     def __init__(self, product_id='BTC-USD', log_to=None):

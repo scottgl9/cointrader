@@ -1,5 +1,5 @@
-from trader.gdax import fixtags
-from trader.gdax import msgtype
+from trader.account.gdax import fixtags
+from trader.account.gdax import msgtype
 
 
 #from pyfix.message import FIXMessage

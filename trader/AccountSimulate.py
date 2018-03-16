@@ -1,5 +1,6 @@
 from trader import AccountBase
-from trader import gdax
+from trader.account import gdax
+
 
 class AccountSimulate(AccountBase):
     def __init__(self, auth_client, name, currency='USD'):

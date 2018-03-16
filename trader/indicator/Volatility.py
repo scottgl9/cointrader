@@ -1,5 +1,5 @@
 from datetime import timedelta, datetime
-from trader import gdax
+from trader.account import gdax
 
 
 class Volatility:

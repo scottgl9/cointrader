@@ -1,9 +1,8 @@
 from trader import OrderBookGDAX
 from trader import AccountGDAX
-from trader.indicator import MACD
 from trader import OrderHandler
-from trader import gdax
-import numpy as np
+from trader.account import gdax
+
 
 class fft_predictor:
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None):

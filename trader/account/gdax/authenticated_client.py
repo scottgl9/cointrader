@@ -6,8 +6,8 @@
 
 import requests
 import json
-from trader.gdax.public_client import PublicClient
-from trader.gdax.gdax_auth import GdaxAuth
+from trader.account.gdax import PublicClient
+from trader.account.gdax.gdax_auth import GdaxAuth
 
 
 class AuthenticatedClient(PublicClient):

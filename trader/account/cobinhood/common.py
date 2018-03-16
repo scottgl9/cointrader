@@ -3,7 +3,7 @@ Common Library
 """
 import logging
 import coloredlogs
-from trader.cobinhood.configuration import Config
+from trader.account.cobinhood import Config
 
 LOG = logging.getLogger('cobinhood')
 

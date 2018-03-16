@@ -1,8 +1,6 @@
-from datetime import datetime, timedelta
-import numpy as np
-from trader.binance.client import Client
+#from trader.account.cobinhood import
 from trader.AccountBase import AccountBase
-from trader.cobinhood.cobinhood import Cobinhood
+
 
 class AccountCobinhood(AccountBase):
     def __init__(self, client, name, asset):
@@ -24,7 +22,7 @@ class AccountCobinhood(AccountBase):
                 self.funds_available = float(funds['free'])
 
         self.client = client
-        self.ticker_id = ('%s%s' % (self.base_currency, self.currency))
+        self.ticker_id = self.get_ticker_id()
         #self.client.get_asset_balance()
 
     def html_run_stats(self):
@@ -33,8 +31,11 @@ class AccountCobinhood(AccountBase):
         results += "quote_currency_available: {}<br>".format(self.quote_currency_available)
         results += "balance: {}<br>".format(self.balance)
         results += "funds_available: {}<br>".format(self.funds_available)
-        results += ("high: %f low: %f open: %f<br>" % (self.high_24hr, self.low_24hr, self.open_24hr))
+        #results += ("high: %f low: %f open: %f<br>" % (self.high_24hr, self.low_24hr, self.open_24hr))
         return results
+
+    def get_ticker_id(self):
+        return '%s%s' % (self.base_currency, self.currency)
 
     def handle_buy_completed(self, price, size):
         pass
@@ -42,14 +43,14 @@ class AccountCobinhood(AccountBase):
     def handle_sell_completed(self, price, size):
         pass
 
-    def get_all_orders(self, symbol, limit=500):
-        return self.client.get_all_orders(symbol=symbol, limit=limit)
+    def get_orders(self):
+        return self.client.get_all_orders(symbol=self.get_ticker_id(), limit=100)
 
     def get_open_orders(self, symbol):
         return self.client.get_open_orders(symbol=symbol)
 
-    def cancel_order(self, symbol, orderId):
-        return self.client.cancel_order(symbol=symbol, orderId=orderId)
+    def cancel_order(self, order_id):
+        return self.client.cancel_order(symbol=self.get_ticker_id(), orderId=order_id)
 
     def get_asset_balance(self, asset):
         return self.client.get_asset_balance(asset=asset)

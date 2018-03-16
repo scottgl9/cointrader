@@ -1,4 +1,3 @@
-import gdax
 from AccountBase import AccountBase
 from AccountGDAX import AccountGDAX
 from AccountSimulate import AccountSimulate
@@ -7,4 +6,4 @@ from OrderBookGDAX import OrderBookGDAX
 from OrderHandler import OrderHandler
 from Order import Order
 from trader.strategy.TraderGDAX import TraderGDAX
-import coinbase
+from trader.account import coinbase, gdax

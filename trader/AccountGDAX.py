@@ -1,4 +1,3 @@
-from trader import gdax
 from trader import AccountBase
 from trader.myhelpers import *
 from datetime import timedelta, datetime
@@ -33,7 +32,7 @@ class AccountGDAX(AccountBase):
             self.profile_id = account['profile_id']
             self.base_currency = account['currency']
             self.currency = currency
-            self.ticker_id = ('%s-%s' % (self.base_currency, self.currency))
+            self.ticker_id = self.get_ticker_id()
             self.balance = float(account['balance'])
             self.funds_available = float(account['available'])
 
@@ -55,16 +54,6 @@ class AccountGDAX(AccountBase):
 
         if self.simulation:
             print("Simulation mode enabled")
-
-    def __repr__(self):
-        retstr = self.ticker_id + " info:\n"
-        retstr += ("balance (%s): %f\n" % (self.currency, self.quote_currency_balance))
-        retstr += ("available funds (%s): %f\n" % (self.currency, self.quote_currency_available))
-        retstr += ("balance (%s): %f\n" % (self.base_currency, self.balance))
-        retstr += ("available funds (%s): %f\n" % (self.base_currency, self.funds_available))
-        retstr += ("quote increment: {} min size: {}\n".format(str(self.quote_increment), str(self.base_min_size)))
-        retstr += ("high: %f low: %f open: %f\n" % (self.high_24hr, self.low_24hr, self.open_24hr))
-        return retstr
 
     def check_order_error(self, result, side):
         if 'message' in result and (result['message'] == 'Insufficient funds'
@@ -146,6 +135,12 @@ class AccountGDAX(AccountBase):
 
         return buy_price_list, sell_price_list
 
+    def get_ticker_id(self):
+        return '%s-%s' % (self.base_currency, self.currency)
+
+    def get_deposit_address(self):
+        return self.auth_client.get_deposit_address(self.get_ticker_id())
+
     def handle_buy_completed(self, price, size):
         pass
 
@@ -180,12 +175,6 @@ class AccountGDAX(AccountBase):
 
     def set_market_price(self, price):
         pass
-
-    def process_limit_orders(self, price):
-        pass
-
-    def get_account_history(self):
-        return self.auth_client.get_account_history(self.account_id)
 
     def get_fill(self, order_id=''):
         return self.auth_client.get_fills(order_id=order_id)

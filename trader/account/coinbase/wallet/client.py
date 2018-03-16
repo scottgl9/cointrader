@@ -9,31 +9,31 @@ import os
 import requests
 import six
 import warnings
-from trader.coinbase.wallet.auth import HMACAuth
-from trader.coinbase.wallet.auth import OAuth2Auth
-from trader.coinbase.wallet.compat import imap
-from trader.coinbase.wallet.compat import quote
-from trader.coinbase.wallet.compat import urljoin
-from trader.coinbase.wallet.error import build_api_error
-from trader.coinbase.wallet.model import APIObject
-from trader.coinbase.wallet.model import Account
-from trader.coinbase.wallet.model import Address
-from trader.coinbase.wallet.model import Buy
-from trader.coinbase.wallet.model import Checkout
-from trader.coinbase.wallet.model import CurrentUser
-from trader.coinbase.wallet.model import Deposit
-from trader.coinbase.wallet.model import Merchant
-from trader.coinbase.wallet.model import Notification
-from trader.coinbase.wallet.model import PaymentMethod
-from trader.coinbase.wallet.model import Order
-from trader.coinbase.wallet.model import Sell
-from trader.coinbase.wallet.model import Transaction
-from trader.coinbase.wallet.model import Report
-from trader.coinbase.wallet.model import User
-from trader.coinbase.wallet.model import Withdrawal
-from trader.coinbase.wallet.model import new_api_object
-from trader.coinbase.wallet.util import check_uri_security
-from trader.coinbase.wallet.util import encode_params
+from trader.account.coinbase.wallet.auth import HMACAuth
+from trader.account.coinbase.wallet.auth import OAuth2Auth
+from trader.account.coinbase.wallet.compat import imap
+from trader.account.coinbase.wallet.compat import quote
+from trader.account.coinbase.wallet.compat import urljoin
+from trader.account.coinbase.wallet.error import build_api_error
+from trader.account.coinbase.wallet.model import APIObject
+from trader.account.coinbase.wallet.model import Account
+from trader.account.coinbase.wallet.model import Address
+from trader.account.coinbase.wallet.model import Buy
+from trader.account.coinbase.wallet.model import Checkout
+from trader.account.coinbase.wallet.model import CurrentUser
+from trader.account.coinbase.wallet.model import Deposit
+from trader.account.coinbase.wallet.model import Merchant
+from trader.account.coinbase.wallet.model import Notification
+from trader.account.coinbase.wallet.model import PaymentMethod
+from trader.account.coinbase.wallet.model import Order
+from trader.account.coinbase.wallet.model import Sell
+from trader.account.coinbase.wallet.model import Transaction
+from trader.account.coinbase.wallet.model import Report
+from trader.account.coinbase.wallet.model import User
+from trader.account.coinbase.wallet.model import Withdrawal
+from trader.account.coinbase.wallet.model import new_api_object
+from trader.account.coinbase.wallet.util import check_uri_security
+from trader.account.coinbase.wallet.util import encode_params
 
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA

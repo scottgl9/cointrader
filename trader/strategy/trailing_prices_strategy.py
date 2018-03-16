@@ -1,11 +1,10 @@
 from trader import OrderBookGDAX
 from trader import AccountGDAX
-from trader.indicator import MACD, QUAD, EMA, DiffWindow
 from trader import OrderHandler
-from trader import gdax
+from trader.account import gdax
 from trader.MeasureTrend import MeasureTrend
-from datetime import timedelta, datetime
-import aniso8601
+from datetime import datetime
+
 
 def datetime_to_float(d):
     epoch = datetime.utcfromtimestamp(0)

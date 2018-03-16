@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from trader import gdax
+from trader.account import gdax
 from datetime import datetime, timedelta
 import numpy as np
 import aniso8601

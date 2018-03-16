@@ -1,6 +1,4 @@
-from datetime import datetime, timedelta
-import numpy as np
-from trader.binance.client import Client
+from trader.account.binance import Client
 from trader.AccountBase import AccountBase
 
 class AccountBinance(AccountBase):
@@ -23,7 +21,7 @@ class AccountBinance(AccountBase):
                 self.funds_available = float(funds['free'])
 
         self.client = client
-        self.ticker_id = ('%s%s' % (self.base_currency, self.currency))
+        self.ticker_id = self.get_ticker_id()
         self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         stats = self.client.get_ticker(self.ticker_id)
 
@@ -45,6 +43,12 @@ class AccountBinance(AccountBase):
         results += ("high: %f low: %f open: %f<br>" % (self.high_24hr, self.low_24hr, self.open_24hr))
         return results
 
+    def get_ticker_id(self):
+        return '%s%s' % (self.base_currency, self.currency)
+
+    def get_deposit_address(self):
+        return self.client.get_deposit_address(asset=self.get_ticker_id())
+
     def handle_buy_completed(self, price, size):
         pass
 
@@ -56,9 +60,6 @@ class AccountBinance(AccountBase):
 
     def get_open_orders(self, symbol):
         return self.client.get_open_orders(symbol=symbol)
-
-    def cancel_order(self, symbol, orderId):
-        return self.client.cancel_order(symbol=symbol, orderId=orderId)
 
     def get_asset_balance(self, asset):
         return self.client.get_asset_balance(asset=asset)
@@ -106,3 +107,6 @@ class AccountBinance(AccountBase):
 
     def sell_limit(self, price, size, post_only=True):
         return self.order_limit_sell(symbol=self.ticker_id, price=price, quantity=size)
+
+    def cancel_order(self, orderid):
+        return self.client.cancel_order(symbol=self.get_ticker_id(), orderId=orderid)

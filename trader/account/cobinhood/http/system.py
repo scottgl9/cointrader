@@ -1,7 +1,7 @@
 """ system """
 import requests
-from trader.cobinhood.configuration import Config
-from trader.cobinhood.common import logger
+from trader.account.cobinhood import Config
+from trader.account.cobinhood import logger
 
 BASE_URL = '%s/system' % Config.BASE_URL
 
