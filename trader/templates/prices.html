@@ -1,0 +1,151 @@
+<html>
+<header>
+<style>
+div.stats {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 5px;
+    left: 1480px;
+    width: 300px;
+    height: 900px;
+    border: 3px solid #73AD21;
+}
+div.prices {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 5px;
+    left: 1780px;
+    width: 120px;
+    height: 900px;
+    border: 3px solid #73AD21;
+}
+div.chart {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 5px;
+    left: 0px;
+    width: 1400px;
+    height: 900px;
+    border: 3px solid #73AD21;
+}
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
+ <script src="/static/node_modules/chart.js/dist/Chart.bundle.js"></script>
+<script src="/static/node_modules/chart.js/samples/utils.js"></script>
+    <style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+    	<script>
+		var config = {
+			type: 'line',
+			data: {
+				datasets: [{
+					label: 'BTC-USD',
+					backgroundColor: window.chartColors.blue,
+					borderColor: window.chartColors.blue,
+					cubicInterpolationMode: "monotone",
+					pointRadius: 0,
+					borderWidth: 1,
+					data: [],
+					fill: false,
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: false,
+					text: 'Chart.js Line Chart'
+				},
+				scales: {
+					xAxes: [{
+						display: false,
+						scaleLabel: {
+							display: false,
+							labelString: 'timestamp'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Value'
+						}
+					}]
+				},
+				animation: {
+				    duration: 10
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
+	</script>
+<script type="text/javascript">
+var last_prices = [];
+setInterval(function(){
+    $.ajax({url: "/update_stats", success: function(result){
+        //document.writeln(result);
+        $("#stats").html(result);
+    }});
+ },1000);
+setInterval(function(){
+    $.ajax({url: "/update_prices", success: function(result){
+        if (result.length == 0) return;
+        if (result == last_prices) return;
+        var parts = result.split(',');
+        content = "";
+
+        parts.forEach(function(element) {
+          content += element + '<br>';
+
+          config.data.labels.push(config.data.datasets.length);
+
+          config.data.datasets.forEach(function(dataset) {
+				dataset.data.push(element);
+		  });
+
+        });
+
+        /*
+        if (config.data.labels.length > 1000) {
+            var new_dataset = [];
+            count = 0;
+            config.data.datasets.forEach(function(dataset) {
+                dataset.data = dataset.data.slice(50, dataset.data.length);
+			    config.data.labels = config.data.labels.slice(50, config.data.labels.length);
+		    });
+		}
+		*/
+
+        last_prices = result;
+
+        window.myLine.update();
+        $("#prices").html(content);
+    }});
+ },500);
+</script>
+</header>
+<body>
+<div class='chart' style="width:90%;">
+    <canvas id="canvas"></canvas>
+</div>
+<div class='stats' id='stats'></div>
+<div class='prices' id='prices'></div>
+</body>
+</html>

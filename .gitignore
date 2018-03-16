@@ -1,0 +1,13 @@
+.idea
+*.pyc
+example.py
+data/
+build/
+dist/
+*.egg-info/
+*.rst
+*.db
+*.tar.gz
+venv/
+*log.txt
+gdax/__pycache__/
