@@ -14,6 +14,7 @@ class AccountGDAX(AccountBase):
     def __init__(self, auth_client, name, currency='USD', simulation=False):
         self.account_type = 'GDAX'
         self.simulation = simulation
+        self.market_price = 0.0
         self.quote_currency_balance = 0.0
         self.quote_currency_available = 0.0
 
@@ -141,17 +142,30 @@ class AccountGDAX(AccountBase):
     def get_deposit_address(self):
         return self.auth_client.get_deposit_address(self.get_ticker_id())
 
-    def handle_buy_completed(self, price, size):
-        pass
+    def handle_buy_completed(self, order_price, order_size):
+        if not self.simulation: return
+        self.quote_currency_balance -= self.round_quote(order_price * order_size)
+        self.balance += order_size
+        self.funds_available += order_size
 
-    def handle_sell_completed(self, price, size):
-        pass
+    def handle_sell_completed(self, order_price, order_size):
+        if not self.simulation: return
+        usd_value = self.round_quote(order_price * order_size)
+        self.quote_currency_available += usd_value
+        self.quote_currency_balance += usd_value
+        self.balance -= order_size
 
     def get_account_history(self):
         return self.auth_client.get_account_history(account_id=self.account_id)
 
     def update_account_balance(self, currency_balance, currency_available, balance, available):
-        self.get_account_balance()
+        if self.simulation:
+            self.quote_currency_balance = currency_balance
+            self.quote_currency_available = currency_available
+            self.balance = balance
+            self.funds_available = available
+        else:
+            self.get_account_balance()
 
     def get_account_balance(self):
         for account in self.auth_client.get_accounts():
@@ -174,7 +188,7 @@ class AccountGDAX(AccountBase):
         return (float(ticker['bid']) + float(ticker['ask'])) / 2.0
 
     def set_market_price(self, price):
-        pass
+        self.market_price = price
 
     def get_fill(self, order_id=''):
         return self.auth_client.get_fills(order_id=order_id)
@@ -212,10 +226,32 @@ class AccountGDAX(AccountBase):
         return self.auth_client.buy(price=price, size=size, product_id=self.ticker_id,
                                     type='limit', post_only=post_only, stop='entry', stop_price=stop_price)
 
+    def buy_limit_simulate(self, price, size):
+        price = self.round_quote(price)
+        size = self.round_base(size)
+
+        usd_value = self.round_quote(self.market_price * size)
+        if usd_value <= 0.0: return
+        if self.quote_currency_available >= usd_value:
+            self.quote_currency_available -= usd_value
+            return True
+        return False
+
+    def sell_limit_simulate(self, price, size):
+        price = self.round_quote(price)
+        size = self.round_base(size)
+        if size < self.base_min_size: return False
+        if self.funds_available >= size:
+            self.funds_available -= size
+            return True
+        return False
+
     def buy_limit(self, price, size, post_only=True):
         print("buy_limit({}, {})".format(price, size))
+
         if self.simulation:
-            return
+            return self.buy_limit_simulate(price, size)
+
         result =  self.auth_client.buy(price=price, size=size, product_id=self.ticker_id,
                                     type='limit', post_only=post_only)
 
@@ -236,7 +272,8 @@ class AccountGDAX(AccountBase):
     def sell_limit(self, price, size, post_only=True):
         print("sell_limit({}, {})".format(price, size))
         if self.simulation:
-            return
+            return self.sell_limit_simulate(price, size)
+
         return self.auth_client.sell(price=price, size=size, product_id=self.ticker_id,
                                      type='limit', post_only=post_only)
 
@@ -248,214 +285,3 @@ class AccountGDAX(AccountBase):
 
     def cancel_all(self):
         return self.auth_client.cancel_all(product_id=self.ticker_id)
-
-    def query_price_last_hour(self):
-        x = []
-        y = []
-        end = datetime.utcnow()
-        start = (end - timedelta(hours=1))
-        result = self.collection.find({"type": "match", "time": {"$gt": start.isoformat(), "$lte": end.isoformat()}},
-                                        {"time": 1, "price": 1, "_id": False})
-        for ent in result:
-            x.append(datetime_to_float(aniso8601.parse_datetime(ent['time'])))
-            y.append(float(ent['price']))
-        return {"x": x, "y": y}
-
-    def query_price_last_day(self):
-        x = []
-        y = []
-        end = datetime.utcnow()
-        start = (end - timedelta(days=1))
-        result = self.collection.find({"type": "match", "time": {"$gt": start.isoformat(), "$lte": end.isoformat()}},
-                                        {"time": 1, "price": 1, "_id": False})
-        for ent in result:
-            x.append(aniso8601.parse_datetime(ent['time']).replace(tzinfo=None))
-            y.append(float(ent['price']))
-        return {"x": x, "y": y}
-
-    def compute_sma_from_prices(self, data, window=12):
-        sma = []
-        prices = []
-        age = 0
-        sum = 0.0
-
-        for i in range(0, len(data) - 1):
-            if len(prices) < window:
-                tail = 0  # float(data[i])
-                prices.append(float(data[i]))
-            else:
-                tail = prices[age]
-                prices[age] = float(data[i])
-            sum += float(data[i]) - tail
-            sma.append(sum / float(len(prices)))
-            age = (age + 1) % window
-        return sma
-
-    def compute_ema_from_prices(self, data, weight=26):
-        ema = []
-        prices = self.compute_sma_from_prices(data, weight)
-        k = 2.0 / (float(weight) * 24.0 + 1.0)
-        last_price = float(prices[0])
-
-        for i in range(1, len(prices) - 1):
-            last_price = float(prices[i] * k + last_price * (1.0 - k))
-            ema.append(last_price)
-        return ema
-
-    def compute_smma_from_prices(self, data, weight=14):
-        smma = []
-        sma = self.compute_sma_from_prices(data, weight)
-
-        result = sma[0]
-        for i in range(1, len(sma) - 1):
-            value = sma[i]
-            result = (result * (weight - 1.0) + value) / weight
-            smma.append(result)
-        return smma
-
-    def compute_ema_last_hour(self, weight=26):
-        prices = self.query_price_last_hour()
-        ema = self.compute_ema_from_prices(prices["y"], weight)
-        return {"x": prices["x"], "y": ema}
-
-    def compute_smma_last_hour(self, weight=14):
-        prices = self.query_price_last_hour()
-        smma = self.compute_smma_from_prices(prices["y"], weight)
-        offset = len(prices["x"]) - len(smma)
-        return {"x": prices["x"][offset:], "y": smma}
-
-    def compute_ema_crossover(self, prices, ema1, ema2):
-        if len(ema2["y"]) < len(ema1["y"]):
-            ema1["y"] = ema1["y"][0:len(ema2["y"])]
-        elif len(ema2["y"]) > len(ema1["y"]):
-            ema2["y"] = ema2["y"][0:len(ema1["y"])]
-        ema1prices = np.array(ema1["y"])
-        ema2prices = np.array(ema2["y"])
-        mask = ema1prices > ema2prices
-
-        crossovers = []
-
-        unit_price = float(len(prices["x"])) / (max(prices["y"]) - min(prices["y"]))
-
-        for i in range(0, len(mask) - 2):
-            if mask[i] and not mask[i + 1]:
-                slopex = ema1["x"][i + 2] - ema1["x"][i - 2]
-                slope1 = 0.0
-                slope2 = 0.0
-                if slopex != 0.0:
-                    slope1 = unit_price * (float(ema1prices[i + 2]) - float(ema1prices[i - 2])) / slopex
-                    slope2 = unit_price * (float(ema2prices[i + 2]) - float(ema2prices[i - 2])) / slopex
-
-                now = datetime_to_float(datetime.utcnow())
-                time_ago = int(now - ema1["x"][i])
-                crossovers.append([i, time_ago, slope1, slope2])
-            elif not mask[i] and mask[i + 1]:
-                slopex = ema1["x"][i + 2] - ema1["x"][i - 2]
-                slope1 = 0.0
-                slope2 = 0.0
-                if slopex != 0.0:
-                    slope1 = unit_price * (float(ema1prices[i + 2]) - float(ema1prices[i - 2])) / slopex
-                    slope2 = unit_price * (float(ema2prices[i + 2]) - float(ema2prices[i - 2])) / slopex
-
-                now = datetime_to_float(datetime.utcnow())
-                time_ago = int(now - ema1["x"][i])
-                crossovers.append([i, time_ago, slope1, slope2])
-        return crossovers
-
-    def compute_ema_slope_changes(self, prices, ema):
-        unit_price = float(len(prices["x"])) / (max(prices["y"]) - min(prices["y"]))
-        emaprices = np.array(ema["y"])
-        slopes = []
-
-        for offset in range(1, 2):
-            for i in range(0, len(emaprices) - offset):
-                slopex = float(ema["x"][i + offset] - ema["x"][i])
-                if slopex == 0.0: continue
-                slope = unit_price * (float(emaprices[i + offset]) - float(emaprices[i])) / slopex
-                if slope != 0.0: # and (slope > 0.001 or slope < -0.001):
-                    slopes.append([i + offset, slope])
-            if len(slopes) > 0: break
-
-        slope_ranges = []
-
-        positive_range_start = -1
-        negative_range_start = -1
-
-        for i in range(0, len(slopes)):
-            if positive_range_start == -1 and negative_range_start == -1:
-                if slopes[i][1] > 0.0: positive_range_start = i
-                if slopes[i][1] < 0.0: negative_range_start = i
-            elif positive_range_start == -1 and negative_range_start != -1:
-                if slopes[i][1] > 0.0:
-                    #if (i - negative_range_start) > 10:
-                    slope_ranges.append([negative_range_start, i, -1])
-                    positive_range_start = i
-                    negative_range_start = -1
-            elif positive_range_start != -1 and negative_range_start == -1:
-                if slopes[i][1] < 0.0:
-                    #if (i - positive_range_start) > 5:
-                    slope_ranges.append([positive_range_start, i, 1])
-                    positive_range_start = -1
-                    negative_range_start = i
-
-        #combined_slope_ranges = []
-        #i=0
-        #while i < (len(slope_ranges) - 1):
-        #    if slope_ranges[i][2] == slope_ranges[i+1][2]:
-        #        combined_slope_ranges.append([slope_ranges[i][0], slope_ranges[i+1][1], slope_ranges[i][2]])
-        #        i += 1
-        #    else:
-        #        combined_slope_ranges.append(slope_ranges[i])
-        #    i += 1
-        slope_pivot_points = []
-
-        for i in range(0, len(slope_ranges) - 1):
-            if slope_ranges[i][2] == -1 and slope_ranges[i + 1][2] == 1:
-                pos = (slope_ranges[i][1] + slope_ranges[i + 1][0]) / 2
-                pos = slopes[pos]
-                timeval = ema["x"][pos[0]]
-                price = round(ema["y"][pos[0]], 4)
-                slope_pivot_points.append([timeval, price, 1])
-                #print("valley at %d" % pos)
-            elif slope_ranges[i][2] == 1 and slope_ranges[i + 1][2] == -1:
-                pos = (slope_ranges[i][1] + slope_ranges[i + 1][0]) / 2
-                #print("peak at %d" % pos)
-                pos = slopes[pos]
-                timeval = ema["x"][pos[0]]
-                price = ema["y"][pos[0]]
-                slope_pivot_points.append([timeval, price, -1])
-            else:
-                pos = (slope_ranges[i][1] + slope_ranges[i + 1][0]) / 2
-                #print("peak at %d" % pos)
-                pos = slopes[pos]
-                timeval = ema["x"][pos[0]]
-                price = round(ema["y"][pos[0]], 4)
-                slope_pivot_points.append([timeval, price, 0])
-        return slope_pivot_points
-        #i = 0
-        #while i < (len(slopes) - 1 - 4):
-        #    if slopes[i][1] > 0.0 and slopes[i+4][1] < 0.0:
-        #        slope_change = True
-        #        for j in range(5, 40):
-        #            if (i - j) < 0 or (i + j) > (len(slopes) - 1 - 4):
-        #                slope_change = False
-        #                break
-        #            if slopes[i - j][1] < 0.0 or slopes[i + j][1] > 0.0:
-        #                slope_change = False
-        #                break
-        #        if slope_change:
-        #            print("peak at %d price=%f" % (slopes[i][0], emaprices[slopes[i][0]]))
-        #            i += 4
-        #    elif slopes[i][1] < 0.0 and slopes[i+4][1] > 0.0:
-        #        slope_change = True
-        #        for j in range(5, 40):
-        #            if (i - j) < 0 or (i + j) > (len(slopes) - 1 - 4):
-        #                slope_change = False
-        #                break
-        #            if slopes[i - j][1] > 0.0 or slopes[i + j][1] < 0.0:
-        #                slope_change = False
-        #                break
-        #        if slope_change:
-        #            print("valley at %d price=%f" % (slopes[i][0], emaprices[slopes[i][0]]))
-        #            i += 4
-        #    i += 1

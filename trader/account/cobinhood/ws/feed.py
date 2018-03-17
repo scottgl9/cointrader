@@ -5,8 +5,8 @@ import json
 import threading
 import websocket
 import coloredlogs
-from trader.account.cobinhood import Config
-from trader.account.cobinhood.ws import ExchangeData
+from trader.account.cobinhood.configuration import Config
+from trader.account.cobinhood.ws.response import ExchangeData
 
 logging.basicConfig()
 logger = logging.getLogger('cobinhood.ws')

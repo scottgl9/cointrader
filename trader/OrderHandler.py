@@ -88,7 +88,7 @@ class OrderHandler:
         #self.low_4hr, self.high_4hr = self.accnt.get_4hr_stats()
         #print(self.low_4hr, self.high_4hr)
         #self.count_4hr = 0
-        self.update_24hr_stats()
+        self.accnt.update_24hr_stats()
         print(self.orders_completed_balance(float(self.accnt.close_24hr)))
 
     def DEBUG(self):
@@ -96,17 +96,8 @@ class OrderHandler:
         #args = inspect.getargspec(cf.f_back.f_code)[0].
         print("file {} line {} function {}".format(getsourcefile(self.__class__), cf.f_back.f_lineno, cf.f_back.f_code.co_name))
 
-    def update_24hr_stats(self):
-        stats = self.pc.get_product_24hr_stats(self.accnt.ticker_id)
-        print(stats)
-        self.accnt.high_24hr = float(stats['high'])
-        self.accnt.low_24hr = float(stats['low'])
-        self.accnt.open_24hr = float(stats['open'])
-        self.accnt.close_24hr = float(stats['last'])
-        self.accnt.volume_24hr = float(stats['volume'])
-
     def print_stats(self):
-        self.update_24hr_stats()
+        self.accnt.update_24hr_stats()
         self.accnt.get_account_balance()
         print("balance ({}): {}".format(self.accnt.currency, self.accnt.quote_currency_balance))
         print("available funds ({}): {}".format(self.accnt.currency, self.accnt.quote_currency_available))

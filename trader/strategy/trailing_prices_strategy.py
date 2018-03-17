@@ -109,13 +109,12 @@ class trailing_prices_strategy:
             #self.accnt.get_account_balance()
 
     def update_24hr_stats(self):
-        stats = self.pc.get_product_24hr_stats(self.accnt.ticker_id)
-        print(stats)
-        self.high_24hr = float(stats['high'])
-        self.low_24hr = float(stats['low'])
-        self.open_24hr = float(stats['open'])
-        self.close_24hr = float(stats['last'])
-        self.volume_24hr = float(stats['volume'])
+        self.accnt.update_24hr_stats()
+        self.high_24hr = self.accnt.high_24hr
+        self.low_24hr = self.accnt.low_24hr
+        self.open_24hr = self.accnt.open_24hr
+        self.close_24hr = self.accnt.close_24hr
+        self.volume_24hr = self.accnt.volume_24hr
 
     def update_last_50_prices(self, price):
         #if price in self.last_50_prices:
@@ -125,10 +124,10 @@ class trailing_prices_strategy:
             diff_size = len(self.last_50_prices) - 50
             self.last_50_prices = self.last_50_prices[diff_size:]
 
-    def run_update_price(self, msg):
-        if 'type' in msg and 'match' not in msg['type']: return
+    def run_update_price(self, price):
+        #if 'type' in msg and 'match' not in msg['type']: return
 
-        self.price = float(msg["price"])
+        #elf.price = float(msg["price"])
         self.update_last_50_prices(self.price)
         self.trend.update_price(self.price)
         timestamp = 0 #datetime_to_float(aniso8601.parse_datetime(msg['time']))
