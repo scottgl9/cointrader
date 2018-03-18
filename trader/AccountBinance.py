@@ -15,6 +15,7 @@ class AccountBinance(AccountBase):
         self.simulate = False
         self.low_24hr = self.high_24hr = 0.0
         self.open_24hr = self.close_24hr = 0.0
+        self.last_24hr = 0.0
         self.volume_24hr = 0.0
         self.quote_increment = 0.01
         self.base_min_size = 0.0
@@ -31,16 +32,7 @@ class AccountBinance(AccountBase):
         self.client = client
         self.ticker_id = self.get_ticker_id()
         self.info = self.client.get_symbol_info(symbol=self.ticker_id)
-        #stats = self.client.get_ticker(self.ticker_id)
-
-        #self.high_24hr = self.low_24hr = self.open_24hr = 0.0
-
-        #if 'highPrice' in stats:
-        #    self.high_24hr = float(stats['highPrice'])
-        #if 'lowPrice' in stats:
-        #    self.low_24hr = float(stats['lowPrice'])
-        #if 'openPrice' in stats:
-        #    self.open_24hr = float(stats['openPrice'])
+        self.update_24hr_stats()
 
     def html_run_stats(self):
         results = str('')
@@ -48,7 +40,7 @@ class AccountBinance(AccountBase):
         results += "quote_currency_available: {}<br>".format(self.quote_currency_available)
         results += "balance: {}<br>".format(self.balance)
         results += "funds_available: {}<br>".format(self.funds_available)
-        results += ("high: %f low: %f open: %f<br>" % (self.high_24hr, self.low_24hr, self.open_24hr))
+        results += ("last: %f high: %f low: %f open: %f<br>" % (self.last_24hr,self.high_24hr, self.low_24hr, self.open_24hr))
         return results
 
     def round_base(self, price):
@@ -61,7 +53,10 @@ class AccountBinance(AccountBase):
         return '%s%s' % (self.base_currency, self.currency)
 
     def get_deposit_address(self):
-        return self.client.get_deposit_address(asset=self.get_ticker_id())
+        result = self.client.get_deposit_address(asset=self.base_currency)
+        if 'success' in result and 'address' in result and result['success']:
+            return result['address']
+        return ''
 
     def handle_buy_completed(self, order_price, order_size):
         if not self.simulate: return
@@ -86,13 +81,18 @@ class AccountBinance(AccountBase):
         return [], []
 
     def update_24hr_stats(self):
-        pass
+        stats = self.client.get_ticker(symbol=self.ticker_id)
 
-    def get_all_orders(self, symbol, limit=500):
-        return self.client.get_all_orders(symbol=symbol, limit=limit)
+        self.high_24hr = self.low_24hr = self.open_24hr = 0.0
 
-    def get_open_orders(self, symbol):
-        return self.client.get_open_orders(symbol=symbol)
+        if 'highPrice' in stats:
+            self.high_24hr = float(stats['highPrice'])
+        if 'lowPrice' in stats:
+            self.low_24hr = float(stats['lowPrice'])
+        if 'openPrice' in stats:
+            self.open_24hr = float(stats['openPrice'])
+        if 'lastPrice' in stats:
+            self.last_24hr = self.close_24hr = float(stats['lastPrice'])
 
     def get_asset_balance(self, asset):
         return self.client.get_asset_balance(asset=asset)
@@ -123,13 +123,13 @@ class AccountBinance(AccountBase):
         self.market_price = price
 
     def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
-        pass
+        return self.client.get_all_orders(symbol=self.ticker_id, limit=100)
 
     def get_order(self, order_id):
         return self.client.get_order(order_id=order_id)
 
     def get_orders(self):
-        pass
+        return self.client.get_open_orders(symbol=self.ticker_id)
 
     def get_account_history(self):
         pass

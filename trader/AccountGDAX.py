@@ -140,7 +140,7 @@ class AccountGDAX(AccountBase):
         return '%s-%s' % (self.base_currency, self.currency)
 
     def get_deposit_address(self):
-        return self.auth_client.get_deposit_address(self.get_ticker_id())
+        return self.auth_client.get_deposit_address(self.base_currency)
 
     def handle_buy_completed(self, order_price, order_size):
         if not self.simulation: return
