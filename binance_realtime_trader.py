@@ -19,12 +19,14 @@ class BinanceTrader:
     def __init__(self, client):
         self.client = client
         self.tickers = {}
-        #self.multitrader = MultiTrader(client, 'trailing_prices_strategy', symbols=)
+        self.symbols = get_all_tickers(client)
+        print("loading symbols {}".format(self.symbols))
+        self.multitrader = MultiTrader(client, 'trailing_prices_strategy', symbols=self.symbols)
         #self.accnt = AccountBinance(self.client, 'BNB', 'BTC')
         #self.trader = select_strategy('trailing_prices_strategy', self.client, 'BTC', 'USD',
         #                              account_handler=self.accnt, order_handler=None) #self.order_handler)
 
-        #self.order_handler = self.trader.order_handler
+        self.order_handler = self.trader.order_handler
         #print(self.accnt)
         #self.accnt.get_account_balance()
 
@@ -106,6 +108,16 @@ def get_products_sorted_by_volume(client, currency='BTC'):
 
     return buy_list, sell_list
 
+def get_all_tickers(client):
+    result = []
+    for key, value in client.get_exchange_info().items():
+        if key != 'symbols': continue
+        for asset in value:
+            if asset['symbol'].endswith('USDT'): continue
+            result.append(asset['symbol'])
+    print(result)
+    return result
+
 def get_info_all_assets(client):
     assets = {}
     for key, value in client.get_exchange_info().items():
@@ -185,5 +197,5 @@ if __name__ == '__main__':
     #plt.plot(prices)
     #plt.show()
 
-    # bt = BinanceTrader(client)
-    # bt.run()
+    bt = BinanceTrader(client)
+    bt.run()

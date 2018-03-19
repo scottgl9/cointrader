@@ -1,5 +1,6 @@
 # handle multiple traders, one for each base / currency we want to trade
 from trader.Account import Account
+from trader.AccountBinance import AccountBinance
 from trader.strategy import *
 
 
@@ -20,9 +21,9 @@ class MultiTrader(object):
         self.accounts = {}
         for symbol in symbols:
             base_name, currency_name = split_symbol(symbol)
-            accnt = Account(client, base_name, currency_name, account_name='Binance')
+            accnt = AccountBinance(client, base_name, currency_name) #, account_name='Binance')
             trader = select_strategy(strategy_name, client, base_name, currency_name,
-                                     account_handler=accnt, order_handler=None)
+                                     account_handler=accnt)
 
             if symbol not in self.accounts.keys():
                 self.accounts[symbol] = accnt

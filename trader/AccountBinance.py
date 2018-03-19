@@ -30,7 +30,7 @@ class AccountBinance(AccountBase):
                 self.funds_available = float(funds['free'])
 
         self.client = client
-        self.ticker_id = self.get_ticker_id()
+        self.ticker_id = '{}{}'.format(name, asset)
         self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         self.update_24hr_stats()
 
@@ -51,6 +51,9 @@ class AccountBinance(AccountBase):
 
     def get_ticker_id(self):
         return '%s%s' % (self.base_currency, self.currency)
+
+    def make_ticker_id(self, base, currency):
+        return '%s%s' % (base, currency)
 
     def get_deposit_address(self):
         result = self.client.get_deposit_address(asset=self.base_currency)
@@ -93,6 +96,32 @@ class AccountBinance(AccountBase):
             self.open_24hr = float(stats['openPrice'])
         if 'lastPrice' in stats:
             self.last_24hr = self.close_24hr = float(stats['lastPrice'])
+
+    def get_24hr_stats(self, ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
+
+        stats = self.client.get_ticker(symbol=ticker_id)
+
+        high_24hr = low_24hr = 0.0
+        open_24hr = last_24hr = 0.0
+        volume = 0.0
+        ts_24hr = 0
+
+        if 'highPrice' in stats:
+            high_24hr = float(stats['highPrice'])
+        if 'lowPrice' in stats:
+            low_24hr = float(stats['lowPrice'])
+        if 'openPrice' in stats:
+            open_24hr = float(stats['openPrice'])
+        if 'lastPrice' in stats:
+            last_24hr = float(stats['lastPrice'])
+        if 'volume' in stats:
+            volume = float(stats['volume'])
+        if 'openTime' in stats:
+            ts_24hr = int(stats['openTime'])
+
+        return {'l': low_24hr, 'h': high_24hr, 'o': open_24hr, 'c': last_24hr, 'v': volume, 't': ts_24hr}
 
     def get_asset_balance(self, asset):
         return self.client.get_asset_balance(asset=asset)
@@ -143,18 +172,21 @@ class AccountBinance(AccountBase):
     def order_market_sell(self, symbol, quantity):
         return self.client.order_market_sell(symbol=symbol, quantity=quantity)
 
-    def buy_market(self, size):
+    def buy_market(self, size, ticker_id=None):
         if not self.simulate:
-            return self.client.create_test_order(symbol=self.ticker_id,
+            if not ticker_id:
+                ticker_id = self.ticker_id
+            return self.client.create_test_order(symbol=ticker_id,
                                                  side=Client.SIDE_BUY,
                                                  type=Client.ORDER_TYPE_MARKET,
                                                  quantity=size)
         print("buy_market({})".format(size))
 
-
-    def sell_market(self, size):
+    def sell_market(self, size, ticker_id=None):
         if not self.simulate:
-            return self.client.create_test_order(symbol=self.ticker_id,
+            if not ticker_id:
+                ticker_id = self.ticker_id
+            return self.client.create_test_order(symbol=ticker_id,
                                                  side=Client.SIDE_SELL,
                                                  type=Client.ORDER_TYPE_MARKET,
                                                  quantity=size)
@@ -183,17 +215,21 @@ class AccountBinance(AccountBase):
             return True
         return False
 
-    def buy_limit(self, price, size, post_only=True):
+    def buy_limit(self, price, size, post_only=True, ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
         if self.simulate:
             return self.buy_limit_simulate(price, size)
         timeInForce = Client.TIME_IN_FORCE_GTC
-        return self.client.order_limit_buy(timeInForce=timeInForce, symbol=self.ticker_id, quantity=size, price=price)
+        return self.client.order_limit_buy(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
-    def sell_limit(self, price, size, post_only=True):
+    def sell_limit(self, price, size, post_only=True, ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
         if self.simulate:
             return self.sell_limit_simulate(price, size)
         timeInForce = Client.TIME_IN_FORCE_GTC
-        return self.client.order_limit_sell(timeInForce=timeInForce, symbol=self.ticker_id, quantity=size, price=price)
+        return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
     def cancel_order(self, orderid):
         return self.client.cancel_order(symbol=self.get_ticker_id(), orderId=orderid)

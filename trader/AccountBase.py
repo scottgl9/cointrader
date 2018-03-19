@@ -61,7 +61,7 @@ class AccountBase(object):
         pass
 
     @abstractmethod
-    def buy_market(self, size):
+    def buy_market(self, size, ticker_id=None):
         pass
 
     @abstractmethod
@@ -69,7 +69,7 @@ class AccountBase(object):
         pass
 
     @abstractmethod
-    def sell_market(self, size):
+    def sell_market(self, size, ticker_id=None):
         pass
 
     @abstractmethod

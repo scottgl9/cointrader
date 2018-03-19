@@ -22,6 +22,14 @@ if __name__ == '__main__':
                 total_balance_btc += price_btc
                 if price_usd > 0.01:
                     print("{} = {} ({} BTC {} USD)".format(accnt['asset'], accnt['free'], price_btc, price_usd))
+            else:
+                price_btc = (float(accnt['free']) + float(accnt['locked']))
+                price_usd = price_btc *  btc_usd_price
+                total_balance_usd += price_usd
+                total_balance_btc += price_btc
+                if price_usd > 0.01:
+                    print("{} = {} ({} BTC {} USD)".format(accnt['asset'], accnt['free'], price_btc, price_usd))
+
     print("Total balance USD = {}, BTC={}".format(total_balance_usd, total_balance_btc))
 
     #client.get_ticker()
