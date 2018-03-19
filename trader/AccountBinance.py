@@ -1,9 +1,9 @@
 from trader.account.binance.client import Client
 from trader.AccountBase import AccountBase
-
+from datetime import datetime, timedelta
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name, asset):
+    def __init__(self, client, name, asset, simulation=True):
         self.account_type = 'Binance'
         self.balance = 0.0
         self.funds_available = 0.0
@@ -12,7 +12,7 @@ class AccountBinance(AccountBase):
         self.base_currency = name
         self.currency = asset
         self.client = client
-        self.simulate = False
+        self.simulate = simulation
         self.low_24hr = self.high_24hr = 0.0
         self.open_24hr = self.close_24hr = 0.0
         self.last_24hr = 0.0
@@ -149,6 +149,8 @@ class AccountBinance(AccountBase):
                                                  side=Client.SIDE_BUY,
                                                  type=Client.ORDER_TYPE_MARKET,
                                                  quantity=size)
+        print("buy_market({})".format(size))
+
 
     def sell_market(self, size):
         if not self.simulate:
@@ -156,10 +158,13 @@ class AccountBinance(AccountBase):
                                                  side=Client.SIDE_SELL,
                                                  type=Client.ORDER_TYPE_MARKET,
                                                  quantity=size)
+        print("sell_market({})".format(size))
 
     def buy_limit_simulate(self, price, size):
         price = self.round_quote(price)
         size = self.round_base(size)
+
+        print("buy_limit_simulate({}, {})".format(price, size))
 
         usd_value = self.round_quote(self.market_price * size)
         if usd_value <= 0.0: return
@@ -171,6 +176,7 @@ class AccountBinance(AccountBase):
     def sell_limit_simulate(self, price, size):
         price = self.round_quote(price)
         size = self.round_base(size)
+        print("sell_limit_simulate({}, {})".format(price, size))
         if size < self.base_min_size: return False
         if self.funds_available >= size:
             self.funds_available -= size
@@ -194,3 +200,34 @@ class AccountBinance(AccountBase):
 
     def cancel_all(self):
         pass
+
+    def get_klines(self, days=0, hours=1):
+        timestr = ''
+        if days == 1:
+            timestr = "1 day ago"
+        elif days > 1:
+            timestr = "{} days ago".format(days)
+        if days == 0:
+            if hours == 1:
+                timestr = "1 hour ago"
+            elif hours > 1:
+                timestr = "{} hours ago".format(hours)
+        else:
+            if hours == 1:
+                timestr = "and 1 hour ago"
+            elif hours > 1:
+                timestr = "and {} hours ago".format(hours)
+        timestr += " UTC"
+
+        klines_data = self.client.get_historical_klines(self.ticker_id, Client.KLINE_INTERVAL_1MINUTE, timestr)
+
+        # reorganize kline format to same as GDAX for consistency:
+        # GDAX kline format: [ timestamp, low, high, open, close, volume ]
+        # binance format: [opentime, open, high, low, close, volume, closetime quotevolume, tradecount,
+        # taker_buy_base_volume, taker_buy_currency_volume, ignore]
+        klines = []
+        for k in klines_data:
+            ts = k[0] / 1000
+            klines.append([ts, k[3], k[2], k[1], k[4], k[5]])
+
+        return klines

@@ -7,9 +7,9 @@ from trader.myhelpers import *
 from trader.TradeRange import TradeRange
 
 if __name__ == '__main__':
-    ticker = 'LTC-BTC'
+    ticker = 'ETH-BTC'
     trade_range = TradeRange(ticker_id=ticker)
-    prices = trade_range.get_prices_24hr() #trade_range.get_prices_24hr()
+    prices = trade_range.get_prices_4hr() #trade_range.get_prices_24hr()
 
     #price_crossovers, crossover_counts = trade_range.calc_range_from_prices(prices)
     price_crossovers = trade_range.get_price_crossover_counts(prices)

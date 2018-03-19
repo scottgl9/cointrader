@@ -12,4 +12,5 @@ if __name__ == '__main__':
     print(accnt.get_fills())
     print(accnt.get_deposit_address())
     print(accnt.html_run_stats())
+    print(accnt.get_klines())
     #print(accnt.get_account_history())

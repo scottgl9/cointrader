@@ -11,3 +11,4 @@ if __name__ == '__main__':
     print(accnt.get_orders())
     print(accnt.get_account_history())
     print(accnt.get_deposit_address())
+    print(accnt.get_klines())

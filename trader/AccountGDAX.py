@@ -1,6 +1,7 @@
 from trader import AccountBase
 from trader.myhelpers import *
 from datetime import timedelta, datetime
+from trader.account.gdax.public_client import PublicClient
 import aniso8601
 import numpy as np
 
@@ -11,7 +12,7 @@ def datetime_to_float(d):
     return float(total_seconds)
 
 class AccountGDAX(AccountBase):
-    def __init__(self, auth_client, name, currency='USD', simulation=False):
+    def __init__(self, auth_client, name, currency='USD', simulation=True):
         self.account_type = 'GDAX'
         self.simulation = simulation
         self.market_price = 0.0
@@ -285,3 +286,22 @@ class AccountGDAX(AccountBase):
 
     def cancel_all(self):
         return self.auth_client.cancel_all(product_id=self.ticker_id)
+
+    # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
+    # The maximum amount of data returned is 300 candles
+    # kline format: [ timestamp, low, high, open, close, volume ]
+    def get_klines(self, days=0, hours=1):
+        pc = PublicClient()
+        end = datetime.utcnow()
+        start = (end - timedelta(days=days, hours=hours))
+        granularity = 900
+        if days == 0 and hours < 6:
+            granularity = 60
+        elif (days== 0 and hours <= 24) or (days == 1 and hours == 0):
+            granularity = 300
+
+        rates = pc.get_product_historic_rates(self.ticker_id,
+                                              start.isoformat(),
+                                              end.isoformat(),
+                                              granularity=granularity)
+        return rates[::-1]

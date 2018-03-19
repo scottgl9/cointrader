@@ -2,35 +2,67 @@
 
 from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
+from trader.MultiTrader import MultiTrader
 from trader.AccountBinance import AccountBinance
 from trader.strategy import select_strategy
+import collections
+import matplotlib.pyplot as plt
 
 from config import *
+
+# {u'c': u'0.00035038', u'E': 1521434160493, u'h': u'0.00037032', u'l': u'0.00033418', u'o': u'0.00033855', u'q': u'361.61821435', u's': u'BATETH', u'v': u'1044884.00000000', u'e': u'24hrMiniTicker'}
+
+
+# GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 class BinanceTrader:
     def __init__(self, client):
         self.client = client
-        self.accnt = AccountBinance(self.client, 'BNB', 'BTC')
-        self.trader = select_strategy('trailing_prices_strategy', self.client, 'BTC', 'USD',
-                                      account_handler=self.accnt, order_handler=None) #self.order_handler)
+        self.tickers = {}
+        #self.multitrader = MultiTrader(client, 'trailing_prices_strategy', symbols=)
+        #self.accnt = AccountBinance(self.client, 'BNB', 'BTC')
+        #self.trader = select_strategy('trailing_prices_strategy', self.client, 'BTC', 'USD',
+        #                              account_handler=self.accnt, order_handler=None) #self.order_handler)
 
-        self.order_handler = self.trader.order_handler
-        print(self.accnt)
-        self.accnt.get_account_balance()
+        #self.order_handler = self.trader.order_handler
+        #print(self.accnt)
+        #self.accnt.get_account_balance()
+
+    def get_websocket_kline(self, msg):
+        kline = list()
+        kline.append(int(msg['E']))
+        kline.append(float(msg['l']))
+        kline.append(float(msg['h']))
+        kline.append(float(msg['o']))
+        kline.append(float(msg['c']))
+        kline.append(float(msg['v']))
+        return kline
+
+    # update tickers dict to contain kline ticker values for all traded symbols
+    def process_websocket_message(self, msg):
+        for ticker in msg:
+            if 's' not in ticker: continue
+            self.tickers[ticker['s']] = self.get_websocket_kline(ticker)
 
     def process_message(self, msg):
-        if 'p' in msg:
-            print(msg)
-            price = float(msg["p"])
-            self.trader.run_update_price(price)
+        self.process_websocket_message(msg)
+        print(self.tickers)
 
     def run(self):
         bm = BinanceSocketManager(self.client)
-        bm.start_aggtrade_socket(self.accnt.ticker_id, self.process_message)
+        #bm.start_aggtrade_socket(self.accnt.ticker_id, self.process_message)
+        bm.start_miniticker_socket(self.process_message)
         bm.start()
 
 
-def get_products_volumes(client, currency='BTC'):
+def get_prices_from_klines(klines):
+    prices = []
+    for k in klines:
+        prices.append(k[3])
+        prices.append(k[4])
+    return prices
+
+def get_products_sorted_by_volume(client, currency='BTC'):
     products = client.get_products()
     tickers = client.get_all_tickers()
     pdict = {}
@@ -58,8 +90,8 @@ def get_products_volumes(client, currency='BTC'):
         # ticker['symbol']
     volumes = sorted(volumes.iteritems(), key=lambda (k, v): (v, k), reverse=True)
 
-    buy_list = []
-    sell_list = []
+    buy_list = collections.OrderedDict()
+    sell_list = collections.OrderedDict()
 
     for symbol, volume in volumes[0:len(volumes)/2]:
         baseAsset = prices[symbol][0]
@@ -68,9 +100,9 @@ def get_products_volumes(client, currency='BTC'):
         high = prices[symbol][3]
         mid = (low + high) / 2.0
         if price < (low + low + mid) / 3.0:
-            buy_list.append([baseAsset, price, low, high])
+            buy_list[baseAsset] = [price, low, high]
         elif price > (high + high + mid) / 3.0:
-            buy_list.append([baseAsset, price, low, high])
+            sell_list[baseAsset] = [price, low, high]
 
     return buy_list, sell_list
 
@@ -100,13 +132,13 @@ def get_asset_balances(client):
     return balances
 
 def filter_assets_by_minqty(assets_info, balances):
-    currencies = ['BTC', 'ETH']
+    currencies = ['BTC', 'ETH', 'BNB']
     result = {}
     for name, balance in balances.items():
         for currency in currencies:
-            if name == 'BTC': continue
-            if name == currency: continue
             symbol = "{}{}".format(name, currency)
+            if symbol not in assets_info.keys(): continue
+
             minQty = float(assets_info[symbol]['minQty'])
             if float(balance) >= minQty:
                 result[name] = balance
@@ -115,21 +147,43 @@ def filter_assets_by_minqty(assets_info, balances):
 def filter_by_balances(assets, balances):
     if len(assets) == 0: return assets
     result = []
-    for asset in assets:
-        if asset[0] in balances.keys():
-          result.append(asset)
+    for name, info in assets.items():
+        if name in balances.keys():
+          result.append(name)
     return result
 
 if __name__ == '__main__':
     #print(get_products_by_volume(client))
     client = Client(MY_API_KEY, MY_API_SECRET)
-    #bt = BinanceTrader(client)
-    #bt.run()
     assets_info = get_info_all_assets(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     print(balances)
-    buy_list, sell_list = get_products_volumes(client, 'ETH')
-    print("buy list:")
-    print(filter_by_balances(buy_list, balances))
-    print("sell list:")
-    print(filter_by_balances(sell_list, balances))
+    buy_lists = {}
+    sell_lists = {}
+    currency_list = ['BTC', 'ETH', 'BNB']
+
+    for currency in currency_list:
+        if currency in balances.keys():
+            buy_lists[currency], sell_lists[currency] = get_products_sorted_by_volume(client, currency)
+    print("buy lists:")
+    print(buy_lists)
+    print("sell lists:")
+    print(sell_lists)
+
+    #print("filtered sell list:")
+    #print(filter_by_balances(sell_list, balances))
+    #klines=None
+    #for info in buy_list:
+    #    currency = 'ETH'
+    #    base = info[0]
+    #    print(base, currency)
+    #    accnt = AccountBinance(client, base, currency)
+    #    klines = accnt.get_klines(hours=4)
+    #    print(klines)
+    #    break
+    #prices = get_prices_from_klines(klines)
+    #plt.plot(prices)
+    #plt.show()
+
+    # bt = BinanceTrader(client)
+    # bt.run()
