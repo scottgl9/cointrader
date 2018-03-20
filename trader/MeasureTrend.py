@@ -1,5 +1,8 @@
 from trader.indicator.SMA import SMA
 from trader.indicator.EMA import EMA
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
 
 # IDEA: get range with highest level of oscillation
 
@@ -26,34 +29,25 @@ class MeasureTrend(object):
         if len(self.sma_prices) < self.window:
             return False
 
-        detected = False
-        #for i in range(1, len(self.sma_prices) - 1):
-        i = len(self.sma_prices) - 4
-        if self.sma_prices[i-1] < self.sma_prices[i] and self.sma_prices[i+1] < self.sma_prices[i]:
-            detected = True
-            #for j in range(2, 32):
-            #    if (i-j) < 0 or (i+j) > len(self.sma_prices) - 1:
-            #        break
-            #    if self.sma_prices[i-j] > self.sma_prices[i] or self.sma_prices[i+j] > self.sma_prices[i]:
-            #        detected = False
-            #        break
-        return detected
+        slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
+        slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
+
+        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 < 0.0:
+            return True
+
+        return False
 
     def valley_detected(self):
         if len(self.sma_prices) < self.window:
             return False
 
-        detected = False
-        for i in range(1, len(self.sma_prices) - 1):
-            if self.sma_prices[i-1] > self.sma_prices[i] and self.sma_prices[i+1] > self.sma_prices[i]:
-                detected = True
-                for j in range(2, 32):
-                    if (i-j) < 0 or (i+j) > len(self.sma_prices) - 1:
-                        break
-                    if self.sma_prices[i-j] < self.sma_prices[i] or self.sma_prices[i+j] < self.sma_prices[i]:
-                        detected = False
-                        break
-        return detected
+        slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
+        slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
+
+        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 > 0.0:
+            return True
+
+        return False
 
     def get_peak_price(self):
         if len(self.sma_prices) < self.window:
@@ -82,66 +76,51 @@ class MeasureTrend(object):
         #        return self.sma_prices[i]
         return 0.0
 
+    def compute_linear_regression(self):
+        if len(self.sma_prices) < self.window:
+            return
+        regr = linear_model.LinearRegression()
+        x_values = []
+        y_values = []
+        last_price = 0.0
+        for i in range(0, len(self.sma_prices) - 1):
+            if last_price == 0.0:
+                x_values.append(i)
+                y_values.append(self.sma_prices[i])
+            last_price = self.sma_prices[i]
+        regr.fit(np.array(x_values).reshape(-1, 1), np.array(y_values))
+
+        if regr.coef_ != 0.0:
+            print('Coefficients: \n', regr.coef_)
+
+        line = regr.predict(np.array(x_values).reshape(-1, 1))
+        print_line = False
+        for point in line:
+            if point != 0.0:
+                print_line = True
+                break
+        if print_line:
+            print(line)
+
     def trending_upward(self):
         if len(self.sma_prices) < self.window:
             return False
-        change_down = 0.0
-        change_up = 0.0
-        count_down = 0
-        count_up = 0
-        for i in range(0, len(self.sma_prices) - 1):
-            if self.sma_prices[i] < self.sma_prices[i + 1]:
-                change_up += self.sma_prices[i + 1] - self.sma_prices[i]
-                count_up += 1
-            elif self.sma_prices[i] > self.sma_prices[i + 1]:
-                change_down += self.sma_prices[i] - self.sma_prices[i + 1]
-                count_down += 1
-        if count_up >= int(0.75 * len(self.sma_prices)):
+
+        #self.compute_linear_regression()
+        slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
+        slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
+
+        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 > 0.0:
             return True
-        #if change_up >= (10.0 * change_down) and max(self.sma_prices) == self.sma_prices[-1] \
-        #    and min(self.sma_prices) == self.sma_prices[0]:
-        #    return True
+
         return False
 
     def trending_downward(self):
         if len(self.sma_prices) < self.window:
             return False
-        change_down = 0.0
-        change_up = 0.0
-        count_down = 0
-        count_up = 0
-        for i in range(0, len(self.sma_prices) - 1):
-            if self.sma_prices[i] < self.sma_prices[i + 1]:
-                change_up += self.sma_prices[i + 1] - self.sma_prices[i]
-                count_up += 1
-            elif self.sma_prices[i] > self.sma_prices[i + 1]:
-                change_down += self.sma_prices[i] - self.sma_prices[i + 1]
-                count_down += 1
-        #if change_down >= (10.0 * change_up) and max(self.sma_prices) == self.sma_prices[0] \
-        #    and min(self.sma_prices) == self.sma_prices[-1]:
-        #    return True
-        if count_down >= int(0.75 * len(self.sma_prices)):
+        #self.compute_linear_regression()
+        slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
+        slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
+        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 < 0.0:
             return True
         return False
-
-    #def trending_upward(self):
-    #    if len(self.sma_prices) < 50:
-    #        return False
-    #    count = 0
-    #    for i in range(0, len(self.sma_prices) - 1):
-    #        if self.sma_prices[i] <= self.sma_prices[i+1]:
-    #            count += 1
-    #    if (0.85 * len(self.sma_prices)) <= float(count):
-    #        return True
-    #    return False
-
-    #def trending_downward(self):
-    #    if len(self.sma_prices) < 50:
-    #        return False
-    #    count = 0
-    #    for i in range(0, len(self.sma_prices) - 1):
-    #        if self.sma_prices[i] >= self.sma_prices[i+1]:
-    #            count += 1
-    #    if (0.85 * len(self.sma_prices)) <= float(count):
-    #        return True
-    #    return False

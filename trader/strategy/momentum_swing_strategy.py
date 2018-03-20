@@ -24,7 +24,7 @@ class momentum_swing_strategy:
         self.orderbook = OrderBookGDAX()
         #if not order_handler:
         #self.order_handler = OrderHandler(self.accnt)
-        self.trend = MeasureTrend(window=30)
+        self.trend = MeasureTrend(window=50)
         self.last_price = self.price = 0.0
 
         self.base = name
@@ -74,8 +74,8 @@ class momentum_swing_strategy:
         #if 'type' in msg and 'match' not in msg['type']: return
 
         #elf.price = float(msg["price"])
-        self.update_last_50_prices(self.price)
-        self.trend.update_price(self.price)
+        self.update_last_50_prices(price)
+        self.trend.update_price(price)
         timestamp = 0 #datetime_to_float(aniso8601.parse_datetime(msg['time']))
         #self.order_handler.update_market_price(self.price)
 
@@ -84,11 +84,11 @@ class momentum_swing_strategy:
         if self.trend.trending_upward(): print("{}{} trending upward".format(self.base, self.currency))
         if self.trend.trending_downward(): print("{}{} trending downward".format(self.base, self.currency))
 
-        if self.price != 0.0 and self.last_price != 0.0:
-            self.buy_signal(self.price)
-            self.sell_signal(self.price)
+        #if price != 0.0 and self.last_price != 0.0:
+        #    self.buy_signal(price)
+        #    self.sell_signal(price)
 
-        self.last_price = self.price
+        self.last_price = price
 
     def run_update_orderbook(self, msg):
         self.orderbook.process_update(msg)

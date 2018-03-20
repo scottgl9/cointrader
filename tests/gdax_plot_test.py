@@ -2,6 +2,9 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
 from trader.myhelpers import *
 from trader.indicator.EMA import EMA
 from trader.indicator.SMMA import SMMA
@@ -81,7 +84,18 @@ def plot_emas_product(plt, klines, product):
     for kline in klines:
         vwap.kline_update(low=kline[1], high=kline[2], close=kline[4], volume=kline[5])
         vwap0.append(vwap.result)
+
     ema0 = compute_ema_dict_from_klines(klines, 4)
+    # Create linear regression object
+    regr = linear_model.LinearRegression()
+
+    # Train the model using the training sets
+    #ema_x = []
+    #for i in range(0, len(ema0['y'])):
+    #    ema_x
+    #regr.fit(ema0['x'], ema0['y']
+
+
     #ema1 = compute_ema_dict_from_klines(klines, 12)
     #ema2 = compute_ema_dict_from_klines(klines, 26)
     smma0 = compute_smma_from_kline_prices(prices, 12)
