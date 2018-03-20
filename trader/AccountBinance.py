@@ -3,7 +3,7 @@ from trader.AccountBase import AccountBase
 from datetime import datetime, timedelta
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name, asset, simulation=True):
+    def __init__(self, client, name='BTC', asset='USD', simulation=True):
         self.account_type = 'Binance'
         self.balance = 0.0
         self.funds_available = 0.0
@@ -21,18 +21,18 @@ class AccountBinance(AccountBase):
         self.base_min_size = 0.0
         self.market_price = 0.0
 
-        for funds in client.get_account()['balances']:
-            if funds['asset'] == asset:
-                self.quote_currency_balance = float(funds['free']) + float(funds['locked'])
-                self.quote_currency_available = float(funds['free'])
-            elif funds['asset'] == name:
-                self.balance = float(funds['free']) + float(funds['locked'])
-                self.funds_available = float(funds['free'])
+        #for funds in client.get_account()['balances']:
+        #    if funds['asset'] == asset:
+        #        self.quote_currency_balance = float(funds['free']) + float(funds['locked'])
+        #        self.quote_currency_available = float(funds['free'])
+        #    elif funds['asset'] == name:
+        #        self.balance = float(funds['free']) + float(funds['locked'])
+        #        self.funds_available = float(funds['free'])
 
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
-        self.info = self.client.get_symbol_info(symbol=self.ticker_id)
-        self.update_24hr_stats()
+        #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
+        #self.update_24hr_stats()
 
     def html_run_stats(self):
         results = str('')
@@ -43,20 +43,26 @@ class AccountBinance(AccountBase):
         results += ("last: %f high: %f low: %f open: %f<br>" % (self.last_24hr,self.high_24hr, self.low_24hr, self.open_24hr))
         return results
 
+    def set_market_price(self, price):
+        pass
+
+
     def round_base(self, price):
         return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
 
     def round_quote(self, price):
         return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
 
-    def get_ticker_id(self):
-        return '%s%s' % (self.base_currency, self.currency)
+    #def get_ticker_id(self):
+    #    return '%s%s' % (self.base_currency, self.currency)
 
     def make_ticker_id(self, base, currency):
         return '%s%s' % (base, currency)
 
-    def get_deposit_address(self):
-        result = self.client.get_deposit_address(asset=self.base_currency)
+    def get_deposit_address(self, name=None):
+        if not name:
+            name = self.base_currency
+        result = self.client.get_deposit_address(asset=name)
         if 'success' in result and 'address' in result and result['success']:
             return result['address']
         return ''
@@ -83,8 +89,10 @@ class AccountBinance(AccountBase):
     def preload_buy_price_list(self):
         return [], []
 
-    def update_24hr_stats(self):
-        stats = self.client.get_ticker(symbol=self.ticker_id)
+    def update_24hr_stats(self, ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
+        stats = self.client.get_ticker(symbol=ticker_id)
 
         self.high_24hr = self.low_24hr = self.open_24hr = 0.0
 
@@ -136,29 +144,38 @@ class AccountBinance(AccountBase):
             self.balance = balance
             self.funds_available = available
 
-    def get_account_balance(self):
+    def get_account_balance(self, base=None, currency=None):
+        if not base:
+            base = self.base_currency
+        if not currency:
+            currency = self.currency
         self.balance = 0.0
+        balance = 0.0
+        quote_currency_balance = 0.0
         for funds in self.client.get_account()['balances']:
-            if funds['asset'] == self.currency:
-                self.quote_currency_balance = float(funds['free']) + float(funds['locked'])
-            elif funds['asset'] == self.base_currency:
-                self.balance = float(funds['free']) + float(funds['locked'])
-        return {"base_balance": self.balance, "quote_balance": self.quote_currency_balance}
+            if funds['asset'] == currency:
+                quote_currency_balance = float(funds['free']) + float(funds['locked'])
+                self.quote_currency_balance = quote_currency_balance
+            elif funds['asset'] == base:
+                balance = float(funds['free']) + float(funds['locked'])
+                self.balance = balance
+        return {"base_balance": balance, "quote_balance": quote_currency_balance}
 
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
 
-    def set_market_price(self, price):
-        self.market_price = price
-
-    def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
-        return self.client.get_all_orders(symbol=self.ticker_id, limit=100)
+    def get_fills(self, order_id='', product_id='', before='', after='', limit='', ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
+        return self.client.get_all_orders(symbol=ticker_id, limit=100)
 
     def get_order(self, order_id):
         return self.client.get_order(order_id=order_id)
 
-    def get_orders(self):
-        return self.client.get_open_orders(symbol=self.ticker_id)
+    def get_orders(self, ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
+        return self.client.get_open_orders(symbol=ticker_id)
 
     def get_account_history(self):
         pass
@@ -231,13 +248,18 @@ class AccountBinance(AccountBase):
         timeInForce = Client.TIME_IN_FORCE_GTC
         return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
-    def cancel_order(self, orderid):
-        return self.client.cancel_order(symbol=self.get_ticker_id(), orderId=orderid)
+    def cancel_order(self, orderid, ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
+        return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
 
     def cancel_all(self):
         pass
 
-    def get_klines(self, days=0, hours=1):
+    def get_klines(self, days=0, hours=1, ticker_id=None):
+        if not ticker_id:
+            ticker_id = self.ticker_id
+
         timestr = ''
         if days == 1:
             timestr = "1 day ago"
@@ -255,7 +277,7 @@ class AccountBinance(AccountBase):
                 timestr = "and {} hours ago".format(hours)
         timestr += " UTC"
 
-        klines_data = self.client.get_historical_klines(self.ticker_id, Client.KLINE_INTERVAL_1MINUTE, timestr)
+        klines_data = self.client.get_historical_klines(ticker_id, Client.KLINE_INTERVAL_1MINUTE, timestr)
 
         # reorganize kline format to same as GDAX for consistency:
         # GDAX kline format: [ timestamp, low, high, open, close, volume ]

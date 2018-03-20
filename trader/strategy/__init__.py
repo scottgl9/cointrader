@@ -5,6 +5,7 @@ from trader.strategy.quadratic_with_fibonacci import quadratic_with_fibonacci
 from trader.strategy.smma_of_diff import smma_of_diff
 from trader.strategy.order_book_strategy import order_book_strategy
 from trader.strategy.trailing_prices_strategy import trailing_prices_strategy
+from trader.strategy.momentum_swing_strategy import momentum_swing_strategy
 
 def select_strategy(sname, client, name='BTC', currency='USD', account_handler=None, order_handler=None):
     if sname == 'buy_low_sell_high':
@@ -21,3 +22,5 @@ def select_strategy(sname, client, name='BTC', currency='USD', account_handler=N
         return order_book_strategy(client, name, currency, account_handler, order_handler)
     elif sname == 'trailing_prices_strategy':
         return trailing_prices_strategy(client, name, currency, account_handler, order_handler)
+    elif sname == 'momentum_swing_strategy':
+        return momentum_swing_strategy(client, name, currency, account_handler, order_handler)

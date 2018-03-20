@@ -8,9 +8,9 @@ class AccountBase(object):
     #def __init__(self, auth_client, name, currency='USD'):
     #    pass
 
-    @abstractmethod
-    def get_ticker_id(self):
-        pass
+    #@abstractmethod
+    #def get_ticker_id(self):
+    #    pass
 
     @abstractmethod
     def get_deposit_address(self):
@@ -36,9 +36,9 @@ class AccountBase(object):
     def update_account_balance(self, currency_balance, currency_available, balance, available):
         pass
 
-    @abstractmethod
-    def set_market_price(self, price):
-        pass
+    #@abstractmethod
+    #def set_market_price(self, price):
+    #    pass
 
     @abstractmethod
     def get_fills(self, order_id='', product_id='', before='', after='', limit=''):

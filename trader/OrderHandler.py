@@ -11,7 +11,7 @@ import uuid
 
 class OrderHandler:
     def __init__(self, accnt):
-        self.DEBUG()
+        #self.DEBUG()
         self.accnt = accnt
         self.market_price = 0.0
         self.market_fee = 0.0015 #0.0025
@@ -35,7 +35,7 @@ class OrderHandler:
         self.ticker_id = self.accnt.ticker_id
 
         #self.accnt.cancel_all()
-        self.accnt.get_account_balance()
+        #self.accnt.get_account_balance()
 
         # OrderHandler run stats
         self.limit_buy_orders_placed = 0
@@ -64,32 +64,32 @@ class OrderHandler:
                 self.min_market_funds = float(product['min_market_funds'])
                 break
 
-        self.pending_limit_buy_orders = self.accnt.get_open_buy_orders()
-        for order in self.pending_limit_buy_orders:
-            self.pending_buy_price_list.append(order[0])
+        #self.pending_limit_buy_orders = self.accnt.get_open_buy_orders()
+        #for order in self.pending_limit_buy_orders:
+        #    self.pending_buy_price_list.append(order[0])
 
-        print("pending_buy_price_list")
-        print(self.pending_buy_price_list)
+        #print("pending_buy_price_list")
+        #print(self.pending_buy_price_list)
 
-        self.pending_limit_sell_orders = self.accnt.get_open_sell_orders()
-        for order in self.pending_limit_sell_orders:
-            self.pending_sell_price_list.append(order[0])
-        print("pending_sell_price_list:")
-        print(self.pending_sell_price_list)
+        #self.pending_limit_sell_orders = self.accnt.get_open_sell_orders()
+        #for order in self.pending_limit_sell_orders:
+        #    self.pending_sell_price_list.append(order[0])
+        #print("pending_sell_price_list:")
+        #print(self.pending_sell_price_list)
 
         #if not self.accnt.simulation:
-        self.buy_price_list, self.sell_price_list = self.accnt.preload_buy_price_list()
-        if len(self.sell_price_list) > 0:
-            self.last_sell_price = self.sell_price_list[0]
-        print(self.buy_price_list)
-        print(self.sell_price_list)
+        #self.buy_price_list, self.sell_price_list = self.accnt.preload_buy_price_list()
+        #if len(self.sell_price_list) > 0:
+        #    self.last_sell_price = self.sell_price_list[0]
+        #print(self.buy_price_list)
+        #print(self.sell_price_list)
 
         print("Order Handler Started")
         #self.low_4hr, self.high_4hr = self.accnt.get_4hr_stats()
         #print(self.low_4hr, self.high_4hr)
         #self.count_4hr = 0
-        self.accnt.update_24hr_stats()
-        print(self.orders_completed_balance(float(self.accnt.close_24hr)))
+        #self.accnt.update_24hr_stats()
+        #print(self.orders_completed_balance(float(self.accnt.close_24hr)))
 
     def DEBUG(self):
         cf = currentframe()

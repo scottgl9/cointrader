@@ -20,8 +20,9 @@ if __name__ == '__main__':
                 price_usd = price_btc *  btc_usd_price
                 total_balance_usd += price_usd
                 total_balance_btc += price_btc
+                usd_price = price * btc_usd_price
                 if price_usd > 0.01:
-                    print("{} = {} ({} BTC {} USD)".format(accnt['asset'], accnt['free'], price_btc, price_usd))
+                    print("{} (price USD={}) = {} ({} BTC {} USD)".format(accnt['asset'], usd_price, accnt['free'], price_btc, price_usd))
             else:
                 price_btc = (float(accnt['free']) + float(accnt['locked']))
                 price_usd = price_btc *  btc_usd_price
