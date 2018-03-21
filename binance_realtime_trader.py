@@ -16,12 +16,12 @@ from config import *
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 class BinanceTrader:
-    def __init__(self, client, symbols):
+    def __init__(self, client, asset_info=None, volumes=None):
         self.client = client
         self.tickers = {}
-        self.symbols = symbols #sget_all_tickers(client)
-        print("loading symbols {}".format(self.symbols))
-        self.multitrader = MultiTrader(client, 'momentum_swing_strategy', symbols=self.symbols)
+        #self.symbols = symbols #sget_all_tickers(client)
+        #print("loading symbols {}".format(self.symbols))
+        self.multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=volumes)
         self.accnt = AccountBinance(self.client)
         #self.trader = select_strategy('trailing_prices_strategy', self.client, 'BTC', 'USD',
         #                              account_handler=self.accnt, order_handler=None) #self.order_handler)
@@ -92,6 +92,8 @@ def get_products_sorted_by_volume(client, currency='BTC'):
     buy_list = collections.OrderedDict()
     sell_list = collections.OrderedDict()
 
+    volumes = volumes[0:len(volumes) / 2]
+
     # get only the top half of the sorted list by volume
     for symbol, volume in volumes[0:len(volumes)/2]:
         baseAsset = prices[symbol][0]
@@ -104,7 +106,7 @@ def get_products_sorted_by_volume(client, currency='BTC'):
         elif price > (high + mid) / 3.0:
             sell_list[baseAsset] = [price, low, high]
 
-    return buy_list, sell_list
+    return buy_list, sell_list, volumes
 
 def get_all_tickers(client):
     result = []
@@ -173,16 +175,21 @@ if __name__ == '__main__':
     buy_list = []
     sell_list = []
     currency_list = ['BTC', 'ETH', 'BNB']
+    #print(assets_info)
+    volumes_list = {}
 
     for currency in currency_list:
-        if currency in balances.keys():
-            buy, sell = get_products_sorted_by_volume(client, currency)
+        if 1: #currency in balances.keys():
+            buy, sell, volumes = get_products_sorted_by_volume(client, currency)
+            for k,v in volumes:
+                volumes_list[k] = v
             for symbol in buy.keys():
                 buy_list.append("{}{}".format(symbol, currency))
             for symbol in sell.keys():
                 if symbol not in balances.keys():
                     continue
                 sell_list.append("{}{}".format(symbol, currency))
+    print(volumes_list)
     print("buy list:")
     print(buy_list)
     print("sell lists:")
@@ -203,7 +210,7 @@ if __name__ == '__main__':
     #plt.plot(prices)
     #plt.show()
 
-    bt = BinanceTrader(client, symbol_list)
+    bt = BinanceTrader(client, assets_info, volumes=volumes_list)
     try:
         bt.run()
     except (KeyboardInterrupt, SystemExit):

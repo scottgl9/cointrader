@@ -13,15 +13,14 @@ def datetime_to_float(d):
     return float(total_seconds)
 
 class momentum_swing_strategy:
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None):
+    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
         self.strategy_name = 'trailing_prices_strategy'
         self.client = client
         # if not account_handler:
         #     self.accnt = AccountGDAX(self.client, name, currency)
         # else:
         self.accnt = account_handler
-        self.products = [self.accnt.ticker_id]
-        self.orderbook = OrderBookGDAX()
+        #self.orderbook = OrderBookGDAX()
         #if not order_handler:
         #self.order_handler = OrderHandler(self.accnt)
         self.trend = MeasureTrend(window=50)
@@ -38,13 +37,19 @@ class momentum_swing_strategy:
         self.interval_price = 0.0
         self.last_50_prices = []
         self.prev_last_50_prices = []
+        self.trend_upward_count = 0
+        self.trend_downward_count = 0
+        self.base_min_size = float(base_min_size)
+        self.quote_increment = tick_size
+        self.buy_price_list = []
+        self.ticker_id = self.accnt.make_ticker_id(name, currency)
         #self.accnt.get_account_balance()
         #self.update_24hr_stats()
         #print("Started {} strategy".format(self.__class__.__name__))
         #print("Account balance: {} USD - {} BTC".format(self.accnt.quote_currency_balance, self.accnt.balance))
 
     def get_ticker_id(self):
-        return self.accnt.ticker_id
+        return self.ticker_id
 
     def html_run_stats(self):
         results = str('')
@@ -52,15 +57,89 @@ class momentum_swing_strategy:
         results += "sell_signal_count: {}<br>".format(self.sell_signal_count)
         return results
 
+    def get_lowest_buy_price(self, order_price):
+        if len(self.buy_price_list) == 0: return 0.0
+        lowest_price = float(self.buy_price_list[0])
+        for i in range(1, len(self.buy_price_list)):
+            if float(order_price) > float(self.buy_price_list[i]):
+                lowest_price = self.buy_price_list[i]
+
+        # sell for at least one tick up from minimum buy price
+        if order_price <= (lowest_price + self.accnt.quote_increment * 4):
+            #self.limit_sell_order_price_too_low += 1
+            return 0.0
+        return lowest_price
+
+    def round_base(self, price):
+        return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
+
+    def round_quote(self, price):
+        return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
+
     def buy_signal(self, price):
+        buy_flag = False
+        if self.trend.valley_detected():
+            #print("{}{} valley detected".format(self.base, self.currency))
+            if self.trend_downward_count > 3:
+                buy_flag = True
+            self.trend_upward_count = 0
+            self.trend_downward_count = 0
+            #print("buy({}, {})".format(self.base, self.currency))
+        if self.trend.trending_upward():
+            if self.trend_upward_count > 3:
+                buy_flag = True
+            #print("{}{} trending upward".format(self.base, self.currency))
+            self.trend_downward_count = 0
+            self.trend_upward_count += 1
+
         # if we have insuffient funds to buy
-        size = self.accnt.round_base(self.accnt.quote_currency_available / price)
-        if size < self.accnt.base_min_size:
+        #size = self.accnt.round_base(self.accnt.quote_currency_available / price)
+        balance_available = self.accnt.get_asset_balance(self.currency)['available']
+        size = self.round_base(float(balance_available) / float(price))
+        #if balance_available != 0.0:
+        #    print("{}{} = {}, {}, size={}".format(self.base, self.currency, balance_available, self.base_min_size, size))
+        if size < self.base_min_size:
+            #if size > 0.0:
+            #    print("{} < {}".format(size, self.base_min_size))
             return
+        #print("buy_signal({})".format(price))
+        if buy_flag:
+            print("buy({}, {})".format(self.base, self.currency))
+            self.buy_price_list.append(price)
+            print(self.accnt.buy_market(self.base_min_size, ticker_id=self.get_ticker_id()))
+            self.accnt.get_account_balances()
 
     def sell_signal(self, price):
-        if self.accnt.funds_available < self.accnt.base_min_size:
+        sell_flag = False
+        if self.trend.peak_detected():
+            #print("{}{} peak detected".format(self.base, self.currency))
+            if self.trend_upward_count > 2:
+                sell_flag = True
+            self.trend_upward_count = 0
+            self.trend_downward_count = 0
+            #print("sell({}, {})".format(self.base, self.currency))
+        if self.trend.trending_downward():
+            if self.trend_downward_count > 2:
+                sell_flag = True
+            #print("{}{} trending downward".format(self.base, self.currency))
+            self.trend_upward_count = 0
+            self.trend_downward_count += 1
+
+        balance_available = self.round_base(float(self.accnt.get_asset_balance(self.base)['available']))
+        #if balance_available != 0.0:
+        #    print("{} = {}, {}".format(self.base, balance_available, self.base_min_size))
+        if balance_available < self.base_min_size:
+            #if self.accnt.get_asset_balance(self.base) > 0.0:
+            #    print(self.accnt.get_asset_balance(self.base), self.base_min_size)
             return
+
+        if sell_flag:
+            print("sell({}, {})".format(self.base, self.currency))
+            buy_price = self.get_lowest_buy_price(price)
+            if buy_price == 0.0: return
+            print(self.accnt.sell_market(self.base_min_size, ticker_id=self.get_ticker_id()))
+            self.buy_price_list.remove(buy_price)
+            self.accnt.get_account_balances()
 
     def update_last_50_prices(self, price):
         #if price in self.last_50_prices:
@@ -79,19 +158,15 @@ class momentum_swing_strategy:
         timestamp = 0 #datetime_to_float(aniso8601.parse_datetime(msg['time']))
         #self.order_handler.update_market_price(self.price)
 
-        if self.trend.peak_detected(): print("{}{} peak detected".format(self.base, self.currency))
-        if self.trend.valley_detected(): print("{}{} valley detected".format(self.base, self.currency))
-        if self.trend.trending_upward(): print("{}{} trending upward".format(self.base, self.currency))
-        if self.trend.trending_downward(): print("{}{} trending downward".format(self.base, self.currency))
-
         #if price != 0.0 and self.last_price != 0.0:
-        #    self.buy_signal(price)
-        #    self.sell_signal(price)
+        self.buy_signal(price)
+        self.sell_signal(price)
 
         self.last_price = price
 
     def run_update_orderbook(self, msg):
-        self.orderbook.process_update(msg)
+        pass
+    #    self.orderbook.process_update(msg)
 
     def close(self):
         pass

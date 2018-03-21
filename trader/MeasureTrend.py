@@ -109,8 +109,11 @@ class MeasureTrend(object):
         #self.compute_linear_regression()
         slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
         slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
+        slope3 = 100.0 * (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0]
 
-        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 > 0.0:
+        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 > 0.0 \
+            and slope3 > 1.5:
+            print(slope1, slope2, slope3)
             return True
 
         return False
@@ -121,6 +124,10 @@ class MeasureTrend(object):
         #self.compute_linear_regression()
         slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
         slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
-        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 < 0.0:
+        slope3 = 100.0 * (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0]
+
+        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 < 0.0 \
+            and slope3 < -1.5:
+            print(slope1, slope2, slope3)
             return True
         return False

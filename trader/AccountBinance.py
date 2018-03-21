@@ -3,7 +3,7 @@ from trader.AccountBase import AccountBase
 from datetime import datetime, timedelta
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name='BTC', asset='USD', simulation=True):
+    def __init__(self, client, name='BTC', asset='USD', simulation=False):
         self.account_type = 'Binance'
         self.balance = 0.0
         self.funds_available = 0.0
@@ -20,6 +20,7 @@ class AccountBinance(AccountBase):
         self.quote_increment = 0.01
         self.base_min_size = 0.0
         self.market_price = 0.0
+        self.balances = {}
 
         #for funds in client.get_account()['balances']:
         #    if funds['asset'] == asset:
@@ -33,6 +34,7 @@ class AccountBinance(AccountBase):
         self.ticker_id = '{}{}'.format(name, asset)
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
+        print(self.get_account_balances())
 
     def html_run_stats(self):
         results = str('')
@@ -131,8 +133,8 @@ class AccountBinance(AccountBase):
 
         return {'l': low_24hr, 'h': high_24hr, 'o': open_24hr, 'c': last_24hr, 'v': volume, 't': ts_24hr}
 
-    def get_asset_balance(self, asset):
-        return self.client.get_asset_balance(asset=asset)
+    #def get_asset_balance(self, asset):
+    #    return self.client.get_asset_balance(asset=asset)
 
     def get_account_status(self):
         return self.client.get_account_status()
@@ -160,6 +162,21 @@ class AccountBinance(AccountBase):
                 balance = float(funds['free']) + float(funds['locked'])
                 self.balance = balance
         return {"base_balance": balance, "quote_balance": quote_currency_balance}
+
+    def get_account_balances(self):
+        self.balances = {}
+        for funds in self.client.get_account()['balances']:
+            funds_free = float(funds['free'])
+            funds_locked = float(funds['locked'])
+            if funds_free == 0.0 and funds_locked == 0.0: continue
+            asset_name = funds['asset']
+            self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
+        return self.balances
+
+    def get_asset_balance(self, asset):
+        if asset in self.balances.keys():
+            return self.balances[asset]
+        return {'balance': 0.0, 'available': 0.0}
 
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
