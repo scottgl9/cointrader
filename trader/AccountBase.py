@@ -40,9 +40,9 @@ class AccountBase(object):
     #def set_market_price(self, price):
     #    pass
 
-    @abstractmethod
-    def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
-        pass
+    #@abstractmethod
+    #def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
+    #    pass
 
     #@abstractmethod
     #def check_order_error(self, result, side):

@@ -59,11 +59,11 @@ class MultiTrader(object):
             if msg['s'].endswith('USDT'): return
 
             if msg['s'] not in self.trade_pairs.keys():
-                print("adding {} to trade_pairs".format(msg['s']))
+                #print("adding {} to trade_pairs".format(msg['s']))
                 self.add_trade_pair(msg['s'])
 
             if msg['s'] not in self.trade_pairs.keys(): return
-            if msg['s'] not in self.volumes.keys(): return
+            #if msg['s'] not in self.volumes.keys(): return
             #print("process_message: symbol={} price={}".format(msg['s'], msg['o']))
             #print("process_message({})".format(msg))
             symbol_trader = self.trade_pairs[msg['s']]
@@ -77,11 +77,11 @@ class MultiTrader(object):
 
             if part['s'].endswith('USDT'): return
             if part['s'] not in self.trade_pairs.keys():
-                print("adding {} to trade_pairs".format(part['s']))
+                #print("adding {} to trade_pairs".format(part['s']))
                 self.add_trade_pair(part['s'])
 
             if part['s'] not in self.trade_pairs.keys(): continue
-            if part['s'] not in self.volumes.keys(): continue
+            #if part['s'] not in self.volumes.keys(): continue
             #print("process_message: symbol={} price={}".format(msg['s'], msg['o']))
             #print("process_message({})".format(msg))
             symbol_trader = self.trade_pairs[part['s']]

@@ -181,10 +181,15 @@ class AccountBinance(AccountBase):
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
 
-    def get_fills(self, order_id='', product_id='', before='', after='', limit='', ticker_id=None):
+    def get_fills(self, ticker_id=None, limit=100):
+        result = []
         if not ticker_id:
             ticker_id = self.ticker_id
-        return self.client.get_all_orders(symbol=ticker_id, limit=100)
+        fills = self.client.get_all_orders(symbol=ticker_id, limit=limit)
+        for fill in fills:
+            if 'status' not in fill or fill['status'] != 'FILLED': continue
+            result.append(fill)
+        return result
 
     def get_order(self, order_id):
         return self.client.get_order(order_id=order_id)
@@ -210,21 +215,24 @@ class AccountBinance(AccountBase):
         if not self.simulate:
             if not ticker_id:
                 ticker_id = self.ticker_id
+            print("buy_market({})".format(size))
+            #return self.order_market_buy(symbol=ticker_id, quantity=size)
+
             return self.client.create_test_order(symbol=ticker_id,
                                                  side=Client.SIDE_BUY,
                                                  type=Client.ORDER_TYPE_MARKET,
                                                  quantity=size)
-        print("buy_market({})".format(size))
 
     def sell_market(self, size, ticker_id=None):
         if not self.simulate:
             if not ticker_id:
                 ticker_id = self.ticker_id
+            print("sell_market({})".format(size))
+            #return self.order_market_sell(symbol=ticker_id, quantity=size)
             return self.client.create_test_order(symbol=ticker_id,
                                                  side=Client.SIDE_SELL,
                                                  type=Client.ORDER_TYPE_MARKET,
                                                  quantity=size)
-        print("sell_market({})".format(size))
 
     def buy_limit_simulate(self, price, size):
         price = self.round_quote(price)
