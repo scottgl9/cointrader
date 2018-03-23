@@ -115,8 +115,6 @@ def get_all_tickers(client):
         for asset in value:
             if asset['symbol'].endswith('USDT'): continue
             result.append(asset['symbol'])
-    #print(result)
-
     return result
 
 def get_info_all_assets(client):
@@ -189,7 +187,7 @@ if __name__ == '__main__':
                 if symbol not in balances.keys():
                     continue
                 sell_list.append("{}{}".format(symbol, currency))
-    print(volumes_list)
+    #print(volumes_list)
     print("buy list:")
     print(buy_list)
     print("sell lists:")

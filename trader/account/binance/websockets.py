@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding=utf-8
 
 import json
@@ -11,7 +10,7 @@ from twisted.internet import reactor, ssl
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.internet.error import ReactorAlreadyRunning
 
-from trader.account.binance.client import Client
+from binance.client import Client
 
 
 class BinanceClientProtocol(WebSocketClientProtocol):
@@ -107,7 +106,7 @@ class BinanceSocketManager(threading.Thread):
         :param callback: callback function to handle messages
         :type callback: function
         :param depth: optional Number of depth entries to return, default None. If passed returns a partial book instead of a diff
-        :type depth: enum
+        :type depth: str
 
         :returns: connection key string if successful, False otherwise
 
@@ -176,7 +175,7 @@ class BinanceSocketManager(threading.Thread):
         :param callback: callback function to handle messages
         :type callback: function
         :param interval: Kline interval, default KLINE_INTERVAL_1MINUTE
-        :type interval: enum
+        :type interval: str
 
         :returns: connection key string if successful, False otherwise
 
@@ -211,7 +210,6 @@ class BinanceSocketManager(threading.Thread):
         """
         socket_name = '{}@kline_{}'.format(symbol.lower(), interval)
         return self._start_socket(socket_name, callback)
-
 
     def start_miniticker_socket(self, callback, update_time=1000):
         """Start a miniticker websocket for all trades
@@ -437,13 +435,21 @@ class BinanceSocketManager(threading.Thread):
 
         Message Format - see Binance API docs for all types
         """
+        # Get the user listen key
+        user_listen_key = self._client.stream_get_listen_key()
+        # and start the socket with this specific key
+        conn_key = self._start_user_socket(user_listen_key, callback)
+        return conn_key
+
+    def _start_user_socket(self, user_listen_key, callback):
+        # With this function we can start a user socket with a specific key
         if self._user_listen_key:
             # cleanup any sockets with this key
             for conn_key in self._conns:
                 if len(conn_key) >= 60 and conn_key[:60] == self._user_listen_key:
                     self.stop_socket(conn_key)
                     break
-        self._user_listen_key = self._client.stream_get_listen_key()
+        self._user_listen_key = user_listen_key
         self._user_callback = callback
         conn_key = self._start_socket(self._user_listen_key, callback)
         if conn_key:
@@ -458,11 +464,16 @@ class BinanceSocketManager(threading.Thread):
         self._user_timer.start()
 
     def _keepalive_user_socket(self):
-        listen_key = self._client.stream_get_listen_key()
+        user_listen_key = self._client.stream_get_listen_key()
         # check if they key changed and
-        if listen_key != self._user_listen_key:
-            self.start_user_socket(self._user_callback)
-        self._start_user_timer()
+        if user_listen_key != self._user_listen_key:
+            # Start a new socket with the key received
+            # `_start_user_socket` automatically cleanup open sockets
+            # and starts timer to keep socket alive
+            self._start_user_socket(user_listen_key, self._user_callback)
+        else:
+            # Restart timer only if the user listen key is not changed
+            self._start_user_timer()
 
     def stop_socket(self, conn_key):
         """Stop a websocket given the connection key
@@ -500,8 +511,6 @@ class BinanceSocketManager(threading.Thread):
         except ReactorAlreadyRunning:
             # Ignore error about reactor already running
             pass
-        except (KeyboardInterrupt, SystemExit):
-            self.close()
 
     def close(self):
         """Close all connections

@@ -34,7 +34,7 @@ class AccountBinance(AccountBase):
         self.ticker_id = '{}{}'.format(name, asset)
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
-        print(self.get_account_balances())
+        self.get_account_balances()
 
     def html_run_stats(self):
         results = str('')

@@ -186,10 +186,10 @@ class momentum_swing_strategy:
 
             #print(self.ticker_id, self.quad.C)
             if self.quad.C < price and self.trend.sma_prices[0] > self.trend.sma_prices[-1]:
-                print("{} Valley at {}".format(self.ticker_id, self.quad.C))
+                #print("{} Valley at {}".format(self.ticker_id, self.quad.C))
                 self.buy_signal(price)
             elif self.quad.C > price and self.trend.sma_prices[0] < self.trend.sma_prices[-1]:
-                print("{} Peak at {}".format(self.ticker_id, self.quad.C))
+                #print("{} Peak at {}".format(self.ticker_id, self.quad.C))
                 self.sell_signal(price)
         timestamp = 0 #datetime_to_float(aniso8601.parse_datetime(msg['time']))
         #self.order_handler.update_market_price(self.price)

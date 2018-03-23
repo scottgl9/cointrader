@@ -117,7 +117,7 @@ class MeasureTrend(object):
         slope3 = (self.sma_prices[-1] - self.sma_prices[0]) / (self.ts[-1] - self.ts[0])
         roc = abs(100.0 * (self.sma_prices[-1] / self.sma_prices[0] - 1.0))
 
-        print("trending_upward={}".format(roc)) #slope1, slope2, slope3)
+        # print("trending_upward={}".format(roc)) #slope1, slope2, slope3)
 
         if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 > 0.0 \
             and slope3 > 1.5:
@@ -138,7 +138,7 @@ class MeasureTrend(object):
 
         roc = abs(100.0 * (self.sma_prices[0] / self.sma_prices[-1] - 1.0))
 
-        print("trending_downward={}".format(roc)) #slope1, slope2, slope3)
+        #print("trending_downward={}".format(roc)) #slope1, slope2, slope3)
 
         if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 < 0.0 \
             and slope3 < -1.0:
