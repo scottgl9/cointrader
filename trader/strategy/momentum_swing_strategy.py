@@ -111,9 +111,10 @@ class momentum_swing_strategy:
 
         #print("buy_signal({})".format(price))
         #if buy_flag:
-        print("buy({}, {} @ {})".format(self.base, self.currency, price))
-        self.buy_price_list.append(price)
-        print(self.accnt.buy_market(self.base_min_size, ticker_id=self.get_ticker_id()))
+        if self.last_buy_price != 0.0 and self.last_sell_price != 0.0:
+            print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
+            self.buy_price_list.append(price)
+            print(self.accnt.buy_market(self.base_min_size, ticker_id=self.get_ticker_id()))
         self.last_buy_price = price
         self.accnt.get_account_balances()
 
@@ -151,13 +152,17 @@ class momentum_swing_strategy:
             return
 
         #if sell_flag:
-        print("sell({}, {}) @ {}".format(self.base, self.currency, price))
         buy_price = self.get_lowest_buy_price(price)
         if buy_price == 0.0: return
         if (price - buy_price) / buy_price < 0.001: return
-        print(self.accnt.sell_market(self.base_min_size, ticker_id=self.get_ticker_id()))
+
+        if self.last_buy_price != 0.0 and self.last_sell_price != 0.0:
+            print("sell({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
+            print(self.accnt.sell_market(self.base_min_size, ticker_id=self.get_ticker_id()))
+            self.buy_price_list.remove(buy_price)
+
         self.last_sell_price = price
-        self.buy_price_list.remove(buy_price)
+
         self.accnt.get_account_balances()
 
     def update_last_50_prices(self, price):

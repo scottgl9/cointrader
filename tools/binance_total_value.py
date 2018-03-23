@@ -10,26 +10,25 @@ if __name__ == '__main__':
     total_balance_usd = 0.0
     total_balance_btc = 0.0
     for accnt in client.get_account()['balances']:
-        if float(accnt['free']) != 0.0:
-            price = 1.0
+        if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
+            price = 0.0
             price_usd = 0.0
             price_btc = 0.0
             if accnt['asset'] != 'BTC':
                 price = float(client.get_symbol_ticker(symbol="{}BTC".format(accnt['asset']))['price'])
-                price_btc = price * (float(accnt['free']) + float(accnt['locked']))
-                price_usd = price_btc *  btc_usd_price
-                total_balance_usd += price_usd
-                total_balance_btc += price_btc
-                usd_price = price * btc_usd_price
-                if price_usd > 0.01:
-                    print("{} (price USD={}) = {} ({} BTC {} USD)".format(accnt['asset'], usd_price, accnt['free'], price_btc, price_usd))
+                total_amount = float(accnt['free']) + float(accnt['locked'])
+                price_btc = price * total_amount
             else:
-                price_btc = (float(accnt['free']) + float(accnt['locked']))
-                price_usd = price_btc *  btc_usd_price
-                total_balance_usd += price_usd
-                total_balance_btc += price_btc
-                if price_usd > 0.01:
-                    print("{} = {} ({} BTC {} USD)".format(accnt['asset'], accnt['free'], price_btc, price_usd))
+                price = 1.0
+                total_amount = float(accnt['free']) + float(accnt['locked'])
+                price_btc = total_amount
+
+            price_usd = price_btc * btc_usd_price
+            total_balance_usd += price_usd
+            total_balance_btc += price_btc
+            usd_price = price * btc_usd_price
+            if price_usd > 1.0:
+                print("{} = {} ({} BTC {} USD)".format(accnt['asset'], total_amount, price_btc, price_usd))
 
     print("Total balance USD = {}, BTC={}".format(total_balance_usd, total_balance_btc))
 
