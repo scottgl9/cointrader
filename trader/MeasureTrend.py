@@ -8,13 +8,14 @@ from sklearn.metrics import mean_squared_error, r2_score
 # IDEA: get range with highest level of oscillation
 
 class MeasureTrend(object):
-    def __init__(self, name='BTCUSD', window=50):
+    def __init__(self, name='BTCUSD', window=50, detect_width=16):
         self.prices = []
         self.last_price = 0.0
         self.sma_prices = []
         self.ts = []
         self.name = name
         self.window = window
+        self.detect_width = detect_width
         self.sma = EMA(12)
 
     def update_price(self, price):
@@ -34,52 +35,28 @@ class MeasureTrend(object):
         if len(self.sma_prices) < self.window:
             return False
 
-        slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
-        slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
+        for i in range(self.detect_width, len(self.sma_prices) - self.detect_width):
+            for j in range(1, self.detect_width):
+                if self.sma_prices[i - j] > self.sma_prices[i] or self.sma_prices[i] < self.sma_prices[i + j]:
+                    return False
+                if self.sma_prices[i-j] > self.sma_prices[i-j+1] or self.sma_prices[i+j-1] < self.sma_prices[i+j]:
+                    return False
 
-        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 < 0.0:
-            return True
-
-        return False
+        return True
 
     def valley_detected(self):
         if len(self.sma_prices) < self.window:
             return False
 
-        slope1 = 100.0 * (self.sma_prices[len(self.sma_prices)/2] - self.sma_prices[0]) / self.sma_prices[0]
-        slope2 = 100.0 * (self.sma_prices[-1] - self.sma_prices[len(self.sma_prices)/2]) / self.sma_prices[len(self.sma_prices)/2]
+        for i in range(self.detect_width, len(self.sma_prices) - self.detect_width):
+            for j in range(1, self.detect_width):
+                if self.sma_prices[i - j] < self.sma_prices[i] or self.sma_prices[i] > self.sma_prices[i + j]:
+                    return False
+                if self.sma_prices[i-j] < self.sma_prices[i-j+1] or self.sma_prices[i+j-1] > self.sma_prices[i+j]:
+                    return False
 
-        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 > 0.0:
-            return True
+        return True
 
-        return False
-
-    def get_peak_price(self):
-        if len(self.sma_prices) < self.window:
-            return 0.0
-
-        #for i in range(1, len(self.sma_prices) - 1):
-        i = len(self.sma_prices) - 8
-        if max(self.sma_prices) <= self.sma_prices[i]:
-            return self.sma_prices[i]
-            #for j in range(2, 32):
-            #    if (i-j) < 0 or (i+j) > len(self.sma_prices) - 1:
-            #        break
-            #    if self.sma_prices[i-j] > self.sma_prices[i] or self.sma_prices[i+j] > self.sma_prices[i]:
-            #        detected = False
-            #        break
-        return 0.0
-
-    def get_valley_price(self):
-        if len(self.sma_prices) < self.window:
-            return 0.0
-        i = len(self.sma_prices) - 8
-        if min(self.sma_prices) >= self.sma_prices[i]:
-            return self.sma_prices[i]
-        #for i in range(1, len(self.sma_prices) - 1):
-        #    if self.sma_prices[i-1] > self.sma_prices[i] and self.sma_prices[i+1] > self.sma_prices[i]:
-        #        return self.sma_prices[i]
-        return 0.0
 
     def compute_linear_regression(self):
         if len(self.sma_prices) < self.window:
@@ -128,7 +105,7 @@ class MeasureTrend(object):
             if self.sma_prices[i] >= self.sma_prices[i-1]:
                 upcount += 1
 
-        if upcount < int(0.9 * len(self.sma_prices)):
+        if upcount < int(0.95 * len(self.sma_prices)):
             return False
 
         #print("trending_upward={} {} {} {}".format(self.name, slope1, slope2, slope3))
@@ -136,7 +113,7 @@ class MeasureTrend(object):
 
         if self.sma_prices[0] == 0.0: return False
 
-        if (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0] > 0.001:
+        if (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0] > 0.005:
             return True
 
         return False

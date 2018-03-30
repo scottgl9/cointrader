@@ -239,8 +239,15 @@ class AccountBinance(AccountBase):
                     if 'status' not in fill or fill['status'] != 'FILLED': continue
                     actual_fills[fill['time']] = fill
 
+            skip_size = 0.0
             for (k, v) in sorted(actual_fills.items(), reverse=True):
-                if v['side'] != 'BUY': continue
+                if v['side'] == 'SELL':
+                    skip_size += float(v['executedQty'])
+                    continue
+
+                if float(v['executedQty']) <= skip_size:
+                    skip_size -= float(v['executedQty'])
+                    continue
 
                 if name not in result.keys():
                     result[name] = []

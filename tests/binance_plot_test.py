@@ -81,9 +81,9 @@ def plot_emas_product(plt, klines, product):
     plt.legend(handles=[symprice, ema4, ema5])
     plt.subplot(212)
     fig1, = plt.plot(macd_signal, label='MACD')
-    fig2, = plt.plot(quad_x, quad_y, label='QUAD')
-    fig3, = plt.plot(quad_x, quad_maxes, label='QUAD_MAX')
-    plt.legend(handles=[fig1, fig2, fig3])
+    #fig2, = plt.plot(quad_x, quad_y, label='QUAD')
+    #fig3, = plt.plot(quad_x, quad_maxes, label='QUAD_MAX')
+    plt.legend(handles=[fig1])#, fig2, fig3])
     return macd_signal
 
 def abs_average(values):
