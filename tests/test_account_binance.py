@@ -8,8 +8,8 @@ from config import *
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client, 'BNB', 'BTC')
-    balances = accnt.get_account_balances()
-    print(balances)
+    #balances = accnt.get_account_balances()
+    #print(balances)
     #currencies = ['BTC', 'ETH', 'BNB']
     #for base_name, info in balances.items():
     #    funds_available = 0.0
@@ -26,10 +26,12 @@ if __name__ == '__main__':
 
     #        except BinanceAPIException:
     #            continue
-    print(accnt.get_orders())
+    #print(accnt.get_orders())
     #print(client._post_private())
-    print(client.get_open_orders())
-    #print(accnt.get_fills())
+    #print(client.get_open_orders())
+    for k, v in accnt.get_fills().items():
+        print(v)
+        print("")
     #print(accnt.get_deposit_address())
     #print(accnt.html_run_stats())
     #print(accnt.get_klines())

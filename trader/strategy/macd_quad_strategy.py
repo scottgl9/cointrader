@@ -50,7 +50,7 @@ class macd_quad_strategy:
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
         self.buy_price_list = []
-
+        #self.accnt.get_account_balances()
 
     def get_ticker_id(self):
         return self.ticker_id
@@ -81,13 +81,14 @@ class macd_quad_strategy:
         return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
 
     def buy_signal(self, price):
-        if self.quad.C > self.macd.diff or self.trend.trending_downward():
+        if self.quad.C <= 0.0 or self.quad.C > self.macd.diff or self.trend.trending_downward():
             return
 
-        #print("buy_signal({}, {})".format(self.ticker_id, price))
+        if self.trend_upward_count < 5: return
+        print("buy_signal({}, {})".format(self.ticker_id, price))
 
         for order_price in self.buy_price_list:
-            if order_price - self.quote_increment <= price <= order_price + self.quote_increment:
+            if order_price - (self.quote_increment * 4) <= price <= order_price + (self.quote_increment * 4):
                 continue
 
         if self.last_sell_price != 0.0 and price >= self.last_sell_price:
@@ -104,19 +105,21 @@ class macd_quad_strategy:
         if len(self.buy_price_list) > 4:
             return
 
-        logger.info("buy({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
+        print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
         self.buy_price_list.append(price)
-        logger.info(self.accnt.buy_market(self.base_min_size, ticker_id=self.get_ticker_id()))
+        print(self.accnt.buy_market(float(self.base_min_size), ticker_id=self.get_ticker_id()))
         self.last_buy_price = price
         self.accnt.get_account_balances()
 
     def sell_signal(self, price):
-        if self.quad.C < self.macd.diff or self.trend.trending_upward():
+        if self.quad.C <= 0.0 or self.quad.C < self.macd.diff or self.trend.trending_upward():
             return
 
         #print("sell_signal({}, {})".format(self.ticker_id, price))
 
         if len(self.buy_price_list) == 0: return
+
+        if self.trend_downward_count < 5: return
 
         if self.last_buy_price != 0.0 and price <= self.last_buy_price:
             return
@@ -133,8 +136,8 @@ class macd_quad_strategy:
         if buy_price == 0.0: return
         if (price - buy_price) / buy_price < 0.001: return
 
-        logger.info("sell({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
-        logger.info(self.accnt.sell_market(self.base_min_size, ticker_id=self.get_ticker_id()))
+        print("sell({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
+        print(self.accnt.sell_market(float(self.base_min_size), ticker_id=self.get_ticker_id()))
         self.buy_price_list.remove(buy_price)
 
         self.last_sell_price = price
@@ -153,6 +156,12 @@ class macd_quad_strategy:
         self.macd.update(price)
         self.quad.update(self.macd.diff)
         self.trend.update_price(self.macd.diff)
+        if self.trend.trending_upward():
+            self.trend_upward_count += 1
+            self.trend_downward_count = 0
+        elif self.trend.trending_downward():
+            self.trend_upward_count = 0
+            self.trend_downward_count += 1
         self.buy_signal(price)
         self.sell_signal(price)
 

@@ -168,13 +168,15 @@ class AccountBinance(AccountBase):
 
     def get_account_balances(self):
         self.balances = {}
+        result = {}
         for funds in self.client.get_account()['balances']:
             funds_free = float(funds['free'])
             funds_locked = float(funds['locked'])
             if funds_free == 0.0 and funds_locked == 0.0: continue
             asset_name = funds['asset']
             self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
-        return self.balances
+            result[asset_name] = funds_free + funds_locked
+        return result
 
     def get_asset_balance(self, asset):
         if asset in self.balances.keys():
@@ -184,10 +186,54 @@ class AccountBinance(AccountBase):
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
 
+    def get_all_tickers(self):
+        result = []
+        for ticker in self.client.get_all_tickers():
+            result.append(ticker['symbol'])
+        return result
+
+    # get all fills by using account balances to backtrack
+    def get_all_fills(self, limit=100):
+        tickers = self.get_all_tickers()
+        balances = self.get_account_balances()
+        result = {}
+
+        for name, amount in balances.items():
+            actual_fills = {}
+            current_amount = 0.0
+            for currency in ['BTC', 'ETH', 'BNB']:
+                if name == currency or name == 'BTC':
+                    continue
+                ticker_id = "{}{}".format(name, currency)
+                if ticker_id not in tickers: continue
+                fills = self.client.get_all_orders(symbol=ticker_id, limit=limit)
+                if not fills or len(fills) == 0: continue
+
+                for fill in fills:
+                    if 'status' not in fill or fill['status'] != 'FILLED': continue
+                    actual_fills[fill['time']] = fill
+
+            for (k, v) in sorted(actual_fills.items(), reverse=True):
+                if name not in result.keys():
+                    result[name] = []
+                del v['stopPrice']
+                del v['isWorking']
+                del v['status']
+                del v['timeInForce']
+                del v['icebergQty']
+                result[name].append(v)
+                current_amount += float(v['executedQty'])
+                if current_amount >= float(amount):
+                    break
+
+        return result
+
     def get_fills(self, ticker_id=None, limit=100):
         result = []
-        if not ticker_id:
-            ticker_id = self.ticker_id
+
+        if ticker_id is None:
+            return self.get_all_fills(limit=limit)
+
         fills = self.client.get_all_orders(symbol=ticker_id, limit=limit)
         for fill in fills:
             if 'status' not in fill or fill['status'] != 'FILLED': continue

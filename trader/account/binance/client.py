@@ -195,6 +195,7 @@ class Client(object):
         Raises the appropriate exceptions when necessary; otherwise, returns the
         response.
         """
+
         if not str(response.status_code).startswith('2'):
             raise BinanceAPIException(response)
         try:
@@ -207,11 +208,6 @@ class Client(object):
 
     def _post(self, path, signed=False, version=PUBLIC_API_VERSION, **kwargs):
         return self._request_api('post', path, signed, version, **kwargs)
-
-    #def _post_private(self, signed=False, **kwargs):
-    #    uri = self._create_website_uri('exchange/private/userTrades')
-    #    print(uri)
-    #    self._request('post', uri, signed=signed, **kwargs)
 
     def _put(self, path, signed=False, version=PUBLIC_API_VERSION, **kwargs):
         return self._request_api('put', path, signed, version, **kwargs)

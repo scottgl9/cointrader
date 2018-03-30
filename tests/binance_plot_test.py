@@ -17,6 +17,7 @@ from trader.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.account.binance.exceptions import BinanceAPIException
 from config import *
+import sys
 
 # kline format: [ time, low, high, open, close, volume ]
 
@@ -64,7 +65,7 @@ def plot_emas_product(plt, klines, product):
             y = A * (ts * ts) + (B * ts) + C
             quad_y.append(y)
             quad_maxes.append(C)
-            print(i, y, A, B, C)
+            #print(i, y, A, B, C)
 
     ema26_prices = compute_ema_dict_from_klines(klines, 26)
     ema12_prices = compute_ema_dict_from_klines(klines, 12)
@@ -79,9 +80,10 @@ def plot_emas_product(plt, klines, product):
     #plt.plot(quad_x2, quad_maxes)
     plt.legend(handles=[symprice, ema4, ema5])
     plt.subplot(212)
-    plt.plot(macd_signal)
-    plt.plot(quad_x, quad_y)
-    plt.plot(quad_x, quad_maxes)
+    fig1, = plt.plot(macd_signal, label='MACD')
+    fig2, = plt.plot(quad_x, quad_y, label='QUAD')
+    fig3, = plt.plot(quad_x, quad_maxes, label='QUAD_MAX')
+    plt.legend(handles=[fig1, fig2, fig3])
     return macd_signal
 
 def abs_average(values):
@@ -93,9 +95,15 @@ def abs_average(values):
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
-    accnt = AccountBinance(client, 'TRX', 'BTC')
-    balances = accnt.get_account_balances()
-    print(balances)
+    print(client.get_user_trades())
+    base = 'ETH'
+    currency='BTC'
+    if len(sys.argv) == 3:
+        base=sys.argv[1]
+        currency = sys.argv[2]
+    accnt = AccountBinance(client, base, currency)
+    #balances = accnt.get_account_balances()
+    #print(balances)
     plt.figure(1)
     plt.subplot(211)
     klines = accnt.get_klines(hours=24)

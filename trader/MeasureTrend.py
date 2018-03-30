@@ -124,7 +124,12 @@ class MeasureTrend(object):
         #print("trending_upward={} {} {} {}".format(self.name, slope1, slope2, slope3))
 
 
-        return True
+        if self.sma_prices[0] == 0.0: return False
+
+        #if (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0] > 0.001:
+        #    return True
+
+        return False
 
         #if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 > 0.0 \
         #    and slope3 > 1.5:
