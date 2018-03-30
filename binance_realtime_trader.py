@@ -9,9 +9,11 @@ import collections
 import matplotlib.pyplot as plt
 import sys
 from config import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 # {u'c': u'0.00035038', u'E': 1521434160493, u'h': u'0.00037032', u'l': u'0.00033418', u'o': u'0.00033855', u'q': u'361.61821435', u's': u'BATETH', u'v': u'1044884.00000000', u'e': u'24hrMiniTicker'}
-
 
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
@@ -21,7 +23,7 @@ class BinanceTrader:
         self.tickers = {}
         #self.symbols = symbols #sget_all_tickers(client)
         #print("loading symbols {}".format(self.symbols))
-        self.multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=volumes)
+        self.multitrader = MultiTrader(client, 'macd_quad_strategy', assets_info=assets_info, volumes=volumes)
         self.accnt = AccountBinance(self.client)
         #self.trader = select_strategy('trailing_prices_strategy', self.client, 'BTC', 'USD',
         #                              account_handler=self.accnt, order_handler=None) #self.order_handler)
@@ -188,10 +190,10 @@ if __name__ == '__main__':
                     continue
                 sell_list.append("{}{}".format(symbol, currency))
     #print(volumes_list)
-    print("buy list:")
-    print(buy_list)
-    print("sell lists:")
-    print(sell_list) #filter_by_balances(sell_list, balances))
+    logger.info("buy list:")
+    logger.info(format(buy_list))
+    logger.info("sell lists:")
+    logger.info(format(sell_list)) #filter_by_balances(sell_list, balances))
     symbol_list = buy_list + sell_list
     #print("filtered sell list:")
     #print(filter_by_balances(sell_list, balances))

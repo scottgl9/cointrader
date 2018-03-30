@@ -8,11 +8,12 @@ from sklearn.metrics import mean_squared_error, r2_score
 # IDEA: get range with highest level of oscillation
 
 class MeasureTrend(object):
-    def __init__(self, window=50):
+    def __init__(self, name='BTCUSD', window=50):
         self.prices = []
         self.last_price = 0.0
         self.sma_prices = []
         self.ts = []
+        self.name = name
         self.window = window
         self.sma = EMA(12)
 
@@ -110,41 +111,48 @@ class MeasureTrend(object):
         if len(self.sma_prices) < self.window:
             return False
 
-        mid = len(self.sma_prices)/2
+        length = len(self.sma_prices)
+        mid = length/2
         #self.compute_linear_regression()
-        slope1 = (self.sma_prices[mid] - self.sma_prices[0]) / (self.ts[mid] - self.ts[0])
-        slope2 = (self.sma_prices[-1] - self.sma_prices[mid]) / (self.ts[-1] - self.ts[mid])
-        slope3 = (self.sma_prices[-1] - self.sma_prices[0]) / (self.ts[-1] - self.ts[0])
-        roc = abs(100.0 * (self.sma_prices[-1] / self.sma_prices[0] - 1.0))
+        slope1 = (self.sma_prices[mid] - self.sma_prices[0]) / (mid - 0) #(self.ts[mid] - self.ts[0])
+        slope2 = (self.sma_prices[-1] - self.sma_prices[mid]) / (length - mid) #(self.ts[-1] - self.ts[mid])
+        slope3 = (self.sma_prices[-1] - self.sma_prices[0]) / (length - 0) #(self.ts[-1] - self.ts[0])
 
-        # print("trending_upward={}".format(roc)) #slope1, slope2, slope3)
+        if slope1 <= 0.0 or slope2 <= 0.0 or slope3 <= 0.0:
+            return False
 
-        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 > 0.0 \
-            and slope3 > 1.5:
-            #print(slope1, slope2, slope3)
-            return True
+        #print("trending_upward={} {} {} {}".format(self.name, slope1, slope2, slope3))
 
-        return False
+
+        return True
+
+        #if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 > 0.0 and slope2 > 0.0 \
+        #    and slope3 > 1.5:
+        #    #print(slope1, slope2, slope3)
+        #    return True
+        #
+        #return False
 
     def trending_downward(self):
         if len(self.sma_prices) < self.window:
             return False
 
-        mid = len(self.sma_prices)/2
+        length = len(self.sma_prices)
+        mid = length/2
         #self.compute_linear_regression()
-        slope1 = (self.sma_prices[mid] - self.sma_prices[0]) / (self.ts[mid] - self.ts[0])
-        slope2 = (self.sma_prices[-1] - self.sma_prices[mid]) / (self.ts[-1] - self.ts[mid])
-        slope3 = (self.sma_prices[-1] - self.sma_prices[0]) / (self.ts[-1] - self.ts[0])
+        slope1 = (self.sma_prices[mid] - self.sma_prices[0]) / (mid - 0) #(self.ts[mid] - self.ts[0])
+        slope2 = (self.sma_prices[-1] - self.sma_prices[mid]) / (length - mid) #(self.ts[-1] - self.ts[mid])
+        slope3 = (self.sma_prices[-1] - self.sma_prices[0]) / (length - 0) #(self.ts[-1] - self.ts[0])
 
-        roc = abs(100.0 * (self.sma_prices[0] / self.sma_prices[-1] - 1.0))
+        if slope1 >= 0.0 or slope2 >= 0.0 or slope3 >= 0.0:
+            return False
 
-        #print("trending_downward={}".format(roc)) #slope1, slope2, slope3)
+        #print("trending_downward={} {} {} {}".format(self.name, slope1, slope2, slope3))
 
-        if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 < 0.0 \
-            and slope3 < -1.0:
-            #print(slope1, slope2, slope3)
-            return True
-        return False
+        return True
 
-    #def trend_rate_of_change(self):
-    #    roc = abs(100.0 * (self.sma_prices[-1] / self.sma_prices[0] - 1.0))
+        #if abs(slope1) > 0.1 and abs(slope2) > 0.1 and slope1 < 0.0 and slope2 < 0.0 \
+        #    and slope3 < -1.0:
+        #    #print(slope1, slope2, slope3)
+        #    return True
+        #return False

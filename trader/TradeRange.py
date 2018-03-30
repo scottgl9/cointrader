@@ -5,6 +5,9 @@
 # follows the price
 from trader.indicator.EMA import EMA
 from trader.myhelpers import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 # kline format: [ time, low, high, open, close, volume ]
 

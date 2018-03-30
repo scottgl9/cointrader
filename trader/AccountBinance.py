@@ -1,6 +1,9 @@
 from trader.account.binance.client import Client
 from trader.AccountBase import AccountBase
 from datetime import datetime, timedelta
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AccountBinance(AccountBase):
     def __init__(self, client, name='BTC', asset='USD', simulation=False):
@@ -215,7 +218,6 @@ class AccountBinance(AccountBase):
         if not self.simulate:
             if not ticker_id:
                 ticker_id = self.ticker_id
-            print("buy_market({})".format(size))
             #return self.order_market_buy(symbol=ticker_id, quantity=size)
 
             return self.client.create_test_order(symbol=ticker_id,
@@ -227,7 +229,6 @@ class AccountBinance(AccountBase):
         if not self.simulate:
             if not ticker_id:
                 ticker_id = self.ticker_id
-            print("sell_market({})".format(size))
             #return self.order_market_sell(symbol=ticker_id, quantity=size)
             return self.client.create_test_order(symbol=ticker_id,
                                                  side=Client.SIDE_SELL,
@@ -238,7 +239,7 @@ class AccountBinance(AccountBase):
         price = self.round_quote(price)
         size = self.round_base(size)
 
-        print("buy_limit_simulate({}, {})".format(price, size))
+        logger.info("buy_limit_simulate({}, {})".format(price, size))
 
         usd_value = self.round_quote(self.market_price * size)
         if usd_value <= 0.0: return
@@ -250,7 +251,7 @@ class AccountBinance(AccountBase):
     def sell_limit_simulate(self, price, size):
         price = self.round_quote(price)
         size = self.round_base(size)
-        print("sell_limit_simulate({}, {})".format(price, size))
+        logger.info("sell_limit_simulate({}, {})".format(price, size))
         if size < self.base_min_size: return False
         if self.funds_available >= size:
             self.funds_available -= size

@@ -13,9 +13,9 @@ class MACD:
         self.short_weight = short_weight
         self.long_weight = long_weight
         self.signal_weight = signal_weight
-        self.short = EMA(short_weight)
-        self.long =  EMA(long_weight)
-        self.signal = EMA(signal_weight)
+        self.short = EMA(self.short_weight)
+        self.long =  EMA(self.long_weight)
+        self.signal = EMA(self.signal_weight)
         #self.result_sma = SMA(2)
 
     def update(self, price):

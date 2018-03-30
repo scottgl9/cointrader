@@ -3,6 +3,9 @@ from trader.Account import Account
 from trader.AccountBinance import AccountBinance
 from trader.strategy import *
 from trader.TradePair import TradePair
+import logging
+
+logger = logging.getLogger(__name__)
 
 def split_symbol(symbol):
     base_name = None
