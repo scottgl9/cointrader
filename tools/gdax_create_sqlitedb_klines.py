@@ -80,18 +80,25 @@ def create_update_klines_days(c):
 
     while current < end:
         klines = get_klines_days(pc, ticker_id, current, days=7)
+        for kline in klines:
+            print('SELECT * FROM klines_days WHERE timestamp={}'.format(kline[0]))
+            c.execute('SELECT * FROM klines_days WHERE timestamp={}'.format(kline[0]))
+            print(c.rowcount)
+
         if 'message' in klines:
             print(klines)
             time.sleep(1)
             continue
         for k in klines:
-            c.execute("INSERT INTO klines_days VALUES ('{}', {}, {}, {}, {}, {})".format(k[0], k[1], k[2], k[3], k[4], k[5]))
+            print("INSERT INTO klines_days VALUES ({}, {}, {}, {}, {}, {})".format(k[0], k[1], k[2], k[3], k[4], k[5]))
+            c.execute("INSERT INTO klines_days VALUES ({}, {}, {}, {}, {}, {})".format(k[0], k[1], k[2], k[3], k[4], k[5]))
         print(current)
         current = current + timedelta(days=7)
         count += 7
         if count >= 36:
             count = 0
             time.sleep(1)
+
 
 if __name__ == '__main__':
         ticker_id = 'BTC-USD'
@@ -102,8 +109,8 @@ if __name__ == '__main__':
         conn = sqlite3.connect(filename)
 
         c = conn.cursor()
-        create_update_klines_minutes(c, file_exists)
-        #create_update_klines_days(c)
+        #create_update_klines_minutes(c, file_exists)
+        create_update_klines_days(c)
 
         conn.commit()
         conn.close()

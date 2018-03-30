@@ -31,7 +31,7 @@ def build_dataset(c):
             closeprice = float(closeprice)
             pricechange = closeprice - openprice
             volume = float(volume)
-            open_prices.append((last_openprice - openprice) / last_openprice)
+            open_prices.append(openprice) #(last_openprice - openprice) / last_openprice)
             if last_pricechange != 0.0:
                 price_changes.append((last_pricechange - pricechange) / last_pricechange)
             #volumes.append((last_volume - volume) / last_volume)
@@ -41,7 +41,7 @@ def build_dataset(c):
     return open_prices, price_changes #, volumes
 
 if __name__ == '__main__':
-    ticker_id = 'LTC-USD'
+    ticker_id = 'BTC-USD'
     basefile = ticker_id.replace('-', '_')
 
     conn = sqlite3.connect('{}_klines.db'.format(basefile))

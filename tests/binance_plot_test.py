@@ -95,7 +95,7 @@ def abs_average(values):
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
-    print(client.get_user_trades())
+    #print(client.get_user_trades())
     base = 'ETH'
     currency='BTC'
     if len(sys.argv) == 3:

@@ -139,6 +139,32 @@ class AccountBinance(AccountBase):
     #def get_asset_balance(self, asset):
     #    return self.client.get_asset_balance(asset=asset)
 
+    def get_account_total_value(self):
+        btc_usd_price = float(self.client.get_symbol_ticker(symbol='BTCUSDT')['price'])
+        print(btc_usd_price)
+        total_balance_usd = 0.0
+        total_balance_btc = 0.0
+        for accnt in self.client.get_account()['balances']:
+            if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
+                price = 0.0
+                price_usd = 0.0
+                price_btc = 0.0
+                if accnt['asset'] != 'BTC':
+                    price = float(self.client.get_symbol_ticker(symbol="{}BTC".format(accnt['asset']))['price'])
+                    total_amount = float(accnt['free']) + float(accnt['locked'])
+                    price_btc = price * total_amount
+                else:
+                    price = 1.0
+                    total_amount = float(accnt['free']) + float(accnt['locked'])
+                    price_btc = total_amount
+
+                price_usd = price_btc * btc_usd_price
+                total_balance_usd += price_usd
+                total_balance_btc += price_btc
+                usd_price = price * btc_usd_price
+
+        return total_balance_usd, total_balance_btc
+
     def get_account_status(self):
         return self.client.get_account_status()
 
@@ -214,8 +240,11 @@ class AccountBinance(AccountBase):
                     actual_fills[fill['time']] = fill
 
             for (k, v) in sorted(actual_fills.items(), reverse=True):
+                if v['side'] != 'BUY': continue
+
                 if name not in result.keys():
                     result[name] = []
+
                 del v['stopPrice']
                 del v['isWorking']
                 del v['status']
@@ -262,24 +291,24 @@ class AccountBinance(AccountBase):
 
     def buy_market(self, size, ticker_id=None):
         if not self.simulate:
-            if not ticker_id:
-                ticker_id = self.ticker_id
-            #return self.order_market_buy(symbol=ticker_id, quantity=size)
+            #if not ticker_id:
+            #    ticker_id = self.ticker_id
+            return self.order_market_buy(symbol=ticker_id, quantity=size)
 
-            return self.client.create_test_order(symbol=ticker_id,
-                                                 side=Client.SIDE_BUY,
-                                                 type=Client.ORDER_TYPE_MARKET,
-                                                 quantity=size)
+            #return self.client.create_test_order(symbol=ticker_id,
+            #                                     side=Client.SIDE_BUY,
+            #                                     type=Client.ORDER_TYPE_MARKET,
+            #                                     quantity=size)
 
     def sell_market(self, size, ticker_id=None):
         if not self.simulate:
-            if not ticker_id:
-                ticker_id = self.ticker_id
-            #return self.order_market_sell(symbol=ticker_id, quantity=size)
-            return self.client.create_test_order(symbol=ticker_id,
-                                                 side=Client.SIDE_SELL,
-                                                 type=Client.ORDER_TYPE_MARKET,
-                                                 quantity=size)
+            #if not ticker_id:
+            #    ticker_id = self.ticker_id
+            return self.order_market_sell(symbol=ticker_id, quantity=size)
+            #return self.client.create_test_order(symbol=ticker_id,
+            #                                     side=Client.SIDE_SELL,
+            #                                     type=Client.ORDER_TYPE_MARKET,
+            #                                     quantity=size)
 
     def buy_limit_simulate(self, price, size):
         price = self.round_quote(price)

@@ -84,8 +84,11 @@ class macd_quad_strategy:
         if self.quad.C <= 0.0 or self.quad.C > self.macd.diff or self.trend.trending_downward():
             return
 
+        if not self.trend.trending_upward():
+            return
+
         if self.trend_upward_count < 5: return
-        print("buy_signal({}, {})".format(self.ticker_id, price))
+        #print("buy_signal({}, {})".format(self.ticker_id, price))
 
         for order_price in self.buy_price_list:
             if order_price - (self.quote_increment * 4) <= price <= order_price + (self.quote_increment * 4):
@@ -102,24 +105,26 @@ class macd_quad_strategy:
             return
 
         # for now limit to no more than 4 buys at any one time
-        if len(self.buy_price_list) > 4:
+        if len(self.buy_price_list) > 3:
             return
 
-        print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
-        self.buy_price_list.append(price)
-        print(self.accnt.buy_market(float(self.base_min_size), ticker_id=self.get_ticker_id()))
-        self.last_buy_price = price
+
+        result = self.accnt.buy_market(float(self.base_min_size), ticker_id=self.get_ticker_id())
+        if 'status' in result and result['status'] == 'FILLED':
+            print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
+            self.buy_price_list.append(price)
+            self.last_buy_price = price
         self.accnt.get_account_balances()
 
     def sell_signal(self, price):
-        if self.quad.C <= 0.0 or self.quad.C < self.macd.diff or self.trend.trending_upward():
+        if self.quad.C < self.macd.diff or self.trend.trending_upward():
             return
 
         #print("sell_signal({}, {})".format(self.ticker_id, price))
 
         if len(self.buy_price_list) == 0: return
 
-        if self.trend_downward_count < 5: return
+        #if self.trend_downward_count < 2: return
 
         if self.last_buy_price != 0.0 and price <= self.last_buy_price:
             return
@@ -132,16 +137,13 @@ class macd_quad_strategy:
         if balance_available < self.base_min_size:
             return
 
-        buy_price = self.get_lowest_buy_price(price)
-        if buy_price == 0.0: return
-        if (price - buy_price) / buy_price < 0.001: return
-
-        print("sell({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
-        print(self.accnt.sell_market(float(self.base_min_size), ticker_id=self.get_ticker_id()))
-        self.buy_price_list.remove(buy_price)
-
-        self.last_sell_price = price
-
+        result = self.accnt.sell_market(float(self.base_min_size), ticker_id=self.get_ticker_id())
+        if 'status' in result and result['status'] == 'FILLED':
+            print("sell({}{}, {}) @ {}".format(self.base, self.currency, self.base_min_size, price))
+            self.buy_price_list.remove(buy_price)
+            self.last_sell_price = price
+            total_usd, total_btc = self.accnt.get_account_total_value()
+            print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
         self.accnt.get_account_balances()
 
     def update_last_50_prices(self, price):
@@ -155,6 +157,7 @@ class macd_quad_strategy:
     def run_update_price(self, price):
         self.macd.update(price)
         self.quad.update(self.macd.diff)
+        self.quad.compute()
         self.trend.update_price(self.macd.diff)
         if self.trend.trending_upward():
             self.trend_upward_count += 1
@@ -162,6 +165,7 @@ class macd_quad_strategy:
         elif self.trend.trending_downward():
             self.trend_upward_count = 0
             self.trend_downward_count += 1
+
         self.buy_signal(price)
         self.sell_signal(price)
 

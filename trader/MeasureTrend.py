@@ -111,6 +111,8 @@ class MeasureTrend(object):
         if len(self.sma_prices) < self.window:
             return False
 
+        upcount = 0
+
         length = len(self.sma_prices)
         mid = length/2
         #self.compute_linear_regression()
@@ -121,13 +123,21 @@ class MeasureTrend(object):
         if slope1 <= 0.0 or slope2 <= 0.0 or slope3 <= 0.0:
             return False
 
+
+        for i in range(1, len(self.sma_prices)):
+            if self.sma_prices[i] >= self.sma_prices[i-1]:
+                upcount += 1
+
+        if upcount < int(0.9 * len(self.sma_prices)):
+            return False
+
         #print("trending_upward={} {} {} {}".format(self.name, slope1, slope2, slope3))
 
 
         if self.sma_prices[0] == 0.0: return False
 
-        #if (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0] > 0.001:
-        #    return True
+        if (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0] > 0.001:
+            return True
 
         return False
 
@@ -152,6 +162,18 @@ class MeasureTrend(object):
         if slope1 >= 0.0 or slope2 >= 0.0 or slope3 >= 0.0:
             return False
 
+        downcount = 0
+
+        for i in range(1, len(self.sma_prices)):
+            if self.sma_prices[i] <= self.sma_prices[i-1]:
+                downcount += 1
+
+        if downcount < int(0.8 * len(self.sma_prices)):
+            return False
+
+
+        #if (self.sma_prices[0] - self.sma_prices[-1]) / self.sma_prices[0] > 0.001:
+        #    return True
         #print("trending_downward={} {} {} {}".format(self.name, slope1, slope2, slope3))
 
         return True

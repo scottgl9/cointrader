@@ -3,6 +3,8 @@
 from trader.account.binance import client
 from config import *
 
+
+
 if __name__ == '__main__':
     client = client.Client(MY_API_KEY, MY_API_SECRET)
     btc_usd_price = float(client.get_symbol_ticker(symbol='BTCUSDT')['price'])
