@@ -94,10 +94,10 @@ def get_products_sorted_by_volume(client, currency='BTC'):
     buy_list = collections.OrderedDict()
     sell_list = collections.OrderedDict()
 
-    volumes = volumes[0:len(volumes) / 2]
+    volumes = volumes[0:len(volumes) / 4]
 
     # get only the top half of the sorted list by volume
-    for symbol, volume in volumes[0:len(volumes)/2]:
+    for symbol, volume in volumes:
         baseAsset = prices[symbol][0]
         price = prices[symbol][1]
         low = prices[symbol][2]
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     sell_list = []
     currency_list = ['BTC', 'ETH', 'BNB']
     #print(assets_info)
-    volumes_list = {}
+    volumes_list = collections.OrderedDict()
 
     for currency in currency_list:
         if 1: #currency in balances.keys():

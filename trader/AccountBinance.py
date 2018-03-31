@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name='BTC', asset='USD', simulation=False):
+    def __init__(self, client, name='BTC', asset='USD', simulation=True):
         self.account_type = 'Binance'
         self.balance = 0.0
         self.funds_available = 0.0
@@ -297,25 +297,24 @@ class AccountBinance(AccountBase):
         return self.client.order_market_sell(symbol=symbol, quantity=quantity)
 
     def buy_market(self, size, ticker_id=None):
-        if not self.simulate:
-            #if not ticker_id:
-            #    ticker_id = self.ticker_id
+        if self.simulate:
+            return self.client.create_test_order(symbol=ticker_id,
+                                                 side=Client.SIDE_BUY,
+                                                 type=Client.ORDER_TYPE_MARKET,
+                                                 quantity=size)
+        else:
             return self.order_market_buy(symbol=ticker_id, quantity=size)
 
-            #return self.client.create_test_order(symbol=ticker_id,
-            #                                     side=Client.SIDE_BUY,
-            #                                     type=Client.ORDER_TYPE_MARKET,
-            #                                     quantity=size)
+
 
     def sell_market(self, size, ticker_id=None):
-        if not self.simulate:
-            #if not ticker_id:
-            #    ticker_id = self.ticker_id
+        if self.simulate:
+            return self.client.create_test_order(symbol=ticker_id,
+                                                 side=Client.SIDE_SELL,
+                                                 type=Client.ORDER_TYPE_MARKET,
+                                                 quantity=size)
+        else:
             return self.order_market_sell(symbol=ticker_id, quantity=size)
-            #return self.client.create_test_order(symbol=ticker_id,
-            #                                     side=Client.SIDE_SELL,
-            #                                     type=Client.ORDER_TYPE_MARKET,
-            #                                     quantity=size)
 
     def buy_limit_simulate(self, price, size):
         price = self.round_quote(price)

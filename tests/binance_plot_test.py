@@ -11,6 +11,7 @@ from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD
+from trader.indicator.RSI import RSI
 from trader.indicator.DiffWindow import DiffWindow
 import math
 from trader.AccountBinance import AccountBinance
@@ -27,6 +28,8 @@ def plot_emas_product(plt, klines, product):
     #vwap = VWAP(60)
     #vwaps = []
     macd = MACD(12.0*24.0, 26.0*24.0, 9.0*24.0)
+    rsi = RSI()
+    rsi_values = []
     macd_signal = []
     price_min = []
     price_max = []
@@ -51,6 +54,7 @@ def plot_emas_product(plt, klines, product):
     timestamps = []
     for i in range(1, len(klines) - 1):
         macd.update(float(klines[i][3]))
+        rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
         timestamps.append((float(klines[i][0]) - initial_time) / (60.0))
 
@@ -80,7 +84,8 @@ def plot_emas_product(plt, klines, product):
     #plt.plot(quad_x2, quad_maxes)
     plt.legend(handles=[symprice, ema4, ema5])
     plt.subplot(212)
-    fig1, = plt.plot(macd_signal, label='MACD')
+    print(rsi_values)
+    fig1, = plt.plot(rsi_values, label="RSI") #macd_signal, label='MACD')
     #fig2, = plt.plot(quad_x, quad_y, label='QUAD')
     #fig3, = plt.plot(quad_x, quad_maxes, label='QUAD_MAX')
     plt.legend(handles=[fig1])#, fig2, fig3])

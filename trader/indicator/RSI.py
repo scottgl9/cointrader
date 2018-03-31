@@ -2,7 +2,7 @@ from trader.indicator.SMMA import SMMA
 
 
 class RSI:
-    def __init__(self, weight):
+    def __init__(self, weight=14):
         self.lastClose = None
         self.weight = weight
         self.avgU = SMMA(self.weight)
@@ -14,7 +14,7 @@ class RSI:
         self.age = 0
 
     def update(self, priceclose):
-        currentclose = priceclose
+        currentclose = float(priceclose)
 
         if not self.lastClose:
             # Set initial price to prevent invalid change calculation
@@ -45,3 +45,4 @@ class RSI:
 
         self.lastClose = currentclose
         self.age += 1
+        return self.result

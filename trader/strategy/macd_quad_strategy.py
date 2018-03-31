@@ -5,6 +5,7 @@ from trader.account import gdax
 from trader.MeasureTrend import MeasureTrend
 from trader.indicator.QUAD import QUAD
 from trader.indicator.EMA import EMA
+from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
 from datetime import datetime
 import logging
@@ -30,6 +31,8 @@ class macd_quad_strategy:
         self.last_price = self.price = 0.0
         self.macd = MACD(12.0*24.0, 26.0*24.0, 9.0*24.0)
         self.quad = QUAD()
+        self.rsi = RSI()
+        self.rsi_result = 0.0
         self.trend = MeasureTrend(name=self.ticker_id, window=50)
 
         self.base = name
@@ -47,6 +50,7 @@ class macd_quad_strategy:
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
         self.trend_downward_count = 0
+        self.last_macd_diff = 0.0
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
         self.buy_price_list = []
@@ -81,14 +85,22 @@ class macd_quad_strategy:
         return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
 
     def buy_signal(self, price):
-        if self.quad.C <= 0.0 or self.quad.C > self.macd.diff or self.trend.trending_downward():
+        #if self.quad.C <= 0.0 or self.quad.C > self.macd.diff or self.trend.trending_downward():
+        #    return
+        if self.trend.trending_downward():
             return
 
         if not self.trend.trending_upward():
             return
 
-        if self.trend_upward_count < 5: return
-        #print("buy_signal({}, {})".format(self.ticker_id, price))
+        if self.last_macd_diff == 0 or self.last_macd_diff > self.macd.diff:
+            return
+
+        if self.trend_upward_count < 5 or self.trend_downward_count > 0: return
+
+        #if self.rsi_result != 0.0 and self.rsi_result > 20.0: return
+
+        print("buy_signal({}, {})".format(self.ticker_id, price))
 
         for order_price in self.buy_price_list:
             if order_price - (self.quote_increment * 4) <= price <= order_price + (self.quote_increment * 4):
@@ -117,14 +129,18 @@ class macd_quad_strategy:
         self.accnt.get_account_balances()
 
     def sell_signal(self, price):
-        if self.quad.C < self.macd.diff or self.trend.trending_upward():
+        #if self.quad.C < self.macd.diff or self.trend.trending_upward():
+        #    return
+        if self.trend.trending_upward():
             return
 
+        if self.last_macd_diff == 0 or self.last_macd_diff < self.macd.diff:
+            return
         #print("sell_signal({}, {})".format(self.ticker_id, price))
 
         if len(self.buy_price_list) == 0: return
 
-        #if self.trend_downward_count < 2: return
+        if self.trend_downward_count < 2 or self.trend_upward_count > 0: return
 
         if self.last_buy_price != 0.0 and price <= self.last_buy_price:
             return
@@ -157,6 +173,7 @@ class macd_quad_strategy:
     def run_update_price(self, price):
         self.macd.update(price)
         self.quad.update(self.macd.diff)
+        self.rsi_result = self.rsi.update(price)
         self.quad.compute()
         self.trend.update_price(self.macd.diff)
         if self.trend.trending_upward():
@@ -168,6 +185,7 @@ class macd_quad_strategy:
 
         self.buy_signal(price)
         self.sell_signal(price)
+        self.last_macd_diff = self.macd.diff
 
     def run_update_orderbook(self, msg):
         pass

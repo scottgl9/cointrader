@@ -105,7 +105,7 @@ class MeasureTrend(object):
             if self.sma_prices[i] >= self.sma_prices[i-1]:
                 upcount += 1
 
-        if upcount < int(0.95 * len(self.sma_prices)):
+        if upcount < int(0.90 * len(self.sma_prices)):
             return False
 
         #print("trending_upward={} {} {} {}".format(self.name, slope1, slope2, slope3))
@@ -113,7 +113,7 @@ class MeasureTrend(object):
 
         if self.sma_prices[0] == 0.0: return False
 
-        if (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0] > 0.005:
+        if (self.sma_prices[-1] - self.sma_prices[0]) / self.sma_prices[0] > 0.001:
             return True
 
         return False
