@@ -1,0 +1,14 @@
+from trader.indicator.EMA import EMA
+
+
+class DEMA:
+    def __init__(self, weight=12.0):
+        self.result = 0.0
+        self.weight = weight
+        self.inner = EMA(self.weight)
+        self.outer = EMA(self.weight)
+
+    def update(self, price):
+        self.inner.update(price)
+        self.outer.update(self.inner.result)
+        self.result = 2.0 * self.inner.result - self.outer.result
