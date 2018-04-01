@@ -94,7 +94,7 @@ def get_products_sorted_by_volume(client, currency='BTC'):
     buy_list = collections.OrderedDict()
     sell_list = collections.OrderedDict()
 
-    volumes = volumes[0:len(volumes) / 4]
+    volumes = volumes[0:len(volumes) / 8]
 
     # get only the top half of the sorted list by volume
     for symbol, volume in volumes:

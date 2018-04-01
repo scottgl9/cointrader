@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name='BTC', asset='USD', simulation=True):
+    def __init__(self, client, name='BTC', asset='USD', simulation=False):
         self.account_type = 'Binance'
         self.balance = 0.0
         self.funds_available = 0.0
@@ -50,7 +50,6 @@ class AccountBinance(AccountBase):
 
     def set_market_price(self, price):
         pass
-
 
     def round_base(self, price):
         return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
@@ -218,6 +217,44 @@ class AccountBinance(AccountBase):
             result.append(ticker['symbol'])
         return result
 
+    def get_all_my_trades(self, limit=100):
+        tickers = self.get_all_tickers()
+        balances = self.get_account_balances()
+        result = {}
+
+        for name, amount in balances.items():
+            actual_fills = {}
+            current_amount = 0.0
+            for currency in ['BTC', 'ETH', 'BNB']:
+                if name == currency or name == 'BTC':
+                    continue
+                ticker_id = "{}{}".format(name, currency)
+                if ticker_id not in tickers: continue
+                orders = self.client.get_my_trades(symbol=ticker_id, limit=limit)
+                if not orders or len(orders) == 0: continue
+
+                for order in orders:
+                    actual_fills[order['time']] = order
+
+            skip_size = 0.0
+            for (k, v) in sorted(actual_fills.items(), reverse=True):
+                if v['isBuyer'] == False:
+                    skip_size += float(v['qty'])
+                    continue
+
+                if float(v['qty']) <= skip_size:
+                    skip_size -= float(v['qty'])
+                    continue
+
+                if name not in result.keys():
+                    result[name] = []
+
+                result[name].append(v)
+                current_amount += float(v['qty'])
+                if current_amount >= float(amount):
+                    break
+        return result
+
     # get all fills by using account balances to backtrack
     def get_all_fills(self, limit=100):
         tickers = self.get_all_tickers()
@@ -287,8 +324,45 @@ class AccountBinance(AccountBase):
     def get_account_history(self):
         pass
 
-    def get_my_trades(self, symbol, limit=500):
-        return self.client.get_my_trades(symbol=symbol, limit=limit)
+    def load_buy_price_list(self, base, currency):
+        buy_price_list = []
+        for trade in self.get_my_trades(base, currency):
+            buy_price_list.append(float(trade['price']))
+        return sorted(buy_price_list)
+
+    def get_my_trades(self, base, currency, limit=500):
+        balances = self.get_account_balances()
+        result = []
+
+        symbol = self.make_ticker_id(base, currency)
+
+        amount = 0.0
+        if base in balances.keys():
+            amount = balances[base]
+        actual_fills = {}
+        current_amount = 0.0
+        orders = self.client.get_my_trades(symbol=symbol, limit=limit)
+        for order in orders:
+            actual_fills[order['time']] = order
+
+        skip_size = 0.0
+        for (k, v) in sorted(actual_fills.items(), reverse=True):
+            if v['isBuyer'] == False:
+                skip_size += float(v['qty'])
+                continue
+
+            if float(v['qty']) <= skip_size:
+                skip_size -= float(v['qty'])
+                continue
+
+            #if symbol not in result.keys():
+            #    result[symbol] = []
+
+            result.append(v)
+            current_amount += float(v['qty'])
+            if current_amount >= float(amount):
+                break
+        return result
 
     def order_market_buy(self, symbol, quantity):
         return self.client.order_market_buy(symbol=symbol, quantity=quantity)

@@ -16,6 +16,7 @@ from trader.indicator.DiffWindow import DiffWindow
 import math
 from trader.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
+from trader.MeasureTrend import MeasureTrend
 from trader.account.binance.exceptions import BinanceAPIException
 from config import *
 import sys
@@ -45,6 +46,9 @@ def plot_emas_product(plt, klines, product):
     quad2 = QUAD()
     ema_quad = EMA(26)
     ema_quad2 = EMA(26)
+    ema12 = EMA(12)
+    ema12_prices = []
+    trend = MeasureTrend()
 
     diffwindow = DiffWindow(30)
     last_diff_result = 0
@@ -52,12 +56,23 @@ def plot_emas_product(plt, klines, product):
     initial_time = float(klines[0][0])
     c_gt_price = False
     timestamps = []
+    peaks = []
+    valleys = []
     for i in range(1, len(klines) - 1):
+        trend.update_price(float(klines[i][3]))
         macd.update(float(klines[i][3]))
+        ema12_prices.append(ema12.update(float(klines[i][3])))
+        if trend.valley_detected():
+            print("valley {}, {}".format(i, trend.valley_detected()))
+            valleys.append(i)
+            plt.axhline(y=trend.valley_value(), color='red')
+        if trend.peak_detected():
+            print("peak {}, {}".format(i, trend.peak_detected()))
+            peaks.append(i)
+            plt.axhline(y=trend.peak_value(), color='blue')
         rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
         timestamps.append((float(klines[i][0]) - initial_time) / (60.0))
-
 
     for i in range(0, len(macd_signal)):
         quad.update(macd_signal[i], timestamps[i])#ema_quad.update(klines[i][3]), ts)
@@ -72,12 +87,12 @@ def plot_emas_product(plt, klines, product):
             #print(i, y, A, B, C)
 
     ema26_prices = compute_ema_dict_from_klines(klines, 26)
-    ema12_prices = compute_ema_dict_from_klines(klines, 12)
+    #ema12_prices = compute_ema_dict_from_klines(klines, 12)
 
     prices = prices_from_kline_data(klines)
     symprice, = plt.plot(prices, label=product) #, color='black')
     ema4, = plt.plot(ema26_prices["y"], label='EMA26')
-    ema5, = plt.plot(ema12_prices["y"], label='EMA12')
+    ema5, = plt.plot(ema12_prices, label='EMA12')
 
     #plt.plot(vwaps)
     #quad0, = plt.plot(quad_x, quad_y, label='QUAD')

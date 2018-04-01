@@ -29,9 +29,15 @@ if __name__ == '__main__':
     #print(accnt.get_orders())
     #print(client._post_private())
     #print(client.get_open_orders())
-    for k, v in accnt.get_fills().items():
-        print(v)
-        print("")
+    #for k, v in accnt.get_all_my_orders().items():
+    #    print(k)
+    #    print(v)
+    #    print("")
+    #buy_price_list = []
+    #for trade in accnt.get_my_trades('BNB', 'BTC'):
+    #    buy_price_list.append(float(trade['price']))
+    print(accnt.load_buy_price_list('ETH', 'BTC'))
+
     #print(accnt.get_deposit_address())
     #print(accnt.html_run_stats())
     #print(accnt.get_klines())

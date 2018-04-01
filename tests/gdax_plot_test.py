@@ -12,6 +12,7 @@ from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD
 from trader.indicator.DiffWindow import DiffWindow
+from trader.MeasureTrend import MeasureTrend
 import math
 
 # kline format: [ time, low, high, open, close, volume ]
@@ -38,6 +39,7 @@ def plot_emas_product(plt, klines, product):
     price_max.append(float(klines[0][2]))
     quad = QUAD()
     ema_quad = EMA(9)
+    trend = MeasureTrend()
     diffwindow = DiffWindow(30)
     last_diff_result = 0
 

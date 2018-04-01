@@ -17,6 +17,10 @@ class MeasureTrend(object):
         self.window = window
         self.detect_width = detect_width
         self.sma = EMA(12)
+        self.peak_list = []
+        self.valley_list = []
+        self.last_peak_ts = 0.0
+        self.last_valley_ts = 0.0
 
     def update_price(self, price):
         if self.last_price != 0.0 and price == self.last_price:
@@ -35,28 +39,77 @@ class MeasureTrend(object):
         if len(self.sma_prices) < self.window:
             return False
 
-        for i in range(self.detect_width, len(self.sma_prices) - self.detect_width):
-            for j in range(1, self.detect_width):
-                if self.sma_prices[i - j] > self.sma_prices[i] or self.sma_prices[i] < self.sma_prices[i + j]:
-                    return False
-                if self.sma_prices[i-j] > self.sma_prices[i-j+1] or self.sma_prices[i+j-1] < self.sma_prices[i+j]:
+        mid = len(self.sma_prices)/2
+
+        if self.sma_prices[mid] == max(self.sma_prices):
+            for peak in self.peak_list:
+                if abs(self.sma_prices[mid] - peak) / peak < 0.001:
                     return False
 
-        return True
+            if self.last_peak_ts != 0.0 and float(time.time()) < self.last_peak_ts + 10.0:
+                return False
+
+            self.peak_list.append(self.sma_prices[mid])
+            self.last_peak_ts = float(time.time())
+            return True
+
+        #for i in range(self.detect_width, len(self.sma_prices) - self.detect_width):
+        #for i in range(len(self.sma_prices)/2 - 1, len(self.sma_prices)/2):
+        #    detected = True
+        #    for j in range(1, self.detect_width):
+        #        if self.sma_prices[i - j] > self.sma_prices[i] or self.sma_prices[i] < self.sma_prices[i + j]:
+        #            detected = False
+        #        #if self.sma_prices[i-j] > self.sma_prices[i-j+1] or self.sma_prices[i+j-1] < self.sma_prices[i+j]:
+        #        #    return False
+        #    if detected: return True
+        return False
+
+    def peak_value(self):
+        if len(self.sma_prices) < self.window:
+            return 0.0
+
+        mid = len(self.sma_prices)/2
+        if self.sma_prices[mid] == max(self.sma_prices):
+            return self.sma_prices[mid]
+        return 0.0
 
     def valley_detected(self):
         if len(self.sma_prices) < self.window:
             return False
 
-        for i in range(self.detect_width, len(self.sma_prices) - self.detect_width):
-            for j in range(1, self.detect_width):
-                if self.sma_prices[i - j] < self.sma_prices[i] or self.sma_prices[i] > self.sma_prices[i + j]:
-                    return False
-                if self.sma_prices[i-j] < self.sma_prices[i-j+1] or self.sma_prices[i+j-1] > self.sma_prices[i+j]:
+        mid = len(self.sma_prices) / 2
+
+        if self.sma_prices[mid] == min(self.sma_prices):
+            for valley in self.valley_list:
+                if abs(self.sma_prices[mid] - valley) / valley < 0.001:
                     return False
 
-        return True
+            if self.last_valley_ts != 0.0 and float(time.time()) < self.last_valley_ts + 10.0:
+                return False
 
+            self.valley_list.append(self.sma_prices[mid])
+            self.last_valley_ts = float(time.time())
+            return True
+        #for i in range(self.detect_width, len(self.sma_prices) - self.detect_width):
+        #for i in range(len(self.sma_prices) / 2 - 1, len(self.sma_prices) / 2):
+        #    detected=True
+        #    for j in range(1, self.detect_width):
+        #        if self.sma_prices[i - j] < self.sma_prices[i] or self.sma_prices[i] > self.sma_prices[i + j]:
+        #            detected = False
+        #        #if self.sma_prices[i-j] < self.sma_prices[i-j+1] or self.sma_prices[i+j-1] > self.sma_prices[i+j]:
+        #        #    return False
+        #    if detected: return True
+
+        return False
+
+    def valley_value(self):
+        if len(self.sma_prices) < self.window:
+            return 0.0
+
+        mid = len(self.sma_prices)/2
+        if self.sma_prices[mid] == min(self.sma_prices):
+            return self.sma_prices[mid]
+        return 0.0
 
     def compute_linear_regression(self):
         if len(self.sma_prices) < self.window:
