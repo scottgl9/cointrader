@@ -22,16 +22,32 @@ def simulate(conn, client):
 
     assets_info = get_info_all_assets(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
-    accnt = AccountBinance(client)
-    multitrader = MultiTrader(client, 'macd_quad_strategy', assets_info=assets_info, volumes=None, simulate=True)
+    accnt = AccountBinance(client, simulation=True)
+    accnt.update_asset_balance('BTC', 0.06, 0.06)
+    multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt)
     #row = None
+
+    print(multitrader.accnt.balances)
+
+    tickers = {}
+
+    found = False
 
     for row in c:
         msg = {'t': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
                'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
+        tickers[msg['s']] = float(msg['c'])
+        if msg['s'] == 'BTCUSDT' and not found:
+            found = True
+            total_btc = multitrader.accnt.balances['BTC']['balance']
+            total_usd = float(msg['o']) * total_btc
+            print("Initial BTC={}".format(total_btc))
+
         #print(msg)
         multitrader.process_message(msg)
 
+    print(multitrader.accnt.balances)
+    print("Final BTC={}".format(multitrader.accnt.get_total_btc_value(tickers=tickers)))
     # calculate what the earnings would be for buy and hold:
     #amount = initial_balance_usd / first_buy_price
     #final_balance_usd = amount * last_sell_price

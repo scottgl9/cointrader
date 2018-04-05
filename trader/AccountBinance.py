@@ -38,7 +38,8 @@ class AccountBinance(AccountBase):
         self.ticker_id = '{}{}'.format(name, asset)
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
-        self.get_account_balances()
+        if not self.simulate:
+            self.get_account_balances()
 
     def html_run_stats(self):
         results = str('')
@@ -179,6 +180,27 @@ class AccountBinance(AccountBase):
                 usd_price = price * btc_usd_price
 
         return total_balance_usd, total_balance_btc
+
+    def get_total_btc_value(self, tickers):
+        total_balance_usd = 0.0
+        total_balance_btc = 0.0
+        btc_usd_price = 0.0
+        for symbol, price in self.balances.items():
+            price_btc = 0.0
+            if symbol == 'BTC':
+                ticker_id = 'BTCUSDT'
+                price_btc = float(self.balances['BTC']['balance'])
+                btc_usd_price = tickers[ticker_id]
+            elif btc_usd_price != 0.0:
+                ticker_id = "{}BTC".format(symbol)
+                amount = float(self.balances[symbol]['balance'])
+                price_btc = tickers[ticker_id] * amount
+
+            price_usd = price_btc * btc_usd_price
+            total_balance_usd += price_usd
+            total_balance_btc += price_btc
+
+        return total_balance_btc
 
     def get_account_status(self):
         return self.client.get_account_status()
@@ -401,24 +423,24 @@ class AccountBinance(AccountBase):
 
     def buy_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
-            print("buy_market({}, {}, {}".format(size, price, ticker_id))
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            if size > cavailable: return
+            usd_value = price * size #self.round_quote(price * size)
+            if usd_value > cavailable: return
+            print("buy_market({}, {}, {}".format(size, price, ticker_id))
             self.update_asset_balance(base, bbalance + size, bavailable + size)
-            usd_value = self.round_quote(price * size)
             self.update_asset_balance(currency, cbalance - usd_value, cavailable - usd_value)
         else:
             return self.order_market_buy(symbol=ticker_id, quantity=size)
 
     def sell_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
-            print("sell_market({}, {}, {}".format(size, price, ticker_id))
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
             if size > bavailable: return
+            print("sell_market({}, {}, {}".format(size, price, ticker_id))
             self.update_asset_balance(base, bbalance - size, bavailable - size)
             usd_value = self.round_quote(price * size)
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)

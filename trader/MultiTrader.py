@@ -21,13 +21,17 @@ def split_symbol(symbol):
 
 
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', assets_info=None, volumes=None, account_name='Binance', simulate=False):
+    def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
+                 account_name='Binance', simulate=False, accnt=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.simulate = simulate
         self.strategy_name = strategy_name
-        self.accnt = AccountBinance(self.client, simulation=simulate)  # , account_name='Binance')
+        if accnt:
+            self.accnt = accnt
+        else:
+            self.accnt = AccountBinance(self.client, simulation=simulate)  # , account_name='Binance')
         self.assets_info = assets_info
         self.volumes = volumes
 

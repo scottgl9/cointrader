@@ -23,7 +23,8 @@ class BinanceTrader:
         self.tickers = {}
         #self.symbols = symbols #sget_all_tickers(client)
         #print("loading symbols {}".format(self.symbols))
-        self.multitrader = MultiTrader(client, 'macd_quad_strategy', assets_info=assets_info, volumes=volumes)
+        #accnt = AccountBinance(client, simulation=True)
+        self.multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=volumes)
         #self.accnt = AccountBinance(self.client)
         #self.trader = select_strategy('trailing_prices_strategy', self.client, 'BTC', 'USD',
         #                              account_handler=self.accnt, order_handler=None) #self.order_handler)
