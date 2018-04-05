@@ -16,14 +16,18 @@ if __name__ == '__main__':
             price = 0.0
             price_usd = 0.0
             price_btc = 0.0
-            if accnt['asset'] != 'BTC':
+            if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
                 price = float(client.get_symbol_ticker(symbol="{}BTC".format(accnt['asset']))['price'])
                 total_amount = float(accnt['free']) + float(accnt['locked'])
                 price_btc = price * total_amount
-            else:
+            elif accnt['asset'] != 'USDT':
                 price = 1.0
                 total_amount = float(accnt['free']) + float(accnt['locked'])
                 price_btc = total_amount
+            else:
+                price = 1.0
+                total_amount = float(accnt['free']) + float(accnt['locked'])
+                price_btc = total_amount / btc_usd_price
 
             price_usd = price_btc * btc_usd_price
             total_balance_usd += price_usd

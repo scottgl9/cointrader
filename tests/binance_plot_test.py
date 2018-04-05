@@ -12,6 +12,7 @@ from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD
 from trader.indicator.RSI import RSI
+from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
 import math
 from trader.AccountBinance import AccountBinance
@@ -49,6 +50,9 @@ def plot_emas_product(plt, klines, product):
     ema12 = EMA(12)
     ema12_prices = []
     trend = MeasureTrend()
+    trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
+    tsi = TSI()
+    tsi_values = []
 
     diffwindow = DiffWindow(30)
     last_diff_result = 0
@@ -62,14 +66,17 @@ def plot_emas_product(plt, klines, product):
         trend.update_price(float(klines[i][3]))
         macd.update(float(klines[i][3]))
         ema12_prices.append(ema12.update(float(klines[i][3])))
-        if trend.valley_detected():
-            print("valley {}, {}".format(i, trend.valley_detected()))
-            valleys.append(i)
-            plt.axhline(y=trend.valley_value(), color='red')
-        if trend.peak_detected():
-            print("peak {}, {}".format(i, trend.peak_detected()))
-            peaks.append(i)
-            plt.axhline(y=trend.peak_value(), color='blue')
+        tsi_value = tsi.update(float(klines[i][3]))
+        trend_tsi.update_price(tsi_value)
+        tsi_values.append(tsi_value)
+        if trend_tsi.valley_detected() and trend_tsi.valley_value() < -10.0:
+            print("valley {}, {}".format(i, trend_tsi.valley_value()))
+            #valleys.append(i)
+            #plt.axhline(y=trend.valley_value(), color='red')
+        if trend_tsi.peak_detected() and trend_tsi.peak_value() > 10.0:
+            print("peak {}, {}".format(i, trend_tsi.peak_value()))
+            #peaks.append(i)
+            #plt.axhline(y=trend.peak_value(), color='blue')
         rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
         timestamps.append((float(klines[i][0]) - initial_time) / (60.0))
@@ -99,8 +106,9 @@ def plot_emas_product(plt, klines, product):
     #plt.plot(quad_x2, quad_maxes)
     plt.legend(handles=[symprice, ema4, ema5])
     plt.subplot(212)
-    print(rsi_values)
-    fig1, = plt.plot(rsi_values, label="RSI") #macd_signal, label='MACD')
+    #print(rsi_values)
+    fig1, = plt.plot(tsi_values, label="TSI")
+    #fig1, = plt.plot(rsi_values, label="RSI") #macd_signal, label='MACD')
     #fig2, = plt.plot(quad_x, quad_y, label='QUAD')
     #fig3, = plt.plot(quad_x, quad_maxes, label='QUAD_MAX')
     plt.legend(handles=[fig1])#, fig2, fig3])

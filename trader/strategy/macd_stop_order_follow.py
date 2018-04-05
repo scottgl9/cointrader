@@ -7,7 +7,6 @@ from trader.indicator.QUAD import QUAD
 from trader.indicator.EMA import EMA
 from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
-from trader.indicator.TSI import TSI
 from datetime import datetime
 #import logging
 
@@ -20,10 +19,13 @@ def datetime_to_float(d):
     return float(total_seconds)
 
 
-class macd_quad_strategy:
+class macd_stop_order_follow:
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
-        self.strategy_name = 'macd_quad_strategy'
+        self.strategy_name = 'macd_stop_order_follow'
         self.client = client
+        # if not account_handler:
+        #     self.accnt = AccountGDAX(self.client, name, currency)
+        # else:
         self.accnt = account_handler
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
@@ -33,8 +35,6 @@ class macd_quad_strategy:
         self.rsi_result = 0.0
         self.macd_trend = MeasureTrend(name=self.ticker_id, window=50)
         self.price_trend = MeasureTrend(name=self.ticker_id, window=50)
-        self.tsi = TSI()
-        self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
 
         self.base = name
         self.currency = currency
@@ -55,6 +55,10 @@ class macd_quad_strategy:
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
         self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
+        self.pending_buy_stop_orders = []
+        self.pending_sell_stop_orders = []
+        self.peaks = []
+        self.valleys = []
         self.min_trade_size = base_min_size * 5.0
         #self.accnt.get_account_balances()
 
@@ -87,6 +91,7 @@ class macd_quad_strategy:
         return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
 
     def buy_signal(self, price):
+        if len(self.peaks) < 3: return
         if self.macd_trend.trending_downward() or not self.macd_trend.trending_upward():
             return
 
@@ -98,23 +103,17 @@ class macd_quad_strategy:
 
         if self.trend_upward_count < 25 or self.trend_downward_count > 0: return
 
-        if self.tsi.result > 20.0 or (self.tsi.result < 1.0 and self.tsi.result > -20.0): return
-
-        if not self.trend_tsi.trending_upward() or self.trend_tsi.trending_downward():
-            return
-
         self.trend_upward_count = 0
 
-        # make sure we don't keep buying near previous buy price
         for order_price in self.buy_price_list:
-            if order_price - (self.quote_increment * 3) <= price <= order_price + (self.quote_increment * 3):
+            if order_price - (self.quote_increment * 4) <= price <= order_price + (self.quote_increment * 4):
                 continue
 
         if self.last_sell_price != 0.0 and price >= self.last_sell_price:
             return
 
         # if we have insuffient funds to buy
-        balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
+        balance_available = self.accnt.get_asset_balance(self.currency)['available']
         size = self.round_base(float(balance_available) / float(price))
 
         if size < self.min_trade_size:
@@ -124,23 +123,25 @@ class macd_quad_strategy:
         if len(self.buy_price_list) > 3:
             return
 
+        buy_price = self.peaks[-3]
+        if (buy_price - price) / buy_price < 0.001:
+            return
 
-        result = self.accnt.buy_market(float(self.min_trade_size), price=price, ticker_id=self.get_ticker_id())
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            print("buy({}{}, {}) @ {} TSI={}".format(self.base, self.currency, self.min_trade_size, price, self.tsi.result))
-            self.buy_price_list.append(price)
-            self.last_buy_price = price
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
+        result = self.accnt.buy_limit_stop(price=buy_price + self.quote_increment,
+                                           size=float(self.min_trade_size),
+                                           ticker_id=self.get_ticker_id(),
+                                           stop_price=buy_price)
+        print(result)
+        self.pending_buy_stop_orders.append(result)
+        self.accnt.get_account_balances()
 
     def sell_signal(self, price):
+        if len(self.valleys) < 3: return
         if self.macd_trend.trending_upward() or not self.macd_trend.trending_downward():
             return
 
         if self.last_macd_diff == 0 or self.last_macd_diff < self.macd.diff:
             return
-
-        #if self.tsi.result < -20.0 or (self.tsi.result > 0.0 and self.tsi.result < 20.0): return
         #print("sell_signal({}, {})".format(self.ticker_id, price))
 
         if len(self.buy_price_list) == 0: return
@@ -156,7 +157,7 @@ class macd_quad_strategy:
         if buy_price == 0.0 or (price - buy_price) / buy_price < 0.01:
             return
 
-        balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
+        balance_available = self.round_base(float(self.accnt.get_asset_balance(self.base)['available']))
         if balance_available >= self.min_trade_size:
             trade_size = self.min_trade_size
         elif balance_available >= self.base_min_size:
@@ -164,20 +165,24 @@ class macd_quad_strategy:
         else:
             return
 
-        result = self.accnt.sell_market(float(trade_size), price=price, ticker_id=self.get_ticker_id())
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            pprofit = 100.0 * (price - buy_price) / buy_price
-            print("sell({}{}, {}) @ {} (bought @ {}, {}%)".format(self.base, self.currency, trade_size,
-                                                                  price, buy_price, round(pprofit, 2)))
-            self.buy_price_list.remove(buy_price)
-            self.last_sell_price = price
-            if not self.accnt.simulate:
-                total_usd, total_btc = self.accnt.get_account_total_value()
-                print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
+        sell_price = self.valleys[-3]
+        if buy_price == 0.0 or (sell_price - buy_price) / buy_price < 0.01:
+            return
+
+        if (price - sell_price) / sell_price < 0.001:
+            return
+
+        result = self.accnt.sell_limit_stop(price=sell_price - self.quote_increment,
+                                            size=float(trade_size),
+                                            ticker_id=self.get_ticker_id(),
+                                            stop_price=sell_price)
+        print(result)
+        self.pending_sell_stop_orders.append(result)
+        self.accnt.get_account_balances()
 
     def update_last_50_prices(self, price):
+        #if price in self.last_50_prices:
+        #    return
         self.last_50_prices.append(price)
         if len(self.last_50_prices) > 50:
             diff_size = len(self.last_50_prices) - 50
@@ -189,12 +194,8 @@ class macd_quad_strategy:
         self.run_update_price(float(kline['c']))
 
     def run_update_price(self, price):
-        tsi_value = self.tsi.update(price)
-        self.trend_tsi.update_price(tsi_value)
         self.macd.update(price)
-        #self.quad.update(self.macd.diff)
         self.price_trend.update_price(price)
-        #self.quad.compute()
         self.macd_trend.update_price(self.macd.diff)
         if self.macd_trend.trending_upward() and self.last_macd_diff != 0 and (self.macd.diff - self.last_macd_diff) / self.last_macd_diff >= 0.01:
             self.trend_upward_count += 1
@@ -203,10 +204,16 @@ class macd_quad_strategy:
             self.trend_upward_count = 0
             self.trend_downward_count += 1
 
-        #if self.price_trend.peak_detected():
-        #    print("peak detected {} @ {}".format(self.ticker_id, price))
-        #elif self.price_trend.valley_detected():
-        #    print("valley detected {} @ {}".format(self.ticker_id, price))
+        if self.price_trend.peak_detected():
+            # adjust pending stop limit buy orders
+            for order in self.pending_buy_stop_orders:
+                print(order)
+            self.peaks.append(price)
+        elif self.price_trend.valley_detected():
+            for order in self.pending_sell_stop_orders:
+                print(order)
+            # adjust pending stop limit sell orders
+            self.valleys.append(price)
 
         self.buy_signal(price)
         self.sell_signal(price)

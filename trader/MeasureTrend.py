@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 # IDEA: get range with highest level of oscillation
 
 class MeasureTrend(object):
-    def __init__(self, name='BTCUSD', window=50, detect_width=16):
+    def __init__(self, name='BTCUSD', window=50, detect_width=16, use_ema=True):
         self.prices = []
         self.last_price = 0.0
         self.sma_prices = []
@@ -21,6 +21,7 @@ class MeasureTrend(object):
         self.valley_list = []
         self.last_peak_ts = 0.0
         self.last_valley_ts = 0.0
+        self.use_ema = use_ema
 
     def update_price(self, price):
         if self.last_price != 0.0 and price == self.last_price:
@@ -31,7 +32,10 @@ class MeasureTrend(object):
             self.ts.pop(0)
 
         self.prices.append(float(price))
-        self.sma_prices.append(self.sma.update(price))
+        if self.use_ema:
+            self.sma_prices.append(self.sma.update(price))
+        else:
+            self.sma_prices.append(price)
         self.ts.append(float(time.time()))
         self.last_price = price
 
@@ -42,12 +46,13 @@ class MeasureTrend(object):
         mid = len(self.sma_prices)/2
 
         if self.sma_prices[mid] == max(self.sma_prices):
-            for peak in self.peak_list:
-                if abs(self.sma_prices[mid] - peak) / peak < 0.001:
-                    return False
+            if self.use_ema:
+                for peak in self.peak_list:
+                    if abs(self.sma_prices[mid] - peak) / peak < 0.001:
+                        return False
 
-            if self.last_peak_ts != 0.0 and float(time.time()) < self.last_peak_ts + 10.0:
-                return False
+                if self.last_peak_ts != 0.0 and float(time.time()) < self.last_peak_ts + 10.0:
+                    return False
 
             self.peak_list.append(self.sma_prices[mid])
             self.last_peak_ts = float(time.time())
@@ -65,6 +70,7 @@ class MeasureTrend(object):
         return False
 
     def peak_value(self):
+
         if len(self.sma_prices) < self.window:
             return 0.0
 
@@ -80,12 +86,13 @@ class MeasureTrend(object):
         mid = len(self.sma_prices) / 2
 
         if self.sma_prices[mid] == min(self.sma_prices):
-            for valley in self.valley_list:
-                if abs(self.sma_prices[mid] - valley) / valley < 0.001:
-                    return False
+            if self.use_ema:
+                for valley in self.valley_list:
+                    if abs(self.sma_prices[mid] - valley) / valley < 0.001:
+                        return False
 
-            if self.last_valley_ts != 0.0 and float(time.time()) < self.last_valley_ts + 10.0:
-                return False
+                if self.last_valley_ts != 0.0 and float(time.time()) < self.last_valley_ts + 10.0:
+                    return False
 
             self.valley_list.append(self.sma_prices[mid])
             self.last_valley_ts = float(time.time())

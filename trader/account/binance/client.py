@@ -197,6 +197,7 @@ class Client(object):
         """
 
         if not str(response.status_code).startswith('2'):
+            print(response.status_code)
             raise BinanceAPIException(response)
         try:
             return response.json()

@@ -42,6 +42,9 @@ class TradePair(object):
     def set_market_price(self, price):
         self.market_price = price
 
+    def run_update(self, msg):
+        return self.strategy.run_update(msg)
+
     def run_update_price(self, price):
         #if self.base_name == 'QTUM' and float(price) == 10.0: return
         #print("run_update_price({}, {}, {}".format(self.base_name, self.currency, price))

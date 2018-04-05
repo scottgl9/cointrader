@@ -21,14 +21,18 @@ def split_symbol(symbol):
 
 
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', assets_info=None, volumes=None, account_name='Binance'):
+    def __init__(self, client, strategy_name='', assets_info=None, volumes=None, account_name='Binance', simulate=False):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
+        self.simulate = simulate
         self.strategy_name = strategy_name
-        self.accnt = AccountBinance(self.client)  # , account_name='Binance')
+        self.accnt = AccountBinance(self.client, simulation=simulate)  # , account_name='Binance')
         self.assets_info = assets_info
         self.volumes = volumes
+
+        if self.simulate:
+            print("Running MultiTrader as simulation")
 
         #for symbol in symbols:
         #    base_name, currency_name = split_symbol(symbol)
@@ -62,14 +66,12 @@ class MultiTrader(object):
             if msg['s'].endswith('USDT'): return
 
             if msg['s'] not in self.trade_pairs.keys():
-                #print("adding {} to trade_pairs".format(msg['s']))
                 self.add_trade_pair(msg['s'])
 
             if msg['s'] not in self.trade_pairs.keys(): return
-            if msg['s'] not in self.volumes.keys(): return
+            if self.volumes and msg['s'] not in self.volumes.keys(): return
             symbol_trader = self.trade_pairs[msg['s']]
-            symbol_trader.run_update_price(float(msg['o']))
-            symbol_trader.run_update_price(float(msg['c']))
+            symbol_trader.run_update(msg)
             return
 
         for part in msg:
@@ -82,8 +84,6 @@ class MultiTrader(object):
                 self.add_trade_pair(part['s'])
 
             if part['s'] not in self.trade_pairs.keys(): continue
-            if part['s'] not in self.volumes.keys(): continue
+            if self.volumes and part['s'] not in self.volumes.keys(): continue
             symbol_trader = self.trade_pairs[part['s']]
-
-            symbol_trader.run_update_price(float(part['o']))
-            symbol_trader.run_update_price(float(part['c']))
+            symbol_trader.run_update(part)

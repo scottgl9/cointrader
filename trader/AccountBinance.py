@@ -2,8 +2,9 @@ from trader.account.binance.client import Client
 from trader.AccountBase import AccountBase
 from datetime import datetime, timedelta
 import logging
+import sys
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 class AccountBinance(AccountBase):
     def __init__(self, client, name='BTC', asset='USD', simulation=False):
@@ -62,6 +63,17 @@ class AccountBinance(AccountBase):
 
     def make_ticker_id(self, base, currency):
         return '%s%s' % (base, currency)
+
+    def split_ticker_id(self, symbol):
+        base_name = None
+        currency_name = None
+
+        currencies = ['BTC', 'ETH', 'BNB', 'USDT']
+        for currency in currencies:
+            if symbol.endswith(currency):
+                currency_name = currency
+                base_name = symbol.replace(currency, '')
+        return base_name, currency_name
 
     def get_deposit_address(self, name=None):
         if not name:
@@ -148,14 +160,18 @@ class AccountBinance(AccountBase):
                 price = 0.0
                 price_usd = 0.0
                 price_btc = 0.0
-                if accnt['asset'] != 'BTC':
+                if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
                     price = float(self.client.get_symbol_ticker(symbol="{}BTC".format(accnt['asset']))['price'])
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = price * total_amount
-                else:
+                elif accnt['asset'] != 'USDT':
                     price = 1.0
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = total_amount
+                else:
+                    price = 1.0
+                    total_amount = float(accnt['free']) + float(accnt['locked'])
+                    price_btc = total_amount / btc_usd_price
 
                 price_usd = price_btc * btc_usd_price
                 total_balance_usd += price_usd
@@ -173,6 +189,13 @@ class AccountBinance(AccountBase):
             self.quote_currency_available = currency_available
             self.balance = balance
             self.funds_available = available
+
+    def update_asset_balance(self, name, balance, available):
+        if self.simulate:
+            if name not in self.balances.keys():
+                self.balances[name] = {}
+            self.balances[name]['balance'] = balance
+            self.balances[name]['available'] = available
 
     def get_account_balance(self, base=None, currency=None):
         if not base:
@@ -207,6 +230,12 @@ class AccountBinance(AccountBase):
         if asset in self.balances.keys():
             return self.balances[asset]
         return {'balance': 0.0, 'available': 0.0}
+
+    def get_asset_balance_tuple(self, asset):
+        result = self.get_asset_balance(asset)
+        if 'balance' not in result or 'available' not in result:
+            return 0.0, 0.0
+        return float(result['balance']), float(result['available'])
 
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
@@ -370,23 +399,29 @@ class AccountBinance(AccountBase):
     def order_market_sell(self, symbol, quantity):
         return self.client.order_market_sell(symbol=symbol, quantity=quantity)
 
-    def buy_market(self, size, ticker_id=None):
+    def buy_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
-            return self.client.create_test_order(symbol=ticker_id,
-                                                 side=Client.SIDE_BUY,
-                                                 type=Client.ORDER_TYPE_MARKET,
-                                                 quantity=size)
+            print("buy_market({}, {}, {}".format(size, price, ticker_id))
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+            if size > cavailable: return
+            self.update_asset_balance(base, bbalance + size, bavailable + size)
+            usd_value = self.round_quote(price * size)
+            self.update_asset_balance(currency, cbalance - usd_value, cavailable - usd_value)
         else:
             return self.order_market_buy(symbol=ticker_id, quantity=size)
 
-
-
-    def sell_market(self, size, ticker_id=None):
+    def sell_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
-            return self.client.create_test_order(symbol=ticker_id,
-                                                 side=Client.SIDE_SELL,
-                                                 type=Client.ORDER_TYPE_MARKET,
-                                                 quantity=size)
+            print("sell_market({}, {}, {}".format(size, price, ticker_id))
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+            if size > bavailable: return
+            self.update_asset_balance(base, bbalance - size, bavailable - size)
+            usd_value = self.round_quote(price * size)
+            self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
         else:
             return self.order_market_sell(symbol=ticker_id, quantity=size)
 
@@ -394,7 +429,7 @@ class AccountBinance(AccountBase):
         price = self.round_quote(price)
         size = self.round_base(size)
 
-        logger.info("buy_limit_simulate({}, {})".format(price, size))
+        print("buy_limit_simulate({}, {})".format(price, size))
 
         usd_value = self.round_quote(self.market_price * size)
         if usd_value <= 0.0: return
@@ -406,12 +441,32 @@ class AccountBinance(AccountBase):
     def sell_limit_simulate(self, price, size):
         price = self.round_quote(price)
         size = self.round_base(size)
-        logger.info("sell_limit_simulate({}, {})".format(price, size))
+        print("sell_limit_simulate({}, {})".format(price, size))
         if size < self.base_min_size: return False
         if self.funds_available >= size:
             self.funds_available -= size
             return True
         return False
+
+    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
+        if self.simulate:
+            return
+        timeInForce = Client.TIME_IN_FORCE_GTC
+        return self.client.order_limit_buy(timeInForce=timeInForce,
+                                           symbol=ticker_id,
+                                           quantity=size,
+                                           price=price,
+                                           stopPrice=stop_price)
+
+    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
+        if self.simulate:
+            return
+        timeInForce = Client.TIME_IN_FORCE_GTC
+        return self.client.order_limit_sell(timeInForce=timeInForce,
+                                           symbol=ticker_id,
+                                           quantity=size,
+                                           price=price,
+                                           stopPrice=stop_price)
 
     def buy_limit(self, price, size, post_only=True, ticker_id=None):
         if not ticker_id:
