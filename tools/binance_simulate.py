@@ -85,7 +85,7 @@ def get_asset_balances(client):
     return balances
 
 def filter_assets_by_minqty(assets_info, balances):
-    currencies = ['BTC', 'ETH', 'BNB']
+    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
     result = {}
     for name, balance in balances.items():
         for currency in currencies:

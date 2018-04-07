@@ -19,6 +19,10 @@ class Crossover(object):
 
     # detect if value1 crosses up over value2
     def crossup_detected(self):
+        if self.value1 == 0.0 or self.last_value1 == 0.0:
+            return False
+        if self.value2 == 0.0 or self.last_value2 == 0.0:
+            return False
         if self.value1 == self.last_value1 or self.value2 == self.last_value2:
             return False
         if self.last_value1 < self.last_value2 < self.value1 and \
@@ -28,6 +32,10 @@ class Crossover(object):
         return False
 
     def crossdown_detected(self):
+        if self.value1 == 0.0 or self.last_value1 == 0.0:
+            return False
+        if self.value2 == 0.0 or self.last_value2 == 0.0:
+            return False
         if self.value1 == self.last_value1 or self.value2 == self.last_value2:
             return False
         if self.last_value1 > self.last_value2 > self.value1 and \

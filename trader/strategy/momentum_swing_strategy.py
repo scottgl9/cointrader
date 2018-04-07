@@ -38,9 +38,9 @@ class momentum_swing_strategy:
         self.last_tsi_result = 0.0
         self.cross_short = Crossover()
         self.cross_long = Crossover()
-        self.ema12 = EMA(12)
-        self.ema26 = EMA(26)
-        self.ema50 = EMA(50)
+        self.ema12 = EMA(12, scale=24)
+        self.ema26 = EMA(26, scale=24)
+        self.ema50 = EMA(50, scale=24)
         self.ema100 = EMA(100)
         #self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
 
@@ -66,6 +66,8 @@ class momentum_swing_strategy:
         self.buy_price = 0.0
         if not self.accnt.simulate:
             self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
+            if len(self.buy_price_list) > 0:
+                self.buy_price = self.buy_price_list[-1]
         self.min_trade_size = self.base_min_size * 10.0
         #self.accnt.get_account_balances()
 
@@ -110,13 +112,21 @@ class momentum_swing_strategy:
         if size < self.min_trade_size:
             return
 
+        if self.ema12.last_result == 0.0 or self.ema12.last_result > self.ema26.result:
+            return
+
+        if self.ema26.last_result == 0.0 or self.ema26.last_result > self.ema26.result:
+            return
+
         if self.ema50.last_result == 0.0 or self.ema50.last_result > self.ema50.result:
             return
 
-        if self.ema50.result > self.ema26.result:
+        if self.last_tsi_result == 0.0 or self.tsi.result < self.last_tsi_result:
             return
+        #if self.ema50.result > self.ema26.result:
+        #    return
 
-        if not self.cross_long.crossup_detected() or self.cross_long.crossdown_detected():
+        if self.cross_long.crossdown_detected() or not self.cross_short.crossup_detected():
             return
 
         result = self.accnt.buy_market(float(self.min_trade_size), price=price, ticker_id=self.get_ticker_id())
@@ -139,10 +149,13 @@ class momentum_swing_strategy:
         if self.buy_price != 0.0 and (price - self.buy_price) / self.buy_price < 0.01:
             return
 
-        if self.ema50.last_result == 0.0 or self.ema50.last_result > self.ema50.result:
+        if self.ema26.last_result == 0.0 or self.ema26.last_result < self.ema26.result:
             return
 
-        if self.cross_short.crossup_detected():
+        if self.cross_long.crossup_detected() or self.cross_short.crossup_detected():
+            return
+
+        if self.last_tsi_result == 0.0 or self.tsi.result > self.last_tsi_result:
             return
 
         result = self.accnt.sell_market(float(self.min_trade_size), price=price, ticker_id=self.get_ticker_id())
@@ -177,8 +190,8 @@ class momentum_swing_strategy:
         value2 = self.ema26.update(price)
         value3 = self.ema50.update(price)
         value4 = self.ema100.update(price)
-        self.cross_short.update(value2, value3)
-        self.cross_long.update(value3, value4)
+        self.cross_short.update(value1, value2)
+        self.cross_long.update(value2, value3)
 
         self.buy_signal(price)
         self.sell_signal(price)

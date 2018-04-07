@@ -10,3 +10,5 @@ from trader.indicator.TSI import TSI
 from trader.indicator.VWAP import VWAP
 from trader.indicator.RSI import RSI
 from trader.indicator.DiffWindow import DiffWindow
+from trader.indicator.ZigZag import ZigZag
+

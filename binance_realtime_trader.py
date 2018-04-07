@@ -116,7 +116,7 @@ def get_all_tickers(client):
     for key, value in client.get_exchange_info().items():
         if key != 'symbols': continue
         for asset in value:
-            if asset['symbol'].endswith('USDT'): continue
+            #if asset['symbol'].endswith('USDT'): continue
             result.append(asset['symbol'])
     return result
 
@@ -146,7 +146,7 @@ def get_asset_balances(client):
     return balances
 
 def filter_assets_by_minqty(assets_info, balances):
-    currencies = ['BTC', 'ETH', 'BNB']
+    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
     result = {}
     for name, balance in balances.items():
         for currency in currencies:
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     print(balances)
     buy_list = []
     sell_list = []
-    currency_list = ['BTC', 'ETH', 'BNB']
+    currency_list = ['BTC', 'ETH', 'BNB', 'USDT']
     #print(assets_info)
     volumes_list = collections.OrderedDict()
 

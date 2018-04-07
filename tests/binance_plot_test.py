@@ -14,6 +14,7 @@ from trader.indicator.QUAD import QUAD
 from trader.indicator.RSI import RSI
 from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
+from trader.indicator.ZigZag import ZigZag
 import math
 from trader.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
@@ -53,6 +54,9 @@ def plot_emas_product(plt, klines, product):
     trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
     tsi = TSI()
     tsi_values = []
+    zigzag_x = []
+    zigzag_y = []
+    zigzag = ZigZag()
 
     diffwindow = DiffWindow(30)
     last_diff_result = 0
@@ -66,6 +70,12 @@ def plot_emas_product(plt, klines, product):
         trend.update_price(float(klines[i][3]))
         macd.update(float(klines[i][3]))
         ema12_prices.append(ema12.update(float(klines[i][3])))
+
+        result = zigzag.update(float(klines[i][3]))
+        if result != 0.0:
+            zigzag_y.append(result)
+            zigzag_x.append(i)
+
         tsi_value = tsi.update(float(klines[i][3]))
         trend_tsi.update_price(tsi_value)
         tsi_values.append(tsi_value)
@@ -80,6 +90,8 @@ def plot_emas_product(plt, klines, product):
         rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
         timestamps.append((float(klines[i][0]) - initial_time) / (60.0))
+
+    print(zigzag_y)
 
     for i in range(0, len(macd_signal)):
         quad.update(macd_signal[i], timestamps[i])#ema_quad.update(klines[i][3]), ts)
@@ -100,7 +112,7 @@ def plot_emas_product(plt, klines, product):
     symprice, = plt.plot(prices, label=product) #, color='black')
     ema4, = plt.plot(ema26_prices["y"], label='EMA26')
     ema5, = plt.plot(ema12_prices, label='EMA12')
-
+    plt.plot(zigzag_x, zigzag_y)
     #plt.plot(vwaps)
     #quad0, = plt.plot(quad_x, quad_y, label='QUAD')
     #plt.plot(quad_x2, quad_maxes)
@@ -124,8 +136,8 @@ def abs_average(values):
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
     #print(client.get_user_trades())
-    base = 'ETH'
-    currency='BTC'
+    base = 'BTC'
+    currency='USDT'
     if len(sys.argv) == 3:
         base=sys.argv[1]
         currency = sys.argv[2]

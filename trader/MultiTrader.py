@@ -67,7 +67,7 @@ class MultiTrader(object):
             if 's' not in msg.keys(): return
             #if len(msg) == 0: return
 
-            if msg['s'].endswith('USDT'): return
+            if msg['s'].endswith('USDT') and msg['s'] != 'BTCUSDT': return
 
             if msg['s'] not in self.trade_pairs.keys():
                 self.add_trade_pair(msg['s'])
@@ -82,7 +82,7 @@ class MultiTrader(object):
             if 's' not in part.keys(): continue
             #if len(self.trade_pairs) == 0: continue
 
-            if part['s'].endswith('USDT'): continue
+            if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
             if part['s'] not in self.trade_pairs.keys():
                 #print("adding {} to trade_pairs".format(part['s']))
                 self.add_trade_pair(part['s'])
