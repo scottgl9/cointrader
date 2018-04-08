@@ -7,6 +7,7 @@ from trader.indicator.QUAD import QUAD
 from trader.indicator.EMA import EMA
 from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
+from trader.indicator.ROC import ROC
 from trader.indicator.TSI import TSI
 from trader.Crossover import Crossover
 from datetime import datetime
@@ -32,6 +33,8 @@ class momentum_swing_strategy:
         self.quad = QUAD()
         self.rsi = RSI()
         self.rsi_result = 0.0
+        self.last_rsi_result = 0.0
+        self.roc = ROC()
         self.macd_trend = MeasureTrend(name=self.ticker_id, window=50)
         self.price_trend = MeasureTrend(name=self.ticker_id, window=50)
         self.tsi = TSI()
@@ -42,6 +45,7 @@ class momentum_swing_strategy:
         self.ema26 = EMA(26, scale=24)
         self.ema50 = EMA(50, scale=24)
         self.ema100 = EMA(100)
+        self.ema_volume = EMA(12)
         #self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
 
         self.base = name
@@ -68,7 +72,7 @@ class momentum_swing_strategy:
             self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
             if len(self.buy_price_list) > 0:
                 self.buy_price = self.buy_price_list[-1]
-        self.min_trade_size = self.base_min_size * 10.0
+        self.min_trade_size = self.base_min_size * 30.0
         #self.accnt.get_account_balances()
 
     def get_ticker_id(self):
@@ -112,21 +116,52 @@ class momentum_swing_strategy:
         if size < self.min_trade_size:
             return
 
-        if self.ema12.last_result == 0.0 or self.ema12.last_result > self.ema26.result:
+        if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result < self.ema50.prev_last_result:
             return
 
-        if self.ema26.last_result == 0.0 or self.ema26.last_result > self.ema26.result:
+        if self.rsi_result > 40.0:
             return
 
-        if self.ema50.last_result == 0.0 or self.ema50.last_result > self.ema50.result:
+        if self.roc.last_result == 0.0 or self.roc.result < self.roc.last_result and self.ema26.prev_last_result < self.ema26.last_result < self.ema26.result:
+            return
+
+        ema12_roc = 0.0
+        ema26_roc = 0.0
+
+        if self.ema12.last_result != 0.0 and self.ema26.last_result != 0.0:
+            ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
+            ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
+            if abs(ema12_roc) < abs(ema26_roc) / 2.0:
+                return
+
+        if self.ema50.last_result != 0.0 and self.ema26.last_result != 0.0:
+            ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
+            ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
+            if abs(ema26_roc) < abs(ema50_roc) / 2.0:
+                return
+
+        if self.ema12.prev_last_result == 0.0 or self.ema12.prev_last_result > self.ema12.last_result > self.ema12.result:
+            return
+
+        if self.ema26.prev_last_result == 0.0 or self.ema26.prev_last_result > self.ema26.last_result > self.ema26.result:
+            return
+
+        if self.ema50.prev_last_result == 0.0 or self.ema50.prev_last_result > self.ema50.last_result > self.ema50.result:
+            return
+
+        if self.ema12.result > self.ema12.last_result > self.ema12.prev_last_result and self.roc.result < self.roc.last_result:
+            return
+
+        if self.ema26.result > self.ema26.last_result > self.ema26.prev_last_result and self.roc.result < self.roc.last_result:
             return
 
         if self.last_tsi_result == 0.0 or self.tsi.result < self.last_tsi_result:
             return
-        #if self.ema50.result > self.ema26.result:
-        #    return
 
-        if self.cross_long.crossdown_detected() or not self.cross_short.crossup_detected():
+        if self.ema26.prev_last_result < self.ema26.last_result < self.ema26.result and self.ema_volume.result < self.ema_volume.last_result:
+            return
+
+        if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected() or not self.cross_short.crossup_detected():
             return
 
         result = self.accnt.buy_market(float(self.min_trade_size), price=price, ticker_id=self.get_ticker_id())
@@ -149,7 +184,31 @@ class momentum_swing_strategy:
         if self.buy_price != 0.0 and (price - self.buy_price) / self.buy_price < 0.01:
             return
 
-        if self.ema26.last_result == 0.0 or self.ema26.last_result < self.ema26.result:
+        if self.rsi_result < 60.0 and self.tsi.result > self.last_tsi_result:
+            return
+
+        if self.roc.last_result == 0.0 or self.roc.result > self.roc.last_result:
+            return
+
+        if self.last_tsi_result == 0.0 or self.tsi.result > self.last_tsi_result:
+            return
+
+        if self.ema12.last_result != 0.0 and self.ema26.last_result != 0.0:
+            ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
+            ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
+            if abs(ema12_roc) > abs(ema26_roc):
+                return
+
+        if self.ema12.prev_last_result == 0.0 or self.ema12.prev_last_result < self.ema12.last_result < self.ema12.result and \
+           self.ema_volume.result > self.ema_volume.last_result:
+            return
+
+        if self.ema26.prev_last_result == 0.0 or self.ema26.prev_last_result < self.ema26.last_result < self.ema26.result and \
+            self.ema_volume.result > self.ema_volume.last_result:
+            return
+
+        if self.ema50.prev_last_result == 0.0 or self.ema50.prev_last_result < self.ema50.last_result < self.ema50.result and \
+           self.ema_volume.result > self.ema_volume.last_result:
             return
 
         if self.cross_long.crossup_detected() or self.cross_short.crossup_detected():
@@ -179,9 +238,14 @@ class momentum_swing_strategy:
             self.last_50_prices = self.last_50_prices[diff_size:]
 
     def run_update(self, kline):
+        self.ema_volume.update(float(kline['v']))
         self.run_update_price(float(kline['o']))
         self.rsi_result = self.rsi.update(float(kline['c']))
+        self.roc.update(float(kline['c']), int(kline['E']))
+
         self.run_update_price(float(kline['c']))
+
+        self.last_rsi_result = self.rsi_result
 
     def run_update_price(self, price):
         tsi_value = self.tsi.update(price)

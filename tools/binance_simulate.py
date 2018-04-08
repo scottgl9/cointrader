@@ -21,7 +21,7 @@ def simulate(conn, client):
     c.execute("SELECT * FROM miniticker ORDER BY t ASC")
 
     assets_info = get_info_all_assets(client)
-    balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
+    #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
     accnt.update_asset_balance('BTC', 0.06, 0.06)
     multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt)
@@ -34,7 +34,7 @@ def simulate(conn, client):
     found = False
 
     for row in c:
-        msg = {'t': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
+        msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
                'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
         tickers[msg['s']] = float(msg['c'])
         if msg['s'] == 'BTCUSDT' and not found:

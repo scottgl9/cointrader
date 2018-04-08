@@ -48,6 +48,8 @@ def plot_emas_product(plt, klines, product):
     quad2 = QUAD()
     ema_quad = EMA(26)
     ema_quad2 = EMA(26)
+    ema_volume = EMA(12)
+    ema_volume_values = []
     ema12 = EMA(12)
     ema12_prices = []
     trend = MeasureTrend()
@@ -56,7 +58,9 @@ def plot_emas_product(plt, klines, product):
     tsi_values = []
     zigzag_x = []
     zigzag_y = []
-    zigzag = ZigZag()
+    zigzag = ZigZag(cutoff=0.2)
+    volume_amount = 0.0
+    last_volume_amount = 0.0
 
     diffwindow = DiffWindow(30)
     last_diff_result = 0
@@ -66,17 +70,35 @@ def plot_emas_product(plt, klines, product):
     timestamps = []
     peaks = []
     valleys = []
-    for i in range(1, len(klines) - 1):
-        trend.update_price(float(klines[i][3]))
-        macd.update(float(klines[i][3]))
-        ema12_prices.append(ema12.update(float(klines[i][3])))
 
-        result = zigzag.update(float(klines[i][3]))
+
+    for i in range(1, len(klines) - 1):
+        low = float(klines[i][1])
+        high = float(klines[i][2])
+        open_price = float(klines[i][3])
+        close_price = float(klines[i][4])
+        volume = float(klines[i][5])
+        volume_amount = ema_volume.update(volume)
+        ema_volume_values.append(volume_amount)
+        if volume_amount > 3.0 * last_volume_amount:
+            print("buy signal {}".format(open_price))
+
+        last_volume_amount = volume_amount
+        trend.update_price(open_price)
+        macd.update(open_price)
+        ema12_prices.append(ema12.update(open_price))
+
+        result = zigzag.update_from_kline(open_price, low, high)
         if result != 0.0:
             zigzag_y.append(result)
             zigzag_x.append(i)
 
-        tsi_value = tsi.update(float(klines[i][3]))
+        result = zigzag.update_from_kline(close_price, low, high)
+        if result != 0.0:
+            zigzag_y.append(result)
+            zigzag_x.append(i)
+
+        tsi_value = tsi.update(open_price)
         trend_tsi.update_price(tsi_value)
         tsi_values.append(tsi_value)
         if trend_tsi.valley_detected() and trend_tsi.valley_value() < -10.0:
@@ -118,6 +140,7 @@ def plot_emas_product(plt, klines, product):
     #plt.plot(quad_x2, quad_maxes)
     plt.legend(handles=[symprice, ema4, ema5])
     plt.subplot(212)
+    #plt.plot(ema_volume_values)
     #print(rsi_values)
     fig1, = plt.plot(tsi_values, label="TSI")
     #fig1, = plt.plot(rsi_values, label="RSI") #macd_signal, label='MACD')

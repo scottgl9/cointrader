@@ -442,7 +442,7 @@ class AccountBinance(AccountBase):
             if size > bavailable: return
             print("sell_market({}, {}, {}".format(size, price, ticker_id))
             self.update_asset_balance(base, bbalance - size, bavailable - size)
-            usd_value = self.round_quote(price * size)
+            usd_value = price * size #self.round_quote(price * size)
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
         else:
             return self.order_market_sell(symbol=ticker_id, quantity=size)
