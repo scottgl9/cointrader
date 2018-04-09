@@ -149,10 +149,10 @@ class momentum_swing_strategy:
         if self.ema50.prev_last_result == 0.0 or self.ema50.prev_last_result > self.ema50.last_result > self.ema50.result:
             return
 
-        if self.ema12.result > self.ema12.last_result > self.ema12.prev_last_result and self.roc.result < self.roc.last_result:
+        if self.ema12.result > self.ema12.last_result > self.ema12.prev_last_result and self.roc.result < self.roc.last_result < self.roc.prev_last_result:
             return
 
-        if self.ema26.result > self.ema26.last_result > self.ema26.prev_last_result and self.roc.result < self.roc.last_result:
+        if self.ema26.result > self.ema26.last_result > self.ema26.prev_last_result and self.roc.result < self.roc.last_result < self.roc.prev_last_result:
             return
 
         if self.last_tsi_result == 0.0 or self.tsi.result < self.last_tsi_result:
@@ -204,11 +204,11 @@ class momentum_swing_strategy:
             return
 
         if self.ema26.prev_last_result == 0.0 or self.ema26.prev_last_result < self.ema26.last_result < self.ema26.result and \
-            self.ema_volume.result > self.ema_volume.last_result:
+            self.ema_volume.result > self.ema_volume.last_result > self.ema_volume.prev_last_result:
             return
 
         if self.ema50.prev_last_result == 0.0 or self.ema50.prev_last_result < self.ema50.last_result < self.ema50.result and \
-           self.ema_volume.result > self.ema_volume.last_result:
+           self.ema_volume.result > self.ema_volume.last_result > self.ema_volume.prev_last_result:
             return
 
         if self.cross_long.crossup_detected() or self.cross_short.crossup_detected():

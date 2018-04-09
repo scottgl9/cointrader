@@ -8,6 +8,7 @@ class ROC(object):
         self.last_price = 0.0
         self.result = 0.0
         self.last_result = 0.0
+        self.prev_last_result = 0.0
         self.last_ts = 0
         self.age = 0
         self.rocs = []
@@ -27,4 +28,5 @@ class ROC(object):
             self.result = pchange_per_min
         self.last_price = self.price
         self.last_ts = ts
+        self.prev_last_result = self.last_result
         self.last_result = self.result

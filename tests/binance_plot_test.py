@@ -15,6 +15,7 @@ from trader.indicator.RSI import RSI
 from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
+from trader.indicator.KAMA import KAMA
 import math
 from trader.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
@@ -49,6 +50,8 @@ def plot_emas_product(plt, klines, product):
     ema_quad = EMA(26)
     ema_quad2 = EMA(26)
     ema_volume = EMA(12)
+    kama = KAMA()
+    kama_prices = []
     ema_volume_values = []
     ema12 = EMA(12)
     ema12_prices = []
@@ -87,6 +90,7 @@ def plot_emas_product(plt, klines, product):
         trend.update_price(open_price)
         macd.update(open_price)
         ema12_prices.append(ema12.update(open_price))
+        kama_prices.append(kama.update(close_price))
 
         result = zigzag.update_from_kline(open_price, low, high)
         if result != 0.0:
@@ -134,11 +138,12 @@ def plot_emas_product(plt, klines, product):
     symprice, = plt.plot(prices, label=product) #, color='black')
     ema4, = plt.plot(ema26_prices["y"], label='EMA26')
     ema5, = plt.plot(ema12_prices, label='EMA12')
+    kama0, = plt.plot(kama_prices, label='KAMA')
     plt.plot(zigzag_x, zigzag_y)
     #plt.plot(vwaps)
     #quad0, = plt.plot(quad_x, quad_y, label='QUAD')
     #plt.plot(quad_x2, quad_maxes)
-    plt.legend(handles=[symprice, ema4, ema5])
+    plt.legend(handles=[symprice, ema4, ema5, kama0])
     plt.subplot(212)
     #plt.plot(ema_volume_values)
     #print(rsi_values)

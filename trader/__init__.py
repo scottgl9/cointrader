@@ -4,6 +4,6 @@ from AccountSimulate import AccountSimulate
 from FIX import FIX
 from OrderBookGDAX import OrderBookGDAX
 from OrderHandler import OrderHandler
-from Order import Order
+from trader.lib.Order import Order
 from trader.strategy.TraderGDAX import TraderGDAX
 from trader.account import coinbase, gdax

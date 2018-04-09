@@ -7,6 +7,8 @@ from trader.strategy.order_book_strategy import order_book_strategy
 from trader.strategy.trailing_prices_strategy import trailing_prices_strategy
 from trader.strategy.momentum_swing_strategy import momentum_swing_strategy
 from trader.strategy.macd_stop_order_follow import macd_stop_order_follow
+from trader.strategy.null_strategy import null_strategy
+
 
 def select_strategy(sname, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
     if sname == 'buy_low_sell_high':
@@ -27,3 +29,5 @@ def select_strategy(sname, client, name='BTC', currency='USD', account_handler=N
         return momentum_swing_strategy(client, name, currency, account_handler, order_handler, base_min_size=base_min_size, tick_size=tick_size)
     elif sname == 'macd_stop_order_follow':
         return macd_stop_order_follow(client, name, currency, account_handler, order_handler, base_min_size=base_min_size, tick_size=tick_size)
+    elif sname == 'null_strategy':
+        return null_strategy(client, name, currency, account_handler, order_handler, base_min_size=base_min_size, tick_size=tick_size)

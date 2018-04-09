@@ -18,6 +18,9 @@ class TradePair(object):
         self.base_min_size = 0.0
         self.market_price = 0.0
         #self.get_24hr_stats()
+        self.last_50_prices = []
+        self.prev_last_50_prices = []
+        self.count_prices_added = 0
 
     def get_24hr_stats(self):
         stats = self.accnt.get_24hr_stats()
@@ -26,6 +29,9 @@ class TradePair(object):
         self.open_24hr = stats['o']
         self.last_24hr = stats['c']
         self.volume_24hr = stats['v']
+
+    def html_run_stats(self):
+        return self.strategy.html_run_stats()
 
     def get_ticker_id(self):
         return self.ticker_id
@@ -43,10 +49,17 @@ class TradePair(object):
         self.market_price = price
 
     def run_update(self, msg):
-        return self.strategy.run_update(msg)
+        result = self.strategy.run_update(msg)
+        self.last_50_prices = self.strategy.last_50_prices
+        self.prev_last_50_prices = self.strategy.prev_last_50_prices
+        self.count_prices_added = self.strategy.count_prices_added
+        return result
+
+    def clear_price_counter(self):
+        self.strategy.count_prices_added = 0
+        self.count_prices_added = 0
 
     def run_update_price(self, price):
         #if self.base_name == 'QTUM' and float(price) == 10.0: return
         #print("run_update_price({}, {}, {}".format(self.base_name, self.currency, price))
         return self.strategy.run_update_price(price)
-

@@ -8,11 +8,16 @@ import logging
 
 app = Flask(__name__)
 #app.logger.removeHandler(app.logger.disabled)
-def WebThread(trader):
+
+def WebThread(trader=None, multitrader=None):
+    if not multitrader:
+        print("failed to load multitrader")
+    elif multitrader:
+        trader = multitrader.get_trader('BTCUSDT')
+
     if not trader:
         print("Failed to load trader")
         sys.exit(-1)
-    print(trader.accnt.quote_currency_available)
 
     @app.route('/')
     def index():
@@ -27,15 +32,32 @@ def WebThread(trader):
         page = str('')
         page += trader.html_run_stats()
         page += trader.accnt.html_run_stats()
-        page += trader.order_handler.html_run_stats()
+        #page += trader.order_handler.html_run_stats()
         return page
+
+    @app.route('/get_prices')
+    def get_prices():
+        #trader.prev_last_50_prices = trader.last_50_prices
+        return str(trader.last_50_prices)[1:-1]
 
     @app.route('/update_prices')
     def update_prices():
-        #if trader.last_50_prices == trader.prev_last_50_prices:
-        #    return ''
-        trader.prev_last_50_prices = trader.last_50_prices
-        return str(trader.last_50_prices)[1:-1]
+        count = trader.count_prices_added
+        total_count = len(trader.last_50_prices)
+        prices_added = trader.last_50_prices[total_count - count:]
+        #if len(prices_added) != 0:
+        #    print(prices_added)
+        trader.clear_price_counter()
+        return str(prices_added)[1:-1]
+
+    @app.route('/get_24hr_stats')
+    def get_24hr_stats():
+        stats = trader.accnt.get_24hr_stats(ticker_id=trader.ticker_id)
+        print(stats)
+        jsstats = [stats['l'], stats['h']]
+        retstr = str(jsstats)[1:-1]
+        print(retstr)
+        return retstr
 
     try:
         app.logger.setLevel(logging.ERROR)

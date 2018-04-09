@@ -11,8 +11,8 @@ def split_symbol(symbol):
     base_name = None
     currency_name = None
 
-    if 'USDT' in symbol: return base_name, currency_name
-    currencies = ['BTC', 'ETH', 'BNB']
+    #if 'USDT' in symbol: return base_name, currency_name
+    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
     for currency in currencies:
         if symbol.endswith(currency):
             currency_name = currency
@@ -60,6 +60,11 @@ class MultiTrader(object):
 
         self.trade_pairs[symbol] = trade_pair
 
+    def get_trader(self, symbol):
+        if symbol not in self.trade_pairs.keys():
+            self.add_trade_pair(symbol)
+        return self.trade_pairs[symbol]
+
     def process_message(self, msg):
         if len(msg) == 0: return
 
@@ -67,7 +72,7 @@ class MultiTrader(object):
             if 's' not in msg.keys(): return
             #if len(msg) == 0: return
 
-            if msg['s'].endswith('USDT') and msg['s'] != 'BTCUSDT': return
+            #if msg['s'].endswith('USDT') and msg['s'] != 'BTCUSDT': return
 
             if msg['s'] not in self.trade_pairs.keys():
                 self.add_trade_pair(msg['s'])
@@ -82,7 +87,7 @@ class MultiTrader(object):
             if 's' not in part.keys(): continue
             #if len(self.trade_pairs) == 0: continue
 
-            if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
+            #if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
             if part['s'] not in self.trade_pairs.keys():
                 #print("adding {} to trade_pairs".format(part['s']))
                 self.add_trade_pair(part['s'])
