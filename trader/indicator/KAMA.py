@@ -1,67 +1,69 @@
-from trader.indicator.EMA import EMA, SMA
-import math
-
+from trader.lib.ValueLag import ValueLag
 # ER = Change/Volatility
 # Change = ABS(Close - Close (10 periods ago))
 # Volatility = Sum10(ABS(Close - Prior Close))
 # Volatility is the sum of the absolute value of the last ten price changes (Close - Prior Close).
 
+
 # Kaufman's Adaptive Moving Average (KAMA)
 class KAMA(object):
-    def __init__(self, er_window=10, fast_ema_window=2, slow_ema_window=30):
+    def __init__(self, er_window=10, fast_ema_window=2, slow_ema_window=12, scale=1.0, lagging=False, lag_window=3):
         self.last_result = 0.0
         self.age = 0
         self.sum = 0.0
         self.er_window = er_window
         self.fast_ema_window = fast_ema_window
         self.slow_ema_window = slow_ema_window
-
-        self.fast_ema = EMA(self.fast_ema_window)
-        self.slow_ema = EMA(self.slow_ema_window)
-        self.price_sma = SMA(self.er_window)
         self.prices = []
-        self.count = 0
-        self.result = 0
+        self.result = 0.0
+        self.scale = scale
+        self.lagging = lagging
+        self.value_lag = None
+        if self.lagging:
+            self.value_lag = ValueLag(window=lag_window)
 
     def update(self, price):
         volatility = 0.0
-        change = 0.0
-        sma_price = 0.0
         price = float(price)
+
+        if self.result == 0.0:
+            self.result = price
+            return self.result
 
         if len(self.prices) < self.er_window:
             tail = 0.0
-            sma_price = self.price_sma.update(float(price))
             self.prices.append(price)
             change = 0.0
         else:
             price10 = self.prices[int(self.age)]
-            change = round(price - price10, 2)
+            change = price - price10
             tail = self.prices[int(self.age)]
-            sma_price = self.price_sma.update(float(price))
             self.prices[int(self.age)] = price
             # the price 10 periods ago is the next price in self.prices
 
-        self.sum += sma_price - tail
+        self.sum += float(price) - tail
         if len(self.prices) != 0:
             volatility = self.sum / float(len(self.prices))
 
         if volatility == 0.0 or change == 0.0:
             er = 0.0
         else:
-            er = round(change / volatility, 2)
+            er = change / volatility
 
-        fast_sc = self.fast_ema.update(price)
-        slow_sc = self.slow_ema.update(price)
+        fast_sc = 2.0 / (self.fast_ema_window * self.scale + 1.0)
+        slow_sc = 2.0 / (self.slow_ema_window * self.scale + 1.0)
 
         sc = (er * (fast_sc - slow_sc) + slow_sc) ** 2
 
-        # compute KAMA
-        self.result = price * sc + self.last_result * (1.0 - sc)
-        #self.result = round(self.last_result + sc * (price - self.last_result), 8)
+        if self.lagging:
+            self.last_result = self.value_lag.update(self.result)
+        else:
+            self.last_result = self.result
 
-        self.last_result = self.result
-        self.count += 1
+        # compute KAMA
+        y = self.result
+        self.result = price * sc + y * (1.0 - sc)
+
         self.age = (self.age + 1) % self.er_window
 
         return self.result
