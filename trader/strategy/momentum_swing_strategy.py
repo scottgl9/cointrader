@@ -5,6 +5,7 @@ from trader.account import gdax
 from trader.MeasureTrend import MeasureTrend
 from trader.indicator.QUAD import QUAD
 from trader.indicator.EMA import EMA
+from trader.indicator.KAMA import KAMA
 from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
 from trader.indicator.ROC import ROC
@@ -44,7 +45,7 @@ class momentum_swing_strategy(object):
         self.ema12 = EMA(12, scale=24, lagging=True)
         self.ema26 = EMA(26, scale=24, lagging=True)
         self.ema50 = EMA(50, scale=24, lagging=True)
-        self.ema100 = EMA(100)
+        #self.ema100 = EMA(100)
         self.ema_volume = EMA(12)
         #self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
 
@@ -73,7 +74,7 @@ class momentum_swing_strategy(object):
             self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
             if len(self.buy_price_list) > 0:
                 self.buy_price = self.buy_price_list[-1]
-        self.min_trade_size = self.base_min_size * 20.0
+        self.min_trade_size = self.base_min_size * 50.0
         #self.accnt.get_account_balances()
 
     def get_ticker_id(self):
@@ -121,49 +122,38 @@ class momentum_swing_strategy(object):
         if size < self.min_trade_size:
             return
 
+        if (self.rsi_result == 0.0 or self.ema12.last_result == 0.0 or self.ema26.last_result == 0.0 or
+                self.ema50.last_result == 0.0 or self.roc.last_result == 0.0):
+            return
+
         if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result:
             return
 
         if self.rsi_result > 40.0:
             return
 
-        if self.roc.last_result == 0.0 or self.roc.result < self.roc.last_result and self.ema26.last_result < self.ema26.result:
+        if self.roc.result < self.roc.last_result and self.ema26.last_result < self.ema26.result:
             return
 
-        ema12_roc = 0.0
-        ema26_roc = 0.0
-
-        if self.ema12.last_result != 0.0 and self.ema26.last_result != 0.0:
-            ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
-            ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-            if abs(ema12_roc) < abs(ema26_roc):
-                return
-
-        if self.ema50.last_result != 0.0 and self.ema26.last_result != 0.0:
-            ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
-            ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-            if abs(ema26_roc) < abs(ema50_roc):
-                return
-
-        if self.ema12.last_result == 0.0 or self.ema12.last_result > self.ema12.result:
+        ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
+        ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
+        if abs(ema12_roc) < abs(ema26_roc):
             return
 
-        if self.ema26.last_result == 0.0 or self.ema26.last_result > self.ema26.result:
+        ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
+        if abs(ema26_roc) < abs(ema50_roc):
             return
 
-        #if self.ema50.last_result == 0.0 or self.ema50.last_result > self.ema50.result:
-        #    return
-
-        if self.ema12.result > self.ema12.last_result  and self.roc.result < self.roc.last_result:
+        if self.ema12.last_result > self.ema12.result and self.ema_volume.result > self.ema_volume.last_result:
             return
 
-        if self.ema26.result > self.ema26.last_result and self.roc.result < self.roc.last_result:
-            return
-
-        if self.last_tsi_result == 0.0 or self.tsi.result < self.last_tsi_result:
+        if self.ema50.last_result > self.ema50.result and self.ema_volume.result < self.ema_volume.last_result:
             return
 
         if self.ema26.last_result < self.ema26.result and self.ema_volume.result < self.ema_volume.last_result:
+            return
+
+        if self.ema26.last_result > self.ema26.result and self.ema_volume.result > self.ema_volume.last_result:
             return
 
         if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected() or not self.cross_short.crossup_detected():
@@ -186,40 +176,38 @@ class momentum_swing_strategy(object):
 
         if self.buy_price == 0.0: return
 
-        if self.buy_price != 0.0 and (price - self.buy_price) / self.buy_price < 0.01:
+        if (self.rsi_result == 0.0 or self.ema12.last_result == 0.0 or self.ema26.last_result == 0.0 or
+                self.ema50.last_result == 0.0 or self.roc.last_result == 0.0):
             return
 
-        if self.rsi_result < 60.0 and self.tsi.result > self.last_tsi_result:
+        if (price - self.buy_price) / self.buy_price < 0.01:
             return
 
-        if self.roc.last_result == 0.0 or self.roc.result > self.roc.last_result:
+        if self.rsi_result < 60.0 and self.ema26.result > self.ema26.last_result and \
+                self.ema_volume.result > self.ema_volume.last_result:
             return
 
-        if self.last_tsi_result == 0.0 or self.tsi.result > self.last_tsi_result:
+        if self.rsi_result < 55.0:
             return
 
-        if self.ema12.last_result != 0.0 and self.ema26.last_result != 0.0:
-            ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
-            ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-            if abs(ema12_roc) > abs(ema26_roc):
-                return
-
-        if self.ema12.last_result == 0.0 or self.ema12.last_result < self.ema12.result and \
-           self.ema_volume.result > self.ema_volume.last_result:
+        if self.roc.result > self.roc.last_result and self.ema26.last_result < self.ema26.result:
             return
 
-        if self.ema26.last_result == 0.0 or self.ema26.last_result < self.ema26.result and \
-            self.ema_volume.result > self.ema_volume.last_result:
+        ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
+        ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
+        if abs(ema12_roc) > abs(ema26_roc):
             return
 
-        if self.ema50.last_result == 0.0 or self.ema50.last_result < self.ema50.result and \
-           self.ema_volume.result > self.ema_volume.last_result:
+        if self.ema12.last_result < self.ema12.result and self.ema_volume.result > self.ema_volume.last_result:
+            return
+
+        if self.ema26.last_result < self.ema26.result and self.ema_volume.result > self.ema_volume.last_result:
+            return
+
+        if self.ema50.last_result < self.ema50.result and self.ema_volume.result > self.ema_volume.last_result:
             return
 
         if self.cross_long.crossup_detected() or self.cross_short.crossup_detected():
-            return
-
-        if self.last_tsi_result == 0.0 or self.tsi.result > self.last_tsi_result:
             return
 
         result = self.accnt.sell_market(float(self.min_trade_size), price=price, ticker_id=self.get_ticker_id())

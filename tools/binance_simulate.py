@@ -33,6 +33,8 @@ def simulate(conn, client):
 
     found = False
 
+    initial_btc_total = 0.0
+
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
                'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
@@ -40,6 +42,7 @@ def simulate(conn, client):
         if msg['s'] == 'BTCUSDT' and not found:
             found = True
             total_btc = multitrader.accnt.balances['BTC']['balance']
+            initial_btc_total = total_btc
             total_usd = float(msg['o']) * total_btc
             print("Initial BTC={}".format(total_btc))
 
@@ -47,7 +50,9 @@ def simulate(conn, client):
         multitrader.process_message(msg)
 
     print(multitrader.accnt.balances)
-    print("Final BTC={}".format(multitrader.accnt.get_total_btc_value(tickers=tickers)))
+    final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
+    pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
+    print("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
     # calculate what the earnings would be for buy and hold:
     #amount = initial_balance_usd / first_buy_price
     #final_balance_usd = amount * last_sell_price
