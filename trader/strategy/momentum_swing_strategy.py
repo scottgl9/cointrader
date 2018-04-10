@@ -22,7 +22,7 @@ def datetime_to_float(d):
     return float(total_seconds)
 
 
-class momentum_swing_strategy:
+class momentum_swing_strategy(object):
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
         self.strategy_name = 'momentum_swing_strategy'
         self.client = client
@@ -41,9 +41,9 @@ class momentum_swing_strategy:
         self.last_tsi_result = 0.0
         self.cross_short = Crossover()
         self.cross_long = Crossover()
-        self.ema12 = EMA(12, scale=24)
-        self.ema26 = EMA(26, scale=24)
-        self.ema50 = EMA(50, scale=24)
+        self.ema12 = EMA(12, scale=24, lagging=True)
+        self.ema26 = EMA(26, scale=24, lagging=True)
+        self.ema50 = EMA(50, scale=24, lagging=True)
         self.ema100 = EMA(100)
         self.ema_volume = EMA(12)
         #self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
@@ -51,6 +51,7 @@ class momentum_swing_strategy:
         self.base = name
         self.currency = currency
 
+        self.count_prices_added = 0
         self.buy_signal_count = self.sell_signal_count = 0
         self.high_24hr = self.low_24hr = 0.0
         self.open_24hr = self.close_24hr = self.volume_24hr = 0.0
@@ -98,10 +99,14 @@ class momentum_swing_strategy:
         return lowest_price
 
     def round_base(self, price):
-        return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
+        if self.base_min_size != 0.0:
+            return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
+        return price
 
     def round_quote(self, price):
-        return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
+        if self.quote_increment != 0.0:
+            return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
+        return price
 
     def buy_signal(self, price):
         if self.buy_price != 0.0: return
@@ -116,13 +121,13 @@ class momentum_swing_strategy:
         if size < self.min_trade_size:
             return
 
-        if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result < self.ema50.prev_last_result:
+        if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result:
             return
 
         if self.rsi_result > 40.0:
             return
 
-        if self.roc.last_result == 0.0 or self.roc.result < self.roc.last_result and self.ema26.prev_last_result < self.ema26.last_result < self.ema26.result:
+        if self.roc.last_result == 0.0 or self.roc.result < self.roc.last_result and self.ema26.last_result < self.ema26.result:
             return
 
         ema12_roc = 0.0
@@ -131,34 +136,34 @@ class momentum_swing_strategy:
         if self.ema12.last_result != 0.0 and self.ema26.last_result != 0.0:
             ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
             ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-            if abs(ema12_roc) < abs(ema26_roc) / 2.0:
+            if abs(ema12_roc) < abs(ema26_roc):
                 return
 
         if self.ema50.last_result != 0.0 and self.ema26.last_result != 0.0:
             ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
             ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-            if abs(ema26_roc) < abs(ema50_roc) / 2.0:
+            if abs(ema26_roc) < abs(ema50_roc):
                 return
 
-        if self.ema12.prev_last_result == 0.0 or self.ema12.prev_last_result > self.ema12.last_result > self.ema12.result:
+        if self.ema12.last_result == 0.0 or self.ema12.last_result > self.ema12.result:
             return
 
-        if self.ema26.prev_last_result == 0.0 or self.ema26.prev_last_result > self.ema26.last_result > self.ema26.result:
+        if self.ema26.last_result == 0.0 or self.ema26.last_result > self.ema26.result:
             return
 
-        if self.ema50.prev_last_result == 0.0 or self.ema50.prev_last_result > self.ema50.last_result > self.ema50.result:
+        #if self.ema50.last_result == 0.0 or self.ema50.last_result > self.ema50.result:
+        #    return
+
+        if self.ema12.result > self.ema12.last_result  and self.roc.result < self.roc.last_result:
             return
 
-        if self.ema12.result > self.ema12.last_result > self.ema12.prev_last_result and self.roc.result < self.roc.last_result < self.roc.prev_last_result:
-            return
-
-        if self.ema26.result > self.ema26.last_result > self.ema26.prev_last_result and self.roc.result < self.roc.last_result < self.roc.prev_last_result:
+        if self.ema26.result > self.ema26.last_result and self.roc.result < self.roc.last_result:
             return
 
         if self.last_tsi_result == 0.0 or self.tsi.result < self.last_tsi_result:
             return
 
-        if self.ema26.prev_last_result < self.ema26.last_result < self.ema26.result and self.ema_volume.result < self.ema_volume.last_result:
+        if self.ema26.last_result < self.ema26.result and self.ema_volume.result < self.ema_volume.last_result:
             return
 
         if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected() or not self.cross_short.crossup_detected():
@@ -199,16 +204,16 @@ class momentum_swing_strategy:
             if abs(ema12_roc) > abs(ema26_roc):
                 return
 
-        if self.ema12.prev_last_result == 0.0 or self.ema12.prev_last_result < self.ema12.last_result < self.ema12.result and \
+        if self.ema12.last_result == 0.0 or self.ema12.last_result < self.ema12.result and \
            self.ema_volume.result > self.ema_volume.last_result:
             return
 
-        if self.ema26.prev_last_result == 0.0 or self.ema26.prev_last_result < self.ema26.last_result < self.ema26.result and \
-            self.ema_volume.result > self.ema_volume.last_result > self.ema_volume.prev_last_result:
+        if self.ema26.last_result == 0.0 or self.ema26.last_result < self.ema26.result and \
+            self.ema_volume.result > self.ema_volume.last_result:
             return
 
-        if self.ema50.prev_last_result == 0.0 or self.ema50.prev_last_result < self.ema50.last_result < self.ema50.result and \
-           self.ema_volume.result > self.ema_volume.last_result > self.ema_volume.prev_last_result:
+        if self.ema50.last_result == 0.0 or self.ema50.last_result < self.ema50.result and \
+           self.ema_volume.result > self.ema_volume.last_result:
             return
 
         if self.cross_long.crossup_detected() or self.cross_short.crossup_detected():
@@ -236,6 +241,7 @@ class momentum_swing_strategy:
         if len(self.last_50_prices) > 50:
             diff_size = len(self.last_50_prices) - 50
             self.last_50_prices = self.last_50_prices[diff_size:]
+        self.count_prices_added += 1
 
     def run_update(self, kline):
         self.ema_volume.update(float(kline['v']))

@@ -10,7 +10,7 @@ div.stats {
     top: 5px;
     left: 1480px;
     width: 300px;
-    height: 900px;
+    height: 300px;
     border: 3px solid #73AD21;
 }
 div.prices {
@@ -20,9 +20,9 @@ div.prices {
     padding-top: 25px;
     padding-left: 5px;
     top: 5px;
-    left: 1780px;
+    left: 1080px;
     width: 120px;
-    height: 900px;
+    height: 915px;
     border: 3px solid #73AD21;
 }
 div.chart {
@@ -33,8 +33,20 @@ div.chart {
     padding-left: 5px;
     top: 5px;
     left: 0px;
-    width: 1400px;
-    height: 900px;
+    width: 1080px;
+    height: 720px;
+    border: 3px solid #73AD21;
+}
+div.order {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 720px;
+    left: 0px;
+    width: 1080px;
+    height: 200px;
     border: 3px solid #73AD21;
 }
 </style>
@@ -58,7 +70,7 @@ div.chart {
 					borderColor: window.chartColors.blue,
 					//cubicInterpolationMode: "monotone",
 					//pointRadius: 0,
-					//borderWidth: 1,
+					borderWidth: 1,
 					data: [],
 					fill: false,
 				}]
@@ -148,9 +160,10 @@ setInterval(function(){
 </script>
 </header>
 <body>
-<div class='chart' style="width:90%;">
+<div class='chart' id='chart'>
     <canvas id="canvas"></canvas>
 </div>
+<div class='order' id='order'></div>
 <div class='stats' id='stats'></div>
 <div class='prices' id='prices'></div>
 </body>
