@@ -29,8 +29,8 @@ class momentum_swing_strategy(object):
         self.accnt = account_handler
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
-        self.macd = MACD(12.0*24.0, 26.0*24.0, 9.0*24.0)
-        self.quad = QUAD()
+        #self.macd = MACD(12.0*24.0, 26.0*24.0, 9.0*24.0)
+        #self.quad = QUAD()
         self.rsi = RSI()
         self.rsi_result = 0.0
         self.last_rsi_result = 0.0
@@ -73,7 +73,7 @@ class momentum_swing_strategy(object):
             self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
             if len(self.buy_price_list) > 0:
                 self.buy_price = self.buy_price_list[-1]
-        self.min_trade_size = self.base_min_size * 30.0
+        self.min_trade_size = self.base_min_size * 20.0
         #self.accnt.get_account_balances()
 
     def get_ticker_id(self):
@@ -255,17 +255,17 @@ class momentum_swing_strategy(object):
 
     def run_update_price(self, price):
         tsi_value = self.tsi.update(price)
-        self.macd.update(price)
+        #self.macd.update(price)
         value1 = self.ema12.update(price)
         value2 = self.ema26.update(price)
         value3 = self.ema50.update(price)
-        value4 = self.ema100.update(price)
+        #value4 = self.ema100.update(price)
         self.cross_short.update(value1, value2)
         self.cross_long.update(value2, value3)
 
         self.buy_signal(price)
         self.sell_signal(price)
-        self.last_macd_diff = self.macd.diff
+        #self.last_macd_diff = self.macd.diff
         self.last_tsi_result = tsi_value
 
     def run_update_orderbook(self, msg):

@@ -2,7 +2,7 @@ from trader.indicator.SMA import SMA
 from trader.lib.ValueLag import ValueLag
 
 class EMA:
-    def __init__(self, weight=26, scale=1.0, lagging=False, lag_window=5):
+    def __init__(self, weight=26, scale=1.0, lagging=False, lag_window=3):
         self.result = 0.0
         self.last_result = 0.0
         self.weight = float(weight)

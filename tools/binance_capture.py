@@ -50,9 +50,9 @@ class BinanceTrader:
             if 's' not in msg.keys(): return
             #if len(msg) == 0: return
 
-            if msg['s'].endswith('USDT') and msg['s'] != 'BTCUSDT': return
+            #if msg['s'].endswith('USDT') and msg['s'] != 'BTCUSDT': return
 
-            if msg['s'] != 'BTCUSDT' and msg['s'] not in self.volumes.keys(): return
+            #if msg['s'] != 'BTCUSDT' and msg['s'] not in self.volumes.keys(): return
             self.mongo_collection.insert_one(msg)
             return
 
@@ -60,9 +60,9 @@ class BinanceTrader:
             if 's' not in part.keys(): continue
             #if len(self.trade_pairs) == 0: continue
 
-            if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
+            #if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
 
-            if part['s'] != 'BTCUSDT' and part['s'] not in self.volumes.keys(): continue
+            #if part['s'] != 'BTCUSDT' and part['s'] not in self.volumes.keys(): continue
             self.mongo_collection.insert_one(part)
 
     def run(self):
@@ -110,7 +110,7 @@ def get_products_sorted_by_volume(client, currency='BTC'):
     buy_list = collections.OrderedDict()
     sell_list = collections.OrderedDict()
 
-    volumes = volumes[0:len(volumes) / 5]
+    #volumes = volumes[0:len(volumes) / 5]
 
     # get only the top half of the sorted list by volume
     for symbol, volume in volumes:

@@ -35,11 +35,13 @@ def WebThread(trader=None, multitrader=None):
         #page += trader.order_handler.html_run_stats()
         return page
 
+    # get last 50 prices
     @app.route('/get_prices')
     def get_prices():
         #trader.prev_last_50_prices = trader.last_50_prices
         return str(trader.last_50_prices)[1:-1]
 
+    # get only new prices since last request
     @app.route('/update_prices')
     def update_prices():
         count = trader.count_prices_added
@@ -58,6 +60,14 @@ def WebThread(trader=None, multitrader=None):
         retstr = str(jsstats)[1:-1]
         print(retstr)
         return retstr
+
+    @app.route('/get_klines_1hr')
+    def get_klines_1hr():
+        klines = trader.accnt.get_klines(hours=1, ticker_id=trader.ticker_id)
+        prices = []
+        for kline in klines:
+            prices.append(kline[4])
+        return ','.join(prices)
 
     try:
         app.logger.setLevel(logging.ERROR)
