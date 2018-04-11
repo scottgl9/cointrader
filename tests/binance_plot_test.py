@@ -16,6 +16,7 @@ from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
 from trader.indicator.KAMA import KAMA
+from trader.SupportResistLevels import SupportResistLevels
 import math
 from trader.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
@@ -35,16 +36,12 @@ def plot_emas_product(plt, klines, product):
     rsi = RSI()
     rsi_values = []
     macd_signal = []
-    price_min = []
-    price_max = []
     timestamps = []
     prices = prices_from_kline_data(klines)
     quad_maxes = []
     quad_x = []
     quad_x2 = []
     quad_y = []
-    price_min.append(float(klines[0][1]))
-    price_max.append(float(klines[0][2]))
     quad = QUAD()
     quad2 = QUAD()
     ema_quad = EMA(26)
@@ -55,8 +52,16 @@ def plot_emas_product(plt, klines, product):
     ema_volume_values = []
     ema12 = EMA(12)
     ema12_prices = []
+    ema26 = EMA(26)
+    ema26_prices = []
     trend = MeasureTrend()
     trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
+
+    levels = SupportResistLevels()
+    prev_low_values = []
+    prev_high_values = []
+    prev_x_values = []
+
     tsi = TSI()
     tsi_values = []
     zigzag_x = []
@@ -64,6 +69,11 @@ def plot_emas_product(plt, klines, product):
     zigzag = ZigZag(cutoff=0.2)
     volume_amount = 0.0
     last_volume_amount = 0.0
+
+    price_channel_lows = []
+    price_channel_highs = []
+    pclow_ema = EMA(26)
+    pchigh_ema = EMA(26)
 
     diffwindow = DiffWindow(30)
     last_diff_result = 0
@@ -81,15 +91,21 @@ def plot_emas_product(plt, klines, product):
         open_price = float(klines[i][3])
         close_price = float(klines[i][4])
         volume = float(klines[i][5])
+
+        prev_low, prev_high = levels.update(close_price, low, high)
+        if prev_low != 0 and prev_high != 0:
+            prev_low_values.append(prev_low)
+            prev_high_values.append(prev_high)
+            prev_x_values.append(i)
+
         volume_amount = ema_volume.update(volume)
         ema_volume_values.append(volume_amount)
-        if volume_amount > 3.0 * last_volume_amount:
-            print("buy signal {}".format(open_price))
 
         last_volume_amount = volume_amount
         trend.update_price(open_price)
         macd.update(open_price)
-        ema12_prices.append(ema12.update(open_price))
+        ema12_prices.append(ema12.update(close_price))
+        ema26_prices.append(ema12.update(close_price))
         kama_prices.append(kama.update(close_price))
 
         result = zigzag.update_from_kline(open_price, low, high)
@@ -102,7 +118,7 @@ def plot_emas_product(plt, klines, product):
             zigzag_y.append(result)
             zigzag_x.append(i)
 
-        tsi_value = tsi.update(open_price)
+        tsi_value = tsi.update(close_price)
         trend_tsi.update_price(tsi_value)
         tsi_values.append(tsi_value)
         if trend_tsi.valley_detected() and trend_tsi.valley_value() < -10.0:
@@ -117,7 +133,7 @@ def plot_emas_product(plt, klines, product):
         macd_signal.append(float(macd.diff))
         timestamps.append((float(klines[i][0]) - initial_time) / (60.0))
 
-    print(zigzag_y)
+    print(prev_low_values)
 
     for i in range(0, len(macd_signal)):
         quad.update(macd_signal[i], timestamps[i])#ema_quad.update(klines[i][3]), ts)
@@ -131,19 +147,22 @@ def plot_emas_product(plt, klines, product):
             quad_maxes.append(C)
             #print(i, y, A, B, C)
 
-    ema26_prices = compute_ema_dict_from_klines(klines, 26)
+    #ema26_prices = compute_ema_dict_from_klines(klines, 26)
     #ema12_prices = compute_ema_dict_from_klines(klines, 12)
 
     prices = prices_from_kline_data(klines)
     symprice, = plt.plot(prices, label=product) #, color='black')
-    ema4, = plt.plot(ema26_prices["y"], label='EMA26')
-    ema5, = plt.plot(ema12_prices, label='EMA12')
-    kama0, = plt.plot(kama_prices, label='KAMA')
-    plt.plot(zigzag_x, zigzag_y)
+    #ema4, = plt.plot(ema26_prices["y"], label='EMA26')
+    lowlevel0, = plt.plot(prev_x_values, prev_low_values, label='LOWS')
+    highlevel0, = plt.plot(prev_x_values, prev_high_values, label='HIGHS')
+    ema5, = plt.plot(ema26_prices, label='EMA26')
+    #kama0, = plt.plot(kama_prices, label='KAMA')
+
+    #plt.plot(zigzag_x, zigzag_y)
     #plt.plot(vwaps)
     #quad0, = plt.plot(quad_x, quad_y, label='QUAD')
     #plt.plot(quad_x2, quad_maxes)
-    plt.legend(handles=[symprice, ema4, ema5, kama0])
+    plt.legend(handles=[symprice, ema5, lowlevel0, highlevel0])
     plt.subplot(212)
     #plt.plot(ema_volume_values)
     #print(rsi_values)

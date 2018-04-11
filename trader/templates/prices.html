@@ -68,8 +68,7 @@ div.order {
 					label: 'BTC-USD',
 					backgroundColor: window.chartColors.blue,
 					borderColor: window.chartColors.blue,
-					//cubicInterpolationMode: "monotone",
-					//pointRadius: 0,
+					pointRadius: 0,
 					borderWidth: 1,
 					data: [],
 					fill: false,
@@ -109,18 +108,19 @@ div.order {
 		};
 
 		window.onload = function() {
-		    /*
 		    var low_24hr = 0;
     	    var high_24hr = 0;
     	    $.ajax({url: "/get_24hr_stats", success: function(result){
                 if (result.length == 0) return;
                 var parts = result.split(',');
-                low_24hr = parts[0];
-                high_24hr = parts[1];
+                ticker_id = parts[0];
+                low_24hr = parts[1];
+                high_24hr = parts[2];
+                config.data.datasets[0].label = ticker_id;
                 config.options.scales.yAxes.ticks.suggestedMin = low_24hr;
                 config.options.scales.yAxes.ticks.suggestedMax = high_24hr;
             }});
-            */
+
 			var ctx = document.getElementById('canvas').getContext('2d');
 			window.myLine = new Chart(ctx, config);
 			$.ajax({url: "/get_klines_1hr", success: function(result){

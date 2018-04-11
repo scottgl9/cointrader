@@ -61,6 +61,8 @@ class momentum_swing_strategy(object):
         self.interval_price = 0.0
         self.last_buy_price = 0.0
         self.last_sell_price = 0.0
+        self.last_timestamp = 0
+        self.timestamp = 0
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
@@ -70,11 +72,14 @@ class momentum_swing_strategy(object):
         self.quote_increment = float(tick_size)
         self.buy_price_list = []
         self.buy_price = 0.0
-        if not self.accnt.simulate:
-            self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
-            if len(self.buy_price_list) > 0:
-                self.buy_price = self.buy_price_list[-1]
-        self.min_trade_size = self.base_min_size * 50.0
+        #if not self.accnt.simulate:
+        #    self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
+        #    if len(self.buy_price_list) > 0:
+        #        self.buy_price = self.buy_price_list[-1]
+        self.btc_trade_size = 0.0011
+        self.eth_trade_size = 0.011
+        self.bnb_trade_size = 0.7
+        self.min_trade_size = self.base_min_size * 20.0
         #self.accnt.get_account_balances()
 
     def get_ticker_id(self):
@@ -101,7 +106,10 @@ class momentum_swing_strategy(object):
 
     def round_base(self, price):
         if self.base_min_size != 0.0:
-            return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
+            if self.base_min_size >= 10.0:
+                return int(price)
+            else:
+                return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
         return price
 
     def round_quote(self, price):
@@ -112,14 +120,34 @@ class momentum_swing_strategy(object):
     def buy_signal(self, price):
         if self.buy_price != 0.0: return
 
-        # if we have insuffient funds to buy
+        # if we have insufficient funds to buy
         if self.accnt.simulate:
             balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
             size = self.round_base(float(balance_available) / float(price))
         else:
             size=self.accnt.get_asset_balance(self.currency)['available']
 
+        if self.ticker_id.endswith('BTC'):
+            min_trade_size = self.round_base(self.btc_trade_size / price)
+            if min_trade_size != 0.0:
+                self.min_trade_size = min_trade_size
+            #print("{}, {}, {}, {}".format(self.ticker_id, self.base_min_size, self.quote_increment, min_trade_size))
+        elif self.ticker_id.endswith('ETH'):
+            min_trade_size = self.round_base(self.eth_trade_size / price)
+            if min_trade_size != 0.0:
+                self.min_trade_size = min_trade_size
+            #print("{}, {}, {}, {}".format(self.ticker_id, self.base_min_size, self.quote_increment, min_trade_size))
+        elif self.ticker_id.endswith('BNB'):
+            min_trade_size = self.round_base(self.bnb_trade_size / price)
+            if min_trade_size != 0.0:
+                self.min_trade_size = min_trade_size
+            #print("{}, {}, {}, {}".format(self.ticker_id, self.base_min_size, self.quote_increment, min_trade_size))
+
         if size < self.min_trade_size:
+            return
+
+        if (self.timestamp - self.last_timestamp) > 500:
+            #print(self.last_timestamp, self.timestamp)
             return
 
         if (self.rsi_result == 0.0 or self.ema12.last_result == 0.0 or self.ema26.last_result == 0.0 or
@@ -137,23 +165,20 @@ class momentum_swing_strategy(object):
 
         ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
         ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-        if abs(ema12_roc) < abs(ema26_roc):
+        if ema12_roc < 0.0 and ema26_roc < 0.0 or abs(ema12_roc) < abs(ema26_roc):
             return
 
         ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
-        if abs(ema26_roc) < abs(ema50_roc):
+        if ema26_roc < 0.0 and ema50_roc < 0.0 or abs(ema26_roc) < abs(ema50_roc):
             return
 
-        if self.ema12.last_result > self.ema12.result and self.ema_volume.result > self.ema_volume.last_result:
+        if self.ema12.last_result > self.ema12.result:
             return
 
-        if self.ema50.last_result > self.ema50.result and self.ema_volume.result < self.ema_volume.last_result:
+        if self.ema50.last_result > self.ema50.result:
             return
 
-        if self.ema26.last_result < self.ema26.result and self.ema_volume.result < self.ema_volume.last_result:
-            return
-
-        if self.ema26.last_result > self.ema26.result and self.ema_volume.result > self.ema_volume.last_result:
+        if self.ema26.last_result > self.ema26.result:
             return
 
         if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected() or not self.cross_short.crossup_detected():
@@ -195,7 +220,7 @@ class momentum_swing_strategy(object):
 
         ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
         ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-        if abs(ema12_roc) > abs(ema26_roc):
+        if ema12_roc > 0.0 and ema26_roc > 0.0 or abs(ema12_roc) < abs(ema26_roc):
             return
 
         if self.ema12.last_result < self.ema12.result and self.ema_volume.result > self.ema_volume.last_result:
@@ -232,6 +257,7 @@ class momentum_swing_strategy(object):
         self.count_prices_added += 1
 
     def run_update(self, kline):
+        self.timestamp = int(kline['E'])
         self.ema_volume.update(float(kline['v']))
         self.run_update_price(float(kline['o']))
         self.rsi_result = self.rsi.update(float(kline['c']))
@@ -240,6 +266,7 @@ class momentum_swing_strategy(object):
         self.run_update_price(float(kline['c']))
 
         self.last_rsi_result = self.rsi_result
+        self.last_timestamp = self.timestamp
 
     def run_update_price(self, price):
         tsi_value = self.tsi.update(price)

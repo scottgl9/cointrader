@@ -55,15 +55,14 @@ def WebThread(trader=None, multitrader=None):
     @app.route('/get_24hr_stats')
     def get_24hr_stats():
         stats = trader.accnt.get_24hr_stats(ticker_id=trader.ticker_id)
-        print(stats)
-        jsstats = [stats['l'], stats['h']]
-        retstr = str(jsstats)[1:-1]
+        jsstats = [trader.ticker_id, str(stats['l']), str(stats['h'])]
+        retstr = ','.join(jsstats)
         print(retstr)
         return retstr
 
     @app.route('/get_klines_1hr')
     def get_klines_1hr():
-        klines = trader.accnt.get_klines(hours=1, ticker_id=trader.ticker_id)
+        klines = trader.accnt.get_klines(hours=4, ticker_id=trader.ticker_id)
         prices = []
         for kline in klines:
             prices.append(kline[4])
@@ -71,8 +70,8 @@ def WebThread(trader=None, multitrader=None):
 
     try:
         app.logger.setLevel(logging.ERROR)
-        app.logger.disabled = True
-        app.debug = False
+        #app.logger.disabled = True
+        #app.debug = False
         log = logging.getLogger('werkzeug')
         log.disabled = True
         app.run(host = '0.0.0.0',port=5000)

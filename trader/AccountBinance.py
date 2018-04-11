@@ -214,10 +214,14 @@ class AccountBinance(AccountBase):
 
     def update_asset_balance(self, name, balance, available):
         if self.simulate:
+            if name in self.balances.keys() and balance == 0.0 and available == 0.0:
+                del self.balances[name]
+                return
             if name not in self.balances.keys():
                 self.balances[name] = {}
             self.balances[name]['balance'] = balance
             self.balances[name]['available'] = available
+
 
     def get_account_balance(self, base=None, currency=None):
         if not base:
