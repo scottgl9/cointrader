@@ -94,6 +94,6 @@ class MultiTrader(object):
                 self.add_trade_pair(part['s'])
 
             if part['s'] not in self.trade_pairs.keys(): continue
-            if self.volumes and part['s'] not in self.volumes.keys(): continue
+            #if self.volumes and part['s'] not in self.volumes.keys(): continue
             symbol_trader = self.trade_pairs[part['s']]
             symbol_trader.run_update(part)

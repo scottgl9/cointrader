@@ -50,6 +50,7 @@ class support_resistance_level_strategy(object):
         self.buy_price = 0.0
         self.buy_size = 0.0
         self.buy_order_id = None
+        self.last_price = 0.0
         self.levels = SupportResistLevels()
         self.cross_low = Crossover()
         self.cross_high = Crossover()
@@ -61,6 +62,8 @@ class support_resistance_level_strategy(object):
         self.ema50 = EMA(50, scale=24, lagging=True)
         self.cross_short = Crossover()
         self.cross_long = Crossover()
+        # coins to not buy or sell
+        self.blacklist = ['EOS', 'IOST', 'STORM']
 
         self.prev_low = 0.0
         self.prev_high = 0.0
@@ -74,7 +77,7 @@ class support_resistance_level_strategy(object):
         self.eth_trade_size = 0.011
         self.bnb_trade_size = 0.75
         self.usdt_trade_size = 10.0
-        self.min_trade_size = self.base_min_size * 20.0
+        self.min_trade_size = 0.0 #self.base_min_size * 20.0
         #self.accnt.get_account_balances()
 
     def get_ticker_id(self):
@@ -132,24 +135,27 @@ class support_resistance_level_strategy(object):
         if self.ticker_id.endswith('BTC'):
             min_trade_size = self.round_base(self.btc_trade_size / price)
             if min_trade_size != 0.0:
-                self.min_trade_size = self.my_float(min_trade_size)
-            #print("{}, {}, {}, {}".format(self.ticker_id, self.base_min_size, self.quote_increment, min_trade_size))
+                if self.base == 'ETH' or self.base == 'BNB':
+                    self.min_trade_size = self.my_float(min_trade_size * 2)
+                else:
+                    self.min_trade_size = self.my_float(min_trade_size)
         elif self.ticker_id.endswith('ETH'):
             min_trade_size = self.round_base(self.eth_trade_size / price)
             if min_trade_size != 0.0:
-                self.min_trade_size = self.my_float(min_trade_size)
-            #print("{}, {}, {}, {}".format(self.ticker_id, self.base_min_size, self.quote_increment, min_trade_size))
+                if self.base == 'BNB':
+                    self.min_trade_size = self.my_float(min_trade_size * 2)
+                else:
+                    self.min_trade_size = self.my_float(min_trade_size)
         elif self.ticker_id.endswith('BNB'):
             min_trade_size = self.round_base(self.bnb_trade_size / price)
             if min_trade_size != 0.0:
                 self.min_trade_size = self.my_float(min_trade_size)
-            #print("{}, {}, {}, {}".format(self.ticker_id, self.base_min_size, self.quote_increment, min_trade_size))
         elif self.ticker_id.endswith('USDT'):
             min_trade_size = self.round_base(self.usdt_trade_size / price)
             if min_trade_size != 0.0:
                 self.min_trade_size = self.my_float(min_trade_size)
 
-        if size < float(self.min_trade_size):
+        if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return
 
         if self.last_prev_low == 0.0 or self.last_prev_high == 0.0 or self.prev_low == 0.0 or self.prev_high == 0.0:
@@ -180,7 +186,7 @@ class support_resistance_level_strategy(object):
         #if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result:
         #    return
 
-        #if self.rsi_result > 38.0:
+        #if self.rsi_result > 50.0:
         #    return
 
         if 'e' in str(self.min_trade_size):
@@ -220,7 +226,11 @@ class support_resistance_level_strategy(object):
         if balance_available < float(self.min_trade_size):
             return
 
-        if float(self.buy_price == 0.0): return
+        if float(self.buy_price) == 0.0:
+            return
+
+        if price < float(self.buy_price):
+            return
 
         if self.last_prev_low == 0.0 or self.last_prev_high == 0.0 or self.prev_low == 0.0 or self.prev_high == 0.0:
             return
@@ -291,10 +301,7 @@ class support_resistance_level_strategy(object):
         self.count_prices_added += 1
 
     def run_update(self, kline):
-        # HACK REMOVE
-        if self.currency == 'BNB':
-            return
-
+        if self.base in self.blacklist: return
         self.timestamp = int(kline['E'])
         open = float(kline['o'])
         close = float(kline['c'])
@@ -313,6 +320,7 @@ class support_resistance_level_strategy(object):
 
         self.last_rsi_result = self.rsi_result
         self.last_timestamp = self.timestamp
+        self.last_price = close
 
     def run_update_price(self, price):
         value1 = self.ema12.update(price)

@@ -443,10 +443,11 @@ class AccountBinance(AccountBase):
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            if size > bavailable: return
+
+            if float(size) > bavailable: return
             print("sell_market({}, {}, {}".format(size, price, ticker_id))
-            self.update_asset_balance(base, bbalance - float(size), bavailable - float(size))
-            usd_value = float(price) * float(size) #self.round_quote(price * size)
+            usd_value = float(price) * float(size)
+            self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable) - float(size))
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
         else:
             return self.order_market_sell(symbol=ticker_id, quantity=size)
