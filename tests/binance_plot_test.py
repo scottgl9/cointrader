@@ -60,6 +60,7 @@ def plot_emas_product(plt, klines, product):
     levels = SupportResistLevels()
     prev_low_values = []
     prev_high_values = []
+    high_high_values = []
     prev_x_values = []
 
     tsi = TSI()
@@ -92,10 +93,11 @@ def plot_emas_product(plt, klines, product):
         close_price = float(klines[i][4])
         volume = float(klines[i][5])
 
-        prev_low, prev_high = levels.update(close_price, low, high)
+        prev_low, prev_high, high_high = levels.update(close_price, low, high)
         if prev_low != 0 and prev_high != 0:
             prev_low_values.append(prev_low)
             prev_high_values.append(prev_high)
+            high_high_values.append(high_high)
             prev_x_values.append(i)
 
         volume_amount = ema_volume.update(volume)
@@ -155,6 +157,7 @@ def plot_emas_product(plt, klines, product):
     #ema4, = plt.plot(ema26_prices["y"], label='EMA26')
     lowlevel0, = plt.plot(prev_x_values, prev_low_values, label='LOWS')
     highlevel0, = plt.plot(prev_x_values, prev_high_values, label='HIGHS')
+    highlevel1, = plt.plot(prev_x_values, high_high_values, label='HHIGH')
     ema5, = plt.plot(ema26_prices, label='EMA26')
     #kama0, = plt.plot(kama_prices, label='KAMA')
 
@@ -162,7 +165,7 @@ def plot_emas_product(plt, klines, product):
     #plt.plot(vwaps)
     #quad0, = plt.plot(quad_x, quad_y, label='QUAD')
     #plt.plot(quad_x2, quad_maxes)
-    plt.legend(handles=[symprice, ema5, lowlevel0, highlevel0])
+    plt.legend(handles=[symprice, ema5, lowlevel0, highlevel0, highlevel1])
     plt.subplot(212)
     #plt.plot(ema_volume_values)
     #print(rsi_values)

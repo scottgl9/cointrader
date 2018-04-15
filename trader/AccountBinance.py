@@ -368,8 +368,8 @@ class AccountBinance(AccountBase):
             result.append(fill)
         return result
 
-    def get_order(self, order_id):
-        return self.client.get_order(order_id=order_id)
+    def get_order(self, order_id, ticker_id):
+        return self.client.get_order(orderId=order_id, symbol=ticker_id)
 
     def get_orders(self, ticker_id=None):
         if not ticker_id:
@@ -430,10 +430,10 @@ class AccountBinance(AccountBase):
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = price * size #self.round_quote(price * size)
+            usd_value = float(price) * float(size) #self.round_quote(price * size)
             if usd_value > cavailable: return
             print("buy_market({}, {}, {}".format(size, price, ticker_id))
-            self.update_asset_balance(base, bbalance + size, bavailable + size)
+            self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
             self.update_asset_balance(currency, cbalance - usd_value, cavailable - usd_value)
         else:
             return self.order_market_buy(symbol=ticker_id, quantity=size)
@@ -445,8 +445,8 @@ class AccountBinance(AccountBase):
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
             if size > bavailable: return
             print("sell_market({}, {}, {}".format(size, price, ticker_id))
-            self.update_asset_balance(base, bbalance - size, bavailable - size)
-            usd_value = price * size #self.round_quote(price * size)
+            self.update_asset_balance(base, bbalance - float(size), bavailable - float(size))
+            usd_value = float(price) * float(size) #self.round_quote(price * size)
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
         else:
             return self.order_market_sell(symbol=ticker_id, quantity=size)

@@ -48,9 +48,9 @@ class AccountBase(object):
     #def check_order_error(self, result, side):
     #    pass
 
-    @abstractmethod
-    def get_order(self, order_id):
-        pass
+    #@abstractmethod
+    #def get_order(self, order_id):
+    #    pass
 
     @abstractmethod
     def get_orders(self):

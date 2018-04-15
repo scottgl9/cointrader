@@ -59,6 +59,7 @@ class MultiTrader(object):
         trade_pair = TradePair(self.client, self.accnt, strategy, base_name, currency_name)
 
         self.trade_pairs[symbol] = trade_pair
+        #print("trade_pair {} added".format(symbol))
 
     def get_trader(self, symbol):
         if symbol not in self.trade_pairs.keys():

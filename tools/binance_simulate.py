@@ -18,13 +18,16 @@ from config import *
 
 def simulate(conn, client):
     c = conn.cursor()
-    c.execute("SELECT * FROM miniticker ORDER BY t ASC")
+    c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
     assets_info = get_info_all_assets(client)
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
     accnt.update_asset_balance('BTC', 0.06, 0.06)
-    multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt)
+    #accnt.update_asset_balance('ETH', 0.1, 0.1)
+    #accnt.update_asset_balance('BNB', 10.0, 10.0)
+
+    multitrader = MultiTrader(client, 'support_resistance_level_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt)
     #row = None
 
     print(multitrader.accnt.balances)
@@ -53,16 +56,6 @@ def simulate(conn, client):
     final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
     pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
     print("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
-    # calculate what the earnings would be for buy and hold:
-    #amount = initial_balance_usd / first_buy_price
-    #final_balance_usd = amount * last_sell_price
-    #print("Buy and hold results:")
-    #print("\tInitial balance USD={}".format(initial_balance_usd))
-    #print("\tFinal balance USD={}".format(round(final_balance_usd, 2)))
-    #total = strategy.accnt.market_price * strategy.accnt.balance + strategy.accnt.quote_currency_balance
-    #print("scotts_smma results:")
-    #print("\tInitial balance USD={}".format(initial_balance_usd))
-    #print("\tFinal balance USD={}".format(total))
 
 def get_info_all_assets(client):
     assets = {}
@@ -104,7 +97,7 @@ def filter_assets_by_minqty(assets_info, balances):
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04032018.db')
+    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
 
     # start the Web API
     #thread = threading.Thread(target=WebThread, args=(strategy,))

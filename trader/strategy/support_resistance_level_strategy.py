@@ -1,15 +1,10 @@
 from trader import OrderBookGDAX
 from trader import AccountGDAX
 from trader import OrderHandler
-from trader.account import gdax
-from trader.MeasureTrend import MeasureTrend
-from trader.indicator.QUAD import QUAD
+from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.EMA import EMA
-from trader.indicator.KAMA import KAMA
 from trader.indicator.RSI import RSI
-from trader.indicator.MACD import MACD
-from trader.indicator.ROC import ROC
-from trader.indicator.TSI import TSI
+
 from trader.Crossover import Crossover
 from datetime import datetime
 #import logging
@@ -23,31 +18,13 @@ def datetime_to_float(d):
     return float(total_seconds)
 
 
-class momentum_swing_strategy(object):
+class support_resistance_level_strategy(object):
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
-        self.strategy_name = 'momentum_swing_strategy'
+        self.strategy_name = 'support_resistance_level_strategy'
         self.client = client
         self.accnt = account_handler
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
-        #self.macd = MACD(12.0*24.0, 26.0*24.0, 9.0*24.0)
-        #self.quad = QUAD()
-        self.rsi = RSI()
-        self.rsi_result = 0.0
-        self.last_rsi_result = 0.0
-        self.roc = ROC()
-        self.macd_trend = MeasureTrend(name=self.ticker_id, window=50)
-        self.price_trend = MeasureTrend(name=self.ticker_id, window=50)
-        self.tsi = TSI()
-        self.last_tsi_result = 0.0
-        self.cross_short = Crossover()
-        self.cross_long = Crossover()
-        self.ema12 = EMA(12, scale=24, lagging=True)
-        self.ema26 = EMA(26, scale=24, lagging=True)
-        self.ema50 = EMA(50, scale=24, lagging=True)
-        #self.ema100 = EMA(100)
-        self.ema_volume = EMA(12)
-        #self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
 
         self.base = name
         self.currency = currency
@@ -67,11 +44,28 @@ class momentum_swing_strategy(object):
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
         self.trend_downward_count = 0
-        self.last_macd_diff = 0.0
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
         self.buy_price_list = []
         self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_order_id = None
+        self.levels = SupportResistLevels()
+        self.cross_low = Crossover()
+        self.cross_high = Crossover()
+        self.rsi = RSI()
+        self.rsi_result = 0.0
+        self.last_rsi_result = 0.0
+        self.ema12 = EMA(12, scale=24, lagging=True)
+        self.ema26 = EMA(26, scale=24, lagging=True)
+        self.ema50 = EMA(50, scale=24, lagging=True)
+        self.cross_short = Crossover()
+        self.cross_long = Crossover()
+
+        self.prev_low = 0.0
+        self.prev_high = 0.0
+        self.last_prev_low = 0.0
+        self.last_prev_high = 0.0
         #if not self.accnt.simulate:
         #    self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
         #    if len(self.buy_price_list) > 0:
@@ -118,6 +112,10 @@ class momentum_swing_strategy(object):
     def my_float(self, value):
         return str("{:.8f}".format(float(value)))
 
+
+    # {u'orderId': 124372141, u'clientOrderId': u'vVF2SeBZ8lBUbkbiHMxqIR', u'origQty': u'0.01800000', u'symbol': u'ETHBTC',
+    #  u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1523494742401, u'type': u'MARKET',
+    #  u'price': u'0.00000000', u'executedQty': u'0.01800000'}
     def buy_signal(self, price):
         if self.buy_price != 0.0: return
 
@@ -154,39 +152,36 @@ class momentum_swing_strategy(object):
         if size < float(self.min_trade_size):
             return
 
+        if self.last_prev_low == 0.0 or self.last_prev_high == 0.0 or self.prev_low == 0.0 or self.prev_high == 0.0:
+            return
+
         if (self.rsi_result == 0.0 or self.ema12.last_result == 0.0 or self.ema26.last_result == 0.0 or
-                self.ema50.last_result == 0.0 or self.roc.last_result == 0.0):
+                self.ema50.last_result == 0.0):
             return
 
-        if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result:
+        #if self.ema12.last_result > self.ema12.result:
+        #    return
+
+        #if self.ema50.last_result > self.ema50.result:
+        #    return
+
+        #if self.ema26.last_result > self.ema26.result:
+        #    return
+
+        #if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected():
+        #    return
+
+        if self.last_prev_low >= self.prev_low or self.last_prev_high >= self.prev_high:
             return
 
-        if self.rsi_result > 40.0:
-            return
+        #if price > self.prev_low or price > self.last_prev_low:
+        #    return
 
-        if self.roc.result < self.roc.last_result and self.ema26.last_result < self.ema26.result:
-            return
+        #if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result:
+        #    return
 
-        ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
-        ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-        if ema12_roc < 0.0 and ema26_roc < 0.0 or abs(ema12_roc) < abs(ema26_roc):
-            return
-
-        ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
-        if ema26_roc < 0.0 and ema50_roc < 0.0 or abs(ema26_roc) < abs(ema50_roc):
-            return
-
-        if self.ema12.last_result > self.ema12.result:
-            return
-
-        if self.ema50.last_result > self.ema50.result:
-            return
-
-        if self.ema26.last_result > self.ema26.result:
-            return
-
-        if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected() or not self.cross_short.crossup_detected():
-            return
+        #if self.rsi_result > 38.0:
+        #    return
 
         if 'e' in str(self.min_trade_size):
             return
@@ -222,43 +217,39 @@ class momentum_swing_strategy(object):
     def sell_signal(self, price):
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
-        if balance_available < self.min_trade_size:
+        if balance_available < float(self.min_trade_size):
             return
 
-        if self.buy_price == 0.0: return
+        if float(self.buy_price == 0.0): return
+
+        if self.last_prev_low == 0.0 or self.last_prev_high == 0.0 or self.prev_low == 0.0 or self.prev_high == 0.0:
+            return
 
         if (self.rsi_result == 0.0 or self.ema12.last_result == 0.0 or self.ema26.last_result == 0.0 or
-                self.ema50.last_result == 0.0 or self.roc.last_result == 0.0):
+                self.ema50.last_result == 0.0):
             return
 
-        if (price - self.buy_price) / self.buy_price < 0.01:
+        if self.last_prev_low < self.prev_low and self.last_prev_high < self.prev_high:
             return
 
-        if self.rsi_result < 60.0 and self.ema26.result > self.ema26.last_result and \
-                self.ema_volume.result > self.ema_volume.last_result:
-            return
+        #if self.last_prev_low < self.prev_low or self.last_prev_high < self.prev_high or price > self.prev_low:
+        #    return
 
-        if self.rsi_result < 55.0:
-            return
+        #if not self.cross_low.crossdown_detected() or self.cross_high.crossup_detected():
+        #    return
+        #if price <= self.prev_low:
+        #    return
 
-        if self.roc.result > self.roc.last_result and self.ema26.last_result < self.ema26.result:
-            return
+        #if price < self.prev_high:
+        #    return
 
-        ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
-        ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-        if ema12_roc > 0.0 and ema26_roc > 0.0 or abs(ema12_roc) < abs(ema26_roc):
-            return
+        #if self.rsi_result < 55.0:
+        #    return
 
-        if self.ema12.last_result < self.ema12.result and self.ema_volume.result > self.ema_volume.last_result:
-            return
+        #if self.last_prev_low < self.prev_low and self.last_prev_high < self.prev_high:
+        #    return
 
-        if self.ema26.last_result < self.ema26.result and self.ema_volume.result > self.ema_volume.last_result:
-            return
-
-        if self.ema50.last_result < self.ema50.result and self.ema_volume.result > self.ema_volume.last_result:
-            return
-
-        if self.cross_long.crossup_detected() or self.cross_short.crossup_detected():
+        if float(self.buy_size) == 0.0:
             return
 
         # get the actual buy price on the order before considering selling
@@ -300,20 +291,30 @@ class momentum_swing_strategy(object):
         self.count_prices_added += 1
 
     def run_update(self, kline):
-        self.timestamp = int(kline['E'])
-        self.ema_volume.update(float(kline['v']))
-        self.run_update_price(float(kline['o']))
-        self.rsi_result = self.rsi.update(float(kline['c']))
-        self.roc.update(float(kline['c']), int(kline['E']))
+        # HACK REMOVE
+        if self.currency == 'BNB':
+            return
 
-        self.run_update_price(float(kline['c']))
+        self.timestamp = int(kline['E'])
+        open = float(kline['o'])
+        close = float(kline['c'])
+        low = float(kline['l'])
+        high = float(kline['h'])
+        self.last_prev_low = self.prev_low
+        self.last_prev_high = self.prev_high
+        self.prev_low, self.prev_high, high_high = self.levels.update(close=close, low=low, high=high)
+        self.cross_low.update(self.prev_low, close)
+        self.cross_high.update(self.prev_high, close)
+
+        self.rsi_result = self.rsi.update(close)
+
+        self.run_update_price(open)
+        self.run_update_price(close)
 
         self.last_rsi_result = self.rsi_result
         self.last_timestamp = self.timestamp
 
     def run_update_price(self, price):
-        tsi_value = self.tsi.update(price)
-        #self.macd.update(price)
         value1 = self.ema12.update(price)
         value2 = self.ema26.update(price)
         value3 = self.ema50.update(price)
@@ -323,12 +324,9 @@ class momentum_swing_strategy(object):
 
         self.buy_signal(price)
         self.sell_signal(price)
-        #self.last_macd_diff = self.macd.diff
-        self.last_tsi_result = tsi_value
 
     def run_update_orderbook(self, msg):
         pass
-    #    self.orderbook.process_update(msg)
 
     def close(self):
         #logger.info("close()")

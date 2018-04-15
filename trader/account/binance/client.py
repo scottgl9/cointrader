@@ -197,12 +197,13 @@ class Client(object):
         """
 
         if not str(response.status_code).startswith('2'):
-            print(response.status_code)
-            raise BinanceAPIException(response)
-        try:
-            return response.json()
-        except ValueError:
-            raise BinanceRequestException('Invalid Response: %s' % response.text)
+            print(response.text)
+            #raise BinanceAPIException(response)
+        else:
+            try:
+                return response.json()
+            except ValueError:
+                raise BinanceRequestException('Invalid Response: %s' % response.text)
 
     def _get(self, path, signed=False, version=PUBLIC_API_VERSION, **kwargs):
         return self._request_api('get', path, signed, version, **kwargs)
