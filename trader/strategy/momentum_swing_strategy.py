@@ -302,7 +302,7 @@ class momentum_swing_strategy(object):
     def run_update(self, kline):
         self.timestamp = int(kline['E'])
         self.ema_volume.update(float(kline['v']))
-        self.run_update_price(float(kline['o']))
+        #self.run_update_price(float(kline['o']))
         self.rsi_result = self.rsi.update(float(kline['c']))
         self.roc.update(float(kline['c']), int(kline['E']))
 

@@ -61,8 +61,8 @@ def simulate(conn, client):
             buy_price = float(pair.strategy.buy_price)
             last_price = float(pair.strategy.last_price)
             symbol = pair.strategy.ticker_id
-            pprofit = 100.0 * (last_price - buy_price) / buy_price
-            print("{}: {}".format(symbol, pprofit))
+            pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
+            print("{}: {}%".format(symbol, pprofit))
 
 def get_info_all_assets(client):
     assets = {}

@@ -75,7 +75,7 @@ class support_resistance_level_strategy(object):
         #        self.buy_price = self.buy_price_list[-1]
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
-        self.bnb_trade_size = 0.75
+        self.bnb_trade_size = 0.71
         self.usdt_trade_size = 10.0
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
         #self.accnt.get_account_balances()
@@ -115,23 +115,76 @@ class support_resistance_level_strategy(object):
     def my_float(self, value):
         return str("{:.8f}".format(float(value)))
 
-
-    # {u'orderId': 124372141, u'clientOrderId': u'vVF2SeBZ8lBUbkbiHMxqIR', u'origQty': u'0.01800000', u'symbol': u'ETHBTC',
-    #  u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1523494742401, u'type': u'MARKET',
-    #  u'price': u'0.00000000', u'executedQty': u'0.01800000'}
-    def buy_signal(self, price):
-        if self.buy_price != 0.0: return
-
-        if (self.timestamp - self.last_timestamp) > 300:
+    def place_buy_order(self, price):
+        if 'e' in str(self.min_trade_size):
             return
 
-        # if we have insufficient funds to buy
-        if self.accnt.simulate:
-            balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
-            size = self.round_base(float(balance_available) / float(price))
-        else:
-            size=self.accnt.get_asset_balance(self.currency)['available']
+        result = self.accnt.buy_market(self.min_trade_size, price=price, ticker_id=self.get_ticker_id())
+        if not self.accnt.simulate:
+            print(result)
 
+        print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.min_trade_size, price))
+        if not self.accnt.simulate and not result:
+            return
+
+        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
+            if not self.accnt.simulate:
+                if 'orderId' not in result:
+                    print("WARNING: orderId not found for {}".format(self.ticker_id))
+                    return
+                orderid = result['orderId']
+                self.buy_order_id = orderid
+                result = self.accnt.get_order(order_id=orderid, ticker_id=self.ticker_id)
+                if 'price' not in result:
+                    print("WARNING: price not found for {}".format(self.ticker_id))
+                    return
+                print(result)
+                if float(result['price']) != 0.0:
+                    price = result['price']
+                    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, price))
+
+            self.buy_price = price
+            self.buy_size = self.min_trade_size
+            #self.buy_price_list.append(price)
+            self.last_buy_price = price
+        if not self.accnt.simulate:
+            self.accnt.get_account_balances()
+
+    def place_sell_order(self, price):
+        # get the actual buy price on the order before considering selling
+        if not self.accnt.simulate and self.buy_order_id:
+            result = self.accnt.get_order(order_id=self.buy_order_id, ticker_id=self.ticker_id)
+            if 'price' not in result:
+                return
+            print(result)
+
+            if float(result['price']) != 0.0:
+                self.buy_price = result['price']
+                self.buy_order_id = None
+                print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, self.buy_price))
+            elif price > self.buy_price:
+                # assume that this is the actual price that the market order executed at
+                print("Updated buy_price to {} from {}".format(price, self.buy_price))
+                self.buy_price = price
+                self.buy_order_id = None
+
+        result = self.accnt.sell_market(self.buy_size, price=price, ticker_id=self.get_ticker_id())
+        if not self.accnt.simulate and not result: return
+        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
+            pprofit = 100.0 * (price - self.buy_price) / self.buy_price
+            print("sell({}{}, {}) @ {} (bought @ {}, {}%)".format(self.base, self.currency, self.buy_size,
+                                                                  price, self.buy_price, round(pprofit, 2)))
+            #self.buy_price_list.remove(buy_price)
+            self.buy_price = 0.0
+            self.buy_size = 0.0
+            self.last_sell_price = price
+            if not self.accnt.simulate:
+                total_usd, total_btc = self.accnt.get_account_total_value()
+                print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
+        if not self.accnt.simulate:
+            self.accnt.get_account_balances()
+
+    def compute_min_trade_size(self, price):
         if self.ticker_id.endswith('BTC'):
             min_trade_size = self.round_base(self.btc_trade_size / price)
             if min_trade_size != 0.0:
@@ -155,6 +208,24 @@ class support_resistance_level_strategy(object):
             if min_trade_size != 0.0:
                 self.min_trade_size = self.my_float(min_trade_size)
 
+    # {u'orderId': 124372141, u'clientOrderId': u'vVF2SeBZ8lBUbkbiHMxqIR', u'origQty': u'0.01800000', u'symbol': u'ETHBTC',
+    #  u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1523494742401, u'type': u'MARKET',
+    #  u'price': u'0.00000000', u'executedQty': u'0.01800000'}
+    def buy_signal(self, price):
+        if self.buy_price != 0.0: return
+
+        if (self.timestamp - self.last_timestamp) > 300:
+            return
+
+        # if we have insufficient funds to buy
+        if self.accnt.simulate:
+            balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
+            size = self.round_base(float(balance_available) / float(price))
+        else:
+            size=self.accnt.get_asset_balance(self.currency)['available']
+
+        self.compute_min_trade_size(price)
+
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return
 
@@ -177,48 +248,29 @@ class support_resistance_level_strategy(object):
         #if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected():
         #    return
 
-        if self.last_prev_low >= self.prev_low or self.last_prev_high >= self.prev_high:
+        if self.last_prev_low >= self.prev_low and self.last_prev_high >= self.prev_high:
             return
 
-        #if price > self.prev_low or price > self.last_prev_low:
+        #if price >= self.prev_high or price >= self.last_prev_high:
         #    return
 
         #if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result:
         #    return
 
-        #if self.rsi_result > 50.0:
-        #    return
-
-        if 'e' in str(self.min_trade_size):
+        if self.ema50.result <= self.ema50.last_result:
             return
 
-        result = self.accnt.buy_market(self.min_trade_size, price=price, ticker_id=self.get_ticker_id())
-        if not self.accnt.simulate:
-            print(result)
-
-        print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.min_trade_size, price))
-        if not self.accnt.simulate and not result:
+        if self.ema26.result <= self.ema26.last_result:
             return
 
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            if not self.accnt.simulate:
-                if 'orderId' not in result: return
-                orderid = result['orderId']
-                self.buy_order_id = orderid
-                result = self.accnt.get_order(order_id=orderid, ticker_id=self.ticker_id)
-                if 'price' not in result:
-                    print(result)
-                    return
-                if float(result['price']) != 0.0:
-                    price = result['price']
-                    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, price))
+        if self.ema12.result <= self.ema12.last_result:
+            return
 
-            self.buy_price = price
-            self.buy_size = self.min_trade_size
-            #self.buy_price_list.append(price)
-            self.last_buy_price = price
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
+        if self.rsi_result > 40.0 and self.ema50.result > self.ema50.last_result:
+            return
+
+        self.place_buy_order(price)
+
 
     def sell_signal(self, price):
         # check balance to see if we have enough to sell
@@ -239,7 +291,10 @@ class support_resistance_level_strategy(object):
                 self.ema50.last_result == 0.0):
             return
 
-        if self.last_prev_low < self.prev_low and self.last_prev_high < self.prev_high:
+        if self.last_prev_high < self.prev_high:    # self.last_prev_low < self.prev_low and
+            return
+
+        if price <= self.prev_low or price <= self.last_prev_low:
             return
 
         #if self.last_prev_low < self.prev_low or self.last_prev_high < self.prev_high or price > self.prev_low:
@@ -262,36 +317,11 @@ class support_resistance_level_strategy(object):
         if float(self.buy_size) == 0.0:
             return
 
-        # get the actual buy price on the order before considering selling
-        if not self.accnt.simulate and self.buy_order_id:
-            result = self.accnt.get_order(order_id=self.buy_order_id, ticker_id=self.ticker_id)
-            if 'price' not in result:
-                print(result)
-                return
-
-            if float(result['price']) != 0.0:
-                self.buy_price = result['price']
-                self.buy_order_id = None
-                print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, self.buy_price))
-
-        if (price - float(self.buy_price)) / float(self.buy_price) < 0.01:
+        if (price - float(self.buy_price)) / float(self.buy_price) < 0.02:
             return
 
-        result = self.accnt.sell_market(self.buy_size, price=price, ticker_id=self.get_ticker_id())
-        if not self.accnt.simulate and not result: return
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            pprofit = 100.0 * (price - self.buy_price) / self.buy_price
-            print("sell({}{}, {}) @ {} (bought @ {}, {}%)".format(self.base, self.currency, self.buy_size,
-                                                                  price, self.buy_price, round(pprofit, 2)))
-            #self.buy_price_list.remove(buy_price)
-            self.buy_price = 0.0
-            self.buy_size = 0.0
-            self.last_sell_price = price
-            if not self.accnt.simulate:
-                total_usd, total_btc = self.accnt.get_account_total_value()
-                print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
+        self.place_sell_order(price)
+
 
     def update_last_50_prices(self, price):
         self.last_50_prices.append(price)
@@ -315,7 +345,7 @@ class support_resistance_level_strategy(object):
 
         self.rsi_result = self.rsi.update(close)
 
-        self.run_update_price(open)
+        #self.run_update_price(open)
         self.run_update_price(close)
 
         self.last_rsi_result = self.rsi_result

@@ -60,6 +60,7 @@ def plot_emas_product(plt, klines, product):
     levels = SupportResistLevels()
     prev_low_values = []
     prev_high_values = []
+    low_low_values = []
     high_high_values = []
     prev_x_values = []
 
@@ -85,7 +86,6 @@ def plot_emas_product(plt, klines, product):
     peaks = []
     valleys = []
 
-
     for i in range(1, len(klines) - 1):
         low = float(klines[i][1])
         high = float(klines[i][2])
@@ -93,10 +93,11 @@ def plot_emas_product(plt, klines, product):
         close_price = float(klines[i][4])
         volume = float(klines[i][5])
 
-        prev_low, prev_high, high_high = levels.update(close_price, low, high)
+        prev_low, prev_high, low_low, high_high = levels.update(close_price, low, high)
         if prev_low != 0 and prev_high != 0:
             prev_low_values.append(prev_low)
             prev_high_values.append(prev_high)
+            low_low_values.append(low_low)
             high_high_values.append(high_high)
             prev_x_values.append(i)
 
@@ -123,56 +124,44 @@ def plot_emas_product(plt, klines, product):
         tsi_value = tsi.update(close_price)
         trend_tsi.update_price(tsi_value)
         tsi_values.append(tsi_value)
-        if trend_tsi.valley_detected() and trend_tsi.valley_value() < -10.0:
-            print("valley {}, {}".format(i, trend_tsi.valley_value()))
-            #valleys.append(i)
-            #plt.axhline(y=trend.valley_value(), color='red')
-        if trend_tsi.peak_detected() and trend_tsi.peak_value() > 10.0:
-            print("peak {}, {}".format(i, trend_tsi.peak_value()))
-            #peaks.append(i)
-            #plt.axhline(y=trend.peak_value(), color='blue')
+        #if trend_tsi.valley_detected() and trend_tsi.valley_value() < -10.0:
+        #    print("valley {}, {}".format(i, trend_tsi.valley_value()))
+        #    #valleys.append(i)
+        #    #plt.axhline(y=trend.valley_value(), color='red')
+        #if trend_tsi.peak_detected() and trend_tsi.peak_value() > 10.0:
+        #    print("peak {}, {}".format(i, trend_tsi.peak_value()))
+        #    #peaks.append(i)
+        #    #plt.axhline(y=trend.peak_value(), color='blue')
         rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
         timestamps.append((float(klines[i][0]) - initial_time) / (60.0))
 
-    print(prev_low_values)
+    #print(prev_low_values)
 
-    for i in range(0, len(macd_signal)):
-        quad.update(macd_signal[i], timestamps[i])#ema_quad.update(klines[i][3]), ts)
-        ts = timestamps[i]
-        A, B, C = quad.compute()
-
-        if C > 0.0: # and C > min(prices) and C < max(prices):
-            quad_x.append(ts)
-            y = A * (ts * ts) + (B * ts) + C
-            quad_y.append(y)
-            quad_maxes.append(C)
-            #print(i, y, A, B, C)
-
-    #ema26_prices = compute_ema_dict_from_klines(klines, 26)
-    #ema12_prices = compute_ema_dict_from_klines(klines, 12)
+    #for i in range(0, len(macd_signal)):
+    #    quad.update(macd_signal[i], timestamps[i])#ema_quad.update(klines[i][3]), ts)
+    #    ts = timestamps[i]
+    #    A, B, C = quad.compute()
+    #    if C > 0.0: # and C > min(prices) and C < max(prices):
+    #        quad_x.append(ts)
+    #        y = A * (ts * ts) + (B * ts) + C
+    #        quad_y.append(y)
+    #        quad_maxes.append(C)
+    #        #print(i, y, A, B, C)
 
     prices = prices_from_kline_data(klines)
     symprice, = plt.plot(prices, label=product) #, color='black')
     #ema4, = plt.plot(ema26_prices["y"], label='EMA26')
     lowlevel0, = plt.plot(prev_x_values, prev_low_values, label='LOWS')
+    lowlevel1, = plt.plot(prev_x_values, low_low_values, label='LLOWS')
     highlevel0, = plt.plot(prev_x_values, prev_high_values, label='HIGHS')
-    highlevel1, = plt.plot(prev_x_values, high_high_values, label='HHIGH')
+    highlevel1, = plt.plot(prev_x_values, high_high_values, label='HHIGHS')
     ema5, = plt.plot(ema26_prices, label='EMA26')
     #kama0, = plt.plot(kama_prices, label='KAMA')
 
-    #plt.plot(zigzag_x, zigzag_y)
-    #plt.plot(vwaps)
-    #quad0, = plt.plot(quad_x, quad_y, label='QUAD')
-    #plt.plot(quad_x2, quad_maxes)
-    plt.legend(handles=[symprice, ema5, lowlevel0, highlevel0, highlevel1])
+    plt.legend(handles=[symprice, ema5, lowlevel0, lowlevel1, highlevel0, highlevel1])
     plt.subplot(212)
-    #plt.plot(ema_volume_values)
-    #print(rsi_values)
-    fig1, = plt.plot(tsi_values, label="TSI")
-    #fig1, = plt.plot(rsi_values, label="RSI") #macd_signal, label='MACD')
-    #fig2, = plt.plot(quad_x, quad_y, label='QUAD')
-    #fig3, = plt.plot(quad_x, quad_maxes, label='QUAD_MAX')
+    fig1, = plt.plot(rsi_values, label="RSI")
     plt.legend(handles=[fig1])#, fig2, fig3])
     return macd_signal
 
@@ -196,6 +185,6 @@ if __name__ == '__main__':
     #print(balances)
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=24)
+    klines = accnt.get_klines(hours=72)
     diff_values = plot_emas_product(plt, klines, accnt.ticker_id)
     plt.show()
