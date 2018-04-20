@@ -11,7 +11,7 @@ import sys
 from config import *
 import logging
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 # {u'c': u'0.00035038', u'E': 1521434160493, u'h': u'0.00037032', u'l': u'0.00033418', u'o': u'0.00033855', u'q': u'361.61821435', u's': u'BATETH', u'v': u'1044884.00000000', u'e': u'24hrMiniTicker'}
 
@@ -21,7 +21,7 @@ class BinanceTrader:
     def __init__(self, client, asset_info=None, volumes=None):
         self.client = client
         self.tickers = {}
-        self.multitrader = MultiTrader(client, 'support_resistance_level_strategy', assets_info=assets_info, volumes=volumes)
+        self.multitrader = MultiTrader(client, 'support_resistance_level_strategy', assets_info=assets_info, volumes=volumes, simulate=True)
 
     def get_websocket_kline(self, msg):
         kline = list()
@@ -46,10 +46,13 @@ class BinanceTrader:
 
     def run(self):
         bm = BinanceSocketManager(self.client)
-        #bm.start_aggtrade_socket(self.accnt.ticker_id, self.process_message)
         bm.start_miniticker_socket(self.process_message)
-        bm.start()
-
+        #bm.daemon = True
+        try:
+            bm.start()
+            #bm.join()
+        except (KeyboardInterrupt, SystemExit):
+            sys.exit(0)
 
 def get_prices_from_klines(klines):
     prices = []

@@ -51,7 +51,14 @@ class support_resistance_level_strategy(object):
         self.buy_size = 0.0
         self.buy_order_id = None
         self.last_price = 0.0
+
         self.levels = SupportResistLevels()
+        self.low_short = self.high_short = 0.0
+        self.low_long = self.high_long = 0.0
+        self.prev_low_long = self.prev_high_long = 0.0
+        self.trending_up = False
+        self.trending_down = False
+
         self.cross_low = Crossover()
         self.cross_high = Crossover()
         self.rsi = RSI()
@@ -229,48 +236,15 @@ class support_resistance_level_strategy(object):
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return
 
-        if self.last_prev_low == 0.0 or self.last_prev_high == 0.0 or self.prev_low == 0.0 or self.prev_high == 0.0:
-            return
-
-        if (self.rsi_result == 0.0 or self.ema12.last_result == 0.0 or self.ema26.last_result == 0.0 or
-                self.ema50.last_result == 0.0):
-            return
-
-        #if self.ema12.last_result > self.ema12.result:
+        #if not self.trending_up and self.trending_down:
         #    return
 
-        #if self.ema50.last_result > self.ema50.result:
+        if self.rsi_result == 0.0 or self.rsi_result > 40.0: return
+
+        #if self.low_short == 0.0 or (abs(price - self.low_short) / self.low_short > 0.005): # or abs(self.low_long - self.high_long) / self.low_long < 0.05):
         #    return
-
-        #if self.ema26.last_result > self.ema26.result:
-        #    return
-
-        #if self.cross_long.crossdown_detected() or self.cross_short.crossdown_detected():
-        #    return
-
-        if self.last_prev_low >= self.prev_low and self.last_prev_high >= self.prev_high:
-            return
-
-        #if price >= self.prev_high or price >= self.last_prev_high:
-        #    return
-
-        #if self.rsi_result > 38.0 and self.ema50.result < self.ema50.last_result:
-        #    return
-
-        if self.ema50.result <= self.ema50.last_result:
-            return
-
-        if self.ema26.result <= self.ema26.last_result:
-            return
-
-        if self.ema12.result <= self.ema12.last_result:
-            return
-
-        if self.rsi_result > 40.0 and self.ema50.result > self.ema50.last_result:
-            return
 
         self.place_buy_order(price)
-
 
     def sell_signal(self, price):
         # check balance to see if we have enough to sell
@@ -284,40 +258,13 @@ class support_resistance_level_strategy(object):
         if price < float(self.buy_price):
             return
 
-        if self.last_prev_low == 0.0 or self.last_prev_high == 0.0 or self.prev_low == 0.0 or self.prev_high == 0.0:
-            return
-
-        if (self.rsi_result == 0.0 or self.ema12.last_result == 0.0 or self.ema26.last_result == 0.0 or
-                self.ema50.last_result == 0.0):
-            return
-
-        if self.last_prev_high < self.prev_high:    # self.last_prev_low < self.prev_low and
-            return
-
-        if price <= self.prev_low or price <= self.last_prev_low:
-            return
-
-        #if self.last_prev_low < self.prev_low or self.last_prev_high < self.prev_high or price > self.prev_low:
-        #    return
-
-        #if not self.cross_low.crossdown_detected() or self.cross_high.crossup_detected():
-        #    return
-        #if price <= self.prev_low:
-        #    return
-
-        #if price < self.prev_high:
-        #    return
-
-        #if self.rsi_result < 55.0:
-        #    return
-
-        #if self.last_prev_low < self.prev_low and self.last_prev_high < self.prev_high:
-        #    return
+        if self.rsi_result == 0.0 or self.rsi_result < 60.0: return
+        #if not self.trending_down and self.trending_up: return # and abs(price - self.high_long) / self.high_long > 0.005: return
 
         if float(self.buy_size) == 0.0:
             return
 
-        if (price - float(self.buy_price)) / float(self.buy_price) < 0.02:
+        if (price - float(self.buy_price)) / float(self.buy_price) < 0.01:
             return
 
         self.place_sell_order(price)
@@ -337,11 +284,17 @@ class support_resistance_level_strategy(object):
         close = float(kline['c'])
         low = float(kline['l'])
         high = float(kline['h'])
-        self.last_prev_low = self.prev_low
-        self.last_prev_high = self.prev_high
-        self.prev_low, self.prev_high, high_high = self.levels.update(close=close, low=low, high=high)
-        self.cross_low.update(self.prev_low, close)
-        self.cross_high.update(self.prev_high, close)
+        self.prev_low_long = self.low_long
+        self.prev_high_long = self.high_long
+        self.low_short, self.high_short, self.low_long, self.high_long = self.levels.update(close=close, low=low, high=high)
+
+        if self.prev_low_long != 0.0 and self.prev_high_long != 0.0:
+            if self.prev_low_long > self.low_long: # or self.prev_high_long > self.high_long:
+                self.trending_down = True
+            elif self.prev_low_long < self.low_long: # or self.prev_high_long < self.high_long:
+                self.trending_up = True
+        #self.cross_low.update(self.prev_low, close)
+        #self.cross_high.update(self.prev_high, close)
 
         self.rsi_result = self.rsi.update(close)
 
@@ -367,5 +320,5 @@ class support_resistance_level_strategy(object):
         pass
 
     def close(self):
-        #logger.info("close()")
+        print("close()")
         pass

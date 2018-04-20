@@ -3,7 +3,7 @@ from trader.indicator.KAMA import KAMA
 from trader.indicator.SMMA import SMMA
 
 class SupportResistLevels(object):
-    def __init__(self, kwindow=12, win_short=12, win_long=100):
+    def __init__(self, kwindow=12, win_short=30, win_long=100):
         self.kwindow = kwindow
         self.win_short = win_short
         self.win_long = win_long

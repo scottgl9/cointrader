@@ -3,8 +3,9 @@ from trader.indicator.EMA import EMA
 #MACD Line: (12-day EMA - 26-day EMA)
 #Signal Line: 9-day EMA of MACD Line
 
+
 class MACD:
-    def __init__(self, short_weight=12.0, long_weight=26.0, signal_weight=9.0):
+    def __init__(self, short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0):
         self.last_result = 0.0
         self.result = 0.0
         self.shortEMA = 0.0
@@ -13,9 +14,9 @@ class MACD:
         self.short_weight = short_weight
         self.long_weight = long_weight
         self.signal_weight = signal_weight
-        self.short = EMA(self.short_weight)
-        self.long =  EMA(self.long_weight)
-        self.signal = EMA(self.signal_weight)
+        self.short = EMA(self.short_weight, scale=scale)
+        self.long = EMA(self.long_weight, scale=scale)
+        self.signal = EMA(self.signal_weight, scale=scale)
         #self.result_sma = SMA(2)
 
     def update(self, price):

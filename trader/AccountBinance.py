@@ -182,22 +182,16 @@ class AccountBinance(AccountBase):
         return total_balance_usd, total_balance_btc
 
     def get_total_btc_value(self, tickers):
-        total_balance_usd = 0.0
         total_balance_btc = 0.0
-        btc_usd_price = 0.0
         for symbol, price in self.balances.items():
             price_btc = 0.0
             if symbol == 'BTC':
-                ticker_id = 'BTCUSDT'
                 price_btc = float(self.balances['BTC']['balance'])
-                btc_usd_price = tickers[ticker_id]
-            elif btc_usd_price != 0.0:
+            else:
                 ticker_id = "{}BTC".format(symbol)
                 amount = float(self.balances[symbol]['balance'])
                 price_btc = tickers[ticker_id] * amount
 
-            price_usd = price_btc * btc_usd_price
-            total_balance_usd += price_usd
             total_balance_btc += price_btc
 
         return total_balance_btc
