@@ -16,11 +16,39 @@ from datetime import datetime
 
 #logger = logging.getLogger(__name__)
 
+
 def datetime_to_float(d):
     epoch = datetime.utcfromtimestamp(0)
     total_seconds =  (d.replace(tzinfo=None) - epoch).total_seconds()
     # total_seconds will be in decimals (millisecond precision)
     return float(total_seconds)
+
+
+# compute if p1 is greater than p2 by X percent
+def percent_p1_gt_p2(p1, p2, percent):
+    if p1 == 0: return False
+    result = 100.0 * (float(p1) - float(p2)) / float(p1)
+    if result <= percent:
+        return False
+    return True
+
+
+def percent_p2_gt_p1(p1, p2, percent):
+    if p1 == 0: return False
+    if p2 <= p1: return False
+    result = 100.0 * (float(p2) - float(p1)) / float(p1)
+    if result <= percent:
+        return False
+    return True
+
+
+# compute if p1 is less than p2 by X percent (p1 is "threshold")
+def percent_p1_lt_p2(p1, p2, percent):
+    if p1 == 0: return False
+    result = 100.0 * (float(p2) - float(p1)) / float(p1)
+    if result >= percent:
+        return False
+    return True
 
 
 class macd_signal_strategy(object):
@@ -46,6 +74,7 @@ class macd_signal_strategy(object):
         self.ema12 = EMA(12, scale=24, lagging=True)
         self.ema26 = EMA(26, scale=24, lagging=True)
         self.ema50 = EMA(50, scale=24, lagging=True)
+        self.ema100 = EMA(100, scale=24, lagging=True)
         #self.ema100 = EMA(100)
         self.ema_volume = EMA(12)
         #self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
@@ -213,10 +242,10 @@ class macd_signal_strategy(object):
                 self.min_trade_size = self.my_float(min_trade_size)
 
     def buy_signal(self, price):
-        if float(self.buy_price) != 0.0: return
+        if float(self.buy_price) != 0.0: return False
 
-        if (self.timestamp - self.last_timestamp) > 300:
-            return
+        if (self.timestamp - self.last_timestamp) > 500:
+            return False
 
         # if we have insufficient funds to buy
         if self.accnt.simulate:
@@ -228,68 +257,72 @@ class macd_signal_strategy(object):
         self.compute_min_trade_size(price)
 
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
-            return
+            return False
 
-        if self.last_macd_diff == 0.0 or self.last_macd_result == 0.0 or self.macd_result == 0.0 or self.ema12.last_result == 0 or self.ema26.last_result == 0: return
+        if self.last_rsi_result == 0.0 or self.last_macd_diff == 0.0 or self.last_macd_result == 0.0 or self.macd_result == 0.0:
+            return False
+        if self.ema50.last_result == 0 or self.ema12.last_result == 0 or self.ema26.last_result == 0:
+            return False
 
-        if self.rsi_result > 40 and self.rsi_result < self.last_rsi_result: return
-        if self.rsi_result > 45: return
+        if self.rsi_result > 40 and self.rsi_result < self.last_rsi_result:
+            return False
+        if self.rsi_result > 45:
+            return False
 
         if not self.cross_macd.crossup_detected() and self.cross_macd.crossdown_detected():
-            return
+            return False
 
-        if self.macd_diff > 0.0: return # or self.macd_diff < self.last_macd_diff: return
+        #if self.macd_diff > 0.0: return # or self.macd_diff < self.last_macd_diff: return
 
         #if self.ema12.last_result >= self.ema12.result:
         #    return
 
-        #if self.ema26.last_result >= self.ema26.result:
-        #    return
+        if self.ema26.last_result > self.ema26.result:
+            return False
 
         if self.ema50.last_result >= self.ema50.result:
-            return
+            return False
 
         #ema12_roc = (self.ema12.result - self.ema12.last_result) / self.ema12.last_result
-        #ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
-        #if ema12_roc < 0.0 or ema26_roc < 0.0 or abs(ema12_roc) < abs(ema26_roc):
+        ema26_roc = (self.ema26.result - self.ema26.last_result) / self.ema26.last_result
+        #if ema12_roc < 0.0 or ema26_roc < 0.0 or abs(ema12_roc) - abs(ema26_roc) / abs(ema12_roc) < 0.01:
         #    return
-        #ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
-        #if ema26_roc < 0.0 or ema50_roc < 0.0 or abs(ema26_roc) < abs(ema50_roc):
-        #    return
+        ema50_roc = (self.ema50.result - self.ema50.last_result) / self.ema50.last_result
+        if ema26_roc < 0.0 or ema50_roc < 0.0 or abs(abs(ema26_roc) - abs(ema50_roc)) / abs(ema26_roc) < 0.01:
+            return False
 
-        self.place_buy_order(price)
+        return True
 
     def sell_signal(self, price):
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size):
-            return
+            return False
 
         if float(self.buy_price) == 0.0:
-            return
+            return False
 
         if price < float(self.buy_price):
-            return
+            return False
 
-        if self.last_macd_diff == 0.0 or self.last_macd_result == 0.0 or self.macd_result == 0.0 or self.ema12.last_result == 0 or self.ema26.last_result == 0: return
+        if self.last_macd_diff == 0.0 or self.last_macd_result == 0.0 or self.macd_result == 0.0:
+            return False
+        if self.ema12.last_result == 0 or self.ema26.last_result == 0:
+            return False
 
-        if self.rsi_result < 60.0: return # or self.rsi_result > self.last_rsi_result: return
+        if self.rsi_result == 0.0 or self.rsi_result < 60.0:
+            return False
 
         if self.cross_macd.crossup_detected() and not self.cross_macd.crossdown_detected():
-            return
-
-        #if self.macd_diff < 0.0: return
+            return False
 
         if self.ema26.last_result < self.ema26.result:
-            return
+            return False
 
-        #if self.ema12.last_result < self.ema12.result:
-        #    return
+        if not percent_p2_gt_p1(self.buy_price, price, 1.0):
+            return False
 
-        if (price - float(self.buy_price)) / float(self.buy_price) < 0.01:
-            return
-
-        self.place_sell_order(price)
+        return True
 
     def update_last_50_prices(self, price):
         self.last_50_prices.append(price)
@@ -302,9 +335,7 @@ class macd_signal_strategy(object):
         close = float(kline['c'])
         self.timestamp = int(kline['E'])
         self.ema_volume.update(float(kline['v']))
-        #self.run_update_price(float(kline['o']))
         self.rsi_result = self.rsi.update(close)
-        #self.roc.update(close, int(kline['E']))
         self.last_macd_result = self.macd_result
         self.macd_result = self.macd.update(close)
         self.last_macd_diff = self.macd_diff
@@ -321,12 +352,14 @@ class macd_signal_strategy(object):
         self.ema12.update(price)
         self.ema26.update(price)
         self.ema50.update(price)
-        self.buy_signal(price)
-        self.sell_signal(price)
+
+        if self.buy_signal(price):
+            self.place_buy_order(price)
+        if self.sell_signal(price):
+            self.place_sell_order(price)
 
     def run_update_orderbook(self, msg):
         pass
-    #    self.orderbook.process_update(msg)
 
     def close(self):
         #logger.info("close()")
