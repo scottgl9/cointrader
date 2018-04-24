@@ -16,7 +16,7 @@ def select_strategy(sname, client, name='BTC', currency='USD', account_handler=N
     elif sname == 'fibonacci_with_macd':
         return fibonacci_with_macd(client, name, currency, account_handler, order_handler)
     elif sname == 'macd_signal_strategy':
-        return macd_signal_strategy(client, name, currency, account_handler, order_handler)
+        return macd_signal_strategy(client, name, currency, account_handler, order_handler, base_min_size=base_min_size, tick_size=tick_size)
     elif sname == 'quadratic_with_fibonacci':
         return quadratic_with_fibonacci(client, name, currency, account_handler, order_handler)
     elif sname == 'smma_of_diff':

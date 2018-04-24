@@ -3,7 +3,7 @@ from trader.indicator.KAMA import KAMA
 from trader.indicator.SMMA import SMMA
 
 class SupportResistLevels(object):
-    def __init__(self, kwindow=12, win_short=30, win_long=100):
+    def __init__(self, kwindow=12, win_short=20, win_long=100):
         self.kwindow = kwindow
         self.win_short = win_short
         self.win_long = win_long
@@ -21,11 +21,11 @@ class SupportResistLevels(object):
 
     def update(self, close, low, high):
         if len(self.klows) < self.kwindow:
-            self.klows.append(float(low))
-            self.khighs.append(float(high))
+            self.klows.append(self.ema_low.update(float(low)))
+            self.khighs.append(self.ema_high.update(float(high)))
         else:
-            self.klows[int(self.kage)] = float(low)
-            self.khighs[int(self.kage)] = float(high)
+            self.klows[int(self.kage)] = self.ema_low.update(float(low))
+            self.khighs[int(self.kage)] = self.ema_high.update(float(high))
 
         if len(self.klows) == self.kwindow and self.kage == 0:
             # handle short window

@@ -1,6 +1,7 @@
 from trader.indicator.ATR import ATR
 from trader.indicator.DEMA import DEMA
 from trader.indicator.EMA import EMA
+from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.KAMA import KAMA
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD

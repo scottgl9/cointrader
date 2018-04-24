@@ -25,7 +25,7 @@ def simulate(conn, client):
     accnt = AccountBinance(client, simulation=True)
     accnt.update_asset_balance('BTC', 0.06, 0.06)
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
-    #accnt.update_asset_balance('BNB', 10.0, 10.0)
+    #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
     multitrader = MultiTrader(client, 'macd_signal_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt)
     #row = None
@@ -49,7 +49,6 @@ def simulate(conn, client):
             total_usd = float(msg['o']) * total_btc
             print("Initial BTC={}".format(total_btc))
 
-        #print(msg)
         multitrader.process_message(msg)
 
     print(multitrader.accnt.balances)
