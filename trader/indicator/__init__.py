@@ -6,6 +6,7 @@ from trader.indicator.KAMA import KAMA
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD
 from trader.indicator.PPO import PPO
+from trader.indicator.PSAR import PSAR
 from trader.indicator.ROC import ROC
 from trader.indicator.SMA import SMA
 from trader.indicator.SMMA import SMMA
