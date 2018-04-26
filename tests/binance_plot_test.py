@@ -18,6 +18,7 @@ from trader.indicator.ZigZag import ZigZag
 from trader.indicator.KAMA import KAMA
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
+from trader.indicator.PSAR import PSAR
 import math
 from trader.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
@@ -57,6 +58,7 @@ def plot_emas_product(plt, klines, product):
     ema26_prices = []
     trend = MeasureTrend()
     trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
+    sar = PSAR()
 
     levels = SupportResistLevels()
     cloud = IchimokuCloud()
@@ -91,6 +93,8 @@ def plot_emas_product(plt, klines, product):
     timestamps = []
     peaks = []
     valleys = []
+    sar_x_values = []
+    sar_values = []
 
     for i in range(1, len(klines) - 1):
         low = float(klines[i][1])
@@ -105,6 +109,10 @@ def plot_emas_product(plt, klines, product):
             Senkou_SpanB_values.append(SpanB)
             #close_last_values.append(close_last_window)
             span_x_values.append(i)
+
+        sar_value = sar.update(close=close_price, low=low, high=high)
+        sar_x_values.append(i)
+        sar_values.append(sar_value)
 
         prev_low, prev_high, low_low, high_high = levels.update(close_price, low, high)
         if prev_low != 0 and prev_high != 0:
@@ -121,7 +129,7 @@ def plot_emas_product(plt, klines, product):
         trend.update_price(open_price)
         macd.update(open_price)
         ema12_prices.append(ema12.update(close_price))
-        ema26_prices.append(ema12.update(close_price))
+        ema26_prices.append(ema26.update(close_price))
         kama_prices.append(kama.update(close_price))
 
         result = zigzag.update_from_kline(open_price, low, high)
@@ -169,13 +177,14 @@ def plot_emas_product(plt, klines, product):
     #lowlevel1, = plt.plot(prev_x_values, low_low_values, label='LLOWS')
     #highlevel0, = plt.plot(prev_x_values, prev_high_values, label='HIGHS')
     #highlevel1, = plt.plot(prev_x_values, high_high_values, label='HHIGHS')
-    SpanA, = plt.plot(span_x_values, Senkou_SpanA_values, label="SpanA")
-    SpanB, = plt.plot(span_x_values, Senkou_SpanB_values, label="SpanB")
+    #SpanA, = plt.plot(span_x_values, Senkou_SpanA_values, label="SpanA")
+    #SpanB, = plt.plot(span_x_values, Senkou_SpanB_values, label="SpanB")
+    #sar0, = plt.plot(sar_x_values, sar_values, label='PSAR')
     #closePlot, = plt.plot(span_x_values, close_last_values, label="Close")
-    #ema5, = plt.plot(ema26_prices, label='EMA26')
+    ema5, = plt.plot(ema26_prices, label='EMA26')
     #kama0, = plt.plot(kama_prices, label='KAMA')
 
-    plt.legend(handles=[symprice, SpanA, SpanB])
+    plt.legend(handles=[symprice, ema5])
     plt.subplot(212)
     fig1, = plt.plot(rsi_values, label="RSI")
     plt.legend(handles=[fig1])#, fig2, fig3])

@@ -298,7 +298,7 @@ class macd_signal_strategy(object):
         #if self.ema26.last_result > self.ema26.result and self.ema50.last_result >= self.ema50.result:
         #    return False
 
-        if self.ema50.last_result > self.ema50.result:
+        if self.ema50.last_result >= self.ema50.result:
             return False
 
         #if self.prev_low_short == 0.0 or self.prev_high_short == 0.0: return
@@ -315,10 +315,10 @@ class macd_signal_strategy(object):
         #if not self.cross_macd_zero.crossup_detected():
         #    return False
 
-        if self.cross_cloud.crossup_detected() or (self.SpanA > self.SpanB and self.ema50.result > self.ema50.last_result):
-            return True
+        #if self.cross_cloud.crossup_detected() or (self.SpanA > self.SpanB and self.ema50.result > self.ema50.last_result):
+        #    return True
 
-        return False
+        return True
 
     def sell_signal(self, price):
         # check balance to see if we have enough to sell
@@ -362,8 +362,12 @@ class macd_signal_strategy(object):
 
         #if self.macd_diff <= 0.0: return False
 
-        if not percent_p2_gt_p1(self.buy_price, price, 1.0):
-            return False
+        if self.base == 'ETH' or self.base == 'BNB':
+            if not percent_p2_gt_p1(self.buy_price, price, 5.0):
+                return False
+        else:
+            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
+                return False
 
         #if self.ema26.result >= self.ema50.result:
         #    return True
@@ -371,8 +375,8 @@ class macd_signal_strategy(object):
         #if self.cross_macd_zero.crossup_detected():
         #    return False
 
-        if self.cross_cloud.crossdown_detected() or self.SpanA < self.SpanB:
-            return True
+        #if self.cross_cloud.crossdown_detected() or self.SpanA < self.SpanB:
+        #    return True
 
         if self.cross_macd.crossdown_detected():
             return True
