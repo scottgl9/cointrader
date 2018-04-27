@@ -2,6 +2,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
+from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
 from trader.indicator.TSI import TSI
 from trader.Crossover import Crossover
@@ -66,6 +67,9 @@ class momentum_swing_strategy(object):
         self.roc = ROC()
         self.tsi = TSI()
         self.last_tsi_result = 0.0
+        self.obv = OBV()
+        self.obv_ema26 = EMA(26, scale=24, lagging=True)
+        self.obv_ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
 
         self.levels = SupportResistLevels()
         self.low_short = self.high_short = 0.0
@@ -276,19 +280,19 @@ class momentum_swing_strategy(object):
         if self.ema50.last_result == 0 or self.ema12.last_result == 0 or self.ema26.last_result == 0:
             return False
 
-        if self.ema50.last_result > self.ema50.result or self.ema26.last_result > self.ema26.result:
-            return False
-
-        #if self.ema_volume.result < self.ema_volume.last_result:
+        #if self.obv_ema26.last_result >= self.obv_ema26.result and self.ema26.result > self.ema26.last_result:
         #    return False
 
-        #if self.stats.trending_downward():
+        #if self.obv_ema50.last_result >= self.obv_ema50.result and self.ema50.result > self.ema50.last_result:
         #    return False
 
-        #if not self.stats.trending_upward():
+        #if self.ema50.last_result > self.ema50.result or self.ema26.last_result > self.ema26.result:
         #    return False
 
-        if self.cross_long.crossup_detected(): # and self.cross_short.crossup_detected():
+        if self.cross_long.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
+            return True
+
+        if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result:
             return True
 
         return False
@@ -326,17 +330,23 @@ class momentum_swing_strategy(object):
         #    return False
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(self.buy_price, price, 5.0):
+            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
                 return False
         else:
-            if not percent_p2_gt_p1(self.buy_price, price, 0.5):
+            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
                 return False
 
+        if self.obv_ema26.result > self.obv_ema26.last_result and self.ema26.result > self.ema26.last_result:
+            return False
+
         if self.cross_short.crossdown_detected():
-        #if self.cross_long.crossdown_detected():
             return True
-        #if self.ema26.result < self.ema26.last_result:
-        #    return True
+
+        if self.cross_long.crossdown_detected():
+            return True
+
+        if self.ema50.result > self.ema50.last_result and self.obv_ema50.result < self.obv_ema50.last_result:
+            return True
 
         return False
 
@@ -352,6 +362,7 @@ class momentum_swing_strategy(object):
         close = float(kline['c'])
         low = float(kline['l'])
         high = float(kline['h'])
+        volume = float(kline['v'])
         self.timestamp = int(kline['E'])
         self.ema_volume.update(float(kline['v']))
         self.rsi_result = self.rsi.update(close)
@@ -361,7 +372,10 @@ class momentum_swing_strategy(object):
         self.macd_diff = self.macd.diff
         self.cross_macd.update(self.macd.diff, self.macd.signal.result)
         self.cross_macd_zero.update(self.macd.diff, 0.0)
-        self.stats.update(close, self.timestamp)
+        #self.stats.update(close, self.timestamp)
+        obv_value = self.obv.update(close=close, volume=volume)
+        self.obv_ema26.update(obv_value)
+        self.obv_ema50.update(obv_value)
 
         self.run_update_price(close)
 

@@ -16,6 +16,7 @@ from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
 from trader.indicator.KAMA import KAMA
+from trader.indicator.OBV import OBV
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.PSAR import PSAR
@@ -56,6 +57,10 @@ def plot_emas_product(plt, klines, product):
     ema12_prices = []
     ema26 = EMA(26)
     ema26_prices = []
+    ema_obv = EMA(26)
+    ema_obv_values = []
+    obv = OBV()
+    obv_values = []
     trend = MeasureTrend()
     trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
     sar = PSAR()
@@ -103,6 +108,10 @@ def plot_emas_product(plt, klines, product):
         close_price = float(klines[i][4])
         volume = float(klines[i][5])
 
+        obv_value = obv.update(close=close_price, volume=volume)
+        obv_values.append(obv_value)
+        ema_obv_values.append(ema_obv.update(obv_value))
+
         SpanA, SpanB = cloud.update(close=close_price, low=low, high=high)
         if SpanA != 0 and SpanB != 0:
             Senkou_SpanA_values.append(SpanA)
@@ -121,9 +130,6 @@ def plot_emas_product(plt, klines, product):
             low_low_values.append(low_low)
             high_high_values.append(high_high)
             prev_x_values.append(i)
-
-        volume_amount = ema_volume.update(volume)
-        ema_volume_values.append(volume_amount)
 
         last_volume_amount = volume_amount
         trend.update_price(open_price)
@@ -186,8 +192,9 @@ def plot_emas_product(plt, klines, product):
 
     plt.legend(handles=[symprice, ema5])
     plt.subplot(212)
-    fig1, = plt.plot(rsi_values, label="RSI")
-    plt.legend(handles=[fig1])#, fig2, fig3])
+    fig1, = plt.plot(obv_values, label="OBV")
+    fig2, = plt.plot(ema_obv_values, label="OBVEMA")
+    plt.legend(handles=[fig1, fig2])#, fig2, fig3])
     return macd_signal
 
 def abs_average(values):
