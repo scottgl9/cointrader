@@ -68,6 +68,7 @@ class momentum_swing_strategy(object):
         self.tsi = TSI()
         self.last_tsi_result = 0.0
         self.obv = OBV()
+        self.obv_ema12 = EMA(12, scale=24, lagging=True)
         self.obv_ema26 = EMA(26, scale=24, lagging=True)
         self.obv_ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
 
@@ -193,7 +194,6 @@ class momentum_swing_strategy(object):
             self.buy_price = price
             self.buy_size = self.min_trade_size
             #self.buy_price_list.append(price)
-            self.last_buy_price = price
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
 
@@ -236,15 +236,15 @@ class momentum_swing_strategy(object):
             min_trade_size = self.round_base(self.btc_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'ETH' or self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size * 2)
+                    self.min_trade_size = self.my_float(min_trade_size * 3)
                 else:
-                    self.min_trade_size = self.my_float(min_trade_size)
+                    self.min_trade_size = self.my_float(min_trade_size * 2)
                 #print("{}: {} {} {}".format(self.ticker_id, self.min_trade_size, self.base_min_size, self.quote_increment))
         elif self.ticker_id.endswith('ETH'):
             min_trade_size = self.round_base(self.eth_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size * 2)
+                    self.min_trade_size = self.my_float(min_trade_size * 3)
                 else:
                     self.min_trade_size = self.my_float(min_trade_size)
         elif self.ticker_id.endswith('BNB'):
@@ -274,6 +274,9 @@ class momentum_swing_strategy(object):
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return False
 
+        if self.last_buy_price != 0 and price > self.last_sell_price:
+            return False
+
         if self.rsi_result == 0:
             return False
 
@@ -286,13 +289,20 @@ class momentum_swing_strategy(object):
         #if self.obv_ema50.last_result >= self.obv_ema50.result and self.ema50.result > self.ema50.last_result:
         #    return False
 
-        #if self.ema50.last_result > self.ema50.result or self.ema26.last_result > self.ema26.result:
+        if self.obv_ema50.result < self.obv_ema50.last_result:
+            return False
+
+        #mid_price = self.stats.close_all_high_cutoff()
+        #if mid_price == 0 or price > mid_price:
         #    return False
 
         if self.cross_long.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
 
         if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result:
+            return True
+
+        if self.obv_ema50.last_result < 0.0 and self.obv_ema50.result > 0.0:
             return True
 
         return False
@@ -316,7 +326,7 @@ class momentum_swing_strategy(object):
             #    self.buy_price = result['price']
             #    self.buy_order_id = None
             #    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, self.buy_price))
-            if price >= float(self.buy_price):
+            if price > float(self.buy_price):
                 # assume that this is the actual price that the market order executed at
                 print("Updated buy_price to {} from {}".format(price, self.buy_price))
                 self.buy_price = price
@@ -348,6 +358,12 @@ class momentum_swing_strategy(object):
         if self.ema50.result > self.ema50.last_result and self.obv_ema50.result < self.obv_ema50.last_result:
             return True
 
+        if self.obv_ema26.last_result > 0.0 and self.obv_ema26.result < 0.0:
+            return True
+
+        if self.obv_ema50.last_result > 0.0 and self.obv_ema50.result < 0.0:
+            return True
+
         return False
 
     def update_last_50_prices(self, price):
@@ -359,21 +375,28 @@ class momentum_swing_strategy(object):
 
     # NOTE: low and high do not update for each kline with binance
     def run_update(self, kline):
+        # HACK REMOVE THIS
+        if self.currency == 'USDT':
+            return
         close = float(kline['c'])
         low = float(kline['l'])
         high = float(kline['h'])
         volume = float(kline['v'])
+        if close == 0 or volume == 0:
+            return
+
         self.timestamp = int(kline['E'])
-        self.ema_volume.update(float(kline['v']))
+        #self.ema_volume.update(float(kline['v']))
         self.rsi_result = self.rsi.update(close)
-        self.last_macd_result = self.macd_result
-        self.macd_result = self.macd.update(close)
-        self.last_macd_diff = self.macd_diff
-        self.macd_diff = self.macd.diff
-        self.cross_macd.update(self.macd.diff, self.macd.signal.result)
-        self.cross_macd_zero.update(self.macd.diff, 0.0)
+        #self.last_macd_result = self.macd_result
+        #self.macd_result = self.macd.update(close)
+        #self.last_macd_diff = self.macd_diff
+        #self.macd_diff = self.macd.diff
+        #self.cross_macd.update(self.macd.diff, self.macd.signal.result)
+        #self.cross_macd_zero.update(self.macd.diff, 0.0)
         #self.stats.update(close, self.timestamp)
         obv_value = self.obv.update(close=close, volume=volume)
+        self.obv_ema12.update(obv_value)
         self.obv_ema26.update(obv_value)
         self.obv_ema50.update(obv_value)
 
@@ -394,6 +417,7 @@ class momentum_swing_strategy(object):
             self.place_buy_order(price)
         if self.sell_signal(price):
             self.place_sell_order(price)
+            self.last_sell_price = price
 
     def run_update_orderbook(self, msg):
         pass
