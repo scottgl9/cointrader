@@ -1,8 +1,12 @@
 
 
 class SignalHandler(object):
-    def __init__(self):
+    SIGNAL_ONE = 1
+    SIGNAL_ALL = 2
+
+    def __init__(self, sigtype=SIGNAL_ONE):
         self.handlers = []
+        self.sigtype = sigtype
 
     def add(self, handler):
         self.handlers.append(handler)
@@ -30,7 +34,13 @@ class SignalHandler(object):
 
         for handler in self.handlers:
             if handler.buy_signal():
-                return True
+                if self.sigtype == self.SIGNAL_ONE:
+                    return True
+            elif self.sigtype == self.SIGNAL_ALL:
+                return False
+
+        if self.sigtype == self.SIGNAL_ALL:
+            return True
 
         return False
 
@@ -40,6 +50,12 @@ class SignalHandler(object):
 
         for handler in self.handlers:
             if handler.sell_signal():
-                return True
+                if self.sigtype == self.SIGNAL_ONE:
+                    return True
+            elif self.sigtype == self.SIGNAL_ALL:
+                return False
+
+        if self.sigtype == self.SIGNAL_ALL:
+            return True
 
         return False

@@ -7,13 +7,11 @@ from trader.indicator.ROC import ROC
 from trader.indicator.TSI import TSI
 from trader.Crossover import Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
+from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.SignalHandler import SignalHandler
 from trader.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
 from datetime import datetime
-#import logging
-
-#logger = logging.getLogger(__name__)
 
 
 def datetime_to_float(d):
@@ -62,14 +60,12 @@ class momentum_swing_strategy(object):
         self.last_macd_result = 0.0
         self.macd_diff = 0.0
         self.last_macd_diff = 0.0
-        self.rsi = RSI()
-        self.rsi_result = 0.0
-        self.last_rsi_result = 0.0
         self.roc = ROC()
         self.tsi = TSI()
         self.last_tsi_result = 0.0
 
         self.signal_handler = SignalHandler()
+        #self.signal_handler.add(RSI_OBV())
         self.signal_handler.add(EMA_OBV_Crossover())
 
         self.roc_obv_ema = EMA(3, scale=1, lagging=True)
@@ -288,18 +284,9 @@ class momentum_swing_strategy(object):
             return False
 
         if not self.accnt.simulate and self.buy_order_id:
-            #result = self.accnt.get_order(order_id=self.buy_order_id, ticker_id=self.ticker_id)
-            #if 'price' not in result:
-            #    return
-            #print(result)
-
-            #if float(result['price']) != 0.0:
-            #    self.buy_price = result['price']
-            #    self.buy_order_id = None
-            #    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, self.buy_price))
             if price > float(self.buy_price):
                 # assume that this is the actual price that the market order executed at
-                print("Updated buy_price to {} from {}".format(price, self.buy_price))
+                print("Updated buy_price from {} to {}".format(self.buy_price, price))
                 self.buy_price = price
                 self.buy_order_id = None
                 return False
@@ -307,14 +294,11 @@ class momentum_swing_strategy(object):
         if price < float(self.buy_price):
             return False
 
-        #if self.rsi_result == 0.0 or self.rsi_result < 60.0:
-        #    return False
-
         if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
                 return False
         else:
-            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
                 return False
 
         if self.signal_handler.sell_signal():
@@ -342,8 +326,6 @@ class momentum_swing_strategy(object):
             return
 
         self.timestamp = int(kline['E'])
-        #self.ema_volume.update(float(kline['v']))
-        self.rsi_result = self.rsi.update(close)
         #self.last_macd_result = self.macd_result
         #self.macd_result = self.macd.update(close)
         #self.last_macd_diff = self.macd_diff
@@ -356,7 +338,6 @@ class momentum_swing_strategy(object):
 
         self.run_update_price(close)
 
-        self.last_rsi_result = self.rsi_result
         self.last_timestamp = self.timestamp
         self.last_price = close
 
