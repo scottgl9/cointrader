@@ -110,3 +110,10 @@ class StatTracker(object):
             return True
 
         return False
+
+    def close_all_high_cutoff(self):
+        if self.close_price_all_high == 0 or self.close_price_all_low == 0:
+            return 0
+
+        return (self.close_price_all_low + 3 * self.close_price_all_high) / 4.0
+

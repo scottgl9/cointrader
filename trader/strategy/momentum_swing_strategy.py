@@ -6,6 +6,8 @@ from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
 from trader.indicator.TSI import TSI
 from trader.Crossover import Crossover
+from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
+from trader.signal.SignalHandler import SignalHandler
 from trader.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
 from datetime import datetime
@@ -60,17 +62,17 @@ class momentum_swing_strategy(object):
         self.last_macd_result = 0.0
         self.macd_diff = 0.0
         self.last_macd_diff = 0.0
-        #self.quad = QUAD()
         self.rsi = RSI()
         self.rsi_result = 0.0
         self.last_rsi_result = 0.0
         self.roc = ROC()
         self.tsi = TSI()
         self.last_tsi_result = 0.0
-        self.obv = OBV()
-        self.obv_ema12 = EMA(12, scale=24, lagging=True)
-        self.obv_ema26 = EMA(26, scale=24, lagging=True)
-        self.obv_ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
+
+        self.signal_handler = SignalHandler()
+        self.signal_handler.add(EMA_OBV_Crossover())
+
+        self.roc_obv_ema = EMA(3, scale=1, lagging=True)
 
         self.levels = SupportResistLevels()
         self.low_short = self.high_short = 0.0
@@ -80,12 +82,6 @@ class momentum_swing_strategy(object):
 
         self.cross_macd = Crossover()
         self.cross_macd_zero = Crossover()
-        self.ema12 = EMA(12, scale=24, lagging=True)
-        self.ema26 = EMA(26, scale=24, lagging=True)
-        self.ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
-        self.cross_short = Crossover()
-        self.cross_long = Crossover()
-        self.ema_volume = EMA(24, scale=24, lagging=True)
 
         self.cloud = IchimokuCloud()
         self.SpanA = 0.0
@@ -238,13 +234,13 @@ class momentum_swing_strategy(object):
                 if self.base == 'ETH' or self.base == 'BNB':
                     self.min_trade_size = self.my_float(min_trade_size * 3)
                 else:
-                    self.min_trade_size = self.my_float(min_trade_size * 2)
+                    self.min_trade_size = self.my_float(min_trade_size * 3)
                 #print("{}: {} {} {}".format(self.ticker_id, self.min_trade_size, self.base_min_size, self.quote_increment))
         elif self.ticker_id.endswith('ETH'):
             min_trade_size = self.round_base(self.eth_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size * 3)
+                    self.min_trade_size = self.my_float(min_trade_size)
                 else:
                     self.min_trade_size = self.my_float(min_trade_size)
         elif self.ticker_id.endswith('BNB'):
@@ -277,32 +273,7 @@ class momentum_swing_strategy(object):
         if self.last_buy_price != 0 and price > self.last_sell_price:
             return False
 
-        if self.rsi_result == 0:
-            return False
-
-        if self.ema50.last_result == 0 or self.ema12.last_result == 0 or self.ema26.last_result == 0:
-            return False
-
-        #if self.obv_ema26.last_result >= self.obv_ema26.result and self.ema26.result > self.ema26.last_result:
-        #    return False
-
-        #if self.obv_ema50.last_result >= self.obv_ema50.result and self.ema50.result > self.ema50.last_result:
-        #    return False
-
-        if self.obv_ema50.result < self.obv_ema50.last_result:
-            return False
-
-        #mid_price = self.stats.close_all_high_cutoff()
-        #if mid_price == 0 or price > mid_price:
-        #    return False
-
-        if self.cross_long.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
-            return True
-
-        if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result:
-            return True
-
-        if self.obv_ema50.last_result < 0.0 and self.obv_ema50.result > 0.0:
+        if self.signal_handler.buy_signal():
             return True
 
         return False
@@ -346,22 +317,7 @@ class momentum_swing_strategy(object):
             if not percent_p2_gt_p1(self.buy_price, price, 1.0):
                 return False
 
-        if self.obv_ema26.result > self.obv_ema26.last_result and self.ema26.result > self.ema26.last_result:
-            return False
-
-        if self.cross_short.crossdown_detected():
-            return True
-
-        if self.cross_long.crossdown_detected():
-            return True
-
-        if self.ema50.result > self.ema50.last_result and self.obv_ema50.result < self.obv_ema50.last_result:
-            return True
-
-        if self.obv_ema26.last_result > 0.0 and self.obv_ema26.result < 0.0:
-            return True
-
-        if self.obv_ema50.last_result > 0.0 and self.obv_ema50.result < 0.0:
+        if self.signal_handler.sell_signal():
             return True
 
         return False
@@ -395,10 +351,8 @@ class momentum_swing_strategy(object):
         #self.cross_macd.update(self.macd.diff, self.macd.signal.result)
         #self.cross_macd_zero.update(self.macd.diff, 0.0)
         #self.stats.update(close, self.timestamp)
-        obv_value = self.obv.update(close=close, volume=volume)
-        self.obv_ema12.update(obv_value)
-        self.obv_ema26.update(obv_value)
-        self.obv_ema50.update(obv_value)
+
+        self.signal_handler.pre_update(close=close, volume=volume)
 
         self.run_update_price(close)
 
@@ -407,12 +361,6 @@ class momentum_swing_strategy(object):
         self.last_price = close
 
     def run_update_price(self, price):
-        value1 = self.ema12.update(price)
-        value2 = self.ema26.update(price)
-        value3 = self.ema50.update(price)
-        self.cross_short.update(value1, value2)
-        self.cross_long.update(value2, value3)
-
         if self.buy_signal(price):
             self.place_buy_order(price)
         if self.sell_signal(price):

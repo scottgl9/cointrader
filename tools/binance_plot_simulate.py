@@ -26,7 +26,8 @@ from trader.indicator.PSAR import PSAR
 def simulate(conn, client, base, currency):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
-    c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
+    #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
+    c.execute("SELECT E,c,h,l,o,q,s,v FROM ticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     cloud = IchimokuCloud()
     macd = MACD(12.0, 26.0, 9.0, scale=24.0)
@@ -79,16 +80,15 @@ def simulate(conn, client, base, currency):
         i += 1
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
-    #lowprice, = plt.plot(low_prices, label=ticker_id)
-    #highprice, = plt.plot(high_prices, label=ticker_id)
+    lowprice, = plt.plot(low_prices, label=ticker_id)
+    highprice, = plt.plot(high_prices, label=ticker_id)
     #SpanA, = plt.plot(Senkou_SpanA_values, label="SpanA")
     #SpanB, = plt.plot(Senkou_SpanB_values, label="SpanB")
-    print(sar_values)
     ema0, = plt.plot(ema12_values, label='EMA12')
     ema1, = plt.plot(ema26_values, label='EMA26')
     ema2, = plt.plot(ema50_values, label='EMA50')
-    sar0, = plt.plot(sar_x_values, sar_values, label='PSAR')
-    plt.legend(handles=[symprice, ema0, ema1, ema2, sar0])
+    #sar0, = plt.plot(sar_x_values, sar_values, label='PSAR')
+    plt.legend(handles=[symprice, ema0, ema1, ema2])
     plt.subplot(212)
     plt.plot(diff_values)
     #plt.plot(signal_values)
@@ -96,7 +96,7 @@ def simulate(conn, client, base, currency):
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
+    conn = sqlite3.connect('cryptocurrency_database.ticker_collection_04282018.db') #'cryptocurrency_database.miniticker_collection_04092018.db')
 
     base = 'BTC'
     currency='USDT'

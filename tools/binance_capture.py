@@ -14,6 +14,10 @@ from config import *
 
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
+#A,B,C,E,F,L,O,P,Q,a,b,c,h,l,n,o,p,q,s,v,w,x
+#J,K,G,E,F,D,I,M,R,a,b,c,h,l,n,o,p,q,s,v,w,x
+
+
 class BinanceTrader:
     def __init__(self, client, asset_info=None, volumes=None):
         self.client = client
@@ -54,6 +58,7 @@ class BinanceTrader:
 
             #if msg['s'] != 'BTCUSDT' and msg['s'] not in self.volumes.keys(): return
             self.mongo_collection.insert_one(msg)
+            #print(msg)
             return
 
         for part in msg:
@@ -64,10 +69,12 @@ class BinanceTrader:
 
             #if part['s'] != 'BTCUSDT' and part['s'] not in self.volumes.keys(): continue
             self.mongo_collection.insert_one(part)
+            #print(part)
 
     def run(self):
         bm = BinanceSocketManager(self.client)
-        bm.start_miniticker_socket(self.process_message)
+        #bm.start_miniticker_socket(self.process_message)
+        bm.start_ticker_socket(self.process_message)
         bm.start()
 
 
