@@ -1,6 +1,7 @@
+from trader.indicator.EMA import EMA
 
 class IchimokuCloud(object):
-    def __init__(self, win_short=12, win_med=26, win_long=50):
+    def __init__(self, win_short=9*24*2, win_med=26*24*2, win_long=52*24*2):
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -11,6 +12,8 @@ class IchimokuCloud(object):
         self.klows_long = []
         self.khighs_long = []
         self.close_prices = []
+        self.ema_klow = EMA(50, scale=24)
+        self.ema_khigh = EMA(50, scale=24)
 
         self.last_klows_short = []
         self.last_khighs_short = []
@@ -33,6 +36,9 @@ class IchimokuCloud(object):
         self.close_last_window = 0.0
 
     def update(self, close, low, high):
+        low = float(low)#self.ema_klow.update(float(low))
+        high = float(high)#self.ema_khigh.update(float(high))
+
         # update window size 9
         if len(self.klows_short) < self.win_short:
             self.klows_short.append(float(low))

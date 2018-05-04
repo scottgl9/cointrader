@@ -47,10 +47,7 @@ class EMA_OBV_Crossover(object):
         if self.cross_long.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
 
-        if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
-            return True
-
-        if self.obv_ema50.last_result <= 0.0 and self.obv_ema50.result >= 0.0 and self.obv_ema50.result != self.obv_ema50.last_result:
+        if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result: #and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
 
         return False
@@ -65,22 +62,13 @@ class EMA_OBV_Crossover(object):
         if self.obv_ema26.result > self.obv_ema26.last_result and self.ema26.result > self.ema26.last_result:
             return False
 
-        if self.cross_short.crossdown_detected(): # and self.obv_ema26.result <= self.obv_ema26.last_result:
+        if self.cross_short.crossdown_detected():
             return True
 
         if self.cross_long.crossdown_detected():
             return True
 
         if self.ema50.result > self.ema50.last_result and self.obv_ema50.result < self.obv_ema50.last_result:
-            return True
-
-        #if self.obv_ema26.result < self.obv_ema26.last_result:
-        #    return True
-
-        if self.obv_ema26.last_result >= 0.0 and self.obv_ema26.result <= 0.0 and self.obv_ema26.result != self.obv_ema26.last_result:
-            return True
-
-        if self.obv_ema50.last_result >= 0.0 and self.obv_ema50.result <= 0.0 and self.obv_ema50.result != self.obv_ema50.last_result:
             return True
 
         return False

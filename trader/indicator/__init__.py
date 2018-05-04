@@ -1,4 +1,5 @@
 from trader.indicator.ATR import ATR
+from trader.indicator.BOX import BOX
 from trader.indicator.DEMA import DEMA
 from trader.indicator.EMA import EMA
 from trader.indicator.IchimokuCloud import IchimokuCloud
