@@ -87,7 +87,7 @@ if __name__ == '__main__':
         if name == 'BTC' or name == 'ETH' or name == 'BNB' or name == 'USDT':
             continue
 
-        ticker_id = "{}BTC".format(name)
+        ticker_id = "{}BNB".format(name)
         if ticker_id not in assets_info.keys(): continue
         size = round_base(value, float(assets_info[ticker_id]['minQty']))
         print(ticker_id, size)

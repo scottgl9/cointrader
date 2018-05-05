@@ -13,7 +13,7 @@ import sys
 from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance
 from config import *
 
 def simulate(conn, client):
@@ -38,10 +38,17 @@ def simulate(conn, client):
 
     initial_btc_total = 0.0
 
+    first_ts = None
+    last_ts = None
+
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
                'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
         tickers[msg['s']] = float(msg['c'])
+        if not first_ts:
+            first_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
+        else:
+            last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
         if msg['s'] == 'BTCUSDT' and not found:
             found = True
             total_btc = multitrader.accnt.balances['BTC']['balance']
@@ -50,6 +57,9 @@ def simulate(conn, client):
             print("Initial BTC={}".format(total_btc))
 
         multitrader.process_message(msg)
+
+    total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
+    print("total time (hours): {}".format(round(total_time_hours, 2)))
 
     print(multitrader.accnt.balances)
     final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)

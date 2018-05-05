@@ -4,11 +4,10 @@
 import time
 import trader.account.gdax as gdax
 from trader.account.gdax.authenticated_client import AuthenticatedClient
-from trader.AccountGDAX import AccountGDAX
+from trader.account.AccountGDAX import AccountGDAX
 import threading
 import sys
 from trader.WebHandler import WebThread
-from trader.strategy import *
 from trader.StrategyHandler import StrategyHandler
 
 from config import *

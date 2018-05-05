@@ -6,6 +6,7 @@ import numpy as np
 from sklearn import datasets, linear_model
 from trader.myhelpers import *
 from sklearn.metrics import mean_squared_error, r2_score
+from trader.indicator.BOX import BOX
 from trader.indicator.EMA import EMA
 from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
@@ -59,6 +60,10 @@ def plot_emas_product(plt, klines, product):
     ema26_prices = []
     ema_obv = EMA(26)
     ema_obv_values = []
+    box=BOX()
+    box_low_values = []
+    box_high_values = []
+    box_x_values = []
     obv = OBV()
     obv_values = []
     trend = MeasureTrend()
@@ -112,27 +117,33 @@ def plot_emas_product(plt, klines, product):
         obv_values.append(obv_value)
         ema_obv_values.append(ema_obv.update(obv_value))
 
-        SpanA, SpanB = cloud.update(close=close_price, low=low, high=high)
-        if SpanA != 0 and SpanB != 0:
-            Senkou_SpanA_values.append(SpanA)
-            Senkou_SpanB_values.append(SpanB)
-            #close_last_values.append(close_last_window)
-            span_x_values.append(i)
+        #SpanA, SpanB = cloud.update(close=close_price, low=low, high=high)
+        #if SpanA != 0 and SpanB != 0:
+        #    Senkou_SpanA_values.append(SpanA)
+        #    Senkou_SpanB_values.append(SpanB)
+        #    #close_last_values.append(close_last_window)
+        #    span_x_values.append(i)
 
-        sar_value = sar.update(close=close_price, low=low, high=high)
-        sar_x_values.append(i)
-        sar_values.append(sar_value)
+        #sar_value = sar.update(close=close_price, low=low, high=high)
+        #sar_x_values.append(i)
+        #sar_values.append(sar_value)
 
-        prev_low, prev_high, low_low, high_high = levels.update(close_price, low, high)
-        if prev_low != 0 and prev_high != 0:
-            prev_low_values.append(prev_low)
-            prev_high_values.append(prev_high)
-            low_low_values.append(low_low)
-            high_high_values.append(high_high)
-            prev_x_values.append(i)
+        #prev_low, prev_high, low_low, high_high = levels.update(close_price, low, high)
+        #if prev_low != 0 and prev_high != 0:
+        #    prev_low_values.append(prev_low)
+        #    prev_high_values.append(prev_high)
+        #    low_low_values.append(low_low)
+        #    high_high_values.append(high_high)
+        #    prev_x_values.append(i)
+
+        box_low, box_high = box.update(close_price)
+        if box_low != 0 and box_high != 0:
+            box_low_values.append(box_low)
+            box_high_values.append(box_high)
+            box_x_values.append(i)
 
         last_volume_amount = volume_amount
-        trend.update_price(open_price)
+        #trend.update_price(open_price)
         macd.update(open_price)
         ema12_prices.append(ema12.update(close_price))
         ema26_prices.append(ema26.update(close_price))
@@ -188,6 +199,8 @@ def plot_emas_product(plt, klines, product):
     #sar0, = plt.plot(sar_x_values, sar_values, label='PSAR')
     #closePlot, = plt.plot(span_x_values, close_last_values, label="Close")
     ema5, = plt.plot(ema26_prices, label='EMA26')
+    plt.plot(box_x_values, box_low_values)
+    plt.plot(box_x_values, box_high_values)
     #kama0, = plt.plot(kama_prices, label='KAMA')
 
     plt.legend(handles=[symprice, ema5])

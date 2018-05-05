@@ -1,5 +1,5 @@
 #from trader.account.cobinhood import
-from trader.AccountBase import AccountBase
+from trader.account.AccountBase import AccountBase
 
 
 class AccountCobinhood(AccountBase):

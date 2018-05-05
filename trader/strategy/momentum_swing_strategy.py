@@ -6,6 +6,7 @@ from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
 from trader.indicator.TSI import TSI
 from trader.Crossover import Crossover
+from trader.signal.BOX_OBV import BOX_OBV
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.PPO_OBV import PPO_OBV
 from trader.signal.RSI_OBV import RSI_OBV
@@ -67,8 +68,9 @@ class momentum_swing_strategy(object):
 
         self.signal_handler = SignalHandler()
         #self.signal_handler.add(RSI_OBV())
-        self.signal_handler.add(PPO_OBV())
+        #self.signal_handler.add(PPO_OBV())
         self.signal_handler.add(EMA_OBV_Crossover())
+        #self.signal_handler.add(BOX_OBV())
 
         self.roc_obv_ema = EMA(3, scale=1, lagging=True)
 

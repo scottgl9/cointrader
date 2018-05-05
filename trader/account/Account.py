@@ -1,6 +1,5 @@
-from trader.AccountBase import AccountBase
-from trader.AccountGDAX import AccountGDAX
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountGDAX import AccountGDAX
+from trader.account.AccountBinance import AccountBinance
 
 class Account(object):
     def __init__(self, client, base_name, currency_name, account_name='GDAX'):

@@ -1,8 +1,6 @@
 from trader.account.binance.client import Client
-from trader.AccountBase import AccountBase
-from datetime import datetime, timedelta
-import logging
-import sys
+from trader.account.AccountBase import AccountBase
+
 
 #logger = logging.getLogger(__name__)
 

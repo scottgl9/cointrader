@@ -1,5 +1,4 @@
 from trader import OrderBookGDAX
-from trader import AccountGDAX
 from trader import OrderHandler
 from trader.account import gdax
 from trader.MeasureTrend import MeasureTrend

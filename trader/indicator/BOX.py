@@ -2,7 +2,7 @@
 
 
 class BOX:
-    def __init__(self, window=200):
+    def __init__(self, window=50):
         self.window = window
         self.close_prices = []
         self.age = 0

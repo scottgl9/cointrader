@@ -1,9 +1,8 @@
 # handle multiple traders, one for each base / currency we want to trade
-from trader.Account import Account
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance
 from trader.strategy import *
 from trader.TradePair import TradePair
-import logging
+
 
 #logger = logging.getLogger(__name__)
 

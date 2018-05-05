@@ -13,7 +13,7 @@ import sys
 from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance
 from config import *
 
 def simulate(conn, client):

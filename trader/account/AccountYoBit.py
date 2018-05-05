@@ -1,4 +1,3 @@
-from trader.AccountBase import AccountBase
 from trader.account.yobit import YoBit
 
 class AccountYoBit(object):

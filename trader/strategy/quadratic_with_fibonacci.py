@@ -1,5 +1,5 @@
 from trader import OrderBookGDAX
-from trader import AccountGDAX
+from trader.account.AccountGDAX import AccountGDAX
 from trader.indicator import QUAD, EMA, DiffWindow
 from trader import OrderHandler
 from trader.account import gdax

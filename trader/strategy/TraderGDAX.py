@@ -1,7 +1,7 @@
 #from pymongo import MongoClient
 from trader import OrderBookGDAX
 from trader.indicator import SMMA, EMA
-from trader import AccountGDAX
+from trader.account.AccountGDAX import AccountGDAX
 from trader import OrderHandler
 import time
 

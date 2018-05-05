@@ -1,5 +1,4 @@
 from trader import OrderBookGDAX
-from trader import AccountGDAX
 from trader import OrderHandler
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.EMA import EMA

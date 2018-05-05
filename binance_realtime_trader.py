@@ -3,13 +3,10 @@
 from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
-from trader.AccountBinance import AccountBinance
-from trader.strategy import select_strategy
 import collections
-import matplotlib.pyplot as plt
 import sys
 from config import *
-import logging
+
 
 #logger = logging.getLogger(__name__)
 
