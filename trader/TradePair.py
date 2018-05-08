@@ -10,6 +10,7 @@ class TradePair(object):
         self.ticker_id = self.accnt.make_ticker_id(base, currency)
         #print(self.accnt.get_fills(ticker_id=self.ticker_id))
 
+        self.last_close = 0.0
         self.low_24hr = self.high_24hr = 0.0
         self.open_24hr = self.close_24hr = 0.0
         self.last_24hr = 0.0
@@ -49,6 +50,7 @@ class TradePair(object):
         self.market_price = price
 
     def run_update(self, msg):
+        self.last_close = self.strategy.last_close
         result = self.strategy.run_update(msg)
         self.last_50_prices = self.strategy.last_50_prices
         self.prev_last_50_prices = self.strategy.prev_last_50_prices

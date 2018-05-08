@@ -22,7 +22,7 @@ from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.PSAR import PSAR
 import math
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.MeasureTrend import MeasureTrend
 from trader.account.binance.exceptions import BinanceAPIException

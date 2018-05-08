@@ -5,6 +5,9 @@ class CircularArray(object):
         self.last_age = 0
         self.age = 0
 
+    def __len__(self):
+        return len(self.carray)
+
     def add(self, value):
         if len(self.carray) < self.window:
             self.carray.append(value)
@@ -38,3 +41,12 @@ class CircularArray(object):
 
     def last_index(self):
         return self.last_age
+
+    def values_by_range(self, start=0, end=-1):
+        values = []
+        age = self.last_age
+        while age != self.age:
+            values.append(self.carray[int(age)])
+            age = (age + 1) % self.window
+
+        return values[start:end]

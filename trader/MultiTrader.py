@@ -1,8 +1,9 @@
 # handle multiple traders, one for each base / currency we want to trade
 from trader.account.AccountBinance import AccountBinance
+from trader.RankManager import RankManager
 from trader.strategy import *
 from trader.TradePair import TradePair
-
+from trader.indicator.SMA import SMA
 
 #logger = logging.getLogger(__name__)
 
@@ -33,6 +34,8 @@ class MultiTrader(object):
             self.accnt = AccountBinance(self.client, simulation=simulate)  # , account_name='Binance')
         self.assets_info = assets_info
         self.volumes = volumes
+        self.rank = RankManager()
+        self.roc_ema = SMA(50)
 
         if self.simulate:
             print("Running MultiTrader as simulation")
@@ -53,8 +56,15 @@ class MultiTrader(object):
         base_name, currency_name = split_symbol(symbol)
         if not base_name or not currency_name: return
 
-        strategy = select_strategy(self.strategy_name, self.client, base_name, currency_name,
-                                   account_handler=self.accnt, base_min_size=base_min_size, tick_size=quote_increment)
+        strategy = select_strategy(self.strategy_name,
+                                   self.client,
+                                   base_name,
+                                   currency_name,
+                                   account_handler=self.accnt,
+                                   base_min_size=base_min_size,
+                                   tick_size=quote_increment,
+                                   rank=self.rank)
+
         trade_pair = TradePair(self.client, self.accnt, strategy, base_name, currency_name)
 
         self.trade_pairs[symbol] = trade_pair
@@ -78,8 +88,13 @@ class MultiTrader(object):
                 self.add_trade_pair(msg['s'])
 
             if msg['s'] not in self.trade_pairs.keys(): return
-            if self.volumes and msg['s'] not in self.volumes.keys(): return
+            #if self.volumes and msg['s'] not in self.volumes.keys(): return
+
             symbol_trader = self.trade_pairs[msg['s']]
+            if symbol_trader.last_close != 0.0:
+                close = float(msg['c'])
+                roc = 100.0 * (close / symbol_trader.last_close - 1)
+                self.rank.update(msg['s'], self.roc_ema.update(roc))
             symbol_trader.run_update(msg)
             return
 
@@ -94,5 +109,10 @@ class MultiTrader(object):
 
             if part['s'] not in self.trade_pairs.keys(): continue
             #if self.volumes and part['s'] not in self.volumes.keys(): continue
+
             symbol_trader = self.trade_pairs[part['s']]
+            if symbol_trader.last_close != 0.0:
+                close = float(msg['c'])
+                roc = 100.0 * (close / symbol_trader.last_close - 1)
+                self.rank.update(msg['s'], self.roc_ema.update(roc))
             symbol_trader.run_update(part)

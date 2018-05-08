@@ -3,13 +3,16 @@ from trader.indicator.BOX import BOX
 from trader.indicator.DEMA import DEMA
 from trader.indicator.DeMark import DeMark
 from trader.indicator.EMA import EMA
+from trader.indicator.HMA import HMA
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.KAMA import KAMA
+from trader.indicator.LinReg import LinReg
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD
 from trader.indicator.OBV import OBV
 from trader.indicator.PPO import PPO
 from trader.indicator.PSAR import PSAR
+from trader.indicator.RMA import RMA
 from trader.indicator.ROC import ROC
 from trader.indicator.SMA import SMA
 from trader.indicator.SMMA import SMMA
@@ -18,3 +21,4 @@ from trader.indicator.VWAP import VWAP
 from trader.indicator.RSI import RSI
 from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
+from trader.indicator.WMA import WMA

@@ -10,7 +10,7 @@ from trader.strategy.macd_stop_order_follow import macd_stop_order_follow
 from trader.strategy.null_strategy import null_strategy
 from trader.strategy.support_resistance_level_strategy import support_resistance_level_strategy
 
-def select_strategy(sname, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
+def select_strategy(sname, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None):
     if sname == 'buy_low_sell_high':
         return buy_low_sell_high(client, name, currency, account_handler, order_handler)
     elif sname == 'fibonacci_with_macd':
@@ -26,7 +26,7 @@ def select_strategy(sname, client, name='BTC', currency='USD', account_handler=N
     elif sname == 'trailing_prices_strategy':
         return trailing_prices_strategy(client, name, currency, account_handler, order_handler)
     elif sname == 'momentum_swing_strategy':
-        return momentum_swing_strategy(client, name, currency, account_handler, order_handler, base_min_size=base_min_size, tick_size=tick_size)
+        return momentum_swing_strategy(client, name, currency, account_handler, order_handler, base_min_size=base_min_size, tick_size=tick_size, rank=rank)
     elif sname == 'macd_stop_order_follow':
         return macd_stop_order_follow(client, name, currency, account_handler, order_handler, base_min_size=base_min_size, tick_size=tick_size)
     elif sname == 'null_strategy':

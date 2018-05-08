@@ -51,18 +51,19 @@ def percent_p1_lt_p2(p1, p2, percent):
 
 
 class momentum_swing_strategy(object):
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
+    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None):
         self.strategy_name = 'momentum_swing_strategy'
         self.client = client
         self.accnt = account_handler
+        self.rank = rank
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
+        self.last_close = 0.0
         self.macd = MACD(12.0, 26.0, 9.0, scale=1.0)
         self.macd_result = 0.0
         self.last_macd_result = 0.0
         self.macd_diff = 0.0
         self.last_macd_diff = 0.0
-        self.roc = ROC()
         self.tsi = TSI()
         self.last_tsi_result = 0.0
 
@@ -71,8 +72,6 @@ class momentum_swing_strategy(object):
         #self.signal_handler.add(PPO_OBV())
         self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(BOX_OBV())
-
-        self.roc_obv_ema = EMA(3, scale=1, lagging=True)
 
         self.levels = SupportResistLevels()
         self.low_short = self.high_short = 0.0
@@ -96,6 +95,11 @@ class momentum_swing_strategy(object):
         self.buy_signal_count = self.sell_signal_count = 0
         self.high_24hr = self.low_24hr = 0.0
         self.open_24hr = self.close_24hr = self.volume_24hr = 0.0
+        self.rank_value = -1
+        self.last_rank_value = -1
+        self.rank_increases = 0
+        self.rank_decreases = 0
+        self.rank_top = False
         self.last_high_24hr = 0.0
         self.last_low_24hr = 0.0
         self.interval_price = 0.0
@@ -118,9 +122,10 @@ class momentum_swing_strategy(object):
         #        self.buy_price = self.buy_price_list[-1]
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
-        self.bnb_trade_size = 0.71
+        self.bnb_trade_size = 1.0
         self.usdt_trade_size = 10.0
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
+        self.min_trade_size_qty = 1.0
         #self.accnt.get_account_balances()
 
     def get_ticker_id(self):
@@ -166,7 +171,12 @@ class momentum_swing_strategy(object):
         if not self.accnt.simulate:
             print(result)
 
-        print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.min_trade_size, price))
+        min_trade_size = self.min_trade_size
+
+        if self.min_trade_size_qty != 1.0:
+            min_trade_size = float(min_trade_size) * self.min_trade_size_qty
+
+        print("buy({}{}, {}) @ {}".format(self.base, self.currency, min_trade_size, price))
         if not self.accnt.simulate and not result:
             return
 
@@ -178,17 +188,15 @@ class momentum_swing_strategy(object):
                     return
                 orderid = result['orderId']
                 self.buy_order_id = orderid
-                #result = self.accnt.get_order(order_id=orderid, ticker_id=self.ticker_id)
-                #if 'price' not in result:
-                #    print("WARNING: price not found for {}".format(self.ticker_id))
-                #    return
-                #print(result)
-                #if float(result['price']) != 0.0:
-                #    price = result['price']
-                #    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, price))
 
             self.buy_price = price
-            self.buy_size = self.min_trade_size
+            self.buy_size = min_trade_size
+
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
+
+            self.last_buy_price = price
+
             #self.buy_price_list.append(price)
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
@@ -270,10 +278,33 @@ class momentum_swing_strategy(object):
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return False
 
-        if self.last_buy_price != 0 and price > self.last_sell_price:
+        if self.last_close == 0:
             return False
 
+        #if self.rank_increases == 0 or self.rank_decreases == 0:
+        #    return False
+
+        #if self.ticker_id in dict(self.rank.rank_descending_bottom()).keys():
+        #    self.roc = float(dict(self.rank.rank_descending_bottom())[self.ticker_id])
+        #    #if self.roc < -0.1:
+        #    return False
+
+        #if self.last_roc != 0.0 and self.roc != 0.0 and self.roc < self.last_roc and self.last_roc < 0.0:
+        #    #self.min_trade_size_qty = 0.5
+        #    return False
+
+        #if self.ticker_id in dict(self.rank.rank_descending_top()).keys():
+        #    self.roc = float(dict(self.rank.rank_descending_top())[self.ticker_id])
+
+        if self.ticker_id in dict(self.rank.rank_descending_top()).keys():
+            self.rank_top = True
+
         if self.signal_handler.buy_signal():
+            #if self.rank_decreases >= self.rank_increases:
+            #    return False
+            #if self.last_roc != 0.0 and self.roc != 0.0 and self.roc > self.last_roc:
+            #    self.min_trade_size_qty = 3.0
+            #if self.rank_increases > self.rank_decreases:
             return True
 
         return False
@@ -295,6 +326,12 @@ class momentum_swing_strategy(object):
                 self.buy_order_id = None
                 return False
 
+        if self.rank_top and self.ticker_id in dict(self.rank.rank_descending_bottom()).keys() and self.signal_handler.sell_signal():
+            self.rank_top = False
+            pchange = (price - self.buy_price) / self.buy_price
+            if pchange >= 0.0:
+                return True
+
         if price < float(self.buy_price):
             return False
 
@@ -306,6 +343,8 @@ class momentum_swing_strategy(object):
                 return False
 
         if self.signal_handler.sell_signal():
+            self.rank_increases = 0
+            self.rank_decreases = 0
             return True
 
         return False
@@ -326,6 +365,7 @@ class momentum_swing_strategy(object):
         low = float(kline['l'])
         high = float(kline['h'])
         volume = float(kline['v'])
+
         if close == 0 or volume == 0:
             return
 
@@ -338,19 +378,27 @@ class momentum_swing_strategy(object):
         #self.cross_macd_zero.update(self.macd.diff, 0.0)
         #self.stats.update(close, self.timestamp)
 
-        self.signal_handler.pre_update(close=close, volume=volume)
+        self.last_rank_value = self.rank_value
+        self.rank_value = self.rank.rank(symbol=self.ticker_id)
+        if self.last_rank_value != -1 and self.rank_value != -1:
+            if self.rank_value < self.last_rank_value:
+                self.rank_decreases += (self.last_rank_value - self.rank_value)
+            elif self.rank_value > self.last_rank_value:
+                self.rank_increases += (self.rank_value - self.last_rank_value)
+
+        self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp)
 
         self.run_update_price(close)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
+        self.last_close = close
 
     def run_update_price(self, price):
         if self.buy_signal(price):
             self.place_buy_order(price)
         if self.sell_signal(price):
             self.place_sell_order(price)
-            self.last_sell_price = price
 
     def run_update_orderbook(self, msg):
         pass

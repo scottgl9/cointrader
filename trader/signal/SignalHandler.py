@@ -14,12 +14,12 @@ class SignalHandler(object):
     def remove(self, handler):
         self.handlers.remove(handler)
 
-    def pre_update(self, close, volume):
+    def pre_update(self, close, volume, ts=0):
         if len(self.handlers) == 0:
             return
 
         for handler in self.handlers:
-            handler.pre_update(close=close, volume=volume)
+            handler.pre_update(close=close, volume=volume, ts=ts)
 
     def post_update(self, close, volume):
         if len(self.handlers) == 0:
