@@ -1,57 +1,66 @@
 # idea I have for smoothing a moving average
 from trader.lib.CircularArray import CircularArray
 
+# Idea of channel linear regression lines:
+# - each time price is updated, add to circular array of size
+#   window, take minimum of prices in window, and add result to
+# array of low_prices. Do the same except use max for high_prices
+
+# Find direction of the trend:
+# if minimum of high_prices <= maximum of low_prices: direction = -1
+# if maximum of low_prices >= minimum of high_prices: direction = 1
+from trader.indicator.EMA import EMA
+
 class TESTMA(object):
-    def __init__(self, segment, window):
+    def __init__(self, window=50, window2=5):
         self.window = window
-        self.segment = segment
+        self.window2 = window2
         self.values = CircularArray(window=window)
-        self.segment_values = []
+        self.low_prices = CircularArray(window=window2)
+        self.high_prices = CircularArray(window=window2)
         self.age = 0
+        self.age2 = 0
         self.segment_age = 0
         self.result = 0
         self.direction = 0
-        self.start_minimum = 0
-        self.last_minimum = 0
-        self.last_maximum = 0
-        self.minimum_age = 0
+        self.last_direction = 0
+        self.min_low_prices = 0
+        self.last_min_low_prices = 0
+        self.max_high_prices = 0
+        self.last_max_high_prices = 0
 
     def update(self, value):
+        if float(value) not in self.values.values():
             self.values.add(float(value))
+        values = self.values.values()
 
-            seg1 = self.values[:self.segment]
-            seg2 = self.values[-self.segment:]
-            minimum = min(min(seg1), min(seg2))
-            maximum = max(max(seg1), max(seg2))
+        if len(values) == self.window:
+            self.low_prices.add(min(values))
+            self.high_prices.add(max(values))
 
-            if self.direction == -1 and minimum < self.last_minimum:
-                self.last_minimum = minimum
-            elif self.direction == 1 and minimum > self.last_minimum:
-                self.last_minimum = minimum
-            else:
-                # start new segment and return old segment
-                if min(seg1) >= min(seg2):
-                    self.direction = -1
-                elif min(seg1) < min(seg2):
-                    self.direction = 1
+        low_prices = self.low_prices.values()
+        high_prices = self.high_prices.values()
 
-                values = []
+        if len(high_prices) != 0:
+            if min(high_prices) < max(low_prices):
+                self.direction = -1
+            elif max(low_prices) > min(high_prices):
+                self.direction = 1
 
-                if self.last_minimum != 0 and self.minimum_age != 0:
-                    slope = (minimum - self.start_minimum) / self.minimum_age
+            if self.direction != 0:
+                print(self.direction)
 
-                    for i in range(0, self.minimum_age):
-                        values.append(i * slope + self.start_minimum)
+        if len(self.low_prices) < 1:
+            return 0.0, 0.0
 
-                    print(self.direction, self.last_minimum, min(seg1), min(seg2))
+        self.last_min_low_prices = self.min_low_prices
+        self.last_max_high_prices = self.max_high_prices
+        self.min_low_prices = min(low_prices)
+        self.max_high_prices = max(high_prices)
 
-                self.last_minimum = minimum
-                self.start_minimum = minimum
-                self.minimum_age = 0
+        if self.min_low_prices == self.last_min_low_prices:
+            return 0.0, 0.0
+        if self.max_high_prices == self.last_max_high_prices:
+            return 0.0, 0.0
 
-                return values
-
-        self.minimum_age += 1
-        self.age = (self.age + 1) % self.window
-
-        return []
+        return self.min_low_prices, self.max_high_prices
