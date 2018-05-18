@@ -1,7 +1,7 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.PPO import PPO
-from trader.Crossover import Crossover
+from trader.lib.Crossover import Crossover
 
 
 class PPO_OBV(object):

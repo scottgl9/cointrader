@@ -1,14 +1,3 @@
-from trader import OrderBookGDAX
-from trader import OrderHandler
-from trader.account import gdax
-from trader.MeasureTrend import MeasureTrend
-from trader.indicator.QUAD import QUAD
-from trader.indicator.EMA import EMA
-from trader.indicator.RSI import RSI
-from trader.indicator.MACD import MACD
-from trader.indicator.ROC import ROC
-from trader.indicator.TSI import TSI
-from trader.Crossover import Crossover
 from datetime import datetime
 #import logging
 

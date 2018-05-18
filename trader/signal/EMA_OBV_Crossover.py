@@ -1,9 +1,9 @@
-from trader.indicator.BOX import BOX
 from trader.indicator.EMA import EMA
-from trader.indicator.ZLEMA import DZLEMA
 from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
-from trader.Crossover import Crossover
+from trader.indicator.TESTMA import TESTMA
+from trader.lib.Crossover import Crossover
+from trader.lib.Crossover2 import Crossover2
 
 
 class EMA_OBV_Crossover(object):
@@ -14,15 +14,16 @@ class EMA_OBV_Crossover(object):
         self.ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.ema26 = EMA(self.win_med, scale=24, lagging=True)
         self.ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
-        self.cross_short = Crossover()
-        self.cross_long = Crossover()
+        self.cross_short = Crossover2()
+        self.cross_long = Crossover2()
 
         self.obv = OBV()
-        self.obv_ema12 = DZLEMA(self.win_short, scale=24, lagging=True)
-        self.obv_ema26 = DZLEMA(self.win_med, scale=24, lagging=True, lag_window=5)
-        self.obv_ema50 = DZLEMA(self.win_long, scale=24, lagging=True, lag_window=5)
+        self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
+        self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
+        self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
         self.roc_ema26 = ROC()
         self.roc_ema50 = ROC()
+        self.testma = TESTMA()
         #self.box = BOX()
         self.trend_down_count = 0
         self.trend_up_count = 0
@@ -51,6 +52,8 @@ class EMA_OBV_Crossover(object):
         #    self.trending_down = False
         #    self.trend_up_count += 1
 
+        self.testma.update(close)
+
         self.obv_ema12.update(obv_value)
         self.obv_ema26.update(obv_value)
         self.obv_ema50.update(obv_value)
@@ -58,8 +61,8 @@ class EMA_OBV_Crossover(object):
         value1 = self.ema12.update(close)
         value2 = self.ema26.update(close)
         value3 = self.ema50.update(close)
-        self.roc_ema26.update(price=value1, ts=ts)
-        self.roc_ema50.update(price=value2, ts=ts)
+        #self.roc_ema26.update(price=value1, ts=ts)
+        #self.roc_ema50.update(price=value2, ts=ts)
 
         self.cross_short.update(value1, value2)
         self.cross_long.update(value2, value3)
@@ -82,6 +85,12 @@ class EMA_OBV_Crossover(object):
 
         if self.obv_ema12.result <= self.obv_ema12.last_result:
             return False
+
+        #if self.testma.peak():
+        #    return False
+
+        #if self.testma.valley():
+        #    return True
 
         if self.cross_long.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
@@ -114,6 +123,9 @@ class EMA_OBV_Crossover(object):
 
         if self.ema50.result > self.ema50.last_result and self.obv_ema50.result < self.obv_ema50.last_result:
             return True
+
+        #if self.testma.peak():
+        #    return True
 
         #if self.ema12.result > self.ema12.last_result and self.obv_ema12.result < self.obv_ema12.last_result:
         #    return True

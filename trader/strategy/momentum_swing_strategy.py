@@ -1,15 +1,8 @@
-from trader.indicator.EMA import EMA
 from trader.indicator.IchimokuCloud import IchimokuCloud
-from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
-from trader.indicator.OBV import OBV
-from trader.indicator.ROC import ROC
 from trader.indicator.TSI import TSI
-from trader.Crossover import Crossover
-from trader.signal.BOX_OBV import BOX_OBV
+from trader.lib.Crossover import Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
-from trader.signal.PPO_OBV import PPO_OBV
-from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.SignalHandler import SignalHandler
 from trader.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
@@ -296,8 +289,8 @@ class momentum_swing_strategy(object):
         #if self.ticker_id in dict(self.rank.rank_descending_top()).keys():
         #    self.roc = float(dict(self.rank.rank_descending_top())[self.ticker_id])
 
-        if self.ticker_id in dict(self.rank.rank_descending_top()).keys():
-            self.rank_top = True
+        #if self.ticker_id in dict(self.rank.rank_descending_top()).keys():
+        #    self.rank_top = True
 
         if self.signal_handler.buy_signal():
             #if self.rank_decreases >= self.rank_increases:
@@ -326,11 +319,11 @@ class momentum_swing_strategy(object):
                 self.buy_order_id = None
                 return False
 
-        if self.rank_top and self.ticker_id in dict(self.rank.rank_descending_bottom()).keys() and self.signal_handler.sell_signal():
-            self.rank_top = False
-            pchange = (price - self.buy_price) / self.buy_price
-            if pchange >= 0.0:
-                return True
+        #if self.rank_top and self.ticker_id in dict(self.rank.rank_descending_bottom()).keys() and self.signal_handler.sell_signal():
+        #    self.rank_top = False
+        #    pchange = (price - self.buy_price) / self.buy_price
+        #    if pchange >= 0.0:
+        #        return True
 
         if price < float(self.buy_price):
             return False

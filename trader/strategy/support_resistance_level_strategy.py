@@ -1,10 +1,8 @@
-from trader import OrderBookGDAX
-from trader import OrderHandler
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.EMA import EMA
 from trader.indicator.RSI import RSI
 
-from trader.Crossover import Crossover
+from trader.lib.Crossover import Crossover
 from datetime import datetime
 #import logging
 

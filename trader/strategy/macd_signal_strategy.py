@@ -1,16 +1,10 @@
-from trader import OrderBookGDAX
-from trader import OrderHandler
-from trader.account import gdax
-from trader.MeasureTrend import MeasureTrend
-from trader.indicator.QUAD import QUAD
 from trader.indicator.EMA import EMA
-from trader.indicator.KAMA import KAMA
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
 from trader.indicator.ROC import ROC
 from trader.indicator.TSI import TSI
-from trader.Crossover import Crossover
+from trader.lib.Crossover import Crossover
 from trader.SupportResistLevels import SupportResistLevels
 from datetime import datetime
 #import logging

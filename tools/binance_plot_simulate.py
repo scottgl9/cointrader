@@ -17,6 +17,7 @@ from trader.account.AccountBinance import AccountBinance
 from config import *
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.EMA import EMA
@@ -51,7 +52,7 @@ def simulate(conn, client, base, currency):
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
-    testma = TESTMA(segment=30, window=500)
+    testma = TESTMA()
     testma_values = []
     testma_x_values = []
     zlema = ZLEMA(window=50, scale=24)
@@ -88,6 +89,10 @@ def simulate(conn, client, base, currency):
     lstsqs_x_values = []
     lstsqs_y_values = []
 
+    volumes_x_values = []
+    volumes_values = []
+    volumes = []
+
     i=0
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
@@ -101,6 +106,8 @@ def simulate(conn, client, base, currency):
         #if sar.bull:
         #    sar_x_values.append(i)
         #    sar_values.append(sar_value)
+
+        volumes.append(volume)
 
         box_low, box_high = box.update(close)
         if box_low != 0 and box_high != 0:
@@ -118,13 +125,17 @@ def simulate(conn, client, base, currency):
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
 
-        values = testma.update(close)
-        if len(values) != 0:
-            for value in values:
-                testma_values.append(value)
-                testma_x_values.append(i)
+        value1, value2 = testma.update(close)
+        if value1 != 0 and value2 != 0:
+            support1_values.append(value1)
+            support2_values.append(value2)
+            lstsqs_x_values.append(i)
+        #if len(values) != 0:
+        #    for value in values:
+        #        testma_values.append(value)
+        #        testma_x_values.append(i)
 
-        zlema_values.append(zlema2.update(zlema.update(close)))
+        #zlema_values.append(zlema2.update(zlema.update(close)))
 
         #line_value = line.update(ema12_value)
         #if line_value != 0:
@@ -154,23 +165,34 @@ def simulate(conn, client, base, currency):
         close_prices.append(close)
         low_prices.append(low)
         high_prices.append(high)
-        lstsqs_x_values.append(i)
+        #lstsqs_x_values.append(i)
         i += 1
 
+    i = 0
+    min_price = min(low_prices)
+    scale = min(low_prices) / max(volumes)
+    for volume in volumes:
+        volumes_values.append(volume)
+        volumes_x_values.append(i)
+        i+= 1
     #lstsqs = np.poly1d(np.polyfit(np.array(lstsqs_x_values), np.array(close_prices), 5))
     #for x in lstsqs_x_values:
     #    lstsqs_y_values.append(lstsqs(x))
 
-    plt.subplot(211)
+    #plt.subplot(211)
+    fig = plt.figure()
+    ax = fig.add_subplot(2,1,1)
     symprice, = plt.plot(close_prices, label=ticker_id)
+    plt.plot(lstsqs_x_values, support1_values)
+    plt.plot(lstsqs_x_values, support2_values)
     #lowprice, = plt.plot(low_prices, label=ticker_id)
     #highprice, = plt.plot(high_prices, label=ticker_id)
     #SpanA, = plt.plot(Senkou_SpanA_values, label="SpanA")
     #SpanB, = plt.plot(Senkou_SpanB_values, label="SpanB")
-    ema0, = plt.plot(ema12_values, label='EMA12')
-    plt.plot(testma_x_values, testma_values)
+    #ema0, = plt.plot(ema12_values, label='EMA12')
+    #plt.plot(testma_x_values, testma_values)
     #ema1, = plt.plot(ema26_values, label='EMA26')
-    ema2, = plt.plot(ema50_values, label='EMA50')
+    #ema2, = plt.plot(ema50_values, label='EMA50')
     #plt.plot(box_lows)
     #plt.plot(box_highs)
     #plt.plot(line_x_values, line_values)
@@ -180,7 +202,9 @@ def simulate(conn, client, base, currency):
     #quad0, = plt.plot(quad_y_values, label='QUAD')
     #plt.plot(lstsqs_x_values, lstsqs_y_values)
     #sar0, = plt.plot(sar_x_values, sar_values, label='PSAR')
-    plt.legend(handles=[symprice, ema0, ema2])
+
+    #plt.bar(volumes_x_values, volumes_values, align='center')
+    plt.legend(handles=[symprice])
     plt.subplot(212)
     plt.plot(obv_ema12_values)
     plt.plot(obv_ema26_values)
