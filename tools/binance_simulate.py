@@ -27,8 +27,7 @@ def simulate(conn, client):
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
-    multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt)
-    #row = None
+    multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, ranking=False)
 
     print(multitrader.accnt.balances)
 

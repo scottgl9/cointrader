@@ -4,6 +4,7 @@ from trader.indicator.ROC import ROC
 from trader.indicator.TESTMA import TESTMA
 from trader.lib.Crossover import Crossover
 from trader.lib.Crossover2 import Crossover2
+from trader.lib.CrossoverDouble import CrossoverDouble
 
 
 class EMA_OBV_Crossover(object):
@@ -14,8 +15,9 @@ class EMA_OBV_Crossover(object):
         self.ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.ema26 = EMA(self.win_med, scale=24, lagging=True)
         self.ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
-        self.cross_short = Crossover2()
-        self.cross_long = Crossover2()
+        self.cross_short = Crossover2(window=10)
+        self.cross_long = Crossover2(window=10)
+        self.cross_double = CrossoverDouble()
 
         self.obv = OBV()
         self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
@@ -52,11 +54,11 @@ class EMA_OBV_Crossover(object):
         #    self.trending_down = False
         #    self.trend_up_count += 1
 
-        self.testma.update(close)
+        #self.testma.update(close)
 
-        self.obv_ema12.update(obv_value)
-        self.obv_ema26.update(obv_value)
-        self.obv_ema50.update(obv_value)
+        obv_value1 = self.obv_ema12.update(obv_value)
+        obv_value2 = self.obv_ema26.update(obv_value)
+        obv_value3 = self.obv_ema50.update(obv_value)
 
         value1 = self.ema12.update(close)
         value2 = self.ema26.update(close)
@@ -64,8 +66,11 @@ class EMA_OBV_Crossover(object):
         #self.roc_ema26.update(price=value1, ts=ts)
         #self.roc_ema50.update(price=value2, ts=ts)
 
+        #self.cross_short.update(value1, value2)
+        #self.cross_long.update(value2, value3)
         self.cross_short.update(value1, value2)
         self.cross_long.update(value2, value3)
+        self.cross_double.update(value1, value2, value3)
 
     def post_update(self, close, volume):
         pass
@@ -78,7 +83,7 @@ class EMA_OBV_Crossover(object):
             return False
 
         if self.obv_ema50.result <= self.obv_ema50.last_result:
-            return False
+           return False
 
         if self.obv_ema26.result <= self.obv_ema26.last_result:
             return False
@@ -86,17 +91,14 @@ class EMA_OBV_Crossover(object):
         if self.obv_ema12.result <= self.obv_ema12.last_result:
             return False
 
-        #if self.testma.peak():
-        #    return False
-
-        #if self.testma.valley():
-        #    return True
-
         if self.cross_long.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
 
         if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
+
+        #if self.cross_double.crossup_detected():
+        #    return True
 
         #if self.trend_down_count > 10 and self.trend_up_count > 2 and self.trending_up:
         #    self.trend_up_count = 0
@@ -121,11 +123,11 @@ class EMA_OBV_Crossover(object):
         if self.cross_long.crossdown_detected():
             return True
 
+        #if self.cross_double.crossdown_detected():
+        #    return True
+
         if self.ema50.result > self.ema50.last_result and self.obv_ema50.result < self.obv_ema50.last_result:
             return True
-
-        #if self.testma.peak():
-        #    return True
 
         #if self.ema12.result > self.ema12.last_result and self.obv_ema12.result < self.obv_ema12.last_result:
         #    return True

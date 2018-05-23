@@ -3,6 +3,7 @@ from trader.indicator.MACD import MACD
 from trader.indicator.TSI import TSI
 from trader.lib.Crossover import Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
+from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.SignalHandler import SignalHandler
 from trader.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
@@ -195,23 +196,6 @@ class momentum_swing_strategy(object):
             self.accnt.get_account_balances()
 
     def place_sell_order(self, price):
-        # get the actual buy price on the order before considering selling
-        #if not self.accnt.simulate and self.buy_order_id:
-        #    #result = self.accnt.get_order(order_id=self.buy_order_id, ticker_id=self.ticker_id)
-        #    #if 'price' not in result:
-        #    #    return
-        #    #print(result)
-
-        #    #if float(result['price']) != 0.0:
-        #    #    self.buy_price = result['price']
-        #    #    self.buy_order_id = None
-        #    #    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, self.buy_price))
-        #    if price > self.buy_price:
-        #        # assume that this is the actual price that the market order executed at
-        #        print("Updated buy_price to {} from {}".format(price, self.buy_price))
-        #        self.buy_price = price
-        #        self.buy_order_id = None
-
         result = self.accnt.sell_market(self.buy_size, price=price, ticker_id=self.get_ticker_id())
         if not self.accnt.simulate and not result: return
         if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
@@ -274,23 +258,10 @@ class momentum_swing_strategy(object):
         if self.last_close == 0:
             return False
 
-        #if self.rank_increases == 0 or self.rank_decreases == 0:
-        #    return False
-
-        #if self.ticker_id in dict(self.rank.rank_descending_bottom()).keys():
-        #    self.roc = float(dict(self.rank.rank_descending_bottom())[self.ticker_id])
-        #    #if self.roc < -0.1:
-        #    return False
-
-        #if self.last_roc != 0.0 and self.roc != 0.0 and self.roc < self.last_roc and self.last_roc < 0.0:
-        #    #self.min_trade_size_qty = 0.5
-        #    return False
-
-        #if self.ticker_id in dict(self.rank.rank_descending_top()).keys():
-        #    self.roc = float(dict(self.rank.rank_descending_top())[self.ticker_id])
-
-        #if self.ticker_id in dict(self.rank.rank_descending_top()).keys():
-        #    self.rank_top = True
+        # do not buy back in the previous buy/sell price range
+        if self.last_buy_price != 0 and self.last_sell_price != 0:
+            if self.last_buy_price <= price <= self.last_sell_price:
+                return False
 
         if self.signal_handler.buy_signal():
             #if self.rank_decreases >= self.rank_increases:
@@ -363,13 +334,6 @@ class momentum_swing_strategy(object):
             return
 
         self.timestamp = int(kline['E'])
-        #self.last_macd_result = self.macd_result
-        #self.macd_result = self.macd.update(close)
-        #self.last_macd_diff = self.macd_diff
-        #self.macd_diff = self.macd.diff
-        #self.cross_macd.update(self.macd.diff, self.macd.signal.result)
-        #self.cross_macd_zero.update(self.macd.diff, 0.0)
-        #self.stats.update(close, self.timestamp)
 
         self.last_rank_value = self.rank_value
         self.rank_value = self.rank.rank(symbol=self.ticker_id)

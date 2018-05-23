@@ -22,7 +22,7 @@ def split_symbol(symbol):
 
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
-                 account_name='Binance', simulate=False, accnt=None):
+                 account_name='Binance', simulate=False, accnt=None, ranking=True):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
@@ -35,6 +35,7 @@ class MultiTrader(object):
         self.assets_info = assets_info
         self.volumes = volumes
         self.rank = RankManager()
+        self.ranking = ranking
         self.roc_ema = SMA(50)
 
         if self.simulate:
@@ -91,7 +92,7 @@ class MultiTrader(object):
             #if self.volumes and msg['s'] not in self.volumes.keys(): return
 
             symbol_trader = self.trade_pairs[msg['s']]
-            if symbol_trader.last_close != 0.0:
+            if self.ranking and symbol_trader.last_close != 0.0:
                 close = float(msg['c'])
                 roc = 100.0 * (close / symbol_trader.last_close - 1)
                 self.rank.update(msg['s'], self.roc_ema.update(roc))
@@ -111,7 +112,7 @@ class MultiTrader(object):
             #if self.volumes and part['s'] not in self.volumes.keys(): continue
 
             symbol_trader = self.trade_pairs[part['s']]
-            if symbol_trader.last_close != 0.0:
+            if self.ranking and symbol_trader.last_close != 0.0:
                 close = float(msg['c'])
                 roc = 100.0 * (close / symbol_trader.last_close - 1)
                 self.rank.update(msg['s'], self.roc_ema.update(roc))
