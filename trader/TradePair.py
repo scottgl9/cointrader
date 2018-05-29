@@ -22,6 +22,7 @@ class TradePair(object):
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.count_prices_added = 0
+        self.tickers = None
 
     def get_24hr_stats(self):
         stats = self.accnt.get_24hr_stats()
@@ -50,6 +51,7 @@ class TradePair(object):
         self.market_price = price
 
     def run_update(self, msg):
+        self.strategy.tickers = self.tickers
         self.last_close = self.strategy.last_close
         result = self.strategy.run_update(msg)
         self.last_50_prices = self.strategy.last_50_prices
@@ -65,3 +67,6 @@ class TradePair(object):
         #if self.base_name == 'QTUM' and float(price) == 10.0: return
         #print("run_update_price({}, {}, {}".format(self.base_name, self.currency, price))
         return self.strategy.run_update_price(price)
+
+    def update_tickers(self, tickers):
+        self.tickers = tickers

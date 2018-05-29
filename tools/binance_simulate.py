@@ -55,6 +55,7 @@ def simulate(conn, client):
             total_usd = float(msg['o']) * total_btc
             print("Initial BTC={}".format(total_btc))
 
+        multitrader.update_tickers(tickers)
         multitrader.process_message(msg)
 
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)

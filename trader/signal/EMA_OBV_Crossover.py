@@ -15,8 +15,8 @@ class EMA_OBV_Crossover(object):
         self.ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.ema26 = EMA(self.win_med, scale=24, lagging=True)
         self.ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
-        self.cross_short = Crossover2(window=10)
-        self.cross_long = Crossover2(window=10)
+        self.cross_short = Crossover2(window=10, cutoff=0.0)
+        self.cross_long = Crossover2(window=10, cutoff=0.0)
         self.cross_double = CrossoverDouble()
 
         self.obv = OBV()
@@ -82,7 +82,7 @@ class EMA_OBV_Crossover(object):
         if self.obv_ema50.last_result == 0 or self.obv_ema12.last_result == 0 or self.obv_ema26.last_result == 0:
             return False
 
-        if self.obv_ema50.result <= self.obv_ema50.last_result:
+        if self.obv_ema50.result < self.obv_ema50.last_result:
            return False
 
         if self.obv_ema26.result <= self.obv_ema26.last_result:
@@ -94,7 +94,7 @@ class EMA_OBV_Crossover(object):
         if self.cross_long.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
 
-        if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
+        if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result >= self.obv_ema50.last_result:
             return True
 
         #if self.cross_double.crossup_detected():

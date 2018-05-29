@@ -1,9 +1,10 @@
 # crossover detection
-
+import numpy as np
 
 class Crossover2(object):
-    def __init__(self, window=12):
+    def __init__(self, window=12, cutoff=0.0):
         self.window = window
+        self.cutoff = cutoff
         self.values1 = []
         self.values2 = []
         self.age = 0
@@ -21,10 +22,22 @@ class Crossover2(object):
             self.values2[int(self.age)] = float(value2)
             if self.values_under and min(self.values1) > max(self.values2):
                 self.values_under = False
-                self.crossup = True
+                # only mark as crossup if largest difference in values is greater than cutoff
+                if self.cutoff != 0:
+                    diff = np.abs(np.array(self.values1) - np.array(self.values2)) / np.array(self.values1)
+                    if np.max(diff) > self.cutoff:
+                        self.crossup = True
+                else:
+                    self.crossup = True
             elif self.values_over and max(self.values1) < min(self.values2):
                 self.values_over = False
-                self.crossdown = True
+                # only mark as crossdown if largest difference in values is greater than cutoff
+                if self.cutoff != 0.0:
+                    diff = np.abs(np.array(self.values1) - np.array(self.values2)) / np.array(self.values1)
+                    if np.max(diff) > self.cutoff:
+                        self.crossdown = True
+                else:
+                    self.crossdown = True
             elif not self.values_under and not self.values_over:
                 if max(self.values1) < min(self.values2):
                     self.values_under = True

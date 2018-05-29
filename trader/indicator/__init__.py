@@ -9,9 +9,11 @@ from trader.indicator.KAMA import KAMA
 from trader.indicator.LinReg import LinReg
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD
+from trader.indicator.OBP import OBP
 from trader.indicator.OBV import OBV
 from trader.indicator.PPO import PPO
 from trader.indicator.PSAR import PSAR
+from trader.indicator.Rep import Rep
 from trader.indicator.RMA import RMA
 from trader.indicator.ROC import ROC
 from trader.indicator.SMA import SMA

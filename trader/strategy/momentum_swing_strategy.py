@@ -4,6 +4,7 @@ from trader.indicator.TSI import TSI
 from trader.lib.Crossover import Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
+from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.SignalHandler import SignalHandler
 from trader.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
@@ -64,6 +65,7 @@ class momentum_swing_strategy(object):
         self.signal_handler = SignalHandler()
         #self.signal_handler.add(RSI_OBV())
         #self.signal_handler.add(PPO_OBV())
+        #self.signal_handler.add(TSI_Signal())
         self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(BOX_OBV())
 
@@ -121,6 +123,8 @@ class momentum_swing_strategy(object):
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
         self.min_trade_size_qty = 1.0
         #self.accnt.get_account_balances()
+        self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
+        self.tickers = None
 
     def get_ticker_id(self):
         return self.ticker_id
@@ -200,8 +204,24 @@ class momentum_swing_strategy(object):
         if not self.accnt.simulate and not result: return
         if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
             pprofit = 100.0 * (price - self.buy_price) / self.buy_price
-            print("sell({}{}, {}) @ {} (bought @ {}, {}%)".format(self.base, self.currency, self.buy_size,
-                                                                  price, self.buy_price, round(pprofit, 2)))
+            if self.tickers:
+                current_btc = self.accnt.get_total_btc_value(self.tickers)
+                tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
+                print("sell({}{}, {}) @ {} (bought @ {}, {}%, {}%)".format(self.base,
+                                                                      self.currency,
+                                                                      self.buy_size,
+                                                                      price,
+                                                                      self.buy_price,
+                                                                      round(pprofit, 2),
+                                                                      round(tpprofit, 2)))
+            else:
+                print("sell({}{}, {}) @ {} (bought @ {}, {}%)".format(self.base,
+                                                                      self.currency,
+                                                                      self.buy_size,
+                                                                      price,
+                                                                      self.buy_price,
+                                                                      round(pprofit, 2)))
+
             #self.buy_price_list.remove(buy_price)
             self.buy_price = 0.0
             self.buy_size = 0.0

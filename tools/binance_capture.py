@@ -3,7 +3,7 @@
 from pymongo import MongoClient
 from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance
 from trader.strategy import select_strategy
 import collections
 import matplotlib.pyplot as plt
@@ -73,8 +73,8 @@ class BinanceTrader:
 
     def run(self):
         bm = BinanceSocketManager(self.client)
-        #bm.start_miniticker_socket(self.process_message)
-        bm.start_ticker_socket(self.process_message)
+        bm.start_miniticker_socket(self.process_message)
+        #bm.start_ticker_socket(self.process_message)
         bm.start()
 
 

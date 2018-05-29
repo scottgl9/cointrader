@@ -37,6 +37,7 @@ class MultiTrader(object):
         self.rank = RankManager()
         self.ranking = ranking
         self.roc_ema = SMA(50)
+        self.tickers = None
 
         if self.simulate:
             print("Running MultiTrader as simulation")
@@ -96,6 +97,7 @@ class MultiTrader(object):
                 close = float(msg['c'])
                 roc = 100.0 * (close / symbol_trader.last_close - 1)
                 self.rank.update(msg['s'], self.roc_ema.update(roc))
+            symbol_trader.update_tickers(self.tickers)
             symbol_trader.run_update(msg)
             return
 
@@ -116,4 +118,8 @@ class MultiTrader(object):
                 close = float(msg['c'])
                 roc = 100.0 * (close / symbol_trader.last_close - 1)
                 self.rank.update(msg['s'], self.roc_ema.update(roc))
+            symbol_trader.update_tickers(self.tickers)
             symbol_trader.run_update(part)
+
+    def update_tickers(self, tickers):
+        self.tickers = tickers
