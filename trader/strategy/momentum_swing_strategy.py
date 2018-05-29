@@ -2,6 +2,8 @@ from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.MACD import MACD
 from trader.indicator.TSI import TSI
 from trader.lib.Crossover import Crossover
+from trader.lib.Message import Message
+from trader.lib.MessageHandler import MessageHandler
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.TSI_Signal import TSI_Signal
@@ -62,6 +64,7 @@ class momentum_swing_strategy(object):
         self.tsi = TSI()
         self.last_tsi_result = 0.0
 
+        self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler()
         #self.signal_handler.add(RSI_OBV())
         #self.signal_handler.add(PPO_OBV())
@@ -78,10 +81,6 @@ class momentum_swing_strategy(object):
         self.cross_macd = Crossover()
         self.cross_macd_zero = Crossover()
 
-        self.cloud = IchimokuCloud()
-        self.SpanA = 0.0
-        self.SpanB = 0.0
-        self.cross_cloud = Crossover()
         self.stats = StatTracker()
 
         self.base = name
@@ -111,6 +110,8 @@ class momentum_swing_strategy(object):
         self.quote_increment = float(tick_size)
         self.buy_price_list = []
         self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_order_id = None
         self.last_price = 0.0
         #if not self.accnt.simulate:
         #    self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
@@ -128,6 +129,12 @@ class momentum_swing_strategy(object):
 
     def get_ticker_id(self):
         return self.ticker_id
+
+    # clear pending sell trades which have been bought
+    def reset(self):
+        self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_order_id = None
 
     def html_run_stats(self):
         results = str('')
@@ -165,14 +172,14 @@ class momentum_swing_strategy(object):
         if 'e' in str(self.min_trade_size):
             return
 
-        result = self.accnt.buy_market(self.min_trade_size, price=price, ticker_id=self.get_ticker_id())
-        if not self.accnt.simulate:
-            print(result)
-
         min_trade_size = self.min_trade_size
 
         if self.min_trade_size_qty != 1.0:
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
+
+        result = self.accnt.buy_market(min_trade_size, price=price, ticker_id=self.get_ticker_id())
+        if not self.accnt.simulate:
+            print(result)
 
         print("buy({}{}, {}) @ {}".format(self.base, self.currency, min_trade_size, price))
         if not self.accnt.simulate and not result:
@@ -195,7 +202,6 @@ class momentum_swing_strategy(object):
 
             self.last_buy_price = price
 
-            #self.buy_price_list.append(price)
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
 
@@ -207,7 +213,7 @@ class momentum_swing_strategy(object):
             if self.tickers:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
                 tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                print("sell({}{}, {}) @ {} (bought @ {}, {}%, {}%)".format(self.base,
+                print("sell({}{}, {}) @ {} (bought @ {}, {}%)\t{}%".format(self.base,
                                                                       self.currency,
                                                                       self.buy_size,
                                                                       price,
@@ -240,7 +246,6 @@ class momentum_swing_strategy(object):
                     self.min_trade_size = self.my_float(min_trade_size * 3)
                 else:
                     self.min_trade_size = self.my_float(min_trade_size * 3)
-                #print("{}: {} {} {}".format(self.ticker_id, self.min_trade_size, self.base_min_size, self.quote_increment))
         elif self.ticker_id.endswith('ETH'):
             min_trade_size = self.round_base(self.eth_trade_size / price)
             if min_trade_size != 0.0:
@@ -373,9 +378,31 @@ class momentum_swing_strategy(object):
 
     def run_update_price(self, price):
         if self.buy_signal(price):
-            self.place_buy_order(price)
+            if 'e' in str(self.min_trade_size):
+                return
+
+            min_trade_size = self.min_trade_size
+
+            if self.min_trade_size_qty != 1.0:
+                min_trade_size = float(min_trade_size) * self.min_trade_size_qty
+
+            self.buy_price = price
+            self.buy_size = min_trade_size
+            self.last_buy_price = self.buy_price
+
+            #self.place_buy_order(price)
+            self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
         if self.sell_signal(price):
-            self.place_sell_order(price)
+            self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
+
+            #self.place_sell_order(price)
+
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
+
+            self.buy_price = 0.0
+            self.buy_size = 0.0
+            self.last_sell_price = price
 
     def run_update_orderbook(self, msg):
         pass

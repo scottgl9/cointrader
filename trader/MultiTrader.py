@@ -4,6 +4,7 @@ from trader.RankManager import RankManager
 from trader.strategy import *
 from trader.TradePair import TradePair
 from trader.indicator.SMA import SMA
+from trader.lib.MessageHandler import Message, MessageHandler
 
 #logger = logging.getLogger(__name__)
 
@@ -38,6 +39,7 @@ class MultiTrader(object):
         self.ranking = ranking
         self.roc_ema = SMA(50)
         self.tickers = None
+        self.msg_handler = MessageHandler()
 
         if self.simulate:
             print("Running MultiTrader as simulation")
@@ -99,27 +101,81 @@ class MultiTrader(object):
                 self.rank.update(msg['s'], self.roc_ema.update(roc))
             symbol_trader.update_tickers(self.tickers)
             symbol_trader.run_update(msg)
+        else:
+            for part in msg:
+                if 's' not in part.keys(): continue
+                #if len(self.trade_pairs) == 0: continue
+
+                #if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
+                if part['s'] not in self.trade_pairs.keys():
+                    #print("adding {} to trade_pairs".format(part['s']))
+                    self.add_trade_pair(part['s'])
+
+                if part['s'] not in self.trade_pairs.keys(): continue
+                #if self.volumes and part['s'] not in self.volumes.keys(): continue
+
+                symbol_trader = self.trade_pairs[part['s']]
+                if self.ranking and symbol_trader.last_close != 0.0:
+                    close = float(msg['c'])
+                    roc = 100.0 * (close / symbol_trader.last_close - 1)
+                    self.rank.update(msg['s'], self.roc_ema.update(roc))
+                symbol_trader.update_tickers(self.tickers)
+                symbol_trader.run_update(part)
+        if not self.msg_handler.empty():
+            for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
+                if msg.cmd == Message.MSG_MARKET_BUY:
+                    self.place_buy_order(msg.src_id, msg.price, msg.size)
+                elif msg.cmd == Message.MSG_MARKET_SELL:
+                    self.place_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+            self.msg_handler.clear()
+
+    def place_buy_order(self, ticker_id, price, size):
+        result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
+        if not self.accnt.simulate:
+            print(result)
+
+        print("buy({}, {}) @ {}".format(ticker_id, size, price))
+        if not self.accnt.simulate and not result:
             return
 
-        for part in msg:
-            if 's' not in part.keys(): continue
-            #if len(self.trade_pairs) == 0: continue
+        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
+            self.buy_order_id = None
+            if not self.accnt.simulate:
+                if 'orderId' not in result:
+                    print("WARNING: orderId not found for {}".format(ticker_id))
+                    return
+                orderid = result['orderId']
+                self.buy_order_id = orderid
 
-            #if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
-            if part['s'] not in self.trade_pairs.keys():
-                #print("adding {} to trade_pairs".format(part['s']))
-                self.add_trade_pair(part['s'])
+        if not self.accnt.simulate:
+            self.accnt.get_account_balances()
 
-            if part['s'] not in self.trade_pairs.keys(): continue
-            #if self.volumes and part['s'] not in self.volumes.keys(): continue
+    def place_sell_order(self, ticker_id, price, size, buy_price):
+        result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
+        if not self.accnt.simulate and not result: return
+        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
+            pprofit = 100.0 * (price - buy_price) / buy_price
+            if self.tickers:
+                current_btc = self.accnt.get_total_btc_value(self.tickers)
+                #tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
+                print("sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
+                                                                         size,
+                                                                         price,
+                                                                         buy_price,
+                                                                         round(pprofit, 2)))
+                                                                         #round(tpprofit, 2)))
+            else:
+                print("sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
+                                                                    size,
+                                                                    price,
+                                                                    buy_price,
+                                                                    round(pprofit, 2)))
 
-            symbol_trader = self.trade_pairs[part['s']]
-            if self.ranking and symbol_trader.last_close != 0.0:
-                close = float(msg['c'])
-                roc = 100.0 * (close / symbol_trader.last_close - 1)
-                self.rank.update(msg['s'], self.roc_ema.update(roc))
-            symbol_trader.update_tickers(self.tickers)
-            symbol_trader.run_update(part)
+            if not self.accnt.simulate:
+                total_usd, total_btc = self.accnt.get_account_total_value()
+                print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
+        if not self.accnt.simulate:
+            self.accnt.get_account_balances()
 
     def update_tickers(self, tickers):
         self.tickers = tickers
