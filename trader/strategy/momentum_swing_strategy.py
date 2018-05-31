@@ -4,6 +4,7 @@ from trader.indicator.TSI import TSI
 from trader.lib.Crossover import Crossover
 from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
+from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.TSI_Signal import TSI_Signal
@@ -56,20 +57,14 @@ class momentum_swing_strategy(object):
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
         self.last_close = 0.0
-        self.macd = MACD(12.0, 26.0, 9.0, scale=1.0)
-        self.macd_result = 0.0
-        self.last_macd_result = 0.0
-        self.macd_diff = 0.0
-        self.last_macd_diff = 0.0
-        self.tsi = TSI()
-        self.last_tsi_result = 0.0
 
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler()
         #self.signal_handler.add(RSI_OBV())
         #self.signal_handler.add(PPO_OBV())
         #self.signal_handler.add(TSI_Signal())
-        self.signal_handler.add(EMA_OBV_Crossover())
+        self.signal_handler.add(MACD_Crossover())
+        #self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(BOX_OBV())
 
         self.levels = SupportResistLevels()
@@ -77,9 +72,6 @@ class momentum_swing_strategy(object):
         self.low_long = self.high_long = 0.0
         self.prev_low_long = self.prev_high_long = 0.0
         self.prev_low_short = self.prev_high_short = 0.0
-
-        self.cross_macd = Crossover()
-        self.cross_macd_zero = Crossover()
 
         self.stats = StatTracker()
 
@@ -124,8 +116,9 @@ class momentum_swing_strategy(object):
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
         self.min_trade_size_qty = 1.0
         #self.accnt.get_account_balances()
-        self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
         self.tickers = None
+        self.min_price = 0.0
+        self.max_price = 0.0
 
     def get_ticker_id(self):
         return self.ticker_id
@@ -167,76 +160,6 @@ class momentum_swing_strategy(object):
 
     def my_float(self, value):
         return str("{:.8f}".format(float(value)))
-
-    def place_buy_order(self, price):
-        if 'e' in str(self.min_trade_size):
-            return
-
-        min_trade_size = self.min_trade_size
-
-        if self.min_trade_size_qty != 1.0:
-            min_trade_size = float(min_trade_size) * self.min_trade_size_qty
-
-        result = self.accnt.buy_market(min_trade_size, price=price, ticker_id=self.get_ticker_id())
-        if not self.accnt.simulate:
-            print(result)
-
-        print("buy({}{}, {}) @ {}".format(self.base, self.currency, min_trade_size, price))
-        if not self.accnt.simulate and not result:
-            return
-
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            self.buy_order_id = None
-            if not self.accnt.simulate:
-                if 'orderId' not in result:
-                    print("WARNING: orderId not found for {}".format(self.ticker_id))
-                    return
-                orderid = result['orderId']
-                self.buy_order_id = orderid
-
-            self.buy_price = price
-            self.buy_size = min_trade_size
-
-            if self.min_trade_size_qty != 1.0:
-                self.min_trade_size_qty = 1.0
-
-            self.last_buy_price = price
-
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
-
-    def place_sell_order(self, price):
-        result = self.accnt.sell_market(self.buy_size, price=price, ticker_id=self.get_ticker_id())
-        if not self.accnt.simulate and not result: return
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            pprofit = 100.0 * (price - self.buy_price) / self.buy_price
-            if self.tickers:
-                current_btc = self.accnt.get_total_btc_value(self.tickers)
-                tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                print("sell({}{}, {}) @ {} (bought @ {}, {}%)\t{}%".format(self.base,
-                                                                      self.currency,
-                                                                      self.buy_size,
-                                                                      price,
-                                                                      self.buy_price,
-                                                                      round(pprofit, 2),
-                                                                      round(tpprofit, 2)))
-            else:
-                print("sell({}{}, {}) @ {} (bought @ {}, {}%)".format(self.base,
-                                                                      self.currency,
-                                                                      self.buy_size,
-                                                                      price,
-                                                                      self.buy_price,
-                                                                      round(pprofit, 2)))
-
-            #self.buy_price_list.remove(buy_price)
-            self.buy_price = 0.0
-            self.buy_size = 0.0
-            self.last_sell_price = price
-            if not self.accnt.simulate:
-                total_usd, total_btc = self.accnt.get_account_total_value()
-                print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
 
     def compute_min_trade_size(self, price):
         if self.ticker_id.endswith('BTC'):
@@ -325,10 +248,10 @@ class momentum_swing_strategy(object):
             return False
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
                 return False
         else:
-            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
                 return False
 
         if self.signal_handler.sell_signal():
@@ -388,18 +311,15 @@ class momentum_swing_strategy(object):
 
             self.buy_price = price
             self.buy_size = min_trade_size
-            self.last_buy_price = self.buy_price
 
-            #self.place_buy_order(price)
             self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
         if self.sell_signal(price):
             self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
 
-            #self.place_sell_order(price)
-
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0
 
+            self.last_buy_price = self.buy_price
             self.buy_price = 0.0
             self.buy_size = 0.0
             self.last_sell_price = price

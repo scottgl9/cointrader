@@ -41,6 +41,8 @@ class MultiTrader(object):
         self.tickers = None
         self.msg_handler = MessageHandler()
 
+        self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
+
         if self.simulate:
             print("Running MultiTrader as simulation")
 
@@ -127,7 +129,22 @@ class MultiTrader(object):
                     self.place_buy_order(msg.src_id, msg.price, msg.size)
                 elif msg.cmd == Message.MSG_MARKET_SELL:
                     self.place_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+                elif msg.cmd == Message.MSG_MARKET_SELL_ALL:
+                    self.sell_all()
             self.msg_handler.clear()
+
+    # sell off everything that was bought
+    def sell_all(self):
+        for trader in self.trade_pairs.values():
+            buy_price = trader.strategy.buy_price
+            buy_size = trader.strategy.buy_size
+            ticker_id = trader.strategy.ticker_id
+            if float(buy_price) == 0 or float(buy_size) == 0:
+                continue
+            self.place_sell_order(ticker_id, 0, buy_size, buy_price)
+            trader.strategy.buy_price = 0.0
+            trader.strategy.buy_size = 0.0
+            trader.strategy.buy_order_id = None
 
     def place_buy_order(self, ticker_id, price, size):
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
@@ -157,13 +174,13 @@ class MultiTrader(object):
             pprofit = 100.0 * (price - buy_price) / buy_price
             if self.tickers:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
-                #tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                print("sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
+                tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
+                print("sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(ticker_id,
                                                                          size,
                                                                          price,
                                                                          buy_price,
-                                                                         round(pprofit, 2)))
-                                                                         #round(tpprofit, 2)))
+                                                                         round(pprofit, 2),
+                                                                         round(tpprofit, 2)))
             else:
                 print("sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
                                                                     size,

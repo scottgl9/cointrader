@@ -67,6 +67,8 @@ class MessageHandler(object):
     # remove all messages by id matching dst_id
     def remove_by_dst_id(self, id):
         for i in range(0, len(global_message_queue)):
+            #if i < len(global_message_queue) - 1:
+            #    return
             message = global_message_queue[i]
             if message.dst_id == id:
                 del global_message_queue[i]

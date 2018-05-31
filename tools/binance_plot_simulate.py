@@ -29,6 +29,7 @@ from trader.indicator.RMA import RMA
 from trader.indicator.MACD import MACD
 from trader.indicator.PSAR import PSAR
 from trader.indicator.QUAD import QUAD
+from trader.indicator.TSI import TSI
 from trader.indicator.BOX import BOX
 from trader.indicator.ZLEMA import *
 from trader.indicator.WMA import WMA
@@ -58,6 +59,8 @@ def simulate(conn, client, base, currency):
     zlema = ZLEMA(window=50, scale=24)
     zlema2 = ZLEMA(window=50, scale=24)
     zlema_values = []
+    tsi = TSI()
+    tsi_values = []
 
     quad = QUAD()
     obv = OBV()
@@ -130,6 +133,11 @@ def simulate(conn, client, base, currency):
             support1_values.append(value1)
             support2_values.append(value2)
             lstsqs_x_values.append(i)
+
+        tsi_value = tsi.update(close)
+        if tsi_value:
+            tsi_values.append(tsi_value)
+
         #if len(values) != 0:
         #    for value in values:
         #        testma_values.append(value)
@@ -183,39 +191,24 @@ def simulate(conn, client, base, currency):
     fig = plt.figure()
     ax = fig.add_subplot(2,1,1)
     symprice, = plt.plot(close_prices, label=ticker_id)
-    plt.plot(lstsqs_x_values, support1_values)
-    plt.plot(lstsqs_x_values, support2_values)
-    #lowprice, = plt.plot(low_prices, label=ticker_id)
-    #highprice, = plt.plot(high_prices, label=ticker_id)
-    #SpanA, = plt.plot(Senkou_SpanA_values, label="SpanA")
-    #SpanB, = plt.plot(Senkou_SpanB_values, label="SpanB")
-    #ema0, = plt.plot(ema12_values, label='EMA12')
-    #plt.plot(testma_x_values, testma_values)
-    #ema1, = plt.plot(ema26_values, label='EMA26')
-    #ema2, = plt.plot(ema50_values, label='EMA50')
-    #plt.plot(box_lows)
-    #plt.plot(box_highs)
-    #plt.plot(line_x_values, line_values)
-    #plt.plot(support1_values)
-    #plt.plot(support2_values)
-    #plt.plot(resistance1_values)
-    #quad0, = plt.plot(quad_y_values, label='QUAD')
-    #plt.plot(lstsqs_x_values, lstsqs_y_values)
-    #sar0, = plt.plot(sar_x_values, sar_values, label='PSAR')
-
-    #plt.bar(volumes_x_values, volumes_values, align='center')
-    plt.legend(handles=[symprice])
+    #plt.plot(lstsqs_x_values, support1_values)
+    #plt.plot(lstsqs_x_values, support2_values)
+    fig1, = plt.plot(ema12_values, label='EMA12')
+    fig2, = plt.plot(ema26_values, label='EMA26')
+    fig3, = plt.plot(ema50_values, label='EMA50')
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
     plt.plot(obv_ema12_values)
     plt.plot(obv_ema26_values)
     plt.plot(obv_ema50_values)
     #plt.plot(signal_values)
+    #plt.plot(tsi_values)
     plt.show()
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
     #conn = sqlite3.connect('cryptocurrency_database.ticker_collection_04282018.db') #'cryptocurrency_database.miniticker_collection_04092018.db')
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
+    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04032018.db')
 
     base = 'BTC'
     currency='USDT'

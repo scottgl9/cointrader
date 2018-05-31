@@ -17,13 +17,12 @@ from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
 from trader.indicator.KAMA import KAMA
-from trader.indicator.OBP import OBP
 from trader.indicator.OBV import OBV
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.PSAR import PSAR
-from trader.indicator.Rep import Rep
 from trader.lib.Crossover2 import Crossover2
+from trader.lib.CrossoverDouble import CrossoverDouble
 import math
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
@@ -55,7 +54,8 @@ def plot_emas_product(plt, klines, product):
     ema26_prices = []
     ema50 = EMA(50, scale=24)
     ema50_prices = []
-    cross_short = Crossover2(window=10, cutoff=0.0005)
+    double_cross = CrossoverDouble(window=10)
+    cross_short = Crossover2(window=10)
     cross_long = Crossover2(window=10)
 
     ema26_obv = EMA(26, scale=24)
@@ -69,10 +69,6 @@ def plot_emas_product(plt, klines, product):
     box_x_values = []
     obv = OBV()
     obv_values = []
-    obp = OBP()
-    obp_values = []
-    rep = Rep()
-    rep_values = []
     trend = MeasureTrend()
     trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
     sar = PSAR()
@@ -122,14 +118,14 @@ def plot_emas_product(plt, klines, product):
 
         obv_value = obv.update(close=close_price, volume=volume)
         obv_values.append(obv_value)
-        obp_value = obp.update(price=close_price)
-        obp_values.append(obp_value)
+        #obp_value = obp.update(price=close_price)
+        #obp_values.append(obp_value)
         ema26_obv_values.append(ema26_obv.update(obv_value))
         ema50_obv_values.append(ema50_obv.update(obv_value))
 
-        rep_value = rep.update(close_price)
-        if rep_value != 0:
-            rep_values.append(rep_value)
+        #rep_value = rep.update(close_price)
+        #if rep_value != 0:
+        #    rep_values.append(rep_value)
 
         #SpanA, SpanB = cloud.update(close=close_price, low=low, high=high)
         #if SpanA != 0 and SpanB != 0:
@@ -204,10 +200,11 @@ def plot_emas_product(plt, klines, product):
 
 
     for i in range(0, len(ema12_prices)):
-        cross_short.update(ema12_prices[i], ema26_prices[i])
-        if cross_short.crossup_detected():
+        #cross_short.update(ema12_prices[i], ema26_prices[i])
+        double_cross.update(ema12_prices[i], ema26_prices[i], ema50_prices[i])
+        if double_cross.crossup_detected():
             plt.axvline(x=i, color='green')
-        elif cross_short.crossdown_detected():
+        elif double_cross.crossdown_detected():
             plt.axvline(x=i, color='red')
     prices = prices_from_kline_data(klines)
     symprice, = plt.plot(prices, label=product) #, color='black')
@@ -256,6 +253,6 @@ if __name__ == '__main__':
     #print(balances)
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=72)
+    klines = accnt.get_klines(hours=24)
     diff_values = plot_emas_product(plt, klines, accnt.ticker_id)
     plt.show()
