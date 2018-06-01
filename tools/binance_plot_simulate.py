@@ -29,6 +29,7 @@ from trader.indicator.RMA import RMA
 from trader.indicator.MACD import MACD
 from trader.indicator.PSAR import PSAR
 from trader.indicator.QUAD import QUAD
+from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.indicator.TSI import TSI
 from trader.indicator.BOX import BOX
 from trader.indicator.ZLEMA import *
@@ -61,6 +62,7 @@ def simulate(conn, client, base, currency):
     zlema_values = []
     tsi = TSI()
     tsi_values = []
+    peakvalley = PeakValleyDetect(window=200)
 
     quad = QUAD()
     obv = OBV()
@@ -176,13 +178,13 @@ def simulate(conn, client, base, currency):
         #lstsqs_x_values.append(i)
         i += 1
 
-    i = 0
-    min_price = min(low_prices)
-    scale = min(low_prices) / max(volumes)
-    for volume in volumes:
-        volumes_values.append(volume)
-        volumes_x_values.append(i)
-        i+= 1
+    #i = 0
+    #min_price = min(low_prices)
+    #scale = min(low_prices) / max(volumes)
+    #for volume in volumes:
+    #    volumes_values.append(volume)
+    #    volumes_x_values.append(i)
+    #    i+= 1
     #lstsqs = np.poly1d(np.polyfit(np.array(lstsqs_x_values), np.array(close_prices), 5))
     #for x in lstsqs_x_values:
     #    lstsqs_y_values.append(lstsqs(x))
@@ -190,6 +192,13 @@ def simulate(conn, client, base, currency):
     #plt.subplot(211)
     fig = plt.figure()
     ax = fig.add_subplot(2,1,1)
+    for i in range(0, len(ema12_values)):
+        peakvalley.update(ema50_values[i])
+        if peakvalley.peak_detect():
+            plt.axvline(x=i, color='green')
+        elif peakvalley.valley_detect():
+            plt.axvline(x=i, color='red')
+
     symprice, = plt.plot(close_prices, label=ticker_id)
     #plt.plot(lstsqs_x_values, support1_values)
     #plt.plot(lstsqs_x_values, support2_values)
@@ -208,7 +217,7 @@ def simulate(conn, client, base, currency):
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
     #conn = sqlite3.connect('cryptocurrency_database.ticker_collection_04282018.db') #'cryptocurrency_database.miniticker_collection_04092018.db')
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04032018.db')
+    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
 
     base = 'BTC'
     currency='USDT'

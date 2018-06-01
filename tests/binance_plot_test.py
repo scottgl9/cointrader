@@ -18,6 +18,7 @@ from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
 from trader.indicator.KAMA import KAMA
 from trader.indicator.OBV import OBV
+from trader.indicator.LinReg import LinReg
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.PSAR import PSAR
@@ -72,7 +73,9 @@ def plot_emas_product(plt, klines, product):
     trend = MeasureTrend()
     trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
     sar = PSAR()
-
+    linreg = LinReg()
+    linreg_values = []
+    linreg_x_values = []
     levels = SupportResistLevels()
     cloud = IchimokuCloud()
     prev_low_values = []
@@ -155,11 +158,16 @@ def plot_emas_product(plt, klines, product):
         last_volume_amount = volume_amount
         #trend.update_price(open_price)
         macd.update(open_price)
-        ema12_prices.append(ema12.update(close_price))
+        ema12_price = ema12.update(close_price)
+        ema12_prices.append(ema12_price)
         ema26_prices.append(ema26.update(close_price))
         ema50_prices.append(ema50.update(close_price))
         kama_prices.append(kama.update(close_price))
 
+        value = linreg.update(ema12_price)
+        if value != 0:
+            linreg_x_values.append(i)
+            linreg_values.append(value)
         #result = zigzag.update_from_kline(open_price, low, high)
         #if result != 0.0:
         #    zigzag_y.append(result)
@@ -208,6 +216,7 @@ def plot_emas_product(plt, klines, product):
             plt.axvline(x=i, color='red')
     prices = prices_from_kline_data(klines)
     symprice, = plt.plot(prices, label=product) #, color='black')
+    plt.plot(linreg_x_values, linreg_values)
     #ema4, = plt.plot(ema26_prices["y"], label='EMA26')
     #lowlevel0, = plt.plot(prev_x_values, prev_low_values, label='LOWS')
     #lowlevel1, = plt.plot(prev_x_values, low_low_values, label='LLOWS')
