@@ -7,6 +7,7 @@ from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
+from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.SignalHandler import SignalHandler
 from trader.SupportResistLevels import SupportResistLevels
@@ -63,7 +64,8 @@ class momentum_swing_strategy(object):
         #self.signal_handler.add(RSI_OBV())
         #self.signal_handler.add(PPO_OBV())
         #self.signal_handler.add(TSI_Signal())
-        self.signal_handler.add(MACD_Crossover())
+        #self.signal_handler.add(MACD_Crossover())
+        self.signal_handler.add(TD_Sequential_Signal())
         #self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(BOX_OBV())
 

@@ -29,6 +29,7 @@ from trader.indicator.RMA import RMA
 from trader.indicator.MACD import MACD
 from trader.indicator.PSAR import PSAR
 from trader.indicator.QUAD import QUAD
+from trader.lib.FakeKline import FakeKline
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.indicator.TSI import TSI
 from trader.indicator.BOX import BOX
@@ -51,6 +52,7 @@ def simulate(conn, client, base, currency):
     obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24, lagging=True)
     obv_ema26 = DZLEMA(26, scale=24) #EMA(26, scale=24, lagging=True)
     obv_ema50 = DZLEMA(50,scale=24) #EMA(50, scale=24, lagging=True, lag_window=5)
+    fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
@@ -72,6 +74,7 @@ def simulate(conn, client, base, currency):
     ema26_values = []
     ema50_values = []
     close_prices = []
+    open_prices = []
     low_prices = []
     diff_values = []
     signal_values = []
@@ -172,7 +175,10 @@ def simulate(conn, client, base, currency):
         #    Senkou_SpanB_values.append(SpanB)
         #    span_x_values.append(i)
 
+        open, close, low, high, volume = fkline.update(close)
+        print(open, close, low, high)
         close_prices.append(close)
+        open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
         #lstsqs_x_values.append(i)
@@ -200,12 +206,15 @@ def simulate(conn, client, base, currency):
             plt.axvline(x=i, color='red')
 
     symprice, = plt.plot(close_prices, label=ticker_id)
+    symprice2, = plt.plot(open_prices, label=ticker_id)
+    plt.plot(low_prices)
+    plt.plot(high_prices)
     #plt.plot(lstsqs_x_values, support1_values)
     #plt.plot(lstsqs_x_values, support2_values)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
-    plt.legend(handles=[symprice, fig1, fig2, fig3])
+    plt.legend(handles=[symprice, symprice2, fig1, fig2, fig3])
     plt.subplot(212)
     plt.plot(obv_ema12_values)
     plt.plot(obv_ema26_values)

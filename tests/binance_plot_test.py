@@ -12,7 +12,10 @@ from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
 from trader.indicator.QUAD import QUAD
+from trader.indicator.QUAD2 import QUAD2
 from trader.indicator.RSI import RSI
+from trader.indicator.REMA import REMA
+from trader.indicator.RSQUARE import RSQUARE
 from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
@@ -35,10 +38,10 @@ import sys
 # kline format: [ time, low, high, open, close, volume ]
 
 def plot_emas_product(plt, klines, product):
-    #klines = retrieve_klines_last_hour(product, hours=4)
-    #klines = retrieve_klines_24hrs(product)
-    #vwap = VWAP(60)
-    #vwaps = []
+    open_prices = []
+    close_prices = []
+    low_prices = []
+    high_prices = []
     macd = MACD(12.0*24.0, 26.0*24.0, 9.0*24.0)
     rsi = RSI()
     rsi_values = []
@@ -55,9 +58,16 @@ def plot_emas_product(plt, klines, product):
     ema26_prices = []
     ema50 = EMA(50, scale=24)
     ema50_prices = []
+    # this creates a very quadratic looking curve
+    rema12 = REMA(12)#, scale=24)
+    rema12_prices = []
+    quad2 = QUAD2()
+    quad2_values = []
     double_cross = CrossoverDouble(window=10)
     cross_short = Crossover2(window=10)
     cross_long = Crossover2(window=10)
+    rsquare = RSQUARE()
+    rsquare_values = []
 
     ema26_obv = EMA(26, scale=24)
     ema26_obv_values = []
@@ -76,41 +86,6 @@ def plot_emas_product(plt, klines, product):
     linreg = LinReg()
     linreg_values = []
     linreg_x_values = []
-    levels = SupportResistLevels()
-    cloud = IchimokuCloud()
-    prev_low_values = []
-    prev_high_values = []
-    low_low_values = []
-    high_high_values = []
-    prev_x_values = []
-    Senkou_SpanA_values = []
-    Senkou_SpanB_values = []
-    close_last_values = []
-    span_x_values = []
-
-    tsi = TSI()
-    tsi_values = []
-    zigzag_x = []
-    zigzag_y = []
-    zigzag = ZigZag(cutoff=0.2)
-    volume_amount = 0.0
-    last_volume_amount = 0.0
-
-    price_channel_lows = []
-    price_channel_highs = []
-    pclow_ema = EMA(26)
-    pchigh_ema = EMA(26)
-
-    diffwindow = DiffWindow(30)
-    last_diff_result = 0
-
-    initial_time = float(klines[0][0])
-    c_gt_price = False
-    timestamps = []
-    peaks = []
-    valleys = []
-    sar_x_values = []
-    sar_values = []
 
     for i in range(1, len(klines) - 1):
         low = float(klines[i][1])
@@ -118,6 +93,11 @@ def plot_emas_product(plt, klines, product):
         open_price = float(klines[i][3])
         close_price = float(klines[i][4])
         volume = float(klines[i][5])
+
+        open_prices.append(open_price)
+        close_prices.append(close_price)
+        low_prices.append(low)
+        high_prices.append(high)
 
         obv_value = obv.update(close=close_price, volume=volume)
         obv_values.append(obv_value)
@@ -149,20 +129,26 @@ def plot_emas_product(plt, klines, product):
         #    high_high_values.append(high_high)
         #    prev_x_values.append(i)
 
+        value = quad2.update(close_price)
+        if value != 0:
+            quad2_values.append(value)
+
         box_low, box_high = box.update(close_price)
         if box_low != 0 and box_high != 0:
             box_low_values.append(box_low)
             box_high_values.append(box_high)
             box_x_values.append(i)
 
-        last_volume_amount = volume_amount
-        #trend.update_price(open_price)
         macd.update(open_price)
         ema12_price = ema12.update(close_price)
         ema12_prices.append(ema12_price)
+        rema12_prices.append(rema12.update(close_price))
         ema26_prices.append(ema26.update(close_price))
         ema50_prices.append(ema50.update(close_price))
         kama_prices.append(kama.update(close_price))
+
+        value = rsquare.update(ema12_price)
+        rsquare_values.append(value)
 
         value = linreg.update(ema12_price)
         if value != 0:
@@ -178,9 +164,6 @@ def plot_emas_product(plt, klines, product):
         #    zigzag_y.append(result)
         #    zigzag_x.append(i)
 
-        tsi_value = tsi.update(close_price)
-        trend_tsi.update_price(tsi_value)
-        tsi_values.append(tsi_value)
         #if trend_tsi.valley_detected() and trend_tsi.valley_value() < -10.0:
         #    print("valley {}, {}".format(i, trend_tsi.valley_value()))
         #    #valleys.append(i)
@@ -191,7 +174,6 @@ def plot_emas_product(plt, klines, product):
         #    #plt.axhline(y=trend.peak_value(), color='blue')
         rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
-        timestamps.append((float(klines[i][0]) - initial_time) / (60.0))
 
     #print(prev_low_values)
 
@@ -215,8 +197,11 @@ def plot_emas_product(plt, klines, product):
         elif double_cross.crossdown_detected():
             plt.axvline(x=i, color='red')
     prices = prices_from_kline_data(klines)
-    symprice, = plt.plot(prices, label=product) #, color='black')
-    plt.plot(linreg_x_values, linreg_values)
+    symprice, = plt.plot(close_prices, label=product) #, color='black')
+    symprice2, = plt.plot(open_prices, label=product)
+    plt.plot(low_prices)
+    plt.plot(high_prices)
+    #plt.plot(linreg_x_values, linreg_values)
     #ema4, = plt.plot(ema26_prices["y"], label='EMA26')
     #lowlevel0, = plt.plot(prev_x_values, prev_low_values, label='LOWS')
     #lowlevel1, = plt.plot(prev_x_values, low_low_values, label='LLOWS')
@@ -229,17 +214,20 @@ def plot_emas_product(plt, klines, product):
     ema4, = plt.plot(ema12_prices, label='EMA12')
     ema5, = plt.plot(ema26_prices, label='EMA26')
     ema6, = plt.plot(ema50_prices, label='EMA50')
+    ema7, = plt.plot(rema12_prices, label='REMA12')
+    plt.plot(quad2_values)
     #plt.plot(box_x_values, box_low_values)
     #plt.plot(box_x_values, box_high_values)
     #kama0, = plt.plot(kama_prices, label='KAMA')
 
-    plt.legend(handles=[symprice, ema4, ema5, ema6])
+    plt.legend(handles=[symprice, symprice2, ema4, ema5, ema6, ema7])
     plt.subplot(212)
     fig1, = plt.plot(obv_values, label="OBV")
     fig2, = plt.plot(ema26_obv_values, label="OBVEMA26")
     fig3, = plt.plot(ema50_obv_values, label="OBVEMA50")
     #fig3, = plt.plot(obv_values, label="OBP")
     plt.legend(handles=[fig1, fig2, fig3])
+    #plt.plot(rsquare_values)
     return macd_signal
 
 def abs_average(values):

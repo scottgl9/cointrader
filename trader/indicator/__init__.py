@@ -12,10 +12,13 @@ from trader.indicator.QUAD import QUAD
 from trader.indicator.OBV import OBV
 from trader.indicator.PPO import PPO
 from trader.indicator.PSAR import PSAR
+from trader.indicator.REMA import REMA
 from trader.indicator.RMA import RMA
 from trader.indicator.ROC import ROC
+from trader.indicator.RSQUARE import RSQUARE
 from trader.indicator.SMA import SMA
 from trader.indicator.SMMA import SMMA
+from trader.indicator.STOCH import STOCH
 from trader.indicator.TSI import TSI
 from trader.indicator.VWAP import VWAP
 from trader.indicator.RSI import RSI

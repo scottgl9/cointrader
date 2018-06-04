@@ -64,7 +64,7 @@ class MACD_Crossover(object):
             return False
 
         if self.obv_ema50.result < self.obv_ema50.last_result:
-           return False
+            return False
 
         if self.obv_ema26.result <= self.obv_ema26.last_result:
             return False
