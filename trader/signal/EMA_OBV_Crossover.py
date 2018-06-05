@@ -3,7 +3,6 @@ from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
 from trader.indicator.REMA import REMA
 from trader.indicator.TESTMA import TESTMA
-from trader.lib.Crossover import Crossover
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 

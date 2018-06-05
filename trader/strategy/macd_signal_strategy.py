@@ -1,15 +1,10 @@
-from trader.indicator.EMA import EMA
-from trader.indicator.IchimokuCloud import IchimokuCloud
-from trader.indicator.RSI import RSI
-from trader.indicator.MACD import MACD
-from trader.indicator.ROC import ROC
-from trader.indicator.TSI import TSI
-from trader.lib.Crossover import Crossover
+from trader.lib.Message import Message
+from trader.lib.MessageHandler import MessageHandler
+from trader.signal.MACD_Crossover import MACD_Crossover
+from trader.signal.SignalHandler import SignalHandler
 from trader.SupportResistLevels import SupportResistLevels
+from trader.lib.StatTracker import StatTracker
 from datetime import datetime
-#import logging
-
-#logger = logging.getLogger(__name__)
 
 
 def datetime_to_float(d):
@@ -47,24 +42,18 @@ def percent_p1_lt_p2(p1, p2, percent):
 
 
 class macd_signal_strategy(object):
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
+    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None):
         self.strategy_name = 'macd_signal_strategy'
         self.client = client
         self.accnt = account_handler
+        self.rank = rank
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
-        self.macd = MACD(12.0, 26.0, 9.0, scale=1.0)
-        self.macd_result = 0.0
-        self.last_macd_result = 0.0
-        self.macd_diff = 0.0
-        self.last_macd_diff = 0.0
-        #self.quad = QUAD()
-        self.rsi = RSI()
-        self.rsi_result = 0.0
-        self.last_rsi_result = 0.0
-        self.roc = ROC()
-        self.tsi = TSI()
-        self.last_tsi_result = 0.0
+        self.last_close = 0.0
+
+        self.msg_handler = MessageHandler()
+        self.signal_handler = SignalHandler()
+        self.signal_handler.add(MACD_Crossover())
 
         self.levels = SupportResistLevels()
         self.low_short = self.high_short = 0.0
@@ -72,19 +61,7 @@ class macd_signal_strategy(object):
         self.prev_low_long = self.prev_high_long = 0.0
         self.prev_low_short = self.prev_high_short = 0.0
 
-        self.cross_macd = Crossover()
-        self.cross_macd_zero = Crossover()
-        self.ema12 = EMA(12, scale=24, lagging=True)
-        self.ema26 = EMA(26, scale=24, lagging=True)
-        self.ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
-        self.cross_short = Crossover()
-        self.cross_long = Crossover()
-        self.ema_volume = EMA(12, scale=24, lagging=True)
-
-        self.cloud = IchimokuCloud()
-        self.SpanA = 0.0
-        self.SpanB = 0.0
-        self.cross_cloud = Crossover()
+        self.stats = StatTracker()
 
         self.base = name
         self.currency = currency
@@ -93,6 +70,11 @@ class macd_signal_strategy(object):
         self.buy_signal_count = self.sell_signal_count = 0
         self.high_24hr = self.low_24hr = 0.0
         self.open_24hr = self.close_24hr = self.volume_24hr = 0.0
+        self.rank_value = -1
+        self.last_rank_value = -1
+        self.rank_increases = 0
+        self.rank_decreases = 0
+        self.rank_top = False
         self.last_high_24hr = 0.0
         self.last_low_24hr = 0.0
         self.interval_price = 0.0
@@ -108,6 +90,8 @@ class macd_signal_strategy(object):
         self.quote_increment = float(tick_size)
         self.buy_price_list = []
         self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_order_id = None
         self.last_price = 0.0
         #if not self.accnt.simulate:
         #    self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
@@ -115,13 +99,23 @@ class macd_signal_strategy(object):
         #        self.buy_price = self.buy_price_list[-1]
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
-        self.bnb_trade_size = 0.71
+        self.bnb_trade_size = 1.0
         self.usdt_trade_size = 10.0
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
+        self.min_trade_size_qty = 1.0
         #self.accnt.get_account_balances()
+        self.tickers = None
+        self.min_price = 0.0
+        self.max_price = 0.0
 
     def get_ticker_id(self):
         return self.ticker_id
+
+    # clear pending sell trades which have been bought
+    def reset(self):
+        self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_order_id = None
 
     def html_run_stats(self):
         results = str('')
@@ -155,90 +149,19 @@ class macd_signal_strategy(object):
     def my_float(self, value):
         return str("{:.8f}".format(float(value)))
 
-    def place_buy_order(self, price):
-        if 'e' in str(self.min_trade_size):
-            return
-
-        result = self.accnt.buy_market(self.min_trade_size, price=price, ticker_id=self.get_ticker_id())
-        if not self.accnt.simulate:
-            print(result)
-
-        print("buy({}{}, {}) @ {}".format(self.base, self.currency, self.min_trade_size, price))
-        if not self.accnt.simulate and not result:
-            return
-
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            self.buy_order_id = None
-            if not self.accnt.simulate:
-                if 'orderId' not in result:
-                    print("WARNING: orderId not found for {}".format(self.ticker_id))
-                    return
-                orderid = result['orderId']
-                self.buy_order_id = orderid
-                #result = self.accnt.get_order(order_id=orderid, ticker_id=self.ticker_id)
-                #if 'price' not in result:
-                #    print("WARNING: price not found for {}".format(self.ticker_id))
-                #    return
-                #print(result)
-                #if float(result['price']) != 0.0:
-                #    price = result['price']
-                #    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, price))
-
-            self.buy_price = price
-            self.buy_size = self.min_trade_size
-            #self.buy_price_list.append(price)
-            self.last_buy_price = price
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
-
-    def place_sell_order(self, price):
-        # get the actual buy price on the order before considering selling
-        #if not self.accnt.simulate and self.buy_order_id:
-        #    #result = self.accnt.get_order(order_id=self.buy_order_id, ticker_id=self.ticker_id)
-        #    #if 'price' not in result:
-        #    #    return
-        #    #print(result)
-
-        #    #if float(result['price']) != 0.0:
-        #    #    self.buy_price = result['price']
-        #    #    self.buy_order_id = None
-        #    #    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, self.buy_price))
-        #    if price > self.buy_price:
-        #        # assume that this is the actual price that the market order executed at
-        #        print("Updated buy_price to {} from {}".format(price, self.buy_price))
-        #        self.buy_price = price
-        #        self.buy_order_id = None
-
-        result = self.accnt.sell_market(self.buy_size, price=price, ticker_id=self.get_ticker_id())
-        if not self.accnt.simulate and not result: return
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
-            pprofit = 100.0 * (price - self.buy_price) / self.buy_price
-            print("sell({}{}, {}) @ {} (bought @ {}, {}%)".format(self.base, self.currency, self.buy_size,
-                                                                  price, self.buy_price, round(pprofit, 2)))
-            #self.buy_price_list.remove(buy_price)
-            self.buy_price = 0.0
-            self.buy_size = 0.0
-            self.last_sell_price = price
-            if not self.accnt.simulate:
-                total_usd, total_btc = self.accnt.get_account_total_value()
-                print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
-
     def compute_min_trade_size(self, price):
         if self.ticker_id.endswith('BTC'):
             min_trade_size = self.round_base(self.btc_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'ETH' or self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size * 2)
+                    self.min_trade_size = self.my_float(min_trade_size * 3)
                 else:
-                    self.min_trade_size = self.my_float(min_trade_size)
-                #print("{}: {} {} {}".format(self.ticker_id, self.min_trade_size, self.base_min_size, self.quote_increment))
+                    self.min_trade_size = self.my_float(min_trade_size * 3)
         elif self.ticker_id.endswith('ETH'):
             min_trade_size = self.round_base(self.eth_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size * 2)
+                    self.min_trade_size = self.my_float(min_trade_size)
                 else:
                     self.min_trade_size = self.my_float(min_trade_size)
         elif self.ticker_id.endswith('BNB'):
@@ -268,50 +191,23 @@ class macd_signal_strategy(object):
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return False
 
-        if self.last_rsi_result == 0.0 or self.last_macd_diff == 0.0 or self.last_macd_result == 0.0 or self.macd_result == 0.0:
-            return False
-        if self.ema50.last_result == 0 or self.ema12.last_result == 0 or self.ema26.last_result == 0:
+        if self.last_close == 0:
             return False
 
-        #if self.rsi_result > 40 and self.rsi_result < self.last_rsi_result:
-        #    return False
-        #if self.rsi_result > 45:
-        #    return False
+        # do not buy back in the previous buy/sell price range
+        if self.last_buy_price != 0 and self.last_sell_price != 0:
+            if self.last_buy_price <= price <= self.last_sell_price:
+                return False
 
-        #if not self.cross_macd.crossup_detected() and self.cross_macd.crossdown_detected():
-        #    return False
+        if self.signal_handler.buy_signal():
+            #if self.rank_decreases >= self.rank_increases:
+            #    return False
+            #if self.last_roc != 0.0 and self.roc != 0.0 and self.roc > self.last_roc:
+            #    self.min_trade_size_qty = 3.0
+            #if self.rank_increases > self.rank_decreases:
+            return True
 
-        #if self.macd_diff > 0.0: return False # or self.macd_diff < self.last_macd_diff: return
-
-        #if self.macd_diff <= 0.0 and self.macd_diff <= self.last_macd_diff: return False
-
-        #if self.ema12.last_result > self.ema12.result and self.ema50.last_result >= self.ema50.result:
-        #    return False
-
-        #if self.ema26.last_result > self.ema26.result and self.ema50.last_result >= self.ema50.result:
-        #    return False
-
-        if self.ema50.last_result >= self.ema50.result:
-            return False
-
-        #if self.prev_low_short == 0.0 or self.prev_high_short == 0.0: return
-
-        #if self.low_short < self.prev_low_short or self.high_short < self.prev_high_short:
-        #    return False
-
-        #if abs(self.low_long - self.low_short) / self.low_short > 0.05:
-        #    return False
-
-        #if self.cross_macd_zero.crossdown_detected():
-        #    return False
-
-        #if not self.cross_macd_zero.crossup_detected():
-        #    return False
-
-        #if self.cross_cloud.crossup_detected() or (self.SpanA > self.SpanB and self.ema50.result > self.ema50.last_result):
-        #    return True
-
-        return True
+        return False
 
     def sell_signal(self, price):
         # check balance to see if we have enough to sell
@@ -323,58 +219,35 @@ class macd_signal_strategy(object):
             return False
 
         if not self.accnt.simulate and self.buy_order_id:
-            #result = self.accnt.get_order(order_id=self.buy_order_id, ticker_id=self.ticker_id)
-            #if 'price' not in result:
-            #    return
-            #print(result)
-
-            #if float(result['price']) != 0.0:
-            #    self.buy_price = result['price']
-            #    self.buy_order_id = None
-            #    print("buy({}{}, {}) @ {} (CORRECTED)".format(self.base, self.currency, self.min_trade_size, self.buy_price))
-            if price >= float(self.buy_price):
+            if price > float(self.buy_price):
                 # assume that this is the actual price that the market order executed at
-                print("Updated buy_price to {} from {}".format(price, self.buy_price))
+                print("Updated buy_price from {} to {}".format(self.buy_price, price))
                 self.buy_price = price
                 self.buy_order_id = None
                 return False
 
+        #if self.rank_top and self.ticker_id in dict(self.rank.rank_descending_bottom()).keys() and self.signal_handler.sell_signal():
+        #    self.rank_top = False
+        #    pchange = (price - self.buy_price) / self.buy_price
+        #    if pchange >= 0.0:
+        #        return True
+
         if price < float(self.buy_price):
             return False
 
-        #if self.last_macd_diff == 0.0 or self.last_macd_result == 0.0 or self.macd_result == 0.0:
-        #    return False
-        #if self.ema12.last_result == 0 or self.ema26.last_result == 0:
-        #    return False
-
-        if self.rsi_result == 0.0 or self.rsi_result < 60.0:
-            return False
-
-        #if self.ema26.last_result < self.ema26.result:
-        #    return False
-
-        #if self.macd_diff <= 0.0: return False
-
         if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(self.buy_price, price, 5.0):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
                 return False
         else:
-            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
                 return False
 
-        #if self.ema26.result >= self.ema50.result:
-        #    return True
-
-        #if self.cross_macd_zero.crossup_detected():
-        #    return False
-
-        #if self.cross_cloud.crossdown_detected() or self.SpanA < self.SpanB:
-        #    return True
-
-        if self.cross_macd.crossdown_detected():
+        if self.signal_handler.sell_signal():
+            self.rank_increases = 0
+            self.rank_decreases = 0
             return True
 
-        return True
+        return False
 
     def update_last_50_prices(self, price):
         self.last_50_prices.append(price)
@@ -383,47 +256,61 @@ class macd_signal_strategy(object):
             self.last_50_prices = self.last_50_prices[diff_size:]
         self.count_prices_added += 1
 
+    # NOTE: low and high do not update for each kline with binance
     def run_update(self, kline):
+        # HACK REMOVE THIS
+        if self.currency == 'USDT':
+            return
         close = float(kline['c'])
         low = float(kline['l'])
         high = float(kline['h'])
+        volume = float(kline['v'])
+
+        if close == 0 or volume == 0:
+            return
+
         self.timestamp = int(kline['E'])
-        self.ema_volume.update(float(kline['v']))
-        self.rsi_result = self.rsi.update(close)
-        self.last_macd_result = self.macd_result
-        self.macd_result = self.macd.update(close)
-        self.last_macd_diff = self.macd_diff
-        self.macd_diff = self.macd.diff
-        self.cross_macd.update(self.macd.diff, self.macd.signal.result)
-        self.cross_macd_zero.update(self.macd.diff, 0.0)
 
-        self.prev_low_long = self.low_long
-        self.prev_high_long = self.high_long
-        self.prev_low_short = self.low_short
-        self.prev_high_short = self.high_short
-        #self.low_short, self.high_short, self.low_long, self.high_long = self.levels.update(close=close, low=low, high=high)
+        self.last_rank_value = self.rank_value
+        self.rank_value = self.rank.rank(symbol=self.ticker_id)
+        if self.last_rank_value != -1 and self.rank_value != -1:
+            if self.rank_value < self.last_rank_value:
+                self.rank_decreases += (self.last_rank_value - self.rank_value)
+            elif self.rank_value > self.last_rank_value:
+                self.rank_increases += (self.rank_value - self.last_rank_value)
 
-        self.SpanA, self.SpanB = self.cloud.update(close=close, low=low, high=high)
-        if self.SpanA != 0 and self.SpanB != 0:
-            self.cross_cloud.update(self.SpanA, self.SpanB)
+        self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp)
 
         self.run_update_price(close)
 
-        self.last_rsi_result = self.rsi_result
         self.last_timestamp = self.timestamp
         self.last_price = close
+        self.last_close = close
 
     def run_update_price(self, price):
-        value1 = self.ema12.update(price)
-        value2 = self.ema26.update(price)
-        value3 = self.ema50.update(price)
-        self.cross_short.update(value1, value2)
-        self.cross_long.update(value2, value3)
-
         if self.buy_signal(price):
-            self.place_buy_order(price)
+            if 'e' in str(self.min_trade_size):
+                return
+
+            min_trade_size = self.min_trade_size
+
+            if self.min_trade_size_qty != 1.0:
+                min_trade_size = float(min_trade_size) * self.min_trade_size_qty
+
+            self.buy_price = price
+            self.buy_size = min_trade_size
+
+            self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
         if self.sell_signal(price):
-            self.place_sell_order(price)
+            self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
+
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
+
+            self.last_buy_price = self.buy_price
+            self.buy_price = 0.0
+            self.buy_size = 0.0
+            self.last_sell_price = price
 
     def run_update_orderbook(self, msg):
         pass

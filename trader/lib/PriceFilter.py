@@ -15,7 +15,6 @@ class PriceFilter(object):
         self.prev_last_price = 0
         self.prev_prev_last_price = 0
 
-    # TODO: add filter to remove jagged lines
     def update(self, price):
         # prices outside of range of prices have to retest price to be entered into prices
         if self.minmax_filter and len(self.prices) > 0:

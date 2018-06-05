@@ -1,7 +1,3 @@
-from trader.indicator.IchimokuCloud import IchimokuCloud
-from trader.indicator.MACD import MACD
-from trader.indicator.TSI import TSI
-from trader.lib.Crossover import Crossover
 from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
@@ -10,7 +6,6 @@ from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.SignalHandler import SignalHandler
-from trader.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
 from datetime import datetime
 
