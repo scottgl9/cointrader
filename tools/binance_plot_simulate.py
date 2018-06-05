@@ -30,7 +30,9 @@ from trader.indicator.MACD import MACD
 from trader.indicator.PSAR import PSAR
 from trader.indicator.QUAD import QUAD
 from trader.lib.FakeKline import FakeKline
+from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.lib.PeakValleyDetect import PeakValleyDetect
+from trader.lib.PriceFilter import PriceFilter
 from trader.indicator.TSI import TSI
 from trader.indicator.BOX import BOX
 from trader.indicator.ZLEMA import *
@@ -56,6 +58,9 @@ def simulate(conn, client, base, currency):
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
+    filter = PriceFilter(window=20, range_filter=False)
+    filter_values =[]
+    filter_x_values = []
     testma = TESTMA()
     testma_values = []
     testma_x_values = []
@@ -65,6 +70,7 @@ def simulate(conn, client, base, currency):
     tsi = TSI()
     tsi_values = []
     peakvalley = PeakValleyDetect(window=200)
+    tdseq = TD_Sequential_Signal()
 
     quad = QUAD()
     obv = OBV()
@@ -175,8 +181,11 @@ def simulate(conn, client, base, currency):
         #    Senkou_SpanB_values.append(SpanB)
         #    span_x_values.append(i)
 
-        open, close, low, high, volume = fkline.update(close)
-        print(open, close, low, high)
+        value = filter.update(close)
+        if value != 0:
+            filter_values.append(value)
+            filter_x_values.append(i)
+
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -198,23 +207,29 @@ def simulate(conn, client, base, currency):
     #plt.subplot(211)
     fig = plt.figure()
     ax = fig.add_subplot(2,1,1)
-    for i in range(0, len(ema12_values)):
-        peakvalley.update(ema50_values[i])
-        if peakvalley.peak_detect():
+    for i in range(0, len(close_prices)):
+        tdseq.pre_update(close=close_prices[i])
+        if tdseq.buy_signal():
             plt.axvline(x=i, color='green')
-        elif peakvalley.valley_detect():
+        elif tdseq.sell_signal():
             plt.axvline(x=i, color='red')
+    #for i in range(0, len(ema12_values)):
+    #    peakvalley.update(ema50_values[i])
+    #    if peakvalley.peak_detect():
+    #        plt.axvline(x=i, color='green')
+    #    elif peakvalley.valley_detect():
+    #        plt.axvline(x=i, color='red')
 
     symprice, = plt.plot(close_prices, label=ticker_id)
-    symprice2, = plt.plot(open_prices, label=ticker_id)
-    plt.plot(low_prices)
-    plt.plot(high_prices)
+    plt.plot(filter_x_values, filter_values)
+    #plt.plot(low_prices)
+    #plt.plot(high_prices)
     #plt.plot(lstsqs_x_values, support1_values)
     #plt.plot(lstsqs_x_values, support2_values)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
-    plt.legend(handles=[symprice, symprice2, fig1, fig2, fig3])
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
     plt.plot(obv_ema12_values)
     plt.plot(obv_ema26_values)

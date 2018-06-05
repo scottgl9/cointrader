@@ -3,7 +3,7 @@ from trader.lib.CircularArray import CircularArray
 
 
 class FakeKline(object):
-    def __init__(self, window=5):
+    def __init__(self, window=10):
         self.window = window
         self.values = CircularArray(window=window)
         self.last_close = 0
@@ -21,6 +21,9 @@ class FakeKline(object):
             return close, close, close, close, volume
 
         if close == self.last_close:
+            return self.open, close, self.low, self.high, volume
+
+        if close in self.values.carray:
             return self.open, close, self.low, self.high, volume
 
         self.open = self.last_close
