@@ -1,8 +1,7 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
-from trader.indicator.REMA import REMA
-from trader.indicator.TESTMA import TESTMA
+from trader.indicator.test.TESTMA import TESTMA
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 

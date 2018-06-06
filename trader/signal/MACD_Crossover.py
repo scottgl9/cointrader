@@ -1,5 +1,6 @@
 from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
+from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
 from trader.lib.Crossover2 import Crossover2
@@ -16,6 +17,7 @@ class MACD_Crossover(object):
         self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
+        self.kst = KST()
         self.macd = MACD(scale=24)
         self.macd_cross = Crossover2(window=10, cutoff=0.0)
         self.macd_zero_cross = Crossover2(window=10, cutoff=0.0)
@@ -52,6 +54,8 @@ class MACD_Crossover(object):
         self.macd_cross.update(self.macd.diff, self.macd.signal.result)
         self.macd_zero_cross.update(self.macd.diff, 0)
 
+        self.kst.update(close)
+
     def post_update(self, close, volume):
         pass
 
@@ -69,6 +73,9 @@ class MACD_Crossover(object):
             return False
 
         if self.obv_ema12.result <= self.obv_ema12.last_result:
+            return False
+
+        if self.kst.result < 0.0:
             return False
 
         if self.macd_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:

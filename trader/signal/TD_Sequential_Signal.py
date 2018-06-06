@@ -123,7 +123,7 @@ class TD_Sequential_Signal(object):
 
     #  the low of bars 8 or 9 should be lower or equal to the low of bar 6 and bar 7 in Buy Setup.
     def buy_signal(self):
-        if self.bullish_flip:
+        if self.buyCountdownCompleted:
             self.buyCountdownCompleted = False
             self.isBuySetup = False
             self.bullish_flip = False
@@ -134,7 +134,7 @@ class TD_Sequential_Signal(object):
 
     #  the high of bars 8 or 9 should be higher or equal to the high of bar 6 and bar 7 in Sell Setup.
     def sell_signal(self):
-        if self.bearish_flip:
+        if self.sellCountdownCompleted:
             self.sellCountdownCompleted= False
             self.isSellSetup = False
             self.bearish_flip = False

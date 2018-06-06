@@ -1,38 +1,23 @@
-from trader.indicator.SMMA import SMMA
+# Compute the rate of change (ROC) from current price and price N values ago
+
 
 class ROC(object):
-    def __init__(self, window=30):
+    def __init__(self, window=10):
         self.window = window
-        #self.smma = SMMA(14)
-        self.price = 0.0
-        self.last_price = 0.0
         self.result = 0.0
-        self.last_result = 0.0
-        self.last_ts = 0
         self.age = 0
-        self.rocs = []
+        self.values = []
 
-    def update(self, price, ts):
-        pchange_per_min = 0.0
-        result = 0
-        self.last_price = self.price
-        self.price = price
-        if self.last_price != 0.0 and self.price != 0.0:
-            pchange = (self.price - self.last_price) / self.last_price
-            #time_change = (ts - self.last_ts) / 60.0
-            #if time_change != 0.0:
-            pchange_per_min = abs(pchange) #/ time_change)
-            if len(self.rocs) < self.window:
-                self.rocs.append(pchange_per_min)
-            else:
-                self.rocs[int(self.age)] = pchange_per_min
-            result = pchange_per_min
-        self.last_ts = ts
-        self.last_result = self.result
-        self.result = result
+    def update(self, value):
+        if len(self.values) < self.window:
+            self.values.append(float(value))
+            self.result = 0
+        else:
+            old_value = self.values[int(self.age)]
+            if old_value != 0:
+                self.result = 100.0 * (float(value) - old_value) / old_value
+            self.values[int(self.age)] = float(value)
 
-    def increasing(self):
-        return self.last_result != 0 and self.result > self.last_result
+        self.age = (self.age + 1) % self.window
 
-    def decreasing(self):
-        return self.last_result != 0 and self.result < self.last_result
+        return self.result

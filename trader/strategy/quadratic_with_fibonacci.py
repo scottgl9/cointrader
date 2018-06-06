@@ -1,6 +1,6 @@
 from trader import OrderBookGDAX
 from trader.account.AccountGDAX import AccountGDAX
-from trader.indicator import QUAD, EMA, DiffWindow
+from trader.indicator import QUAD, EMA
 from trader import OrderHandler
 from trader.account import gdax
 from datetime import datetime
@@ -30,7 +30,6 @@ class quadratic_with_fibonacci:
         self.order_handler = OrderHandler(self.accnt)
         self.quad = QUAD(30)
         self.ema_quad = EMA(9)
-        self.diffwindow = DiffWindow(30)
         self.last_price = 0.0
 
         # for fibonacci retraceement

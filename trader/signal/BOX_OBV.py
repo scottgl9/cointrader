@@ -1,7 +1,6 @@
-from trader.indicator.BOX import BOX
+from trader.indicator.test.BOX import BOX
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
-from trader.indicator.RSI import RSI
 
 
 class BOX_OBV(object):

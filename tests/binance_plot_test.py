@@ -6,22 +6,23 @@ import numpy as np
 from sklearn import datasets, linear_model
 from trader.myhelpers import *
 from sklearn.metrics import mean_squared_error, r2_score
-from trader.indicator.BOX import BOX
+from trader.indicator.test.BOX import BOX
 from trader.indicator.EMA import EMA
 from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
+from trader.indicator.KST import KST
 from trader.indicator.QUAD import QUAD
 from trader.indicator.QUAD2 import QUAD2
 from trader.indicator.RSI import RSI
 from trader.indicator.REMA import REMA
 from trader.indicator.RSQUARE import RSQUARE
 from trader.indicator.TSI import TSI
-from trader.indicator.DiffWindow import DiffWindow
-from trader.indicator.ZigZag import ZigZag
+from trader.indicator.test.SVI import SVI
 from trader.indicator.KAMA import KAMA
 from trader.indicator.OBV import OBV
 from trader.indicator.LinReg import LinReg
+from trader.indicator.test.PriceChannel import PriceChannel
 from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.PSAR import PSAR
@@ -47,8 +48,11 @@ def plot_emas_product(plt, klines, product):
     rsi_values = []
     macd_signal = []
     timestamps = []
+    pc = PriceChannel()
     prices = prices_from_kline_data(klines)
     ema_volume = EMA(12)
+    kst = KST()
+    kst_values = []
     kama = KAMA()
     kama_prices = []
     ema_volume_values = []
@@ -94,10 +98,14 @@ def plot_emas_product(plt, klines, product):
         close_price = float(klines[i][4])
         volume = float(klines[i][5])
 
+
+        print(pc.update(close_price))
         open_prices.append(open_price)
         close_prices.append(close_price)
         low_prices.append(low)
         high_prices.append(high)
+
+        kst_values.append(kst.update(close_price))
 
         obv_value = obv.update(close=close_price, volume=volume)
         obv_values.append(obv_value)
@@ -222,11 +230,12 @@ def plot_emas_product(plt, klines, product):
 
     plt.legend(handles=[symprice, symprice2, ema4, ema5, ema6, ema7])
     plt.subplot(212)
-    fig1, = plt.plot(obv_values, label="OBV")
-    fig2, = plt.plot(ema26_obv_values, label="OBVEMA26")
-    fig3, = plt.plot(ema50_obv_values, label="OBVEMA50")
+    #fig1, = plt.plot(obv_values, label="OBV")
+    #fig2, = plt.plot(ema26_obv_values, label="OBVEMA26")
+    #fig3, = plt.plot(ema50_obv_values, label="OBVEMA50")
     #fig3, = plt.plot(obv_values, label="OBP")
-    plt.legend(handles=[fig1, fig2, fig3])
+    #plt.legend(handles=[fig1, fig2, fig3])
+    plt.plot(kst_values)
     #plt.plot(rsquare_values)
     return macd_signal
 

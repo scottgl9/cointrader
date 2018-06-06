@@ -59,12 +59,11 @@ class momentum_swing_strategy(object):
         #self.signal_handler.add(RSI_OBV())
         #self.signal_handler.add(PPO_OBV())
         #self.signal_handler.add(TSI_Signal())
-        #self.signal_handler.add(MACD_Crossover())
-        self.signal_handler.add(TD_Sequential_Signal())
+        self.signal_handler.add(MACD_Crossover())
+        #self.signal_handler.add(TD_Sequential_Signal())
         #self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(BOX_OBV())
 
-        self.levels = SupportResistLevels()
         self.low_short = self.high_short = 0.0
         self.low_long = self.high_long = 0.0
         self.prev_low_long = self.prev_high_long = 0.0
