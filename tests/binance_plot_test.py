@@ -198,27 +198,39 @@ def plot_emas_product(plt, klines, product):
     #    elif double_cross.crossdown_detected():
     #        plt.axvline(x=i, color='red')
     #prices = prices_from_kline_data(klines)
+    low_lines = []
+    high_lines = []
     for i in range(0, len(close_prices)):
         close = close_prices[i]
-        pc.update(close)
+        result = pc.update(close)
+        if len(result) != 0:
+            center = result[0]
+            low_line = result[1]
+            high_line = result[2]
+            pc_values = np.append(pc_values, center)
+            low_lines = np.append(low_lines, low_line)
+            high_lines = np.append(high_lines, high_line)
         price_x_values.append(i)
         if pc.split_up():
             plt.axvline(x=i, color='green')
         elif pc.split_down():
             plt.axvline(x=i, color='red')
     symprice, = plt.plot(close_prices, label=product) #, color='black')
-    ema4, = plt.plot(ema12_prices, label='EMA12')
-    ema5, = plt.plot(ema26_prices, label='EMA26')
-    ema6, = plt.plot(ema50_prices, label='EMA50')
+    #ema4, = plt.plot(ema12_prices, label='EMA12')
+    #ema5, = plt.plot(ema26_prices, label='EMA26')
+    #ema6, = plt.plot(ema50_prices, label='EMA50')
     #ema7, = plt.plot(rema12_prices, label='REMA12')
-    plt.plot(min_values)
-    plt.plot(max_values)
+    #plt.plot(min_values)
+    #plt.plot(max_values)
+    plt.plot(pc_values)
+    plt.plot(low_lines)
+    plt.plot(high_lines)
     #p, e = optimize.curve_fit(piecewise_linear, price_x_values, close_prices)
     #plt.plot(price_x_values, piecewise_linear(price_x_values, *p))
     #plt.plot(pc_values)
     #plt.plot([0, pc.total_age], [pc.start_low, pc.cur_low])
     #plt.plot([0, pc.total_age], [pc.start_high, pc.cur_high])
-    plt.legend(handles=[symprice, ema4, ema5, ema6])
+    #plt.legend(handles=[symprice, ema4, ema5, ema6])
     plt.subplot(212)
     fig1, = plt.plot(obv_values, label="OBV")
     fig2, = plt.plot(ema26_obv_values, label="OBVEMA26")

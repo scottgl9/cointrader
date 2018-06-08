@@ -2,27 +2,65 @@
 import numpy as np
 from scipy.stats import linregress
 from trader.indicator.MINMAX import MINMAX
+from trader.indicator.SMA import SMA
+
 
 class PriceSegment(object):
     def __init__(self, prices, slope, start, x):
-        self.prices = prices
+        self.prices = np.array(prices)
         self.slope = slope
         self.start = start
         self.size = len(prices)
         self.x = np.array(x)
+        self.line = []
+        self.low_line = []
+        self.high_line = []
 
-    def get_values(self):
-        return (self.slope * self.x) + self.start
+    def get_regression_line(self):
+        if len(self.line) == 0:
+            self.line = (self.slope * self.x) + self.start
+        return self.line
+
+    def get_low_line(self):
+        self.get_regression_line()
+        diff = self.prices - self.line
+        min_value = 0
+        min_index = -1
+        for i in range(0, len(diff)):
+            if diff[i] < min_value:
+                min_value = diff[i]
+                min_index = i
+        min_price = self.prices[min_index]
+        start = min_price - self.slope * min_index
+        self.low_line = (self.slope * self.x) + start
+        return self.low_line
+
+    def get_high_line(self):
+        self.get_regression_line()
+        diff = self.prices - self.line
+        max_value = 0
+        max_index = -1
+        for i in range(0, len(diff)):
+            if diff[i] > max_value:
+                max_value = diff[i]
+                max_index = i
+        max_price = self.prices[max_index]
+        start = max_price - self.slope * max_index
+        self.high_line = (self.slope * self.x) + start
+        return self.high_line
+
 
 class PriceChannel(object):
     def __init__(self, window=50):
         self.window = window
         self.prices = []
+        self.sma_prices = []
         self.prices_x = []
         self.segments = []
         self.win_prices = []
         self.minmax = MINMAX(100)
         self.age = 0
+        self.sma = SMA(50)
         self.total_age = 0
         self.result = []
         self.low = 0
@@ -31,18 +69,48 @@ class PriceChannel(object):
         self.prev_high = 0
         self.low_count = 0
         self.high_count = 0
+        self.up = False
+        self.down = False
+
+    def reset(self):
+        self.prices = []
+        self.prices_x = []
+        self.sma_prices = []
+        self.age = 0
+        self.total_age = 0
 
     def update(self, price):
         self.prev_low = self.low
         self.prev_high = self.high
         self.low, self.high = self.minmax.update(price)
 
+        if self.low_count > 2 and self.high_count > 5:
+            self.high_count = 0
+            self.low_count = 0
+            self.down = True
+        elif self.low_count > 5 and self.high_count > 2:
+            self.high_count = 0
+            self.low_count = 0
+            self.up = True
+
+        if self.down or self.up:
+            slope = (self.sma_prices[-1] - self.sma_prices[0]) / (self.prices_x[-1] - self.prices_x[0])
+            start = self.sma_prices[0]
+            s = PriceSegment(self.prices, slope=slope, start=start, x=self.prices_x)
+            center = s.get_regression_line()
+            high = s.get_high_line()
+            low = s.get_low_line()
+            self.result = [center, low, high]
+            self.segments.append(s)
+            self.reset()
+        else:
+            self.result = []
+
         if len(self.win_prices) < self.window:
             self.win_prices.append(float(price))
             self.prices.append(float(price))
             self.prices_x.append(self.total_age)
         else:
-            self.result = []
             self.win_prices[int(self.age)] = float(price)
             self.prices.append(float(price))
             self.prices_x.append(self.total_age)
@@ -51,6 +119,9 @@ class PriceChannel(object):
             elif self.high > self.prev_high:
                 self.high_count += 1
 
+            self.sma_prices.append(self.sma.update(price))
+
+            # mixed result so discard
             if self.low_count == 3 and self.high_count == 3:
                 self.low_count = 0
                 self.high_count = 0
@@ -61,29 +132,26 @@ class PriceChannel(object):
         return self.result
 
     def split_down(self):
-        if self.low_count > 2 and self.high_count > 5:
-            self.high_count = 0
-            self.low_count = 0
+        if self.down:
+            self.down = False
             return True
         return False
 
     def split_up(self):
-        if self.low_count > 5 and self.high_count > 2:
-            self.high_count = 0
-            self.low_count = 0
+        if self.up:
+            self.up = False
             return True
         return False
 
-    def line_values(self, start, end, count):
-        values = []
-        slope = (end - start) / count
-        for i in range(0, count):
-            values.append(i * slope + start)
-        return values
+    def get_regression_line(self):
+        slope = (self.sma_prices[-1] - self.sma_prices[0]) / (self.prices_x[-1] - self.prices_x[0])
+        intercept = self.sma_prices[0]
+        #slope, intercept, r_value, p_value, std_err = linregress(self.prices_x, self.prices)
+        x = np.array(self.prices_x)
+        result = slope * x + intercept
+        return result
 
     def values_between_lines(self, values, low_start, low_end, high_start, high_end, count):
-        #if (low_end - low_start) == 0 or (high_end - high_start) == 0:
-        #    return 0,0,0
         low_slope = (low_end - low_start) / count
         high_slope = (high_end - high_start) / count
         for i in range(0, count):
@@ -94,80 +162,3 @@ class PriceChannel(object):
             if values[i] > high:
                 return 1, i, values[i]
         return 0, 0, 0
-
-    def recompute(self):
-        if self.cur_low == 0 or self.cur_high == 0:
-            self.cur_low = min(self.win_prices)
-            self.cur_high = max(self.win_prices)
-            slope_low = (self.cur_low - self.start_low) / self.total_age
-            slope_high = (self.cur_high - self.start_high) / self.total_age
-            if abs(slope_low) < abs(slope_high):
-                self.slope = slope_low
-                self.start_low = self.cur_low - (self.slope * self.total_age)
-            else:
-                self.slope = slope_high
-                self.start_high = self.cur_high - (self.slope * self.total_age)
-        else:
-            cur_low = self.slope * self.total_age + self.start_low
-            cur_high = self.slope * self.total_age + self.start_high
-            if min(self.win_prices) < cur_low:
-                cur_low = min(self.win_prices)
-            if max(self.win_prices) > cur_high:
-                cur_high = max(self.win_prices)
-            result, index, lvalue = self.values_between_lines(self.prices,
-                                                              self.start_low,
-                                                              cur_low,
-                                                              self.start_high,
-                                                              cur_high,
-                                                              self.total_age)
-            if result != 0:
-                if result == -1:
-                    # new low value
-                    cur_low = self.prices[index]
-                    if index == 0:
-                        self.cur_low = cur_low
-                    else:
-                        slope_low = (cur_low - self.start_low) / index
-                        self.slope = slope_low
-                        # try adjusting upper line down
-                        start_high = self.cur_high - (slope_low * index)
-                        result, index, lvalue = self.values_between_lines(self.prices,
-                                                                          self.start_low,
-                                                                          cur_low,
-                                                                          start_high,
-                                                                          cur_high,
-                                                                          self.total_age)
-                        if result == 0:
-                            self.start_high = start_high
-                            self.slope = slope_low
-                            self.cur_high = (self.slope * self.total_age) + self.start_high
-                        else:
-                            # didn't work, adjust start_low down
-                            self.cur_low = cur_low
-                            self.start_low = self.cur_low - (self.slope * self.total_age)
-                elif result == 1:
-                    # new high value
-                    cur_high = self.prices[index]
-                    if index == 0:
-                        self.cur_high = cur_high
-                    else:
-                        slope_high = (cur_high - self.start_high) / index
-                        # try adjusting lower line up
-                        start_low = self.cur_low - (slope_high * index)
-                        result, index, lvalue = self.values_between_lines(self.prices,
-                                                                          start_low,
-                                                                          cur_low,
-                                                                          self.start_high,
-                                                                          cur_high,
-                                                                          self.total_age)
-                        if result == 0:
-                            self.start_low = start_low
-                            self.slope = slope_high
-                            self.cur_low = (self.slope * self.total_age) + self.start_low
-                        else:
-                            # didn't work, adjust start_high up
-                            self.cur_high = cur_high
-                            self.start_high = self.cur_high - (self.slope * self.total_age)
-            else:
-                self.cur_low = cur_low
-                self.cur_high = cur_high
