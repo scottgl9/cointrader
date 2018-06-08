@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 import numpy as np
+from scipy import optimize
 import matplotlib.pyplot as plt
-import numpy as np
 from sklearn import datasets, linear_model
 from trader.myhelpers import *
 from sklearn.metrics import mean_squared_error, r2_score
@@ -11,6 +11,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
+from trader.indicator.MINMAX import MINMAX
 from trader.indicator.KST import KST
 from trader.indicator.QUAD import QUAD
 from trader.indicator.QUAD2 import QUAD2
@@ -36,6 +37,11 @@ from trader.account.binance.exceptions import BinanceAPIException
 from config import *
 import sys
 
+def piecewise_linear(x, x0, x1, b, k1, k2, k3):
+    condlist = [x < x0, (x >= x0) & (x < x1), x >= x1]
+    funclist = [lambda x: k1*x + b, lambda x: k1*x + b + k2*(x-x0), lambda x: k1*x + b + k2*(x-x0) + k3*(x - x1)]
+    return np.piecewise(x, condlist, funclist)
+
 # kline format: [ time, low, high, open, close, volume ]
 
 def plot_emas_product(plt, klines, product):
@@ -48,7 +54,9 @@ def plot_emas_product(plt, klines, product):
     rsi_values = []
     macd_signal = []
     timestamps = []
+    minmax = MINMAX(50)
     pc = PriceChannel()
+    pc_values = []
     prices = prices_from_kline_data(klines)
     ema_volume = EMA(12)
     kst = KST()
@@ -56,6 +64,7 @@ def plot_emas_product(plt, klines, product):
     kama = KAMA()
     kama_prices = []
     ema_volume_values = []
+    price_x_values = []
     ema12 = EMA(12, scale=24)
     ema12_prices = []
     ema26 = EMA(26, scale=24)
@@ -78,18 +87,11 @@ def plot_emas_product(plt, klines, product):
     ema50_obv = EMA(50, scale=24)
     ema50_obv_values = []
 
-    box=BOX()
-    box_low_values = []
-    box_high_values = []
-    box_x_values = []
     obv = OBV()
     obv_values = []
-    trend = MeasureTrend()
-    trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
-    sar = PSAR()
-    linreg = LinReg()
-    linreg_values = []
-    linreg_x_values = []
+    min_values = []
+    max_values = []
+
 
     for i in range(1, len(klines) - 1):
         low = float(klines[i][1])
@@ -98,12 +100,14 @@ def plot_emas_product(plt, klines, product):
         close_price = float(klines[i][4])
         volume = float(klines[i][5])
 
-
-        print(pc.update(close_price))
         open_prices.append(open_price)
         close_prices.append(close_price)
         low_prices.append(low)
         high_prices.append(high)
+
+        minimum, maximum = minmax.update(close_price)
+        min_values.append(minimum)
+        max_values.append(maximum)
 
         kst_values.append(kst.update(close_price))
 
@@ -137,16 +141,6 @@ def plot_emas_product(plt, klines, product):
         #    high_high_values.append(high_high)
         #    prev_x_values.append(i)
 
-        value = quad2.update(close_price)
-        if value != 0:
-            quad2_values.append(value)
-
-        box_low, box_high = box.update(close_price)
-        if box_low != 0 and box_high != 0:
-            box_low_values.append(box_low)
-            box_high_values.append(box_high)
-            box_x_values.append(i)
-
         macd.update(open_price)
         ema12_price = ema12.update(close_price)
         ema12_prices.append(ema12_price)
@@ -155,13 +149,6 @@ def plot_emas_product(plt, klines, product):
         ema50_prices.append(ema50.update(close_price))
         kama_prices.append(kama.update(close_price))
 
-        value = rsquare.update(ema12_price)
-        rsquare_values.append(value)
-
-        value = linreg.update(ema12_price)
-        if value != 0:
-            linreg_x_values.append(i)
-            linreg_values.append(value)
         #result = zigzag.update_from_kline(open_price, low, high)
         #if result != 0.0:
         #    zigzag_y.append(result)
@@ -182,8 +169,12 @@ def plot_emas_product(plt, klines, product):
         #    #plt.axhline(y=trend.peak_value(), color='blue')
         rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
+        last_close = close_price
 
-    #print(prev_low_values)
+    #result = pc.get_values()
+    #if len(result) != 0:
+    #    print(result)
+    #    pc_values = np.append(pc_values, result)
 
     #for i in range(0, len(macd_signal)):
     #    quad.update(macd_signal[i], timestamps[i])#ema_quad.update(klines[i][3]), ts)
@@ -197,45 +188,44 @@ def plot_emas_product(plt, klines, product):
     #        #print(i, y, A, B, C)
 
 
-    for i in range(0, len(ema12_prices)):
-        #cross_short.update(ema12_prices[i], ema26_prices[i])
-        double_cross.update(ema12_prices[i], ema26_prices[i], ema50_prices[i])
-        if double_cross.crossup_detected():
+    #pc_values = pc.get_values()
+
+    #for i in range(0, len(ema12_prices)):
+    #    #cross_short.update(ema12_prices[i], ema26_prices[i])
+    #    double_cross.update(ema12_prices[i], ema26_prices[i], ema50_prices[i])
+    #    if double_cross.crossup_detected():
+    #        plt.axvline(x=i, color='green')
+    #    elif double_cross.crossdown_detected():
+    #        plt.axvline(x=i, color='red')
+    #prices = prices_from_kline_data(klines)
+    for i in range(0, len(close_prices)):
+        close = close_prices[i]
+        pc.update(close)
+        price_x_values.append(i)
+        if pc.split_up():
             plt.axvline(x=i, color='green')
-        elif double_cross.crossdown_detected():
+        elif pc.split_down():
             plt.axvline(x=i, color='red')
-    prices = prices_from_kline_data(klines)
     symprice, = plt.plot(close_prices, label=product) #, color='black')
-    symprice2, = plt.plot(open_prices, label=product)
-    plt.plot(low_prices)
-    plt.plot(high_prices)
-    #plt.plot(linreg_x_values, linreg_values)
-    #ema4, = plt.plot(ema26_prices["y"], label='EMA26')
-    #lowlevel0, = plt.plot(prev_x_values, prev_low_values, label='LOWS')
-    #lowlevel1, = plt.plot(prev_x_values, low_low_values, label='LLOWS')
-    #highlevel0, = plt.plot(prev_x_values, prev_high_values, label='HIGHS')
-    #highlevel1, = plt.plot(prev_x_values, high_high_values, label='HHIGHS')
-    #SpanA, = plt.plot(span_x_values, Senkou_SpanA_values, label="SpanA")
-    #SpanB, = plt.plot(span_x_values, Senkou_SpanB_values, label="SpanB")
-    #sar0, = plt.plot(sar_x_values, sar_values, label='PSAR')
-    #closePlot, = plt.plot(span_x_values, close_last_values, label="Close")
     ema4, = plt.plot(ema12_prices, label='EMA12')
     ema5, = plt.plot(ema26_prices, label='EMA26')
     ema6, = plt.plot(ema50_prices, label='EMA50')
-    ema7, = plt.plot(rema12_prices, label='REMA12')
-    plt.plot(quad2_values)
-    #plt.plot(box_x_values, box_low_values)
-    #plt.plot(box_x_values, box_high_values)
-    #kama0, = plt.plot(kama_prices, label='KAMA')
-
-    plt.legend(handles=[symprice, symprice2, ema4, ema5, ema6, ema7])
+    #ema7, = plt.plot(rema12_prices, label='REMA12')
+    plt.plot(min_values)
+    plt.plot(max_values)
+    #p, e = optimize.curve_fit(piecewise_linear, price_x_values, close_prices)
+    #plt.plot(price_x_values, piecewise_linear(price_x_values, *p))
+    #plt.plot(pc_values)
+    #plt.plot([0, pc.total_age], [pc.start_low, pc.cur_low])
+    #plt.plot([0, pc.total_age], [pc.start_high, pc.cur_high])
+    plt.legend(handles=[symprice, ema4, ema5, ema6])
     plt.subplot(212)
-    #fig1, = plt.plot(obv_values, label="OBV")
-    #fig2, = plt.plot(ema26_obv_values, label="OBVEMA26")
-    #fig3, = plt.plot(ema50_obv_values, label="OBVEMA50")
+    fig1, = plt.plot(obv_values, label="OBV")
+    fig2, = plt.plot(ema26_obv_values, label="OBVEMA26")
+    fig3, = plt.plot(ema50_obv_values, label="OBVEMA50")
     #fig3, = plt.plot(obv_values, label="OBP")
-    #plt.legend(handles=[fig1, fig2, fig3])
-    plt.plot(kst_values)
+    plt.legend(handles=[fig1, fig2, fig3])
+    #plt.plot(kst_values)
     #plt.plot(rsquare_values)
     return macd_signal
 

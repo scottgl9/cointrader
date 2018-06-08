@@ -113,7 +113,7 @@ def filter_assets_by_minqty(assets_info, balances):
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_05312018.db')
+    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
 
     # start the Web API
     #thread = threading.Thread(target=WebThread, args=(strategy,))
