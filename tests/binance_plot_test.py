@@ -202,19 +202,21 @@ def plot_emas_product(plt, klines, product):
     high_lines = []
     for i in range(0, len(close_prices)):
         close = close_prices[i]
-        result = pc.update(close)
-        if len(result) != 0:
-            center = result[0]
-            low_line = result[1]
-            high_line = result[2]
-            pc_values = np.append(pc_values, center)
-            low_lines = np.append(low_lines, low_line)
-            high_lines = np.append(high_lines, high_line)
+        pc.update(close)
         price_x_values.append(i)
         if pc.split_up():
             plt.axvline(x=i, color='green')
         elif pc.split_down():
             plt.axvline(x=i, color='red')
+
+    for result in pc.get_values():
+        center = result[0]
+        low_line = result[1]
+        high_line = result[2]
+        pc_values = np.append(pc_values, center)
+        low_lines = np.append(low_lines, low_line)
+        high_lines = np.append(high_lines, high_line)
+
     symprice, = plt.plot(close_prices, label=product) #, color='black')
     #ema4, = plt.plot(ema12_prices, label='EMA12')
     #ema5, = plt.plot(ema26_prices, label='EMA26')

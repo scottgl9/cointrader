@@ -6,48 +6,99 @@ from trader.indicator.SMA import SMA
 
 
 class PriceSegment(object):
-    def __init__(self, prices, slope, start, x):
+    def __init__(self, prices, start, end, x):
         self.prices = np.array(prices)
-        self.slope = slope
         self.start = start
+        self.end = end
         self.size = len(prices)
         self.x = np.array(x)
         self.line = []
         self.low_line = []
         self.high_line = []
+        self.slope = (end - start) / (self.x[-1] - self.x[0])
+        self.low_diff = 0
+        self.high_diff = 0
+        self.low_start = 0
+        self.high_start = 0
+
+    def add(self, prices, x, end):
+        self.line = []
+        self.low_line = []
+        self.high_line = []
+        self.prices = np.append(self.prices, prices)
+        self.x = np.append(self.x, x)
+        self.size = len(self.prices)
+        self.end = end
+        self.slope = (self.end - self.start) / (self.x[-1] - self.x[0])
+        self.set_regression_line()
+        self.get_low_line()
+        self.get_high_line()
+
+    def set_regression_line(self):
+        self.line = (self.slope * self.x) + self.start
 
     def get_regression_line(self):
         if len(self.line) == 0:
-            self.line = (self.slope * self.x) + self.start
+            self.set_regression_line()
         return self.line
 
-    def get_low_line(self):
-        self.get_regression_line()
-        diff = self.prices - self.line
-        min_value = 0
-        min_index = -1
-        for i in range(0, len(diff)):
-            if diff[i] < min_value:
-                min_value = diff[i]
-                min_index = i
-        min_price = self.prices[min_index]
-        start = min_price - self.slope * min_index
-        self.low_line = (self.slope * self.x) + start
+    def get_low_line(self, start=0):
+        if start != 0:
+            self.low_line = (self.slope * self.x) + start
+        else:
+            self.low_line = (self.slope * self.x) + self.low_start
         return self.low_line
 
-    def get_high_line(self):
-        self.get_regression_line()
-        diff = self.prices - self.line
-        max_value = 0
-        max_index = -1
-        for i in range(0, len(diff)):
-            if diff[i] > max_value:
-                max_value = diff[i]
-                max_index = i
-        max_price = self.prices[max_index]
-        start = max_price - self.slope * max_index
-        self.high_line = (self.slope * self.x) + start
+    def get_high_line(self, start=0):
+        if start != 0:
+            self.high_line = (self.slope * self.x) + start
+        else:
+            self.high_line = (self.slope * self.x) + self.high_start
         return self.high_line
+
+    def compute_low_start(self):
+        if len(self.low_line) == 0:
+            self.get_regression_line()
+            diff = self.prices - self.line
+            min_value = 0
+            min_index = -1
+            for i in range(0, len(diff)):
+                if diff[i] < min_value:
+                    min_value = diff[i]
+                    min_index = i
+            self.low_diff = min_value
+            min_price = self.prices[min_index]
+            self.low_start = min_price - self.slope * min_index
+        return self.low_start
+
+    def compute_high_start(self):
+        if len(self.high_line) == 0:
+            self.get_regression_line()
+            diff = self.prices - self.line
+            max_value = 0
+            max_index = -1
+            for i in range(0, len(diff)):
+                if diff[i] > max_value:
+                    max_value = diff[i]
+                    max_index = i
+            self.high_diff = max_value
+            max_price = self.prices[max_index]
+            self.high_start = max_price - self.slope * max_index
+        return self.high_start
+
+    def values_between_lines(self, values):
+        test_values = np.append(self.prices, values)
+        count = len(test_values)
+        low_slope = self.slope
+        high_slope = self.slope
+        for i in range(0, count):
+            low = i * low_slope + self.low_start
+            high = i * high_slope + self.high_start
+            if test_values[i] < low:
+                return False
+            if test_values[i] > high:
+                return False
+        return True
 
 
 class PriceChannel(object):
@@ -71,6 +122,13 @@ class PriceChannel(object):
         self.high_count = 0
         self.up = False
         self.down = False
+        self.last_center_start = 0
+        self.last_center_end = 0
+        self.last_high_start = 0
+        self.last_high_end = 0
+        self.last_low_start = 0
+        self.last_low_end = 0
+        self.last_slope = 0
 
     def reset(self):
         self.prices = []
@@ -94,14 +152,26 @@ class PriceChannel(object):
             self.up = True
 
         if self.down or self.up:
-            slope = (self.sma_prices[-1] - self.sma_prices[0]) / (self.prices_x[-1] - self.prices_x[0])
-            start = self.sma_prices[0]
-            s = PriceSegment(self.prices, slope=slope, start=start, x=self.prices_x)
+
+
+            #s = PriceSegment(self.prices, start=start, end=end, x=self.prices_x)
+
+            s = self.process_segments()
+
             center = s.get_regression_line()
+            slope = s.slope
+
             high = s.get_high_line()
             low = s.get_low_line()
-            self.result = [center, low, high]
-            self.segments.append(s)
+            #pcenter = 100.0 * (center[0] - low[0]) / (high[0] - low[0])
+
+            self.last_center_start = center[0]
+            self.last_center_end = center[-1]
+            self.last_high_start = high[0]
+            self.last_high_end = high[-1]
+            self.last_low_start = low[0]
+            self.last_low_end = low[-1]
+            self.last_slope = slope
             self.reset()
         else:
             self.result = []
@@ -131,6 +201,43 @@ class PriceChannel(object):
 
         return self.result
 
+    def process_segments(self):
+        # adjust high and low lines to be equal distance from center line
+        #for s in self.segments:
+        #    if abs(s.low_diff) < abs(s.high_diff):
+        #        s.low_start -= abs(s.high_diff) - abs(s.low_diff)
+        #        s.low_diff = s.high_diff
+        #    elif abs(s.low_diff) > abs(s.high_diff):
+        #        s.high_start += abs(s.low_diff) - abs(s.high_diff)
+        #        s.high_diff = s.low_diff
+
+        if len(self.segments) > 0:
+            s = self.segments[-1]
+            if s.values_between_lines(self.prices):
+                print(self.sma_prices[-1])
+                s.add(self.prices, self.prices_x, self.sma_prices[-1])
+            else:
+                start = self.sma_prices[0]
+                end = self.sma_prices[-1]
+                s = PriceSegment(self.prices, start=start, end=end, x=self.prices_x)
+                s.get_regression_line()
+                s.compute_high_start()
+                s.compute_low_start()
+                s.get_low_line()
+                s.get_high_line()
+                self.segments.append(s)
+        else:
+            start = self.sma_prices[0]
+            end = self.sma_prices[-1]
+            s = PriceSegment(self.prices, start=start, end=end, x=self.prices_x)
+            s.get_regression_line()
+            s.compute_high_start()
+            s.compute_low_start()
+            s.get_low_line()
+            s.get_high_line()
+            self.segments.append(s)
+        return s
+
     def split_down(self):
         if self.down:
             self.down = False
@@ -142,6 +249,15 @@ class PriceChannel(object):
             self.up = False
             return True
         return False
+
+    def get_values(self):
+        result = []
+        for s in self.segments:
+            center = s.get_regression_line()
+            low = s.get_low_line()
+            high = s.get_high_line()
+            result.append([center, low, high])
+        return result
 
     def get_regression_line(self):
         slope = (self.sma_prices[-1] - self.sma_prices[0]) / (self.prices_x[-1] - self.prices_x[0])
