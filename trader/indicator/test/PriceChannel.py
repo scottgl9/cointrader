@@ -26,8 +26,8 @@ class PriceSegment(object):
         self.low_line = []
         self.high_line = []
         self.prices = np.append(self.prices, prices)
-        self.x = np.append(self.x, x)
         self.size = len(self.prices)
+        self.x = np.array(range(0, self.size)) #np.append(self.x, x)
         self.end = end
         self.slope = (self.end - self.start) / (self.x[-1] - self.x[0])
         self.set_regression_line()
@@ -129,6 +129,7 @@ class PriceChannel(object):
         self.last_low_start = 0
         self.last_low_end = 0
         self.last_slope = 0
+        self.debug_age = 0
 
     def reset(self):
         self.prices = []
@@ -198,23 +199,19 @@ class PriceChannel(object):
 
         self.age = (self.age + 1) % self.window
         self.total_age = self.total_age + 1
+        self.debug_age = self.debug_age + 1
 
         return self.result
 
     def process_segments(self):
         # adjust high and low lines to be equal distance from center line
         #for s in self.segments:
-        #    if abs(s.low_diff) < abs(s.high_diff):
-        #        s.low_start -= abs(s.high_diff) - abs(s.low_diff)
-        #        s.low_diff = s.high_diff
-        #    elif abs(s.low_diff) > abs(s.high_diff):
-        #        s.high_start += abs(s.low_diff) - abs(s.high_diff)
-        #        s.high_diff = s.low_diff
+
 
         if len(self.segments) > 0:
             s = self.segments[-1]
             if s.values_between_lines(self.prices):
-                print(self.sma_prices[-1])
+                print("EXTEND: {}".format(self.debug_age))
                 s.add(self.prices, self.prices_x, self.sma_prices[-1])
             else:
                 start = self.sma_prices[0]
@@ -223,9 +220,16 @@ class PriceChannel(object):
                 s.get_regression_line()
                 s.compute_high_start()
                 s.compute_low_start()
+                if abs(s.low_diff) < abs(s.high_diff):
+                    s.low_start -= abs(s.high_diff) - abs(s.low_diff)
+                    s.low_diff = s.high_diff
+                elif abs(s.low_diff) > abs(s.high_diff):
+                    s.high_start += abs(s.low_diff) - abs(s.high_diff)
+                    s.high_diff = s.low_diff
                 s.get_low_line()
                 s.get_high_line()
                 self.segments.append(s)
+                print("ADD: {}".format(self.debug_age))
         else:
             start = self.sma_prices[0]
             end = self.sma_prices[-1]
@@ -236,6 +240,7 @@ class PriceChannel(object):
             s.get_low_line()
             s.get_high_line()
             self.segments.append(s)
+            print("ADD: {}".format(self.debug_age))
         return s
 
     def split_down(self):
