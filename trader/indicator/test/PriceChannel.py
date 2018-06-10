@@ -211,7 +211,6 @@ class PriceChannel(object):
         if len(self.segments) > 0:
             s = self.segments[-1]
             if s.values_between_lines(self.prices):
-                print("EXTEND: {}".format(self.debug_age))
                 s.add(self.prices, self.prices_x, self.sma_prices[-1])
             else:
                 start = self.sma_prices[0]
@@ -229,7 +228,19 @@ class PriceChannel(object):
                 s.get_low_line()
                 s.get_high_line()
                 self.segments.append(s)
-                print("ADD: {}".format(self.debug_age))
+                # reverse channel size propagation
+                for i in range(len(self.segments)-1, 0, -1):
+                    s1 = self.segments[i - 1]
+                    s2 = self.segments[i]
+                    s2low = s2.get_low_line()
+                    s2high = s2.get_high_line()
+                    s1low = s1.get_low_line()   # segment before s2
+                    s1high = s1.get_high_line()
+                    if s1low[-1] >= s2low[0] and s1high[-1] <= s2high[0]:
+                        s1.low_start -= s1low[-1] - s2low[0]
+                        s1.high_start += s2high[0] - s1high[-1]
+                        s1.get_low_line()
+                        s1.get_high_line()
         else:
             start = self.sma_prices[0]
             end = self.sma_prices[-1]
@@ -240,7 +251,6 @@ class PriceChannel(object):
             s.get_low_line()
             s.get_high_line()
             self.segments.append(s)
-            print("ADD: {}".format(self.debug_age))
         return s
 
     def split_down(self):

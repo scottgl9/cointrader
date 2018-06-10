@@ -263,6 +263,6 @@ if __name__ == '__main__':
     #print(balances)
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=24)
+    klines = accnt.get_klines(hours=72)
     diff_values = plot_emas_product(plt, klines, accnt.ticker_id)
     plt.show()
