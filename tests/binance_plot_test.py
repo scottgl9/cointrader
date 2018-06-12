@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import numpy as np
+import matplotlib.dates as md
 from scipy import optimize
 import matplotlib.pyplot as plt
 from sklearn import datasets, linear_model
@@ -34,6 +35,7 @@ from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.MeasureTrend import MeasureTrend
 from trader.account.binance.exceptions import BinanceAPIException
+import datetime as dt
 from config import *
 import sys
 
@@ -94,6 +96,7 @@ def plot_emas_product(plt, klines, product):
 
 
     for i in range(1, len(klines) - 1):
+        ts = float(klines[i][0])
         low = float(klines[i][1])
         high = float(klines[i][2])
         open_price = float(klines[i][3])
@@ -104,6 +107,7 @@ def plot_emas_product(plt, klines, product):
         close_prices.append(close_price)
         low_prices.append(low)
         high_prices.append(high)
+        timestamps.append(ts)
 
         minimum, maximum = minmax.update(close_price)
         min_values.append(minimum)
@@ -217,6 +221,7 @@ def plot_emas_product(plt, klines, product):
         low_lines = np.append(low_lines, low_line)
         high_lines = np.append(high_lines, high_line)
 
+    dates = [dt.datetime.fromtimestamp(ts) for ts in timestamps]
     symprice, = plt.plot(close_prices, label=product) #, color='black')
     #ema4, = plt.plot(ema12_prices, label='EMA12')
     #ema5, = plt.plot(ema26_prices, label='EMA26')
@@ -224,7 +229,7 @@ def plot_emas_product(plt, klines, product):
     #ema7, = plt.plot(rema12_prices, label='REMA12')
     #plt.plot(min_values)
     #plt.plot(max_values)
-    plt.plot(pc_values)
+    #plt.plot(pc_values)
     plt.plot(low_lines)
     plt.plot(high_lines)
     #p, e = optimize.curve_fit(piecewise_linear, price_x_values, close_prices)
@@ -263,6 +268,6 @@ if __name__ == '__main__':
     #print(balances)
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=72)
+    klines = accnt.get_klines(hours=96)
     diff_values = plot_emas_product(plt, klines, accnt.ticker_id)
     plt.show()
