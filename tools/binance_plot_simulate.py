@@ -22,7 +22,6 @@ from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.EMA import EMA
 from trader.indicator.LinReg import LinReg
-from trader.indicator.TESTMA import TESTMA
 from trader.indicator.OBV import OBV
 from trader.indicator.HMA import HMA
 from trader.indicator.RMA import RMA
@@ -34,8 +33,8 @@ from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.PriceFilter import PriceFilter
 from trader.indicator.TSI import TSI
-from trader.indicator.BOX import BOX
 from trader.indicator.ZLEMA import *
+from trader.indicator.test.PriceChannel import PriceChannel
 from trader.indicator.WMA import WMA
 from scipy import optimize
 
@@ -61,9 +60,6 @@ def simulate(conn, client, base, currency):
     filter = PriceFilter(window=20, range_filter=False)
     filter_values =[]
     filter_x_values = []
-    testma = TESTMA()
-    testma_values = []
-    testma_x_values = []
     zlema = ZLEMA(window=50, scale=24)
     zlema2 = ZLEMA(window=50, scale=24)
     zlema_values = []
@@ -71,6 +67,10 @@ def simulate(conn, client, base, currency):
     tsi_values = []
     peakvalley = PeakValleyDetect(window=200)
     tdseq = TD_Sequential_Signal()
+
+    pc = PriceChannel()
+    pc_values = []
+    price_x_values = []
 
     quad = QUAD()
     obv = OBV()
@@ -96,9 +96,6 @@ def simulate(conn, client, base, currency):
     support1_values = []
     support2_values = []
     resistance1_values = []
-    box = BOX()
-    box_lows = []
-    box_highs = []
 
     lstsqs_x_values = []
     lstsqs_y_values = []
@@ -123,11 +120,6 @@ def simulate(conn, client, base, currency):
 
         volumes.append(volume)
 
-        box_low, box_high = box.update(close)
-        if box_low != 0 and box_high != 0:
-            box_lows.append(box_low)
-            box_highs.append(box_high)
-
         obv_value = obv.update(close=close, volume=volume)
         obv_ema12_values.append(obv_ema12.update(obv_value))
         obv_ema26_values.append(obv_ema26.update(obv_value))
@@ -138,12 +130,6 @@ def simulate(conn, client, base, currency):
         ema26_values.append(ema26.update(close))
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
-
-        value1, value2 = testma.update(close)
-        if value1 != 0 and value2 != 0:
-            support1_values.append(value1)
-            support2_values.append(value2)
-            lstsqs_x_values.append(i)
 
         tsi_value = tsi.update(close)
         if tsi_value:
@@ -207,29 +193,38 @@ def simulate(conn, client, base, currency):
     #plt.subplot(211)
     fig = plt.figure()
     ax = fig.add_subplot(2,1,1)
+
+    low_lines = []
+    high_lines = []
     for i in range(0, len(close_prices)):
-        tdseq.pre_update(close=close_prices[i])
-        if tdseq.buy_signal():
+        close = close_prices[i]
+        pc.update(close)
+        price_x_values.append(i)
+        if pc.split_up():
             plt.axvline(x=i, color='green')
-        elif tdseq.sell_signal():
+        elif pc.split_down():
             plt.axvline(x=i, color='red')
-    #for i in range(0, len(ema12_values)):
-    #    peakvalley.update(ema50_values[i])
-    #    if peakvalley.peak_detect():
-    #        plt.axvline(x=i, color='green')
-    #    elif peakvalley.valley_detect():
-    #        plt.axvline(x=i, color='red')
+
+    for result in pc.get_values():
+        center = result[0]
+        low_line = result[1]
+        high_line = result[2]
+        pc_values = np.append(pc_values, center)
+        low_lines = np.append(low_lines, low_line)
+        high_lines = np.append(high_lines, high_line)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
-    plt.plot(filter_x_values, filter_values)
+    #plt.plot(filter_x_values, filter_values)
     #plt.plot(low_prices)
     #plt.plot(high_prices)
     #plt.plot(lstsqs_x_values, support1_values)
     #plt.plot(lstsqs_x_values, support2_values)
-    fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
-    plt.legend(handles=[symprice, fig1, fig2, fig3])
+    #fig1, = plt.plot(ema12_values, label='EMA12')
+    #fig2, = plt.plot(ema26_values, label='EMA26')
+    #fig3, = plt.plot(ema50_values, label='EMA50')
+    plt.plot(low_lines)
+    plt.plot(high_lines)
+    plt.legend(handles=[symprice])
     plt.subplot(212)
     plt.plot(obv_ema12_values)
     plt.plot(obv_ema26_values)

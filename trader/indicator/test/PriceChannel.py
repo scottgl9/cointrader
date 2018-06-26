@@ -229,6 +229,7 @@ class PriceChannel(object):
                 self.segments.append(s)
                 self.fix_split_segments()
                 self.resize_segments()
+                self.fix_jagged_segments()
                 #self.reverse_extend_segments()
                 s = self.segments[-1]
 
@@ -327,6 +328,25 @@ class PriceChannel(object):
                 s1.high_start = s2.high_line[0] - s1.size * s1.slope
                 s2.get_low_line()
                 s1.get_high_line()
+
+    def fix_jagged_segments(self):
+        segs_remove = []
+        for i in range(1, len(self.segments)):
+            s1 = self.segments[i - 1]
+            s2 = self.segments[i]
+            if s1.line[-1] < s1.line[0] and s2.line[0] < s2.line[-1] < s1.line[0]:
+                s1.add(s2.prices, s2.x, s2.line[-1])
+                s1.reset()
+                s1.get_regression_line()
+                s1.compute_low_start()
+                s1.compute_high_start()
+                s1.get_low_line()
+                s1.get_high_line()
+                segs_remove.append(s2)
+
+        for seg in segs_remove:
+            if seg in self.segments:
+                self.segments.remove(seg)
 
     def split_down(self):
         if self.down:

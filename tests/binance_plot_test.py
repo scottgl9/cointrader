@@ -223,8 +223,8 @@ def plot_emas_product(plt, klines, product):
 
     dates = [dt.datetime.fromtimestamp(ts) for ts in timestamps]
     symprice, = plt.plot(close_prices, label=product) #, color='black')
-    #ema4, = plt.plot(ema12_prices, label='EMA12')
-    #ema5, = plt.plot(ema26_prices, label='EMA26')
+    ema4, = plt.plot(ema12_prices, label='EMA12')
+    ema5, = plt.plot(ema26_prices, label='EMA26')
     #ema6, = plt.plot(ema50_prices, label='EMA50')
     #ema7, = plt.plot(rema12_prices, label='REMA12')
     #plt.plot(min_values)
@@ -268,6 +268,6 @@ if __name__ == '__main__':
     #print(balances)
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=128)
+    klines = accnt.get_klines(hours=96)
     diff_values = plot_emas_product(plt, klines, accnt.ticker_id)
     plt.show()
