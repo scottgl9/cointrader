@@ -46,12 +46,6 @@ class MultiTrader(object):
         if self.simulate:
             print("Running MultiTrader as simulation")
 
-        #for symbol in symbols:
-        #    base_name, currency_name = split_symbol(symbol)
-        #    accnt = AccountBinance(client, base_name, currency_name) #, account_name='Binance')
-        #    trader = select_strategy(strategy_name, client, base_name, currency_name,
-        #                             account_handler=accnt)
-
     def add_trade_pair(self, symbol):
         base_min_size = 0.0
         quote_increment = 0.0
@@ -123,6 +117,8 @@ class MultiTrader(object):
                     self.rank.update(msg['s'], self.roc_ema.update(roc))
                 symbol_trader.update_tickers(self.tickers)
                 symbol_trader.run_update(part)
+
+        # handle incoming messages
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
                 if msg.cmd == Message.MSG_MARKET_BUY:

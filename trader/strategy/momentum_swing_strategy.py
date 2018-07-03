@@ -8,6 +8,7 @@ from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.price_channel_signal import price_channel_signal
 from trader.signal.SignalHandler import SignalHandler
 from trader.lib.StatTracker import StatTracker
+from trader.lib.OrderTrack import OrderTrack
 from datetime import datetime
 
 
@@ -55,13 +56,14 @@ class momentum_swing_strategy(object):
         self.last_price = self.price = 0.0
         self.last_close = 0.0
 
+        self.order_track = OrderTrack(OrderTrack.MARKET_ORDER, max_order_count=1, percent=0.1)
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler()
         #self.signal_handler.add(RSI_OBV())
         #self.signal_handler.add(PPO_OBV())
         #self.signal_handler.add(TSI_Signal())
-        #self.signal_handler.add(MACD_Crossover())
-        self.signal_handler.add(price_channel_signal())
+        self.signal_handler.add(MACD_Crossover())
+        #self.signal_handler.add(price_channel_signal())
         #self.signal_handler.add(TD_Sequential_Signal())
         #self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(BOX_OBV())
@@ -298,7 +300,7 @@ class momentum_swing_strategy(object):
         self.last_close = close
 
     def run_update_price(self, price):
-        if self.buy_signal(price):
+        if self.order_track.can_buy() and self.buy_signal(price):
             if 'e' in str(self.min_trade_size):
                 return
 
@@ -311,11 +313,14 @@ class momentum_swing_strategy(object):
             self.buy_size = min_trade_size
 
             self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
-        if self.sell_signal(price):
+            self.order_track.buy(price, self.buy_size)
+        if self.order_track.can_sell() and self.sell_signal(price):
             self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
 
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0
+
+            self.order_track.sell(price)
 
             self.last_buy_price = self.buy_price
             self.buy_price = 0.0

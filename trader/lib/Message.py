@@ -3,6 +3,8 @@ class Message(object):
     MSG_MARKET_SELL_ALL = 1
     MSG_MARKET_BUY = 2
     MSG_MARKET_SELL = 3
+    MSG_LIMIT_BUY = 4
+    MSG_LIMIT_SELL = 5
 
     def __init__(self, src_id, dst_id, cmd, price=0.0, size=0.0, buy_price=0.0):
         self.src_id = src_id

@@ -19,13 +19,10 @@ from trader.indicator.QUAD2 import QUAD2
 from trader.indicator.RSI import RSI
 from trader.indicator.REMA import REMA
 from trader.indicator.RSQUARE import RSQUARE
-from trader.indicator.TSI import TSI
-from trader.indicator.test.SVI import SVI
 from trader.indicator.KAMA import KAMA
 from trader.indicator.OBV import OBV
 from trader.indicator.LinReg import LinReg
 from trader.indicator.test.PriceChannel import PriceChannel
-from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.PSAR import PSAR
 from trader.lib.Crossover2 import Crossover2
@@ -33,7 +30,6 @@ from trader.lib.CrossoverDouble import CrossoverDouble
 import math
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
-from trader.MeasureTrend import MeasureTrend
 from trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
 from config import *
@@ -61,10 +57,6 @@ def plot_emas_product(plt, klines, product):
     pc_values = []
     prices = prices_from_kline_data(klines)
     ema_volume = EMA(12)
-    kst = KST()
-    kst_values = []
-    kama = KAMA()
-    kama_prices = []
     ema_volume_values = []
     price_x_values = []
     ema12 = EMA(12, scale=24)
@@ -94,7 +86,6 @@ def plot_emas_product(plt, klines, product):
     min_values = []
     max_values = []
 
-
     for i in range(1, len(klines) - 1):
         ts = float(klines[i][0])
         low = float(klines[i][1])
@@ -113,37 +104,11 @@ def plot_emas_product(plt, klines, product):
         min_values.append(minimum)
         max_values.append(maximum)
 
-        kst_values.append(kst.update(close_price))
-
         obv_value = obv.update(close=close_price, volume=volume)
         obv_values.append(obv_value)
-        #obp_value = obp.update(price=close_price)
-        #obp_values.append(obp_value)
+
         ema26_obv_values.append(ema26_obv.update(obv_value))
         ema50_obv_values.append(ema50_obv.update(obv_value))
-
-        #rep_value = rep.update(close_price)
-        #if rep_value != 0:
-        #    rep_values.append(rep_value)
-
-        #SpanA, SpanB = cloud.update(close=close_price, low=low, high=high)
-        #if SpanA != 0 and SpanB != 0:
-        #    Senkou_SpanA_values.append(SpanA)
-        #    Senkou_SpanB_values.append(SpanB)
-        #    #close_last_values.append(close_last_window)
-        #    span_x_values.append(i)
-
-        #sar_value = sar.update(close=close_price, low=low, high=high)
-        #sar_x_values.append(i)
-        #sar_values.append(sar_value)
-
-        #prev_low, prev_high, low_low, high_high = levels.update(close_price, low, high)
-        #if prev_low != 0 and prev_high != 0:
-        #    prev_low_values.append(prev_low)
-        #    prev_high_values.append(prev_high)
-        #    low_low_values.append(low_low)
-        #    high_high_values.append(high_high)
-        #    prev_x_values.append(i)
 
         macd.update(open_price)
         ema12_price = ema12.update(close_price)
@@ -151,57 +116,11 @@ def plot_emas_product(plt, klines, product):
         rema12_prices.append(rema12.update(close_price))
         ema26_prices.append(ema26.update(close_price))
         ema50_prices.append(ema50.update(close_price))
-        kama_prices.append(kama.update(close_price))
 
-        #result = zigzag.update_from_kline(open_price, low, high)
-        #if result != 0.0:
-        #    zigzag_y.append(result)
-        #    zigzag_x.append(i)
-
-        #result = zigzag.update_from_kline(close_price, low, high)
-        #if result != 0.0:
-        #    zigzag_y.append(result)
-        #    zigzag_x.append(i)
-
-        #if trend_tsi.valley_detected() and trend_tsi.valley_value() < -10.0:
-        #    print("valley {}, {}".format(i, trend_tsi.valley_value()))
-        #    #valleys.append(i)
-        #    #plt.axhline(y=trend.valley_value(), color='red')
-        #if trend_tsi.peak_detected() and trend_tsi.peak_value() > 10.0:
-        #    print("peak {}, {}".format(i, trend_tsi.peak_value()))
-        #    #peaks.append(i)
-        #    #plt.axhline(y=trend.peak_value(), color='blue')
         rsi_values.append(rsi.update(klines[i][4]))
         macd_signal.append(float(macd.diff))
         last_close = close_price
 
-    #result = pc.get_values()
-    #if len(result) != 0:
-    #    print(result)
-    #    pc_values = np.append(pc_values, result)
-
-    #for i in range(0, len(macd_signal)):
-    #    quad.update(macd_signal[i], timestamps[i])#ema_quad.update(klines[i][3]), ts)
-    #    ts = timestamps[i]
-    #    A, B, C = quad.compute()
-    #    if C > 0.0: # and C > min(prices) and C < max(prices):
-    #        quad_x.append(ts)
-    #        y = A * (ts * ts) + (B * ts) + C
-    #        quad_y.append(y)
-    #        quad_maxes.append(C)
-    #        #print(i, y, A, B, C)
-
-
-    #pc_values = pc.get_values()
-
-    #for i in range(0, len(ema12_prices)):
-    #    #cross_short.update(ema12_prices[i], ema26_prices[i])
-    #    double_cross.update(ema12_prices[i], ema26_prices[i], ema50_prices[i])
-    #    if double_cross.crossup_detected():
-    #        plt.axvline(x=i, color='green')
-    #    elif double_cross.crossdown_detected():
-    #        plt.axvline(x=i, color='red')
-    #prices = prices_from_kline_data(klines)
     low_lines = []
     high_lines = []
     for i in range(0, len(close_prices)):
@@ -268,6 +187,6 @@ if __name__ == '__main__':
     #print(balances)
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=96)
+    klines = accnt.get_klines(hours=128)
     diff_values = plot_emas_product(plt, klines, accnt.ticker_id)
     plt.show()

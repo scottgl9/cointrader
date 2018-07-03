@@ -1,8 +1,7 @@
-from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.SignalHandler import SignalHandler
-from trader.SupportResistLevels import SupportResistLevels
+from trader.lib.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
 from datetime import datetime
 
