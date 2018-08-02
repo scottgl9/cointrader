@@ -227,8 +227,8 @@ class momentum_swing_strategy(object):
         if balance_available < float(self.min_trade_size):
             return False
 
-        if float(self.buy_price) == 0.0:
-            return False
+        #if float(self.buy_price) == 0.0:
+        #    return False
 
         if not self.accnt.simulate and self.buy_order_id:
             if price > float(self.buy_price):
@@ -244,15 +244,15 @@ class momentum_swing_strategy(object):
         #    if pchange >= 0.0:
         #        return True
 
-        if price < float(self.buy_price):
-            return False
+        #if price < float(self.buy_price):
+        #    return False
 
-        if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
-                return False
-        else:
-            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
-                return False
+        #if self.base == 'ETH' or self.base == 'BNB':
+        #    if not percent_p2_gt_p1(self.buy_price, price, 0.1):
+        #        return False
+        #else:
+        #    if not percent_p2_gt_p1(self.buy_price, price, 0.1):
+        #        return False
 
         if self.signal_handler.sell_signal():
             self.rank_increases = 0
@@ -315,17 +315,17 @@ class momentum_swing_strategy(object):
             self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
             self.order_track.buy(price, self.buy_size)
         if self.order_track.can_sell() and self.sell_signal(price):
-            self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
+            size = self.order_track.sell(price)
+            if size != 0.0:
+                self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
 
-            if self.min_trade_size_qty != 1.0:
-                self.min_trade_size_qty = 1.0
+                if self.min_trade_size_qty != 1.0:
+                    self.min_trade_size_qty = 1.0
 
-            self.order_track.sell(price)
-
-            self.last_buy_price = self.buy_price
-            self.buy_price = 0.0
-            self.buy_size = 0.0
-            self.last_sell_price = price
+                self.last_buy_price = self.buy_price
+                self.buy_price = 0.0
+                self.buy_size = 0.0
+                self.last_sell_price = price
 
     def run_update_orderbook(self, msg):
         pass

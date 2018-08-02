@@ -2,11 +2,11 @@
 
 #from pymongo import MongoClient
 from trader.account.cobinhood.ws import feed
-from trader.account.cobinhood.ws.response import Trade, Orderbook, Ticker
+from trader.account.cobinhood.ws.response import Trade
 from trader.account.cobinhood.configuration import Config
 from trader.account.cobinhood.http import wallet
 
-from config import *
+from trader.config import *
 
 Config.API_TOKEN = CB_KEY
 print wallet.get_balances()

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from trader.account.binance import client
-from config import *
+from trader.config import *
 
 
 

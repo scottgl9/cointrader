@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from trader.binance.client import Client
 
-from config import *
+from trader.config import *
 client = Client(MY_API_KEY, MY_API_SECRET)
 QUOTE_ASSET='BTC'
 

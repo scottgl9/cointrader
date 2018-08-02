@@ -6,7 +6,7 @@ from trader.binance import BinanceSocketManager
 import time
 import sys
 
-from config import *
+from trader.config import *
 
 #def process_message(msg):
 #    print("message type: {}".format(msg['e']))

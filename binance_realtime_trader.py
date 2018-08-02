@@ -5,7 +5,7 @@ from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 import collections
 import sys
-from config import *
+from trader.config import *
 
 
 #logger = logging.getLogger(__name__)

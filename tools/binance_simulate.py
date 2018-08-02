@@ -14,7 +14,7 @@ from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.account.AccountBinance import AccountBinance
-from config import *
+from trader.config import *
 
 def simulate(conn, client):
     c = conn.cursor()

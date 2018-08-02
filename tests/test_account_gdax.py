@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from trader.AccountGDAX import AccountGDAX
 from trader.account.gdax.authenticated_client import AuthenticatedClient
-from config import *
+from trader.config import *
 
 if __name__ == '__main__':
     auth_client = AuthenticatedClient(GDAX_KEY, GDAX_SECRET, GDAX_PASS)

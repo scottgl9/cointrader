@@ -7,7 +7,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
-from config import *
+from trader.config import *
 import sys
 
 # kline format: [ time, low, high, open, close, volume ]

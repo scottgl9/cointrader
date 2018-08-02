@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from trader.account.whaleclub import Client
-from config import *
+from trader.config import *
 
 if __name__ == '__main__':
     client = Client(api_token=WC_BTC_DEMO_API_KEY)

@@ -9,7 +9,7 @@ import hashlib
 from gdax.FIX import FIX
 #from gdax.settings import *
 
-from config import *
+from trader.config import *
 
 fix = FIX(GDAX_KEY_SB, GDAX_SECRET_SB, GDAX_PASS_SB, "FIX.4.2")
 #fix.connect("127.0.0.1", 4197)

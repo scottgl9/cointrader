@@ -8,7 +8,7 @@ from trader.strategy import select_strategy
 import collections
 import matplotlib.pyplot as plt
 import sys
-from config import *
+from trader.config import *
 import logging
 import threading
 import sys

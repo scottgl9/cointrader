@@ -6,7 +6,7 @@ from trader.AccountGDAX import AccountGDAX
 from trader.account.gdax.authenticated_client import AuthenticatedClient
 from trader import gdax
 
-from config import *
+from trader.config import *
 
 
 if __name__ == '__main__':

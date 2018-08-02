@@ -8,7 +8,7 @@ from trader.strategy import select_strategy
 import collections
 import matplotlib.pyplot as plt
 import sys
-from config import *
+from trader.config import *
 
 # {u'c': u'0.00035038', u'E': 1521434160493, u'h': u'0.00037032', u'l': u'0.00033418', u'o': u'0.00033855', u'q': u'361.61821435', u's': u'BATETH', u'v': u'1044884.00000000', u'e': u'24hrMiniTicker'}
 

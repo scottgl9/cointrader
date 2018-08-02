@@ -10,7 +10,7 @@ import sys
 from trader.WebHandler import WebThread
 from trader.StrategyHandler import StrategyHandler
 
-from config import *
+from trader.config import *
 
 # {u'product_id': u'LTC-USD', u'remaining_size': u'6.00000000', u'sequence': 1607580372, u'order_id': u'f2111bfa-2d77-47b7-b863-6ddcd548e53c', u'price': u'213.49000000', u'reason': u'canceled', u'time': u'2018-02-16T10:55:55.497000Z', u'type': u'done', u'side': u'sell'}
 # {u'product_id': u'LTC-USD', u'sequence': 1607589271, u'taker_order_id': u'46cf1c41-e6e6-4c10-92df-b9a4073b9a18', u'price': u'212.90000000', u'trade_id': 25902403, u'time': u'2018-02-16T10:59:30.774000Z', u'maker_order_id': u'b75d5a95-0e47-49a1-a567-d0ca4310be9f', u'type': u'match', u'side': u'buy', u'size': u'0.56921202'}

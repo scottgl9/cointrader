@@ -45,6 +45,8 @@ class OrderTrack(object):
         size = 0.0
         remove_orders = []
         for order in self.orders:
+            if order.price >= price:
+                continue
             if percent_p2_gt_p1(order.price, price, self.percent):
                 remove_orders.append(order)
                 size += order.size

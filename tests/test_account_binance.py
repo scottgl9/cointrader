@@ -3,7 +3,7 @@
 from trader.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.account.binance.exceptions import BinanceAPIException
-from config import *
+from trader.config import *
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)

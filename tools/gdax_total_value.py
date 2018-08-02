@@ -9,7 +9,7 @@ from trader.account.gdax.public_client import PublicClient
 from trader.account.gdax.authenticated_client import AuthenticatedClient
 from trader.account.coinbase.wallet.client import Client
 
-from config import *
+from trader.config import *
 
 if __name__ == '__main__':
         total_debit = 0.0

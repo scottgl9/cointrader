@@ -26,7 +26,7 @@ from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.MeasureTrend import MeasureTrend
 from trader.account.binance.exceptions import BinanceAPIException
-from config import *
+from trader.config import *
 import sys
 
 # kline format: [ time, low, high, open, close, volume ]

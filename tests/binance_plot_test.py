@@ -32,7 +32,7 @@ from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
-from config import *
+from trader.config import *
 import sys
 
 def piecewise_linear(x, x0, x1, b, k1, k2, k3):

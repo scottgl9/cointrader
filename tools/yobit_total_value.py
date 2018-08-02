@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from trader.account.yobit import YoBit
-from config import *
+from trader.config import *
 
 def get_price(client, base, currency):
     ticker_id = "{}_{}".format(base, currency)
