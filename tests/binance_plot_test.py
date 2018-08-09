@@ -41,8 +41,7 @@ def piecewise_linear(x, x0, x1, b, k1, k2, k3):
     return np.piecewise(x, condlist, funclist)
 
 # kline format: [ time, low, high, open, close, volume ]
-
-def plot_emas_product(plt, klines, product):
+def plot_emas_product(plt, klines, product, hours=0):
     open_prices = []
     close_prices = []
     low_prices = []
@@ -55,7 +54,6 @@ def plot_emas_product(plt, klines, product):
     minmax = MINMAX(50)
     pc = PriceChannel()
     pc_values = []
-    prices = prices_from_kline_data(klines)
     ema_volume = EMA(12)
     ema_volume_values = []
     price_x_values = []
@@ -127,10 +125,10 @@ def plot_emas_product(plt, klines, product):
         close = close_prices[i]
         pc.update(close)
         price_x_values.append(i)
-        if pc.split_up():
-            plt.axvline(x=i, color='green')
-        elif pc.split_down():
-            plt.axvline(x=i, color='red')
+        #if pc.split_up():
+        #    plt.axvline(x=i, color='green')
+        #elif pc.split_down():
+        #    plt.axvline(x=i, color='red')
 
     for result in pc.get_values():
         center = result[0]
@@ -140,27 +138,19 @@ def plot_emas_product(plt, klines, product):
         low_lines = np.append(low_lines, low_line)
         high_lines = np.append(high_lines, high_line)
 
-    dates = [dt.datetime.fromtimestamp(ts) for ts in timestamps]
-    symprice, = plt.plot(close_prices, label=product) #, color='black')
-    ema4, = plt.plot(ema12_prices, label='EMA12')
-    ema5, = plt.plot(ema26_prices, label='EMA26')
-    #ema6, = plt.plot(ema50_prices, label='EMA50')
-    #ema7, = plt.plot(rema12_prices, label='REMA12')
-    #plt.plot(min_values)
-    #plt.plot(max_values)
-    #plt.plot(pc_values)
-    plt.plot(low_lines)
-    plt.plot(high_lines)
-    #p, e = optimize.curve_fit(piecewise_linear, price_x_values, close_prices)
-    #plt.plot(price_x_values, piecewise_linear(price_x_values, *p))
-    #plt.plot(pc_values)
-    #plt.plot([0, pc.total_age], [pc.start_low, pc.cur_low])
-    #plt.plot([0, pc.total_age], [pc.start_high, pc.cur_high])
+    xvalues = np.linspace(0, hours, num=len(close_prices))
+    symprice, = plt.plot(xvalues, close_prices, label=product) #, color='black')
+    ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
+    ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
+
+    # scale from count to hours, then plot
+    plt.plot(np.linspace(0, hours, num=len(low_lines)), low_lines)
+    plt.plot(np.linspace(0, hours, num=len(high_lines)), high_lines)
     #plt.legend(handles=[symprice, ema4, ema5, ema6])
     plt.subplot(212)
-    fig1, = plt.plot(obv_values, label="OBV")
-    fig2, = plt.plot(ema26_obv_values, label="OBVEMA26")
-    fig3, = plt.plot(ema50_obv_values, label="OBVEMA50")
+    fig1, = plt.plot(xvalues, obv_values, label="OBV")
+    fig2, = plt.plot(xvalues, ema26_obv_values, label="OBVEMA26")
+    fig3, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
     #fig3, = plt.plot(obv_values, label="OBP")
     plt.legend(handles=[fig1, fig2, fig3])
     #plt.plot(kst_values)
@@ -188,5 +178,5 @@ if __name__ == '__main__':
     plt.figure(1)
     plt.subplot(211)
     klines = accnt.get_klines(hours=128)
-    diff_values = plot_emas_product(plt, klines, accnt.ticker_id)
+    diff_values = plot_emas_product(plt, klines, accnt.ticker_id, hours=128)
     plt.show()
