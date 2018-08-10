@@ -270,13 +270,13 @@ class macd_signal_strategy(object):
 
         self.timestamp = int(kline['E'])
 
-        self.last_rank_value = self.rank_value
-        self.rank_value = self.rank.rank(symbol=self.ticker_id)
-        if self.last_rank_value != -1 and self.rank_value != -1:
-            if self.rank_value < self.last_rank_value:
-                self.rank_decreases += (self.last_rank_value - self.rank_value)
-            elif self.rank_value > self.last_rank_value:
-                self.rank_increases += (self.rank_value - self.last_rank_value)
+        #self.last_rank_value = self.rank_value
+        #self.rank_value = self.rank.rank(symbol=self.ticker_id)
+        #if self.last_rank_value != -1 and self.rank_value != -1:
+        #    if self.rank_value < self.last_rank_value:
+        #        self.rank_decreases += (self.last_rank_value - self.rank_value)
+        #    elif self.rank_value > self.last_rank_value:
+        #        self.rank_increases += (self.rank_value - self.last_rank_value)
 
         self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp)
 

@@ -56,7 +56,7 @@ class momentum_swing_strategy(object):
         self.last_price = self.price = 0.0
         self.last_close = 0.0
 
-        self.order_track = OrderTrack(OrderTrack.MARKET_ORDER, max_order_count=1, percent=0.1)
+        self.order_track = OrderTrack(OrderTrack.MARKET_ORDER, max_order_count=1, percent=0.7)
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler()
         #self.signal_handler.add(RSI_OBV())
