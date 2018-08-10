@@ -18,7 +18,7 @@ class BinanceTrader:
     def __init__(self, client, asset_info=None, volumes=None):
         self.client = client
         self.tickers = {}
-        self.multitrader = MultiTrader(client, 'momentum_swing_strategy', assets_info=assets_info, volumes=volumes, simulate=False)
+        self.multitrader = MultiTrader(client, 'macd_signal_strategy', assets_info=assets_info, volumes=volumes, simulate=False)
 
     def get_websocket_kline(self, msg):
         kline = list()
