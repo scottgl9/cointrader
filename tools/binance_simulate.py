@@ -15,8 +15,10 @@ from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.account.AccountBinance import AccountBinance
 from trader.config import *
+import logging
 
-def simulate(conn, client):
+
+def simulate(conn, client, logger):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
@@ -27,7 +29,7 @@ def simulate(conn, client):
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
-    multitrader = MultiTrader(client, 'macd_signal_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, ranking=False)
+    multitrader = MultiTrader(client, 'macd_signal_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, ranking=False, logger=logger)
 
     print(multitrader.accnt.balances)
 
@@ -112,6 +114,18 @@ def filter_assets_by_minqty(assets_info, balances):
     return result
 
 if __name__ == '__main__':
+    logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+    logger = logging.getLogger()
+
+    fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "simulate"))
+    fileHandler.setFormatter(logFormatter)
+    logger.addHandler(fileHandler)
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    logger.addHandler(consoleHandler)
+    logger.setLevel(logging.DEBUG)
+
     client = Client(MY_API_KEY, MY_API_SECRET)
     conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
 
@@ -120,5 +134,5 @@ if __name__ == '__main__':
     #thread.daemon = True
     #thread.start()
 
-    simulate(conn, client)
+    simulate(conn, client, logger)
     conn.close()

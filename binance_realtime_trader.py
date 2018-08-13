@@ -5,6 +5,7 @@ from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 import collections
 import sys
+import logging
 from trader.config import *
 
 
@@ -15,10 +16,15 @@ from trader.config import *
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 class BinanceTrader:
-    def __init__(self, client, asset_info=None, volumes=None):
+    def __init__(self, client, asset_info=None, volumes=None, logger=None):
         self.client = client
         self.tickers = {}
-        self.multitrader = MultiTrader(client, 'macd_signal_strategy', assets_info=assets_info, volumes=volumes, simulate=False)
+        self.multitrader = MultiTrader(client,
+                                       'macd_signal_strategy',
+                                       assets_info=assets_info,
+                                       volumes=volumes,
+                                       simulate=False,
+                                       logger=logger)
 
     def get_websocket_kline(self, msg):
         kline = list()
@@ -51,12 +57,14 @@ class BinanceTrader:
         except (KeyboardInterrupt, SystemExit):
             sys.exit(0)
 
+
 def get_prices_from_klines(klines):
     prices = []
     for k in klines:
         prices.append(k[3])
         prices.append(k[4])
     return prices
+
 
 def get_products_sorted_by_volume(client, currency='BTC'):
     products = client.get_products()
@@ -105,6 +113,7 @@ def get_products_sorted_by_volume(client, currency='BTC'):
 
     return buy_list, sell_list, volumes
 
+
 def get_all_tickers(client):
     result = []
     for key, value in client.get_exchange_info().items():
@@ -113,6 +122,7 @@ def get_all_tickers(client):
             #if asset['symbol'].endswith('USDT'): continue
             result.append(asset['symbol'])
     return result
+
 
 def get_info_all_assets(client):
     assets = {}
@@ -130,6 +140,7 @@ def get_info_all_assets(client):
             assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
     return assets
 
+
 def get_asset_balances(client):
     balances = {}
     for accnt in client.get_account()['balances']:
@@ -138,6 +149,7 @@ def get_asset_balances(client):
 
         balances[accnt['asset']] = float(accnt['free']) + float(accnt['locked'])
     return balances
+
 
 def filter_assets_by_minqty(assets_info, balances):
     currencies = ['BTC', 'ETH', 'BNB', 'USDT']
@@ -152,6 +164,7 @@ def filter_assets_by_minqty(assets_info, balances):
                 result[name] = balance
     return result
 
+
 def filter_by_balances(assets, balances):
     if len(assets) == 0: return assets
     result = []
@@ -161,8 +174,20 @@ def filter_by_balances(assets, balances):
           result.append(name)
     return result
 
+
 if __name__ == '__main__':
-    #print(get_products_by_volume(client))
+    logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+    logger = logging.getLogger()
+
+    fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "trader"))
+    fileHandler.setFormatter(logFormatter)
+    logger.addHandler(fileHandler)
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    logger.addHandler(consoleHandler)
+    logger.setLevel(logging.DEBUG)
+
     client = Client(MY_API_KEY, MY_API_SECRET)
     assets_info = get_info_all_assets(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
@@ -185,7 +210,7 @@ if __name__ == '__main__':
                     continue
                 sell_list.append("{}{}".format(symbol, currency))
 
-    bt = BinanceTrader(client, assets_info, volumes=volumes_list)
+    bt = BinanceTrader(client, assets_info, volumes=volumes_list, logger=logger)
     try:
         bt.run()
     except (KeyboardInterrupt, SystemExit):

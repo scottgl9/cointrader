@@ -23,7 +23,7 @@ def split_symbol(symbol):
 
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
-                 account_name='Binance', simulate=False, accnt=None, ranking=True):
+                 account_name='Binance', simulate=False, accnt=None, ranking=True, logger=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
@@ -40,11 +40,12 @@ class MultiTrader(object):
         self.roc_ema = SMA(50)
         self.tickers = None
         self.msg_handler = MessageHandler()
+        self.logger = logger
 
         self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
 
         if self.simulate:
-            print("Running MultiTrader as simulation")
+            self.logger.debug("Running MultiTrader as simulation")
 
     def add_trade_pair(self, symbol):
         base_min_size = 0.0
@@ -147,7 +148,7 @@ class MultiTrader(object):
         if not self.accnt.simulate:
             print(result)
 
-        print("buy({}, {}) @ {}".format(ticker_id, size, price))
+        self.logger.info("buy({}, {}) @ {}".format(ticker_id, size, price))
         if not self.accnt.simulate and not result:
             return
 
@@ -155,7 +156,7 @@ class MultiTrader(object):
             self.buy_order_id = None
             if not self.accnt.simulate:
                 if 'orderId' not in result:
-                    print("WARNING: orderId not found for {}".format(ticker_id))
+                    self.logger.warn("orderId not found for {}".format(ticker_id))
                     return
                 orderid = result['orderId']
                 self.buy_order_id = orderid
@@ -171,14 +172,14 @@ class MultiTrader(object):
             if self.tickers:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
                 tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                print("sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(ticker_id,
+                self.logger.info("sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(ticker_id,
                                                                          size,
                                                                          price,
                                                                          buy_price,
                                                                          round(pprofit, 2),
                                                                          round(tpprofit, 2)))
             else:
-                print("sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
+                self.logger.info("sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
                                                                     size,
                                                                     price,
                                                                     buy_price,
@@ -186,7 +187,7 @@ class MultiTrader(object):
 
             if not self.accnt.simulate:
                 total_usd, total_btc = self.accnt.get_account_total_value()
-                print("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
+                self.logger.info("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
 
