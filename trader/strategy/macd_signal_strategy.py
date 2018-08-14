@@ -98,7 +98,7 @@ class macd_signal_strategy(object):
         #        self.buy_price = self.buy_price_list[-1]
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
-        self.bnb_trade_size = 1.0
+        self.bnb_trade_size = 0.8
         self.usdt_trade_size = 10.0
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
         self.min_trade_size_qty = 1.0
@@ -258,8 +258,8 @@ class macd_signal_strategy(object):
     # NOTE: low and high do not update for each kline with binance
     def run_update(self, kline):
         # HACK REMOVE THIS
-        if self.currency == 'USDT':
-            return
+        #if self.currency == 'USDT':
+        #    return
         close = float(kline['c'])
         low = float(kline['l'])
         high = float(kline['h'])

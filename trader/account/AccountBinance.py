@@ -179,6 +179,14 @@ class AccountBinance(AccountBase):
 
         return total_balance_usd, total_balance_btc
 
+    def total_btc_available(self, tickers):
+        for symbol, price in self.balances.items():
+            if symbol != 'BTC':
+                ticker_id = "{}BTC".format(symbol)
+                if ticker_id not in tickers:
+                    return False
+        return True
+
     def get_total_btc_value(self, tickers):
         total_balance_btc = 0.0
         for symbol, price in self.balances.items():

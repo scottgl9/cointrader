@@ -3,7 +3,6 @@
 #from pymongo import MongoClient
 import os.path
 import sys
-from trader import TraderGDAX
 from trader import *
 from trader.account.gdax.public_client import PublicClient
 from trader.account.gdax.authenticated_client import AuthenticatedClient

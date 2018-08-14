@@ -25,9 +25,9 @@ def simulate(conn, client, logger):
     assets_info = get_info_all_assets(client)
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
-    accnt.update_asset_balance('BTC', 0.06, 0.06)
+    #accnt.update_asset_balance('BTC', 0.06, 0.06)
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
-    #accnt.update_asset_balance('BNB', 15.0, 15.0)
+    accnt.update_asset_balance('BNB', 15.0, 15.0)
 
     multitrader = MultiTrader(client, 'macd_signal_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, ranking=False, logger=logger)
 
@@ -51,11 +51,13 @@ def simulate(conn, client, logger):
         else:
             last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
         if msg['s'] == 'BTCUSDT' and not found:
-            found = True
-            total_btc = multitrader.accnt.balances['BTC']['balance']
-            initial_btc_total = total_btc
-            total_usd = float(msg['o']) * total_btc
-            print("Initial BTC={}".format(total_btc))
+            if multitrader.accnt.total_btc_available(tickers):
+                found = True
+                #total_btc = multitrader.accnt.balances['BTC']['balance']
+                total_btc = multitrader.accnt.get_total_btc_value(tickers)
+                initial_btc_total = total_btc
+                total_usd = float(msg['o']) * total_btc
+                print("Initial BTC={}".format(total_btc))
 
         multitrader.update_tickers(tickers)
         multitrader.process_message(msg)

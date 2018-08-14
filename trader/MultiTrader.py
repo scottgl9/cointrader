@@ -169,7 +169,7 @@ class MultiTrader(object):
         if not self.accnt.simulate and not result: return
         if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
             pprofit = 100.0 * (price - buy_price) / buy_price
-            if self.tickers:
+            if self.tickers and self.initial_btc != 0:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
                 tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
                 self.logger.info("sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(ticker_id,
