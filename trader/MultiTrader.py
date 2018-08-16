@@ -23,7 +23,7 @@ def split_symbol(symbol):
 
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
-                 account_name='Binance', simulate=False, accnt=None, ranking=True, logger=None):
+                 account_name='Binance', simulate=False, accnt=None, ranking=False, logger=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
@@ -113,9 +113,10 @@ class MultiTrader(object):
 
                 symbol_trader = self.trade_pairs[part['s']]
                 if self.ranking and symbol_trader.last_close != 0.0:
-                    close = float(msg['c'])
+                    print(part)
+                    close = float(part['c'])
                     roc = 100.0 * (close / symbol_trader.last_close - 1)
-                    self.rank.update(msg['s'], self.roc_ema.update(roc))
+                    self.rank.update(part['s'], self.roc_ema.update(roc))
                 symbol_trader.update_tickers(self.tickers)
                 symbol_trader.run_update(part)
 
