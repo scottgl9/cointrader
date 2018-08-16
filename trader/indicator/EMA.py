@@ -3,7 +3,7 @@ from trader.lib.ValueLag import ValueLag
 
 
 class EMA:
-    def __init__(self, weight=26, scale=1.0, lagging=False, lag_window=3):
+    def __init__(self, weight=26, scale=1.0, lagging=False, lag_window=3, custom=False):
         self.result = 0.0
         self.last_result = 0.0
         self.weight = float(weight)
@@ -13,6 +13,7 @@ class EMA:
         self.esf = 0.0
         self.lagging = lagging
         self.value_lag = None
+        self.custom = custom
         if self.lagging:
             self.value_lag = ValueLag(window=lag_window)
 
@@ -30,7 +31,11 @@ class EMA:
             last_result = self.result
 
             if self.esf == 0.0:
-                self.esf = 2.0 / (self.weight * self.scale + 1.0)
+                if self.custom:
+                    # this is just so we can use EMA with PMO
+                    self.esf = 2.0 / (self.weight * self.scale)
+                else:
+                    self.esf = 2.0 / (self.weight * self.scale + 1.0)
 
             if self.lagging:
                 self.last_result = self.value_lag.update(self.result)
