@@ -1,6 +1,7 @@
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.SignalHandler import SignalHandler
+from trader.signal.PMO_Crossover import PMO_Crossover
 from trader.lib.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
 from datetime import datetime
@@ -53,6 +54,7 @@ class macd_signal_strategy(object):
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler()
         self.signal_handler.add(MACD_Crossover())
+        #self.signal_handler.add(PMO_Crossover())
 
         self.levels = SupportResistLevels()
         self.low_short = self.high_short = 0.0

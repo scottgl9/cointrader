@@ -25,9 +25,9 @@ def simulate(conn, client, logger):
     assets_info = get_info_all_assets(client)
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
-    #accnt.update_asset_balance('BTC', 0.06, 0.06)
+    accnt.update_asset_balance('BTC', 0.06, 0.06)
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
-    accnt.update_asset_balance('BNB', 15.0, 15.0)
+    #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
     multitrader = MultiTrader(client, 'macd_signal_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, ranking=False, logger=logger)
 

@@ -86,10 +86,10 @@ def plot_emas_product(plt, klines, product, hours=0):
     #fig3, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
     #print(pmo_values)
     #print(pmo_signal_values)
-    plt.plot(xvalues[1:], pmo_values)
-    plt.plot(xvalues[1:], pmo_signal_values)
+    fig1, = plt.plot(xvalues[1:], pmo_values, label="PMO")
+    fig2, = plt.plot(xvalues[1:], pmo_signal_values, label="PMO_SIG")
 
-    #plt.legend(handles=[fig1, fig2, fig3])
+    plt.legend(handles=[fig1, fig2])
 
 def abs_average(values):
     total = 0.0
