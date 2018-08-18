@@ -1,8 +1,13 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+
 import os.path
 import time
-import sys
 import sqlite3
 from datetime import datetime, timedelta
 from pypika import Query, Table, Field, Order

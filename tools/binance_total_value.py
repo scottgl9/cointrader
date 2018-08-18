@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+
 from trader.account.binance import client
 from trader.config import *
 

@@ -1,10 +1,15 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+
 from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 import collections
-import sys
 import logging
 from trader.config import *
 

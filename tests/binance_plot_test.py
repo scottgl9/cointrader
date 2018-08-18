@@ -1,13 +1,15 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+
 import numpy as np
 import matplotlib.dates as md
-from scipy import optimize
+#from scipy import optimize
 import matplotlib.pyplot as plt
-from sklearn import datasets, linear_model
-from trader.myhelpers import *
-from sklearn.metrics import mean_squared_error, r2_score
-from trader.indicator.test.BOX import BOX
 from trader.indicator.EMA import EMA
 from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
@@ -33,7 +35,7 @@ from trader.account.binance.client import Client
 from trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
 from trader.config import *
-import sys
+
 
 def piecewise_linear(x, x0, x1, b, k1, k2, k3):
     condlist = [x < x0, (x >= x0) & (x < x1), x >= x1]

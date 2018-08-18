@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+
 import numpy as np
 import matplotlib.pyplot as plt
 from trader.myhelpers import *
@@ -11,7 +17,6 @@ from trader.account.binance.client import Client
 from trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
 from trader.config import *
-import sys
 
 def piecewise_linear(x, x0, x1, b, k1, k2, k3):
     condlist = [x < x0, (x >= x0) & (x < x1), x >= x1]
