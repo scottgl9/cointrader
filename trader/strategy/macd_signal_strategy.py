@@ -237,10 +237,10 @@ class macd_signal_strategy(object):
             return False
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
                 return False
         else:
-            if not percent_p2_gt_p1(self.buy_price, price, 0.1):
+            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
                 return False
 
         if self.signal_handler.sell_signal():
@@ -260,8 +260,8 @@ class macd_signal_strategy(object):
     # NOTE: low and high do not update for each kline with binance
     def run_update(self, kline):
         # HACK REMOVE THIS
-        #if self.currency == 'USDT':
-        #    return
+        if self.currency == 'USDT':
+            return
         close = float(kline['c'])
         low = float(kline['l'])
         high = float(kline['h'])

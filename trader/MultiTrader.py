@@ -6,7 +6,6 @@ from trader.TradePair import TradePair
 from trader.indicator.SMA import SMA
 from trader.lib.MessageHandler import Message, MessageHandler
 
-#logger = logging.getLogger(__name__)
 
 def split_symbol(symbol):
     base_name = None
@@ -45,7 +44,9 @@ class MultiTrader(object):
         self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
 
         if self.simulate:
-            self.logger.debug("Running MultiTrader as simulation")
+            self.logger.debug("Running MultiTrader as simulation with strategy {}".format(self.strategy_name))
+        else:
+            self.logger.debug("Running MultiTrade live with strategy {}".format(self.strategy_name))
 
     def add_trade_pair(self, symbol):
         base_min_size = 0.0
@@ -69,7 +70,6 @@ class MultiTrader(object):
         trade_pair = TradePair(self.client, self.accnt, strategy, base_name, currency_name)
 
         self.trade_pairs[symbol] = trade_pair
-        #print("trade_pair {} added".format(symbol))
 
     def get_trader(self, symbol):
         if symbol not in self.trade_pairs.keys():
@@ -81,15 +81,11 @@ class MultiTrader(object):
 
         if not isinstance(msg, list):
             if 's' not in msg.keys(): return
-            #if len(msg) == 0: return
-
-            #if msg['s'].endswith('USDT') and msg['s'] != 'BTCUSDT': return
 
             if msg['s'] not in self.trade_pairs.keys():
                 self.add_trade_pair(msg['s'])
 
             if msg['s'] not in self.trade_pairs.keys(): return
-            #if self.volumes and msg['s'] not in self.volumes.keys(): return
 
             symbol_trader = self.trade_pairs[msg['s']]
             if self.ranking and symbol_trader.last_close != 0.0:
@@ -101,11 +97,8 @@ class MultiTrader(object):
         else:
             for part in msg:
                 if 's' not in part.keys(): continue
-                #if len(self.trade_pairs) == 0: continue
 
-                #if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
                 if part['s'] not in self.trade_pairs.keys():
-                    #print("adding {} to trade_pairs".format(part['s']))
                     self.add_trade_pair(part['s'])
 
                 if part['s'] not in self.trade_pairs.keys(): continue
