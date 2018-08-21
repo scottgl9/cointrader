@@ -139,16 +139,16 @@ class macd_signal_strategy(object):
 
     def round_base(self, price):
         if self.base_min_size != 0.0:
-            return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
+            return round(price, '{:.9f}'.format(self.base_min_size).index('1') - 1)
         return price
 
     def round_quote(self, price):
         if self.quote_increment != 0.0:
-            return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
+            return round(price, '{:.9f}'.format(self.quote_increment).index('1') - 1)
         return price
 
     def my_float(self, value):
-        return str("{:.8f}".format(float(value)))
+        return str("{:.9f}".format(float(value)))
 
     def compute_min_trade_size(self, price):
         if self.ticker_id.endswith('BTC'):
@@ -260,8 +260,8 @@ class macd_signal_strategy(object):
     # NOTE: low and high do not update for each kline with binance
     def run_update(self, kline):
         # HACK REMOVE THIS
-        if self.currency == 'USDT':
-            return
+        #if self.currency == 'USDT':
+        #    return
         close = float(kline['c'])
         low = float(kline['l'])
         high = float(kline['h'])
