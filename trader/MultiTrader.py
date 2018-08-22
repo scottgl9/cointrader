@@ -5,7 +5,9 @@ from trader.strategy import *
 from trader.TradePair import TradePair
 from trader.indicator.SMA import SMA
 from trader.lib.MessageHandler import Message, MessageHandler
-
+import sqlite3
+import os.path
+import sys
 
 def split_symbol(symbol):
     base_name = None
@@ -40,6 +42,18 @@ class MultiTrader(object):
         self.tickers = None
         self.msg_handler = MessageHandler()
         self.logger = logger
+
+        if not self.simulate:
+            if os.path.exists("trade.db"):
+                self.trade_db = self.open_db_connection("trade.db")
+                self.logger.info("trade.db already exists, restoring open trades...")
+            else:
+                # create database which keeps track of buy trades (not sold), so can reload trades
+                self.trade_db = self.open_db_connection("trade.db")
+                cur = self.trade_db.cursor()
+                cur.execute("""CREATE TABLE trades (ts INTEGER, symbol TEXT, price REAL, qty REAL, bought BOOLEAN)""")
+                self.trade_db.commit()
+                self.logger.info("created trade.db to track trades")
 
         self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
 
@@ -157,6 +171,7 @@ class MultiTrader(object):
 
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
+            self.insert_db_trade(self.trade_db, 0, ticker_id, price, size)
 
     def place_sell_order(self, ticker_id, price, size, buy_price):
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
@@ -187,3 +202,19 @@ class MultiTrader(object):
 
     def update_tickers(self, tickers):
         self.tickers = tickers
+
+    def open_db_connection(self, db_file):
+        try:
+            conn = sqlite3.connect(db_file, check_same_thread=False)
+            return conn
+        except sqlite3.Error as e:
+            print(e)
+
+        return None
+
+    def insert_db_trade(self, conn, ts, symbol, price, qty, bought=True):
+        values = [ts, symbol, price, qty, bought]
+        cur = conn.cursor()
+        sql = """INSERT INTO trades (ts, symbol, price, qty, bought) values(?, ?, ?, ?, ?)"""
+        cur.execute(sql, values)
+        conn.commit()
