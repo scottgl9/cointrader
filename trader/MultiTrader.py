@@ -8,6 +8,8 @@ from trader.lib.MessageHandler import Message, MessageHandler
 import sqlite3
 import os.path
 import sys
+import time
+from trader.TraderDB import TraderDB
 
 def split_symbol(symbol):
     base_name = None
@@ -45,14 +47,11 @@ class MultiTrader(object):
 
         if not self.simulate:
             if os.path.exists("trade.db"):
-                self.trade_db = self.open_db_connection("trade.db")
+                self.trader_db = TraderDB("trade.db")
                 self.logger.info("trade.db already exists, restoring open trades...")
             else:
                 # create database which keeps track of buy trades (not sold), so can reload trades
-                self.trade_db = self.open_db_connection("trade.db")
-                cur = self.trade_db.cursor()
-                cur.execute("""CREATE TABLE trades (ts INTEGER, symbol TEXT, price REAL, qty REAL, bought BOOLEAN)""")
-                self.trade_db.commit()
+                self.trader_db = TraderDB("trade.db")
                 self.logger.info("created trade.db to track trades")
 
         self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
@@ -61,6 +60,7 @@ class MultiTrader(object):
             self.logger.debug("Running MultiTrader as simulation with strategy {}".format(self.strategy_name))
         else:
             self.logger.debug("Running MultiTrade live with strategy {}".format(self.strategy_name))
+
 
     def add_trade_pair(self, symbol):
         base_min_size = 0.0
@@ -85,10 +85,12 @@ class MultiTrader(object):
 
         self.trade_pairs[symbol] = trade_pair
 
+
     def get_trader(self, symbol):
         if symbol not in self.trade_pairs.keys():
             self.add_trade_pair(symbol)
         return self.trade_pairs[symbol]
+
 
     def process_message(self, msg):
         if len(msg) == 0: return
@@ -138,6 +140,7 @@ class MultiTrader(object):
                     self.sell_all()
             self.msg_handler.clear()
 
+
     # sell off everything that was bought
     def sell_all(self):
         for trader in self.trade_pairs.values():
@@ -150,6 +153,7 @@ class MultiTrader(object):
             trader.strategy.buy_price = 0.0
             trader.strategy.buy_size = 0.0
             trader.strategy.buy_order_id = None
+
 
     def place_buy_order(self, ticker_id, price, size):
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
@@ -171,7 +175,9 @@ class MultiTrader(object):
 
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            self.insert_db_trade(self.trade_db, 0, ticker_id, price, size)
+            # add to trader db for tracking
+            self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
+
 
     def place_sell_order(self, ticker_id, price, size, buy_price):
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
@@ -200,21 +206,6 @@ class MultiTrader(object):
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
 
+
     def update_tickers(self, tickers):
         self.tickers = tickers
-
-    def open_db_connection(self, db_file):
-        try:
-            conn = sqlite3.connect(db_file, check_same_thread=False)
-            return conn
-        except sqlite3.Error as e:
-            print(e)
-
-        return None
-
-    def insert_db_trade(self, conn, ts, symbol, price, qty, bought=True):
-        values = [ts, symbol, price, qty, bought]
-        cur = conn.cursor()
-        sql = """INSERT INTO trades (ts, symbol, price, qty, bought) values(?, ?, ?, ?, ?)"""
-        cur.execute(sql, values)
-        conn.commit()
