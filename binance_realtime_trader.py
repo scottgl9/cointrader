@@ -11,6 +11,7 @@ from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 import collections
 import logging
+import signal
 from trader.config import *
 
 
@@ -21,8 +22,9 @@ from trader.config import *
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 class BinanceTrader:
-    def __init__(self, client, asset_info=None, volumes=None, logger=None):
+    def __init__(self, client, assets_info=None, volumes=None, logger=None):
         self.client = client
+        self.found = False
         self.tickers = {}
         self.multitrader = MultiTrader(client,
                                        'macd_signal_strategy',
@@ -30,6 +32,8 @@ class BinanceTrader:
                                        volumes=volumes,
                                        simulate=False,
                                        logger=logger)
+
+
 
     def get_websocket_kline(self, msg):
         kline = list()
@@ -41,6 +45,7 @@ class BinanceTrader:
         kline.append(float(msg['v']))
         return kline
 
+
     # update tickers dict to contain kline ticker values for all traded symbols
     def process_websocket_message(self, msg):
         for ticker in msg:
@@ -48,9 +53,21 @@ class BinanceTrader:
             self.tickers[ticker['s']] = self.get_websocket_kline(ticker)
             return self.tickers[ticker['s']]
 
+
     def process_message(self, msg):
         self.process_websocket_message(msg)
+
+        if not self.found and 'BTCUSDT' in self.tickers.keys():
+            if self.multitrader.accnt.total_btc_available(self.tickers.keys()):
+                print(self.tickers.keys())
+                self.found = True
+                #total_btc = multitrader.accnt.balances['BTC']['balance']
+                total_btc = self.multitrader.accnt.get_total_btc_value(self.tickers.keys())
+                self.multitrader.initial_btc_total = total_btc
+                print("Initial BTC={}".format(total_btc))
+
         self.multitrader.process_message(msg)
+
 
     def run(self):
         bm = BinanceSocketManager(self.client)
@@ -180,6 +197,9 @@ def filter_by_balances(assets, balances):
     return result
 
 
+def sig_test(a, b):
+    log.info("Received INT")
+
 if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
@@ -191,7 +211,7 @@ if __name__ == '__main__':
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     logger.addHandler(consoleHandler)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     client = Client(MY_API_KEY, MY_API_SECRET)
     assets_info = get_info_all_assets(client)

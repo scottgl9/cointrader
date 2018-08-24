@@ -2,6 +2,7 @@
 
 import json
 import threading
+import sys
 
 from autobahn.twisted.websocket import WebSocketClientFactory, \
     WebSocketClientProtocol, \
@@ -511,6 +512,9 @@ class BinanceSocketManager(threading.Thread):
         except ReactorAlreadyRunning:
             # Ignore error about reactor already running
             pass
+        except (KeyboardInterrupt, SystemExit):
+            self.close()
+            sys.exit(0)
 
     def close(self):
         """Close all connections

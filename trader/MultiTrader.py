@@ -1,4 +1,4 @@
-# handle multiple traders, one for each base / currency we want to trade
+# handle multiple TraiePairs, one for each base / currency we want to trade
 from trader.account.AccountBinance import AccountBinance
 from trader.RankManager import RankManager
 from trader.strategy import *
@@ -24,6 +24,8 @@ def split_symbol(symbol):
     return base_name, currency_name
 
 
+# handle incoming websocket messages for all symbols, and create new tradepairs
+# for those that do not yet exist
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
                  account_name='Binance', simulate=False, accnt=None, ranking=False, logger=None):
@@ -46,22 +48,29 @@ class MultiTrader(object):
         self.logger = logger
 
         if not self.simulate:
-            if os.path.exists("trade.db"):
-                self.trader_db = TraderDB("trade.db")
-                self.logger.info("trade.db already exists, restoring open trades...")
-            else:
-                # create database which keeps track of buy trades (not sold), so can reload trades
-                self.trader_db = TraderDB("trade.db")
-                self.logger.info("created trade.db to track trades")
+            self.trade_db_init()
 
         self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
 
         if self.simulate:
-            self.logger.debug("Running MultiTrader as simulation with strategy {}".format(self.strategy_name))
+            self.logger.info("Running MultiTrader as simulation with strategy {}".format(self.strategy_name))
         else:
-            self.logger.debug("Running MultiTrade live with strategy {}".format(self.strategy_name))
+            self.logger.info("Running MultiTrade live with strategy {}".format(self.strategy_name))
 
 
+    def trade_db_init(self):
+        if os.path.exists("trade.db"):
+            self.trader_db = TraderDB("trade.db")
+            self.trader_db.connect()
+            self.logger.info("trade.db already exists, restoring open trades...")
+        else:
+            # create database which keeps track of buy trades (not sold), so can reload trades
+            self.trader_db = TraderDB("trade.db")
+            self.trader_db.connect()
+            self.logger.info("created trade.db to track trades")
+
+
+    # create new tradepair handler and select strategy
     def add_trade_pair(self, symbol):
         base_min_size = 0.0
         quote_increment = 0.0
@@ -205,6 +214,8 @@ class MultiTrader(object):
                 self.logger.info("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
+            # remove from trade db since it has been sold
+            self.trader_db.remove_trade(ticker_id)
 
 
     def update_tickers(self, tickers):
