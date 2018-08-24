@@ -47,8 +47,10 @@ class MultiTrader(object):
         self.msg_handler = MessageHandler()
         self.logger = logger
 
-        if not self.simulate:
-            self.trade_db_init()
+        if self.simulate:
+            self.trade_db_init("trade_simulate.db")
+        else:
+            self.trade_db_init("trade.db")
 
         self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
 
@@ -58,16 +60,16 @@ class MultiTrader(object):
             self.logger.info("Running MultiTrade live with strategy {}".format(self.strategy_name))
 
 
-    def trade_db_init(self):
-        if os.path.exists("trade.db"):
-            self.trader_db = TraderDB("trade.db")
+    def trade_db_init(self, filename):
+        if os.path.exists(filename):
+            self.trader_db = TraderDB(filename)
             self.trader_db.connect()
-            self.logger.info("trade.db already exists, restoring open trades...")
+            self.logger.info("{} already exists, restoring open trades...".format(filename))
         else:
             # create database which keeps track of buy trades (not sold), so can reload trades
-            self.trader_db = TraderDB("trade.db")
+            self.trader_db = TraderDB(filename)
             self.trader_db.connect()
-            self.logger.info("created trade.db to track trades")
+            self.logger.info("created {} to track trades".format(filename))
 
 
     # create new tradepair handler and select strategy
@@ -184,8 +186,9 @@ class MultiTrader(object):
 
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            # add to trader db for tracking
-            self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
+
+        # add to trader db for tracking
+        self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
 
 
     def place_sell_order(self, ticker_id, price, size, buy_price):
@@ -214,8 +217,9 @@ class MultiTrader(object):
                 self.logger.info("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            # remove from trade db since it has been sold
-            self.trader_db.remove_trade(ticker_id)
+
+        # remove from trade db since it has been sold
+        self.trader_db.remove_trade(ticker_id)
 
 
     def update_tickers(self, tickers):

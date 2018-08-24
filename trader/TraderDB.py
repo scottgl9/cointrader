@@ -19,8 +19,8 @@ class TraderDB(object):
         self.db.connect(self.filename)
 
         if not exists:
-            self.db.create_table('trades', ['ts', 'symbol', 'price', 'qty', 'bought'],
-                                 ['integer', 'text', 'real', 'real', 'boolean'], 'ts')
+            self.db.create_table('trades', ['id', 'ts', 'symbol', 'price', 'qty', 'bought'],
+                                 ['integer', 'integer', 'text', 'real', 'real', 'boolean'], 'id')
 
     def load_trades(self):
         return self.db.fetch_all('trades')
@@ -29,4 +29,4 @@ class TraderDB(object):
         self.db.insert('trades', ['ts', 'symbol', 'price', 'qty', 'bought'], [ts, symbol, price, qty, bought])
 
     def remove_trade(self, symbol):
-        self.db.delete('trades', "symbol={}".format(symbol))
+        self.db.delete('trades', "symbol='{}'".format(symbol))
