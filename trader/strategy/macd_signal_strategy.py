@@ -250,12 +250,22 @@ class macd_signal_strategy(object):
 
         return False
 
+
     def update_last_50_prices(self, price):
         self.last_50_prices.append(price)
         if len(self.last_50_prices) > 50:
             diff_size = len(self.last_50_prices) - 50
             self.last_50_prices = self.last_50_prices[diff_size:]
         self.count_prices_added += 1
+
+
+    def set_buy_price_size(self, buy_price, buy_size):
+        if self.buy_price == 0:
+            self.buy_price = buy_price
+        if self.buy_size == 0:
+            self.buy_size = buy_size
+        print("loading into {} price={} size={}".format(self.ticker_id, buy_price, buy_size))
+
 
     # NOTE: low and high do not update for each kline with binance
     def run_update(self, kline):

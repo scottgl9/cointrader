@@ -65,11 +65,22 @@ class MultiTrader(object):
             self.trader_db = TraderDB(filename)
             self.trader_db.connect()
             self.logger.info("{} already exists, restoring open trades...".format(filename))
+            self.trade_db_load()
         else:
             # create database which keeps track of buy trades (not sold), so can reload trades
             self.trader_db = TraderDB(filename)
             self.trader_db.connect()
             self.logger.info("created {} to track trades".format(filename))
+
+
+    # load computed buy orders from the db which have not yet been sold, and load into traid pair strategy
+    def trade_db_load(self):
+        for trade in self.trader_db.load_trades():
+            if trade['symbol'] not in self.trade_pairs.keys():
+                self.add_trade_pair(trade['symbol'])
+
+            symbol_trader = self.trade_pairs[trade['symbol']]
+            symbol_trader.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'])
 
 
     # create new tradepair handler and select strategy

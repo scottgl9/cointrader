@@ -50,6 +50,9 @@ class TradePair(object):
     def set_market_price(self, price):
         self.market_price = price
 
+    def set_buy_price_size(self, buy_price, buy_size):
+        self.strategy.set_buy_price_size(buy_price, buy_size)
+
     def run_update(self, msg):
         self.strategy.tickers = self.tickers
         self.last_close = self.strategy.last_close

@@ -141,5 +141,9 @@ if __name__ == '__main__':
     #thread.daemon = True
     #thread.start()
 
-    simulate(conn, client, logger)
-    conn.close()
+    try:
+        simulate(conn, client, logger)
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("CTRL+C: Exiting....")
+        conn.close()
+        sys.exit(0)
