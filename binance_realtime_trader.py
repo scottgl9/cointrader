@@ -216,7 +216,7 @@ if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
     assets_info = get_info_all_assets(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
-    print(balances)
+    logger.info(balances)
     buy_list = []
     sell_list = []
     currency_list = ['BTC', 'ETH', 'BNB', 'USDT']

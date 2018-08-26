@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from trader.account.binance.client import Client
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance
 from trader.strategy import select_strategy
 import collections
 import matplotlib.pyplot as plt

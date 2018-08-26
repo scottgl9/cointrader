@@ -5,6 +5,7 @@ from trader.strategy import *
 from trader.TradePair import TradePair
 from trader.indicator.SMA import SMA
 from trader.lib.MessageHandler import Message, MessageHandler
+from trader.notify.Email import Email
 import sqlite3
 import os.path
 import sys
@@ -46,11 +47,13 @@ class MultiTrader(object):
         self.tickers = None
         self.msg_handler = MessageHandler()
         self.logger = logger
+        self.notify = None
 
         if self.simulate:
             self.trade_db_init("trade_simulate.db")
         else:
             self.trade_db_init("trade.db")
+            self.notify = Email()
 
         self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
 
@@ -65,7 +68,7 @@ class MultiTrader(object):
             self.trader_db = TraderDB(filename)
             self.trader_db.connect()
             self.logger.info("{} already exists, restoring open trades...".format(filename))
-            self.trade_db_load()
+            #self.trade_db_load()
         else:
             # create database which keeps track of buy trades (not sold), so can reload trades
             self.trader_db = TraderDB(filename)
@@ -182,7 +185,9 @@ class MultiTrader(object):
         if not self.accnt.simulate:
             print(result)
 
-        self.logger.info("buy({}, {}) @ {}".format(ticker_id, size, price))
+        message = "buy({}, {}) @ {}".format(ticker_id, size, price)
+        self.logger.info(message)
+
         if not self.accnt.simulate and not result:
             return
 
@@ -197,9 +202,11 @@ class MultiTrader(object):
 
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
+            if self.notify:
+                self.notify.send(subject=message, text=message)
 
         # add to trader db for tracking
-        self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
+        #self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
 
 
     def place_sell_order(self, ticker_id, price, size, buy_price):
@@ -210,27 +217,31 @@ class MultiTrader(object):
             if self.tickers and self.initial_btc != 0:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
                 tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                self.logger.info("sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(ticker_id,
+                message = "sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(ticker_id,
                                                                          size,
                                                                          price,
                                                                          buy_price,
                                                                          round(pprofit, 2),
-                                                                         round(tpprofit, 2)))
+                                                                         round(tpprofit, 2))
             else:
-                self.logger.info("sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
+                message = "sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
                                                                     size,
                                                                     price,
                                                                     buy_price,
-                                                                    round(pprofit, 2)))
+                                                                    round(pprofit, 2))
+
+            self.logger.info(message)
 
             if not self.accnt.simulate:
                 total_usd, total_btc = self.accnt.get_account_total_value()
                 self.logger.info("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
+            if self.notify:
+                self.notify.send(subject=message, text=message)
 
         # remove from trade db since it has been sold
-        self.trader_db.remove_trade(ticker_id)
+        #self.trader_db.remove_trade(ticker_id)
 
 
     def update_tickers(self, tickers):
