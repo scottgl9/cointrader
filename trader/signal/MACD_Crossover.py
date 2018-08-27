@@ -33,6 +33,7 @@ class MACD_Crossover(object):
         self.prev_high = 0
         self.min_price = 0
         self.max_price = 0
+        self.ts = 0
 
     def pre_update(self, close, volume, ts):
         if self.min_price == 0 or close < self.min_price:
@@ -40,6 +41,8 @@ class MACD_Crossover(object):
 
         if self.max_price == 0 or close > self.max_price:
             self.max_price = close
+
+        self.ts = ts
 
         obv_value = self.obv.update(close=close, volume=volume)
         self.prev_low = self.low
@@ -51,8 +54,8 @@ class MACD_Crossover(object):
         obv_value3 = self.obv_ema50.update(obv_value)
 
         self.macd.update(close)
-        self.macd_cross.update(self.macd.diff, self.macd.signal.result)
-        self.macd_zero_cross.update(self.macd.diff, 0)
+        self.macd_cross.update(self.macd.result, self.macd.result_signal)
+        self.macd_zero_cross.update(self.macd.result, 0)
 
         self.kst.update(close)
 

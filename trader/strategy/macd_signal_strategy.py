@@ -76,13 +76,13 @@ class macd_signal_strategy(object):
         self.rank_increases = 0
         self.rank_decreases = 0
         self.rank_top = False
+        self.timestamp = 0
+        self.last_timestamp = 0
         self.last_high_24hr = 0.0
         self.last_low_24hr = 0.0
         self.interval_price = 0.0
         self.last_buy_price = 0.0
         self.last_sell_price = 0.0
-        self.last_timestamp = 0
-        self.timestamp = 0
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
@@ -92,6 +92,7 @@ class macd_signal_strategy(object):
         self.buy_price_list = []
         self.buy_price = 0.0
         self.buy_size = 0.0
+        self.buy_timestamp = 0
         self.buy_order_id = None
         self.last_price = 0.0
         #if not self.accnt.simulate:
@@ -177,6 +178,7 @@ class macd_signal_strategy(object):
     def buy_signal(self, price):
         if float(self.buy_price) != 0.0: return False
 
+        # if more than 500 seconds between price updates, ignore signal
         if (self.timestamp - self.last_timestamp) > 500:
             return False
 
@@ -233,14 +235,20 @@ class macd_signal_strategy(object):
         #    if pchange >= 0.0:
         #        return True
 
+
+        # if we receive a sell signal less than 10 minutes after the buy,
+        # sell it unconditionally
+        #if (self.timestamp - self.buy_timestamp) < 600 and self.signal_handler.sell_signal():
+        #    return True
+
         if price < float(self.buy_price):
             return False
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
+            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
                 return False
         else:
-            if not percent_p2_gt_p1(self.buy_price, price, 0.7):
+            if not percent_p2_gt_p1(self.buy_price, price, 1.0):
                 return False
 
         if self.signal_handler.sell_signal():
@@ -298,6 +306,7 @@ class macd_signal_strategy(object):
         self.last_price = close
         self.last_close = close
 
+
     def run_update_price(self, price):
         if self.buy_signal(price):
             if 'e' in str(self.min_trade_size):
@@ -310,8 +319,10 @@ class macd_signal_strategy(object):
 
             self.buy_price = price
             self.buy_size = min_trade_size
+            self.buy_timestamp = self.timestamp
 
             self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
+
         if self.sell_signal(price):
             self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
 
@@ -322,9 +333,12 @@ class macd_signal_strategy(object):
             self.buy_price = 0.0
             self.buy_size = 0.0
             self.last_sell_price = price
+            self.buy_timestamp = 0
+
 
     def run_update_orderbook(self, msg):
         pass
+
 
     def close(self):
         #logger.info("close()")

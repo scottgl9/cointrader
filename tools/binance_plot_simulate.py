@@ -22,7 +22,6 @@ from trader.config import *
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-from trader.SupportResistLevels import SupportResistLevels
 from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.EMA import EMA
 from trader.indicator.LinReg import LinReg
@@ -42,14 +41,14 @@ from trader.indicator.test.PriceChannel import PriceChannel
 from trader.indicator.WMA import WMA
 from scipy import optimize
 
-def simulate(conn, client, base, currency):
+def simulate(conn, client, base, currency, type="channel"):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     cloud = IchimokuCloud()
-    macd = MACD(12.0, 26.0, 9.0, scale=24.0)
+
     ema12 = EMA(12, scale=24, lagging=True)
     ema26 = EMA(26, scale=24, lagging=True)
     ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
@@ -64,13 +63,12 @@ def simulate(conn, client, base, currency):
     filter = PriceFilter(window=20, range_filter=False)
     filter_values =[]
     filter_x_values = []
-    zlema = ZLEMA(window=50, scale=24)
-    zlema2 = ZLEMA(window=50, scale=24)
-    zlema_values = []
-    tsi = TSI()
-    tsi_values = []
-    peakvalley = PeakValleyDetect(window=200)
-    tdseq = TD_Sequential_Signal()
+
+    if type == "MACD":
+        macd = MACD(12.0, 26.0, 9.0, scale=24.0)
+        macd_signal = EMA(9, scale=24.0)
+        macd_diff_values = []
+        macd_signal_values = []
 
     pc = PriceChannel()
     pc_values = []
@@ -89,23 +87,6 @@ def simulate(conn, client, base, currency):
     diff_values = []
     signal_values = []
     high_prices = []
-    line = LinReg()
-    line2 = LinReg()
-    line_values = []
-    line_x_values = []
-    Senkou_SpanA_values = []
-    Senkou_SpanB_values = []
-    span_x_values = []
-    pp_values = []
-    support1_values = []
-    support2_values = []
-    resistance1_values = []
-
-    lstsqs_x_values = []
-    lstsqs_y_values = []
-
-    volumes_x_values = []
-    volumes_values = []
     volumes = []
 
     i=0
@@ -135,41 +116,15 @@ def simulate(conn, client, base, currency):
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
 
-        tsi_value = tsi.update(close)
-        if tsi_value:
-            tsi_values.append(tsi_value)
 
-        #if len(values) != 0:
-        #    for value in values:
-        #        testma_values.append(value)
-        #        testma_x_values.append(i)
-
-        #zlema_values.append(zlema2.update(zlema.update(close)))
-
-        #line_value = line.update(ema12_value)
-        #if line_value != 0:
-        #    line_values.append(line_value)
-        #    line_x_values.append(i)
-        #pp_value = (high + low + open)/3.0
-        #support1 = (pp_value * 2.0) - high
-        #support2 = pp_value - (high - low)
-        #resistance1 = (pp_value * 2.0) - low
-        #support1_values.append(support1)
-        #support2_values.append(support2)
-        #resistance1_values.append(resistance1)
-        #pp_values.append(pp_value)
-
-        #result = quad.update(ema50_value)
-        #if result != 0:
-        #    quad_y_values.append(quad.C)
-        #macd.update(close)
-        #diff_values.append(macd.result)
-        #signal_values.append(macd.signal.result)
-        #SpanA, SpanB = cloud.update(close=close, low=low, high=high)
-        #if SpanA != 0 and SpanB != 0:
-        #    Senkou_SpanA_values.append(SpanA)
-        #    Senkou_SpanB_values.append(SpanB)
-        #    span_x_values.append(i)
+        if type == "MACD":
+            macd.update(close)
+            #if macd.result_signal == 0:
+            #    print(i)
+            if macd.diff != 0:
+                value = macd_signal.update(macd.diff)
+                macd_diff_values.append(macd.diff)
+                macd_signal_values.append(value)
 
         value = filter.update(close)
         if value != 0:
@@ -198,24 +153,25 @@ def simulate(conn, client, base, currency):
     fig = plt.figure()
     ax = fig.add_subplot(2,1,1)
 
-    low_lines = []
-    high_lines = []
-    for i in range(0, len(close_prices)):
-        close = close_prices[i]
-        pc.update(close)
-        price_x_values.append(i)
-        if pc.split_up():
-            plt.axvline(x=i, color='green')
-        elif pc.split_down():
-            plt.axvline(x=i, color='red')
+    if type == "channel":
+        low_lines = []
+        high_lines = []
+        for i in range(0, len(close_prices)):
+            close = close_prices[i]
+            pc.update(close)
+            price_x_values.append(i)
+            if pc.split_up():
+                plt.axvline(x=i, color='green')
+            elif pc.split_down():
+                plt.axvline(x=i, color='red')
 
-    for result in pc.get_values():
-        center = result[0]
-        low_line = result[1]
-        high_line = result[2]
-        pc_values = np.append(pc_values, center)
-        low_lines = np.append(low_lines, low_line)
-        high_lines = np.append(high_lines, high_line)
+        for result in pc.get_values():
+            center = result[0]
+            low_line = result[1]
+            high_line = result[2]
+            pc_values = np.append(pc_values, center)
+            low_lines = np.append(low_lines, low_line)
+            high_lines = np.append(high_lines, high_line)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     #plt.plot(filter_x_values, filter_values)
@@ -226,13 +182,15 @@ def simulate(conn, client, base, currency):
     #fig1, = plt.plot(ema12_values, label='EMA12')
     #fig2, = plt.plot(ema26_values, label='EMA26')
     #fig3, = plt.plot(ema50_values, label='EMA50')
-    plt.plot(low_lines)
-    plt.plot(high_lines)
     plt.legend(handles=[symprice])
     plt.subplot(212)
-    plt.plot(obv_ema12_values)
-    plt.plot(obv_ema26_values)
-    plt.plot(obv_ema50_values)
+    if type == "MACD":
+        plt.plot(macd_diff_values)
+        plt.plot(macd_signal_values)
+    else:
+        plt.plot(obv_ema12_values)
+        plt.plot(obv_ema26_values)
+        plt.plot(obv_ema50_values)
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()
@@ -248,5 +206,5 @@ if __name__ == '__main__':
         base=sys.argv[1]
         currency = sys.argv[2]
 
-    simulate(conn, client, base, currency)
+    simulate(conn, client, base, currency, type="MACD")
     conn.close()
