@@ -99,6 +99,9 @@ class MACD_Crossover(object):
         if self.obv_ema12.result > self.obv_ema12.last_result and self.ema12.result > self.ema12.last_result:
             return False
 
+        if self.kst.result > 0.0:
+            return False
+
         if self.macd_cross.crossdown_detected():
             return True
 

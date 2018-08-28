@@ -16,6 +16,8 @@ class ROC(object):
             old_value = self.values[int(self.age)]
             if old_value != 0:
                 self.result = 100.0 * (float(value) - old_value) / old_value
+            else:
+                self.result = 0
             self.values[int(self.age)] = float(value)
 
         self.age = (self.age + 1) % self.window
