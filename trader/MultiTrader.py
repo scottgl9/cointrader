@@ -104,7 +104,8 @@ class MultiTrader(object):
                                    account_handler=self.accnt,
                                    base_min_size=base_min_size,
                                    tick_size=quote_increment,
-                                   rank=self.rank)
+                                   rank=self.rank,
+                                   logger=self.logger)
 
         trade_pair = TradePair(self.client, self.accnt, strategy, base_name, currency_name)
 

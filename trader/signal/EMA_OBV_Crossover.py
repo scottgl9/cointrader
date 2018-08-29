@@ -1,4 +1,5 @@
 from trader.indicator.EMA import EMA
+from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
 from trader.indicator.ROC import ROC
 from trader.indicator.test.TESTMA import TESTMA
@@ -8,6 +9,7 @@ from trader.lib.CrossoverDouble import CrossoverDouble
 
 class EMA_OBV_Crossover(object):
     def __init__(self, win_short=12, win_med=26, win_long=50):
+        self.signal_name = "EMA_OBV_Crossover"
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -17,7 +19,7 @@ class EMA_OBV_Crossover(object):
         self.cross_short = Crossover2(window=10, cutoff=0.0)
         self.cross_long = Crossover2(window=10, cutoff=0.0)
         self.cross_double = CrossoverDouble(window=10)
-
+        self.kst = KST()
         self.obv = OBV()
         self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
@@ -67,6 +69,8 @@ class EMA_OBV_Crossover(object):
         obv_value2 = self.obv_ema26.update(obv_value)
         obv_value3 = self.obv_ema50.update(obv_value)
 
+        self.kst.update(close)
+
         value1 = self.ema12.update(close)
         value2 = self.ema26.update(close)
         value3 = self.ema50.update(close)
@@ -104,6 +108,9 @@ class EMA_OBV_Crossover(object):
         if (self.max_price - self.min_price) / self.min_price <= 0.01:
             return False
 
+        #if self.kst.result < 0.0:
+        #    return False
+
         #if self.cross_double.crossup_detected() and self.obv_ema50.result > self.obv_ema50.last_result:
         #    return True
 
@@ -132,6 +139,9 @@ class EMA_OBV_Crossover(object):
 
         if self.obv_ema12.result > self.obv_ema12.last_result and self.ema12.result > self.ema12.last_result:
             return False
+
+        #if self.kst.result > 0.0:
+        #    return False
 
         if self.cross_short.crossdown_detected():
             return True

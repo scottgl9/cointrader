@@ -7,9 +7,9 @@ from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 
 
-class MACD_Crossover(object):
+class KST_Crossover(object):
     def __init__(self, win_short=12, win_med=26, win_long=50):
-        self.signal_name = "MACD_Crossover"
+        self.signal_name = "KST_Crossover"
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -20,9 +20,7 @@ class MACD_Crossover(object):
         self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
         self.kst = KST()
         self.kst_cross = Crossover2(window=10, cutoff=0.0)
-        self.macd = MACD(scale=24)
-        self.macd_cross = Crossover2(window=10, cutoff=0.0)
-        self.macd_zero_cross = Crossover2(window=10, cutoff=0.0)
+        self.kst_cross_zero = Crossover2(window=10, cutoff=0.0)
 
         #self.box = BOX()
         self.trend_down_count = 0
@@ -55,20 +53,14 @@ class MACD_Crossover(object):
         obv_value2 = self.obv_ema26.update(obv_value)
         obv_value3 = self.obv_ema50.update(obv_value)
 
-        self.macd.update(close)
-        self.macd_cross.update(self.macd.result, self.macd.result_signal)
-        self.macd_zero_cross.update(self.macd.result, 0)
-
-        #self.kst.update(close)
-        #self.kst_cross.update(self.kst.result, 0)
+        self.kst.update(close)
+        self.kst_cross.update(self.kst.result, self.kst.signal_result)
+        self.kst_cross_zero.update(self.kst.result, 0)
 
     def post_update(self, close, volume):
         pass
 
     def buy_signal(self):
-        if self.macd.result == 0 or self.macd.signal.result == 0:
-            return False
-
         if self.obv_ema50.last_result == 0 or self.obv_ema12.last_result == 0 or self.obv_ema26.last_result == 0:
             return False
 
@@ -81,24 +73,15 @@ class MACD_Crossover(object):
         if self.obv_ema12.result <= self.obv_ema12.last_result:
             return False
 
-        if self.kst.result < 0.0:
-            return False
+        #if self.kst.result < 0.0:
+        #    return False
 
-        if self.macd_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
+        if self.kst_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
-
-        if self.macd_zero_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
-            return True
-
-        #if self.kst_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
-        #    return True
 
         return False
 
     def sell_signal(self):
-        if self.macd.result == 0 or self.macd.signal.result == 0:
-            return False
-
         if self.obv_ema50.last_result == 0 or self.obv_ema12.last_result == 0 or self.obv_ema26.last_result == 0:
             return False
 
@@ -108,13 +91,7 @@ class MACD_Crossover(object):
         #if self.kst.result > 0.0:
         #    return False
 
-        if self.macd_cross.crossdown_detected():
+        if self.kst_cross.crossdown_detected():
             return True
-
-        if self.macd_zero_cross.crossdown_detected():
-            return True
-
-        #if self.kst_cross.crossdown_detected():
-        #    return True
 
         return False

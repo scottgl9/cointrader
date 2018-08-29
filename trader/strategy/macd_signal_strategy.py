@@ -1,7 +1,8 @@
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.SignalHandler import SignalHandler
-from trader.signal.PMO_Crossover import PMO_Crossover
+from trader.signal.KST_Crossover import KST_Crossover
+from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.lib.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
 from datetime import datetime
@@ -42,8 +43,9 @@ def percent_p1_lt_p2(p1, p2, percent):
 
 
 class macd_signal_strategy(object):
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None):
+    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None, logger=None):
         self.strategy_name = 'macd_signal_strategy'
+        self.logger = logger
         self.client = client
         self.accnt = account_handler
         self.rank = rank
@@ -52,9 +54,10 @@ class macd_signal_strategy(object):
         self.last_close = 0.0
 
         self.msg_handler = MessageHandler()
-        self.signal_handler = SignalHandler()
+        self.signal_handler = SignalHandler(logger=logger)
         self.signal_handler.add(MACD_Crossover())
-        #self.signal_handler.add(PMO_Crossover())
+        #self.signal_handler.add(EMA_OBV_Crossover())
+        #self.signal_handler.add(KST_Crossover())
 
         self.levels = SupportResistLevels()
         self.low_short = self.high_short = 0.0

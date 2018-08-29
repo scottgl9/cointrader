@@ -8,6 +8,7 @@ from trader.lib.CrossoverDouble import CrossoverDouble
 
 class PMO_Crossover(object):
     def __init__(self, win_short=12, win_med=26, win_long=50):
+        self.signal_name = "PMO_Crossover"
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long

@@ -4,9 +4,10 @@ class SignalHandler(object):
     SIGNAL_ONE = 1
     SIGNAL_ALL = 2
 
-    def __init__(self, sigtype=SIGNAL_ONE):
+    def __init__(self, sigtype=SIGNAL_ONE, logger=None):
         self.handlers = []
         self.sigtype = sigtype
+        self.logger = logger
 
     def add(self, handler):
         self.handlers.append(handler)

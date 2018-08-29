@@ -47,8 +47,9 @@ def percent_p1_lt_p2(p1, p2, percent):
 
 
 class momentum_swing_strategy(object):
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None):
+    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None, logger=None):
         self.strategy_name = 'momentum_swing_strategy'
+        self.logger = logger
         self.client = client
         self.accnt = account_handler
         self.rank = rank
@@ -58,7 +59,7 @@ class momentum_swing_strategy(object):
 
         self.order_track = OrderTrack(OrderTrack.MARKET_ORDER, max_order_count=1, percent=0.7)
         self.msg_handler = MessageHandler()
-        self.signal_handler = SignalHandler()
+        self.signal_handler = SignalHandler(logger=logger)
         #self.signal_handler.add(RSI_OBV())
         #self.signal_handler.add(PPO_OBV())
         #self.signal_handler.add(TSI_Signal())
