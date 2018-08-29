@@ -2,26 +2,29 @@
 
 import sys
 try:
-    import trader
+    import tests.trader
 except ImportError:
     sys.path.append('.')
 
 import numpy as np
 import matplotlib.pyplot as plt
-from trader.myhelpers import *
-from trader.indicator.EMA import EMA
-from trader.indicator.OBV import OBV
-from trader.indicator.PMO import PMO
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance.client import Client
-from trader.account.binance.exceptions import BinanceAPIException
+from tests.trader.myhelpers import *
+from tests.trader.indicator.EMA import EMA
+from tests.trader.indicator.OBV import OBV
+from tests.trader.indicator.KST import KST
+from tests.trader.account.AccountBinance import AccountBinance
+from tests.trader.account.binance.client import Client
+from tests.trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
-from trader.config import *
+from tests.trader.config import *
 
 def piecewise_linear(x, x0, x1, b, k1, k2, k3):
     condlist = [x < x0, (x >= x0) & (x < x1), x >= x1]
     funclist = [lambda x: k1*x + b, lambda x: k1*x + b + k2*(x-x0), lambda x: k1*x + b + k2*(x-x0) + k3*(x - x1)]
     return np.piecewise(x, condlist, funclist)
+
+def get_x_values(hours, values):
+    return np.linspace(0, hours, num=len(values))
 
 # kline format: [ time, low, high, open, close, volume ]
 def plot_emas_product(plt, klines, product, hours=0):
@@ -31,9 +34,9 @@ def plot_emas_product(plt, klines, product, hours=0):
     high_prices = []
     timestamps = []
     price_x_values = []
-    pmo = PMO(scale=24)
-    pmo_values = []
-    pmo_signal_values = []
+    kst = KST(use_ema=True, scale=24)
+    kst_values = []
+    kst_signal_values = []
     ema12 = EMA(12, scale=24)
     ema12_prices = []
     ema26 = EMA(26, scale=24)
@@ -61,11 +64,11 @@ def plot_emas_product(plt, klines, product, hours=0):
         high_prices.append(high)
         timestamps.append(ts)
 
-        pmo.update(close_price)
-        if pmo.pmo != 0:
-            pmo_values.append(pmo.pmo)
-        if pmo.pmo_signal != 0:
-            pmo_signal_values.append(pmo.pmo_signal)
+        kst.update(close_price)
+        if kst.result != 0:
+            kst_values.append(kst.result)
+        if kst.signal_result != 0:
+            kst_signal_values.append(kst.signal_result)
 
         obv_value = obv.update(close=close_price, volume=volume)
         obv_values.append(obv_value)
@@ -79,7 +82,7 @@ def plot_emas_product(plt, klines, product, hours=0):
 
         last_close = close_price
 
-    xvalues = np.linspace(0, hours, num=len(close_prices))
+    xvalues = get_x_values(hours, close_prices)
     symprice, = plt.plot(xvalues, close_prices, label=product) #, color='black')
     ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
     ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
@@ -91,8 +94,8 @@ def plot_emas_product(plt, klines, product, hours=0):
     #fig3, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
     #print(pmo_values)
     #print(pmo_signal_values)
-    fig1, = plt.plot(xvalues[1:], pmo_values, label="PMO")
-    fig2, = plt.plot(xvalues[1:], pmo_signal_values, label="PMO_SIG")
+    fig1, = plt.plot(get_x_values(hours,kst_values), kst_values, label="KST")
+    fig2, = plt.plot(get_x_values(hours,kst_signal_values), kst_signal_values, label="KST_SIG")
 
     plt.legend(handles=[fig1, fig2])
 

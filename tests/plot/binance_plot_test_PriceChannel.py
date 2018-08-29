@@ -2,29 +2,20 @@
 
 import sys
 try:
-    import trader
+    import tests.trader
 except ImportError:
     sys.path.append('.')
 
 import numpy as np
 import matplotlib.pyplot as plt
-from trader.myhelpers import *
-from trader.indicator.EMA import EMA
-from trader.indicator.OBV import OBV
-from trader.indicator.KST import KST
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance.client import Client
-from trader.account.binance.exceptions import BinanceAPIException
+from tests.trader.indicator.EMA import EMA
+from tests.trader.indicator.OBV import OBV
+from tests.trader.indicator.test.PriceChannel import PriceChannel
+from tests.trader.account.AccountBinance import AccountBinance
+from tests.trader.account.binance.client import Client
+from tests.trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
-from trader.config import *
-
-def piecewise_linear(x, x0, x1, b, k1, k2, k3):
-    condlist = [x < x0, (x >= x0) & (x < x1), x >= x1]
-    funclist = [lambda x: k1*x + b, lambda x: k1*x + b + k2*(x-x0), lambda x: k1*x + b + k2*(x-x0) + k3*(x - x1)]
-    return np.piecewise(x, condlist, funclist)
-
-def get_x_values(hours, values):
-    return np.linspace(0, hours, num=len(values))
+from tests.trader.config import *
 
 # kline format: [ time, low, high, open, close, volume ]
 def plot_emas_product(plt, klines, product, hours=0):
@@ -33,14 +24,15 @@ def plot_emas_product(plt, klines, product, hours=0):
     low_prices = []
     high_prices = []
     timestamps = []
+    pc = PriceChannel()
+    pc_values = []
     price_x_values = []
-    kst = KST(use_ema=True, scale=24)
-    kst_values = []
-    kst_signal_values = []
     ema12 = EMA(12, scale=24)
     ema12_prices = []
     ema26 = EMA(26, scale=24)
     ema26_prices = []
+    ema50 = EMA(50, scale=24)
+    ema50_prices = []
 
     ema26_obv = EMA(26, scale=24)
     ema26_obv_values = []
@@ -64,12 +56,6 @@ def plot_emas_product(plt, klines, product, hours=0):
         high_prices.append(high)
         timestamps.append(ts)
 
-        kst.update(close_price)
-        if kst.result != 0:
-            kst_values.append(kst.result)
-        if kst.signal_result != 0:
-            kst_signal_values.append(kst.signal_result)
-
         obv_value = obv.update(close=close_price, volume=volume)
         obv_values.append(obv_value)
 
@@ -79,25 +65,48 @@ def plot_emas_product(plt, klines, product, hours=0):
         ema12_price = ema12.update(close_price)
         ema12_prices.append(ema12_price)
         ema26_prices.append(ema26.update(close_price))
+        ema50_prices.append(ema50.update(close_price))
 
         last_close = close_price
 
-    xvalues = get_x_values(hours, close_prices)
-    symprice, = plt.plot(xvalues, close_prices, label=product) #, color='black')
-    ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
-    ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
+    low_lines = []
+    high_lines = []
+    for i in range(0, len(close_prices)):
+        close = close_prices[i]
+        pc.update(close)
+        price_x_values.append(i)
+        #if pc.split_up():
+        #    plt.axvline(x=i, color='green')
+        #elif pc.split_down():
+        #    plt.axvline(x=i, color='red')
 
+    for result in pc.get_values():
+        center = result[0]
+        low_line = result[1]
+        high_line = result[2]
+        pc_values = np.append(pc_values, center)
+        low_lines = np.append(low_lines, low_line)
+        high_lines = np.append(high_lines, high_line)
+
+    xvalues = np.linspace(0, hours, num=len(close_prices))
+    fig11, = plt.plot(xvalues, close_prices, label=product) #, color='black')
+    fig12, = plt.plot(xvalues, ema12_prices, label='EMA12')
+    fig13, = plt.plot(xvalues, ema26_prices, label='EMA26')
+    plt.legend(handles=[fig11, fig12, fig13])
+
+    # scale from count to hours, then plot
+    plt.plot(np.linspace(0, hours, num=len(low_lines)), low_lines)
+    plt.plot(np.linspace(0, hours, num=len(high_lines)), high_lines)
     #plt.legend(handles=[symprice, ema4, ema5, ema6])
     plt.subplot(212)
-    #fig1, = plt.plot(xvalues, obv_values, label="OBV")
-    #fig2, = plt.plot(xvalues, ema26_obv_values, label="OBVEMA26")
-    #fig3, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
-    #print(pmo_values)
-    #print(pmo_signal_values)
-    fig1, = plt.plot(get_x_values(hours,kst_values), kst_values, label="KST")
-    fig2, = plt.plot(get_x_values(hours,kst_signal_values), kst_signal_values, label="KST_SIG")
+    fig21, = plt.plot(xvalues, obv_values, label="OBV")
+    fig22, = plt.plot(xvalues, ema26_obv_values, label="OBVEMA26")
+    fig23, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
+    #fig3, = plt.plot(obv_values, label="OBP")
+    plt.legend(handles=[fig21, fig22, fig23])
+    #plt.plot(kst_values)
+    #plt.plot(rsquare_values)
 
-    plt.legend(handles=[fig1, fig2])
 
 def abs_average(values):
     total = 0.0
