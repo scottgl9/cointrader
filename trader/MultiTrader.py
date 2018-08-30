@@ -48,6 +48,8 @@ class MultiTrader(object):
         self.msg_handler = MessageHandler()
         self.logger = logger
         self.notify = None
+        self.current_ts = 0
+        self.last_ts = 0
 
         if self.simulate:
             self.trade_db_init("trade_simulate.db")
@@ -134,6 +136,8 @@ class MultiTrader(object):
                 close = float(msg['c'])
                 roc = 100.0 * (close / symbol_trader.last_close - 1)
                 self.rank.update(msg['s'], self.roc_ema.update(roc))
+            if 'E' in msg:
+                self.current_ts = msg['E']
             symbol_trader.update_tickers(self.tickers)
             symbol_trader.run_update(msg)
         else:
@@ -152,8 +156,19 @@ class MultiTrader(object):
                     close = float(part['c'])
                     roc = 100.0 * (close / symbol_trader.last_close - 1)
                     self.rank.update(part['s'], self.roc_ema.update(roc))
+                if 'E' in part:
+                    self.current_ts = part['E']
                 symbol_trader.update_tickers(self.tickers)
                 symbol_trader.run_update(part)
+
+        # print alive check message once every 4 hours
+        if not self.accnt.simulate:
+            if self.last_ts == 0 and self.current_ts != 0:
+                self.last_ts = self.current_ts
+            elif self.current_ts != 0:
+                if (self.current_ts - self.last_ts) > 3600 * 4:
+                    self.logger.info("MultiTrader still running")
+                    self.last_ts = self.current_ts
 
         # handle incoming messages
         if not self.msg_handler.empty():
@@ -213,6 +228,7 @@ class MultiTrader(object):
     def place_sell_order(self, ticker_id, price, size, buy_price):
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate and not result: return
+        message=''
         if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
             pprofit = 100.0 * (price - buy_price) / buy_price
             if self.tickers and self.initial_btc != 0:
@@ -239,7 +255,7 @@ class MultiTrader(object):
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
             if self.notify:
-                self.notify.send(subject=message, text=message)
+                self.notify.send(subject="MultiTrader", text=message)
 
         # remove from trade db since it has been sold
         #self.trader_db.remove_trade(ticker_id)
