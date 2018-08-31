@@ -15,6 +15,8 @@ class MACD_Crossover(object):
         self.win_long = win_long
         self.obv = OBV()
         self.ema12 = EMA(self.win_short, scale=24, lagging=True)
+        self.ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
+        self.ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
         self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
@@ -51,9 +53,11 @@ class MACD_Crossover(object):
         self.prev_high = self.high
 
         self.ema12.update(close)
-        obv_value1 = self.obv_ema12.update(obv_value)
-        obv_value2 = self.obv_ema26.update(obv_value)
-        obv_value3 = self.obv_ema50.update(obv_value)
+        self.ema26.update(close)
+        self.ema50.update(close)
+        self.obv_ema12.update(obv_value)
+        self.obv_ema26.update(obv_value)
+        self.obv_ema50.update(obv_value)
 
         self.macd.update(close)
         self.macd_cross.update(self.macd.result, self.macd.result_signal)
@@ -75,19 +79,19 @@ class MACD_Crossover(object):
         if self.obv_ema50.result < self.obv_ema50.last_result:
             return False
 
-        if self.obv_ema26.result <= self.obv_ema26.last_result:
+        if self.obv_ema26.result <= self.obv_ema26.last_result and self.ema26.result <= self.ema26.last_result:
             return False
 
-        if self.obv_ema12.result <= self.obv_ema12.last_result:
+        if self.obv_ema12.result <= self.obv_ema12.last_result and self.ema12.result <= self.ema12.last_result:
             return False
 
         if self.kst.result < 0.0:
             return False
 
-        if self.macd_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
+        if self.macd_cross.crossup_detected():
             return True
 
-        if self.macd_zero_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
+        if self.macd_zero_cross.crossup_detected():
             return True
 
         #if self.kst_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
