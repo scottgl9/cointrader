@@ -84,8 +84,8 @@ def plot_emas_product(plt, klines, product, hours=0):
 
     xvalues = np.linspace(0, hours, num=len(close_prices))
     symprice, = plt.plot(xvalues, close_prices, label=product) #, color='black')
-    #ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
-    #ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
+    ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
+    ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
     xbands = np.linspace(0, hours, num=len(bb_lows))
     plt.plot(xbands, bb_lows)
     plt.plot(xbands, bb_highs)
@@ -118,6 +118,6 @@ if __name__ == '__main__':
     #print(balances)
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=128)
+    klines = accnt.get_klines(hours=24)
     diff_values = plot_emas_product(plt, klines, accnt.ticker_id, hours=24)
     plt.show()

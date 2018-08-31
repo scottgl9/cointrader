@@ -1,6 +1,7 @@
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.SignalHandler import SignalHandler
+from trader.signal.Bollinger_Bands_Signal import Bollinger_Bands_Signal
 from trader.signal.KST_Crossover import KST_Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.lib.SupportResistLevels import SupportResistLevels
@@ -56,6 +57,7 @@ class macd_signal_strategy(object):
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler(logger=logger)
         self.signal_handler.add(MACD_Crossover())
+        #self.signal_handler.add(Bollinger_Bands_Signal())
         #self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(KST_Crossover())
 

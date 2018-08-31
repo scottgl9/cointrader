@@ -1,3 +1,4 @@
+from trader.signal.Bollinger_Bands_Signal import Bollinger_Bands_Signal
 from trader.signal.BOX_OBV import BOX_OBV
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.KST_Crossover import KST_Crossover
