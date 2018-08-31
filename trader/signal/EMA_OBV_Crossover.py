@@ -1,8 +1,6 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
-from trader.indicator.ROC import ROC
-from trader.indicator.test.TESTMA import TESTMA
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 
@@ -24,10 +22,7 @@ class EMA_OBV_Crossover(object):
         self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
-        self.roc_ema26 = ROC()
-        self.roc_ema50 = ROC()
-        self.testma = TESTMA()
-        #self.box = BOX()
+
         self.trend_down_count = 0
         self.trend_up_count = 0
         self.trending_up = False

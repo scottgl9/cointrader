@@ -3,6 +3,7 @@ from trader.signal.BOX_OBV import BOX_OBV
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.KST_Crossover import KST_Crossover
 from trader.signal.MACD_Crossover import MACD_Crossover
+from trader.signal.OBV_Crossover import OBV_Crossover
 from trader.signal.PPO_OBV import PPO_OBV
 from trader.signal.price_channel_signal import price_channel_signal
 from trader.signal.PMO_Crossover import PMO_Crossover

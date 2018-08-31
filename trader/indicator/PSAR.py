@@ -1,9 +1,9 @@
 
 class PSAR(object):
-    def __init__(self, iaf=0.02, maxaf=0.2):
+    def __init__(self, iaf=0.02, maxaf=0.2, close_only=False):
         self.iaf = iaf
         self.maxaf = maxaf
-        self.af = self.iaf
+        self.af = 0
         self.bull = True
         self.psar = 0
         self.ep = 0
@@ -15,19 +15,27 @@ class PSAR(object):
         self.prev_high = 0
         self.last_prev_low = 0
         self.last_prev_high = 0
+        self.close_only = close_only
 
-    def update(self, close, low, high):
-        self.last_prev_low = self.prev_low
-        self.last_prev_high = self.prev_high
-        self.prev_low = low
-        self.prev_high = high
+    def update(self, close, low=0, high=0):
+        # low and high values unavailable
+        if self.close_only:
+            low = close
+            high = close
 
         if self.psar == 0 or self.last_prev_low == 0 or self.last_prev_high == 0:
             self.psar = close
+            self.last_prev_low = self.prev_low
+            self.last_prev_high = self.prev_high
+            self.prev_low = low
+            self.prev_high = high
+
             return self.psar
 
         prev_psar = self.psar
 
+        if self.af == 0:
+            self.af = self.iaf
         if self.ep == 0:
             self.ep = low
         if self.hp == 0:
@@ -79,5 +87,9 @@ class PSAR(object):
         #    self.psarbull.append(self.psar)
         #else:
         #    self.psarbear.append(self.psar)
+        self.last_prev_low = self.prev_low
+        self.last_prev_high = self.prev_high
+        self.prev_low = low
+        self.prev_high = high
 
         return self.psar

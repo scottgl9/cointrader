@@ -26,16 +26,17 @@ from tools.trader.indicator.IchimokuCloud import IchimokuCloud
 from tools.trader.indicator.EMA import EMA
 from tools.trader.indicator.LinReg import LinReg
 from tools.trader.indicator.OBV import OBV
+from tools.trader.indicator.HMA import HMA
+from tools.trader.indicator.PSAR import PSAR
+from tools.trader.indicator.RMA import RMA
 from tools.trader.indicator.MACD import MACD
+from tools.trader.indicator.PSAR import PSAR
+from tools.trader.indicator.QUAD import QUAD
 from tools.trader.lib.FakeKline import FakeKline
 from tools.trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from tools.trader.lib.PeakValleyDetect import PeakValleyDetect
 from tools.trader.lib.PriceFilter import PriceFilter
-from tools.trader.indicator.TSI import TSI
-from tools.trader.indicator.test.PriceChannel import PriceChannel
-from tools.trader.lib.Crossover2 import Crossover2
-from tools.trader.indicator.WMA import WMA
-from scipy import optimize
+
 
 def simulate(conn, client, base, currency, type="channel"):
     ticker_id = "{}{}".format(base, currency)
@@ -43,34 +44,25 @@ def simulate(conn, client, base, currency, type="channel"):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
+    cloud = IchimokuCloud()
+
     ema12 = EMA(12, scale=24, lagging=True)
     ema26 = EMA(26, scale=24, lagging=True)
     ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
+    hma = HMA(window=26)
     obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24, lagging=True)
     obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24, lagging=True)
     obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lagging=True, lag_window=5)
-    fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
-    filter = PriceFilter(window=20, range_filter=False)
-    filter_values =[]
-    filter_x_values = []
 
-    macd = MACD(12.0, 26.0, 9.0, scale=24.0)
-    macd_cross = Crossover2(window=10, cutoff=0.0)
-    macd_zero_cross = Crossover2(window=10, cutoff=0.0)
-    macd_signal = EMA(9, scale=24.0)
-    macd_diff_values = []
-    macd_signal_values = []
-
-    pc = PriceChannel()
-    pc_values = []
-    price_x_values = []
-
+    psar = PSAR()
+    psar_values = []
     obv = OBV()
-    quad_x_values = []
-    quad_y_values = []
+
+    kline = FakeKline()
+
     ema12_values = []
     ema26_values = []
     ema50_values = []
@@ -109,19 +101,11 @@ def simulate(conn, client, base, currency, type="channel"):
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
 
+        kline.update(close, volume)
 
-        macd.update(close)
-        #if macd.result_signal == 0:
-        #    print(i)
-        if macd.diff != 0:
-            value = macd_signal.update(macd.diff)
-            macd_diff_values.append(macd.diff)
-            macd_signal_values.append(value)
-
-        value = filter.update(close)
+        value = psar.update(close, kline.low, kline.high)
         if value != 0:
-            filter_values.append(value)
-            filter_x_values.append(i)
+            psar_values.append(value)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -130,52 +114,34 @@ def simulate(conn, client, base, currency, type="channel"):
         #lstsqs_x_values.append(i)
         i += 1
 
+    #i = 0
+    #min_price = min(low_prices)
+    #scale = min(low_prices) / max(volumes)
+    #for volume in volumes:
+    #    volumes_values.append(volume)
+    #    volumes_x_values.append(i)
+    #    i+= 1
+    #lstsqs = np.poly1d(np.polyfit(np.array(lstsqs_x_values), np.array(close_prices), 5))
+    #for x in lstsqs_x_values:
+    #    lstsqs_y_values.append(lstsqs(x))
+
     #plt.subplot(211)
     fig = plt.figure()
     ax = fig.add_subplot(2,1,1)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
-
-    bought = False
-    bought_price = 0
-    macd_prices = close_prices[len(close_prices)-len(macd_diff_values):]
-    for i in range(0, len(macd_diff_values)):
-        macd_zero_cross.update(macd_diff_values[i], 0)
-        macd_cross.update(macd_diff_values[i], macd_signal_values[i])
-        if macd_zero_cross.crossup_detected():
-            if not bought:
-                plt.axvline(x=i, color='green')
-                bought = True
-                bought_price = macd_prices[i]
-        elif macd_zero_cross.crossdown_detected():
-            if bought and (bought_price * 1.01) < macd_prices[i]:
-                plt.axvline(x=i, color='red')
-                bought = False
-                bought_price = 0
-        if macd_cross.crossup_detected():
-            if not bought:
-                plt.axvline(x=i, color='green')
-                bought = True
-                bought_price = macd_prices[i]
-        elif macd_cross.crossdown_detected():
-            if bought and (bought_price * 1.01) < macd_prices[i]:
-                plt.axvline(x=i, color='red')
-                bought = False
-                bought_price = 0
-
     #plt.plot(filter_x_values, filter_values)
-    #plt.plot(low_prices)
-    #plt.plot(high_prices)
     #plt.plot(lstsqs_x_values, support1_values)
     #plt.plot(lstsqs_x_values, support2_values)
-    #fig1, = plt.plot(ema12_values, label='EMA12')
-    #fig2, = plt.plot(ema26_values, label='EMA26')
-    #fig3, = plt.plot(ema50_values, label='EMA50')
-    plt.legend(handles=[symprice])
+    fig1, = plt.plot(ema12_values, label='EMA12')
+    fig2, = plt.plot(ema26_values, label='EMA26')
+    fig3, = plt.plot(ema50_values, label='EMA50')
+    fig4, = plt.plot(psar_values, label='PSAR')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    plt.plot(macd_diff_values)
-    plt.plot(macd_signal_values)
-
+    plt.plot(obv_ema12_values)
+    plt.plot(obv_ema26_values)
+    plt.plot(obv_ema50_values)
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()
@@ -183,7 +149,7 @@ def simulate(conn, client, base, currency, type="channel"):
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
     #conn = sqlite3.connect('cryptocurrency_database.ticker_collection_04282018.db') #'cryptocurrency_database.miniticker_collection_04092018.db')
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04032018.db')
+    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
 
     base = 'BTC'
     currency='USDT'

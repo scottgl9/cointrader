@@ -20,8 +20,6 @@ class MACD_Crossover(object):
         self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
         self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
-        self.kst = KST()
-        self.kst_cross = Crossover2(window=10, cutoff=0.0)
         self.macd = MACD(scale=24)
         self.macd_cross = Crossover2(window=10, cutoff=0.0)
         self.macd_zero_cross = Crossover2(window=10, cutoff=0.0)
@@ -63,9 +61,6 @@ class MACD_Crossover(object):
         self.macd_cross.update(self.macd.result, self.macd.result_signal)
         self.macd_zero_cross.update(self.macd.result, 0)
 
-        #self.kst.update(close)
-        #self.kst_cross.update(self.kst.result, 0)
-
     def post_update(self, close, volume):
         pass
 
@@ -85,17 +80,11 @@ class MACD_Crossover(object):
         if self.obv_ema12.result <= self.obv_ema12.last_result and self.ema12.result <= self.ema12.last_result:
             return False
 
-        if self.kst.result < 0.0:
-            return False
-
         if self.macd_cross.crossup_detected():
             return True
 
         if self.macd_zero_cross.crossup_detected():
             return True
-
-        #if self.kst_cross.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
-        #    return True
 
         return False
 
@@ -109,16 +98,10 @@ class MACD_Crossover(object):
         if self.obv_ema12.result > self.obv_ema12.last_result and self.ema12.result > self.ema12.last_result:
             return False
 
-        #if self.kst.result > 0.0:
-        #    return False
-
         if self.macd_cross.crossdown_detected():
             return True
 
         if self.macd_zero_cross.crossdown_detected():
             return True
-
-        #if self.kst_cross.crossdown_detected():
-        #    return True
 
         return False

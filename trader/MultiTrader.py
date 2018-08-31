@@ -50,6 +50,7 @@ class MultiTrader(object):
         self.notify = None
         self.current_ts = 0
         self.last_ts = 0
+        self.check_ts = 3600 * 1000 * 4
 
         if self.simulate:
             self.trade_db_init("trade_simulate.db")
@@ -166,7 +167,7 @@ class MultiTrader(object):
             if self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
-                if (self.current_ts - self.last_ts) > 3600 * 4:
+                if (self.current_ts - self.last_ts) > self.check_ts:
                     self.logger.info("MultiTrader still running")
                     self.last_ts = self.current_ts
 
