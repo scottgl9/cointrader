@@ -83,14 +83,39 @@ if __name__ == '__main__':
     assets_info = get_info_all_assets(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
 
+    usdt_sell_queue = {}
+    btc_sell_queue = {}
+
     for name, value in balances.items():
-        if name == 'BTC' or name == 'USDT':
+        if name == 'USDT':
             continue
 
-        ticker_id = "{}BTC".format(name)
-        if ticker_id not in assets_info.keys(): continue
+        ticker_id = "{}USDT".format(name)
+        if ticker_id not in assets_info.keys():
+            print("{} doesn't exist, so selling as {}BTC first".format(ticker_id, name))
+            ticker_id = "{}BTC".format(name)
+            size = round_base(value, float(assets_info[ticker_id]['minQty']))
+            if size == 0.0:
+                continue
+            btc_sell_queue[ticker_id] = size
+            continue
         size = round_base(value, float(assets_info[ticker_id]['minQty']))
         if size == 0.0:
             continue
-        print(ticker_id, size)
-        print(client.order_market_sell(symbol=ticker_id, quantity=size))
+        usdt_sell_queue[ticker_id] = size
+
+    print("BTC sell queue:")
+    if len(btc_sell_queue) != 0:
+        for ticker_id, size in btc_sell_queue.items():
+            print(ticker_id, size)
+            print(client.order_market_sell(symbol=ticker_id, quantity=size))
+
+        assets_info = get_info_all_assets(client)
+        balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
+        usdt_sell_queue['BTCUSDT'] = balances['BTC']
+
+    print("USDT sell queue:")
+    if len(usdt_sell_queue) != 0:
+        for ticker_id, size in usdt_sell_queue.items():
+            print(ticker_id, size)
+            print(client.order_market_sell(symbol=ticker_id, quantity=size))
