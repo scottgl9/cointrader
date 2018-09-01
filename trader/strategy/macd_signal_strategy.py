@@ -5,6 +5,7 @@ from trader.signal.SignalHandler import SignalHandler
 from trader.signal.Bollinger_Bands_Signal import Bollinger_Bands_Signal
 from trader.signal.KST_Crossover import KST_Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
+from trader.indicator.OBV import OBV
 from trader.lib.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
 from datetime import datetime
@@ -63,7 +64,7 @@ class macd_signal_strategy(object):
         #self.signal_handler.add(EMA_OBV_Crossover())
         #self.signal_handler.add(KST_Crossover())
 
-        self.levels = SupportResistLevels()
+        self.obv = OBV()
         self.low_short = self.high_short = 0.0
         self.low_long = self.high_long = 0.0
         self.prev_low_long = self.prev_high_long = 0.0
@@ -90,6 +91,10 @@ class macd_signal_strategy(object):
         self.interval_price = 0.0
         self.last_buy_price = 0.0
         self.last_sell_price = 0.0
+        self.last_buy_ts = 0
+        self.last_buy_obv = 0
+        self.last_sell_ts = 0
+        self.last_sell_obv = 0
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
@@ -208,6 +213,8 @@ class macd_signal_strategy(object):
         if self.last_buy_price != 0 and self.last_sell_price != 0:
             if self.last_buy_price <= price <= self.last_sell_price:
                 return False
+            #elif price > self.last_sell_price and self.obv.result < self.last_sell_obv:
+            #    return False
 
         if self.signal_handler.buy_signal():
             #if self.rank_decreases >= self.rank_increases:
@@ -305,6 +312,8 @@ class macd_signal_strategy(object):
         #    elif self.rank_value > self.last_rank_value:
         #        self.rank_increases += (self.rank_value - self.last_rank_value)
 
+        self.obv.update(close, volume)
+
         self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp)
 
         self.run_update_price(close)
@@ -327,6 +336,8 @@ class macd_signal_strategy(object):
             self.buy_price = price
             self.buy_size = min_trade_size
             self.buy_timestamp = self.timestamp
+            self.last_buy_ts = self.timestamp
+            self.last_buy_obv = self.obv.result
 
             self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
 
@@ -340,6 +351,8 @@ class macd_signal_strategy(object):
             self.buy_price = 0.0
             self.buy_size = 0.0
             self.last_sell_price = price
+            self.last_sell_ts = self.timestamp
+            self.last_sell_obv = self.obv.result
             self.buy_timestamp = 0
 
 

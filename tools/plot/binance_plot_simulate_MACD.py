@@ -2,39 +2,41 @@
 
 import sys
 try:
-    import tools.trader
+    import trader
 except ImportError:
     sys.path.append('.')
+    import trader
+
 import os.path
 import time
 import sqlite3
 from datetime import datetime, timedelta
 from pypika import Query, Table, Field, Order
-from tools.trader.strategy import *
+from trader.strategy import *
 from datetime import datetime, timedelta
 import threading
 import sys
-from tools.trader.WebHandler import WebThread
-from tools.trader.account.binance.client import Client
-from tools.trader.MultiTrader import MultiTrader
-from tools.trader.account.AccountBinance import AccountBinance
-from tools.trader.config import *
+from trader.WebHandler import WebThread
+from trader.account.binance.client import Client
+from trader.MultiTrader import MultiTrader
+from trader.account.AccountBinance import AccountBinance
+from trader.config import *
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-from tools.trader.indicator.IchimokuCloud import IchimokuCloud
-from tools.trader.indicator.EMA import EMA
-from tools.trader.indicator.LinReg import LinReg
-from tools.trader.indicator.OBV import OBV
-from tools.trader.indicator.MACD import MACD
-from tools.trader.lib.FakeKline import FakeKline
-from tools.trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
-from tools.trader.lib.PeakValleyDetect import PeakValleyDetect
-from tools.trader.lib.PriceFilter import PriceFilter
-from tools.trader.indicator.TSI import TSI
-from tools.trader.indicator.test.PriceChannel import PriceChannel
-from tools.trader.lib.Crossover2 import Crossover2
-from tools.trader.indicator.WMA import WMA
+from trader.indicator.IchimokuCloud import IchimokuCloud
+from trader.indicator.EMA import EMA
+from trader.indicator.LinReg import LinReg
+from trader.indicator.OBV import OBV
+from trader.indicator.MACD import MACD
+from trader.lib.FakeKline import FakeKline
+from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
+from trader.lib.PeakValleyDetect import PeakValleyDetect
+from trader.lib.PriceFilter import PriceFilter
+from trader.indicator.TSI import TSI
+from trader.indicator.test.PriceChannel import PriceChannel
+from trader.lib.Crossover2 import Crossover2
+from trader.indicator.WMA import WMA
 from scipy import optimize
 
 def simulate(conn, client, base, currency, type="channel"):

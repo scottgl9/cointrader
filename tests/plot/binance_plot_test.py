@@ -2,39 +2,40 @@
 
 import sys
 try:
-    import tests.trader
+    import trader
 except ImportError:
     sys.path.append('.')
+    import trader
 
 import numpy as np
 import matplotlib.dates as md
 #from scipy import optimize
 import matplotlib.pyplot as plt
-from tests.trader.indicator.EMA import EMA
-from tests.trader.indicator.SMMA import SMMA
-from tests.trader.indicator.VWAP import VWAP
-from tests.trader.indicator.MACD import MACD
-from tests.trader.indicator.MINMAX import MINMAX
-from tests.trader.indicator.KST import KST
-from tests.trader.indicator.QUAD import QUAD
-from tests.trader.indicator.QUAD2 import QUAD2
-from tests.trader.indicator.RSI import RSI
-from tests.trader.indicator.REMA import REMA
-from tests.trader.indicator.RSQUARE import RSQUARE
-from tests.trader.indicator.KAMA import KAMA
-from tests.trader.indicator.OBV import OBV
-from tests.trader.indicator.LinReg import LinReg
-from tests.trader.indicator.test.PriceChannel import PriceChannel
-from tests.trader.indicator.IchimokuCloud import IchimokuCloud
-from tests.trader.indicator.PSAR import PSAR
-from tests.trader.lib.Crossover2 import Crossover2
-from tests.trader.lib.CrossoverDouble import CrossoverDouble
+from trader.indicator.EMA import EMA
+from trader.indicator.SMMA import SMMA
+from trader.indicator.VWAP import VWAP
+from trader.indicator.MACD import MACD
+from trader.indicator.MINMAX import MINMAX
+from trader.indicator.KST import KST
+from trader.indicator.QUAD import QUAD
+from trader.indicator.QUAD2 import QUAD2
+from trader.indicator.RSI import RSI
+from trader.indicator.REMA import REMA
+from trader.indicator.RSQUARE import RSQUARE
+from trader.indicator.KAMA import KAMA
+from trader.indicator.OBV import OBV
+from trader.indicator.LinReg import LinReg
+from trader.indicator.test.PriceChannel import PriceChannel
+from trader.indicator.IchimokuCloud import IchimokuCloud
+from trader.indicator.PSAR import PSAR
+from trader.lib.Crossover2 import Crossover2
+from trader.lib.CrossoverDouble import CrossoverDouble
 import math
-from tests.trader.account.AccountBinance import AccountBinance
-from tests.trader.account.binance.client import Client
-from tests.trader.account.binance.exceptions import BinanceAPIException
+from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.client import Client
+from trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
-from tests.trader.config import *
+from trader.config import *
 
 
 def piecewise_linear(x, x0, x1, b, k1, k2, k3):

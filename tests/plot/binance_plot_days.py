@@ -1,32 +1,38 @@
 #!/usr/bin/python
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
 
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import datasets, linear_model
-from tests.trader.myhelpers import *
+from trader.myhelpers import *
 from sklearn.metrics import mean_squared_error, r2_score
 from trader.indicator.BOX import BOX
-from tests.trader.indicator.EMA import EMA
-from tests.trader.indicator.SMMA import SMMA
-from tests.trader.indicator.VWAP import VWAP
-from tests.trader.indicator.MACD import MACD
-from tests.trader.indicator.QUAD import QUAD
-from tests.trader.indicator.RSI import RSI
-from tests.trader.indicator.TSI import TSI
+from trader.indicator.EMA import EMA
+from trader.indicator.SMMA import SMMA
+from trader.indicator.VWAP import VWAP
+from trader.indicator.MACD import MACD
+from trader.indicator.QUAD import QUAD
+from trader.indicator.RSI import RSI
+from trader.indicator.TSI import TSI
 from trader.indicator.DiffWindow import DiffWindow
 from trader.indicator.ZigZag import ZigZag
-from tests.trader.indicator.KAMA import KAMA
-from tests.trader.indicator.OBV import OBV
+from trader.indicator.KAMA import KAMA
+from trader.indicator.OBV import OBV
 from trader.SupportResistLevels import SupportResistLevels
-from tests.trader.indicator.IchimokuCloud import IchimokuCloud
-from tests.trader.indicator.PSAR import PSAR
+from trader.indicator.IchimokuCloud import IchimokuCloud
+from trader.indicator.PSAR import PSAR
 import math
-from tests.trader.account.AccountBinance import AccountBinance
-from tests.trader.account.binance.client import Client
+from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.client import Client
 from trader.MeasureTrend import MeasureTrend
-from tests.trader.account.binance.exceptions import BinanceAPIException
-from tests.trader.config import *
+from trader.account.binance.exceptions import BinanceAPIException
+from trader.config import *
 import sys
 
 # kline format: [ time, low, high, open, close, volume ]

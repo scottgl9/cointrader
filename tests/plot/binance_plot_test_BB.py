@@ -2,24 +2,25 @@
 
 import sys
 try:
-    import tests.trader
+    import trader
 except ImportError:
     sys.path.append('.')
+    import trader
 
 import numpy as np
 import matplotlib.dates as md
 #from scipy import optimize
 import matplotlib.pyplot as plt
-from tests.trader.indicator.EMA import EMA
-from tests.trader.indicator.BB import BollingerBands
-from tests.trader.indicator.OBV import OBV
-from tests.trader.indicator.LinReg import LinReg
-from tests.trader.indicator.test.PriceChannel import PriceChannel
-from tests.trader.account.AccountBinance import AccountBinance
-from tests.trader.account.binance.client import Client
-from tests.trader.account.binance.exceptions import BinanceAPIException
+from trader.indicator.EMA import EMA
+from trader.indicator.BB import BollingerBands
+from trader.indicator.OBV import OBV
+from trader.indicator.LinReg import LinReg
+from trader.indicator.test.PriceChannel import PriceChannel
+from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.client import Client
+from trader.account.binance.exceptions import BinanceAPIException
 import datetime as dt
-from tests.trader.config import *
+from trader.config import *
 
 
 # kline format: [ time, low, high, open, close, volume ]
