@@ -168,7 +168,8 @@ class MultiTrader(object):
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
                 if (self.current_ts - self.last_ts) > self.check_ts:
-                    self.logger.info("MultiTrader still running")
+                    self.logger.info("MultiTrader still running...")
+                    self.logger.info(self.accnt.get_account_balances())
                     self.last_ts = self.current_ts
 
         # handle incoming messages
@@ -220,7 +221,7 @@ class MultiTrader(object):
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
             if self.notify:
-                self.notify.send(subject=message, text=message)
+                self.notify.send(subject="MultiTrader", text=message)
 
         # add to trader db for tracking
         #self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
