@@ -4,7 +4,11 @@
 import sqlite3
 import os.path
 import sys
-from sqlwrapper import sqlitewrapper
+try:
+    from sqlwrapper import sqlitewrapper
+except ImportError:
+    print("WARNING: Failed to load sqlwrapper, continuing...")
+
 
 class TraderDB(object):
     def __init__(self, filename):

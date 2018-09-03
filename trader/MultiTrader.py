@@ -52,9 +52,9 @@ class MultiTrader(object):
         self.last_ts = 0
         self.check_ts = 3600 * 1000 * 4
 
-        if self.simulate:
-            self.trade_db_init("trade_simulate.db")
-        else:
+        #if self.simulate:
+        #    self.trade_db_init("trade_simulate.db")
+        if not self.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
 
