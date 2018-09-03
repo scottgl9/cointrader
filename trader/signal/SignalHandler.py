@@ -1,3 +1,4 @@
+from trader.signal.SigType import SigType
 
 
 class SignalHandler(object):
@@ -8,6 +9,8 @@ class SignalHandler(object):
         self.handlers = []
         self.sigtype = sigtype
         self.logger = logger
+        self.buy_type = SigType.SIGNAL_NONE
+        self.sell_type = SigType.SIGNAL_NONE
 
     def add(self, handler):
         self.handlers.append(handler)
@@ -36,6 +39,7 @@ class SignalHandler(object):
         for handler in self.handlers:
             if handler.buy_signal():
                 if self.sigtype == self.SIGNAL_ONE:
+                    self.buy_type = handler.buy_type
                     return True
             elif self.sigtype == self.SIGNAL_ALL:
                 return False
@@ -52,6 +56,8 @@ class SignalHandler(object):
         for handler in self.handlers:
             if handler.sell_signal():
                 if self.sigtype == self.SIGNAL_ONE:
+                    self.buy_type = handler.buy_type
+                    self.sell_type = handler.sell_type
                     return True
             elif self.sigtype == self.SIGNAL_ALL:
                 return False

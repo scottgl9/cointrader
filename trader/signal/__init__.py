@@ -9,5 +9,6 @@ from trader.signal.price_channel_signal import price_channel_signal
 from trader.signal.PMO_Crossover import PMO_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.SignalHandler import SignalHandler
+from trader.signal.SigType import SigType
 from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TSI_Signal import TSI_Signal

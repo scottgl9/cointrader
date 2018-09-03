@@ -2,6 +2,7 @@ from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.OBV_Crossover import OBV_Crossover
 from trader.signal.SignalHandler import SignalHandler
+from trader.signal.SigType import SigType
 from trader.signal.Bollinger_Bands_Signal import Bollinger_Bands_Signal
 from trader.signal.KST_Crossover import KST_Crossover
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
@@ -254,6 +255,15 @@ class macd_signal_strategy(object):
         # sell it unconditionally
         #if (self.timestamp - self.buy_timestamp) < 600 and self.signal_handler.sell_signal():
         #    return True
+
+        sell_signal = False
+
+        #if self.signal_handler.sell_signal():
+        #    sell_signal = True
+        #    #if (self.signal_handler.buy_type == SigType.SIGNAL_SHORT and
+        #    #        self.signal_handler.sell_type == SigType.SIGNAL_LONG and
+        #    #        price >= float(self.buy_price)):
+        #    #    return True
 
         if price < float(self.buy_price):
             return False
