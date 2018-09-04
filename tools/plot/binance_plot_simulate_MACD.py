@@ -66,23 +66,13 @@ def simulate(conn, client, base, currency, type="channel"):
     macd_diff_values = []
     macd_signal_values = []
 
-    pc = PriceChannel()
-    pc_values = []
-    price_x_values = []
-
-    obv = OBV()
-    quad_x_values = []
-    quad_y_values = []
     ema12_values = []
     ema26_values = []
     ema50_values = []
     close_prices = []
     open_prices = []
     low_prices = []
-    diff_values = []
-    signal_values = []
     high_prices = []
-    volumes = []
 
     i=0
     for row in c:
@@ -93,17 +83,6 @@ def simulate(conn, client, base, currency, type="channel"):
         high = float(msg['h'])
         open = float(msg['o'])
         volume = float(msg['v'])
-        #sar_value = sar.update(close=close, low=low, high=high)
-        #if sar.bull:
-        #    sar_x_values.append(i)
-        #    sar_values.append(sar_value)
-
-        volumes.append(volume)
-
-        obv_value = obv.update(close=close, volume=volume)
-        obv_ema12_values.append(obv_ema12.update(obv_value))
-        obv_ema26_values.append(obv_ema26.update(obv_value))
-        obv_ema50_values.append(obv_ema50.update(obv_value))
 
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
@@ -111,19 +90,13 @@ def simulate(conn, client, base, currency, type="channel"):
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
 
-
         macd.update(close)
         #if macd.result_signal == 0:
         #    print(i)
-        if macd.diff != 0:
+        if macd.result != 0 and macd.result_signal != 0:
             value = macd_signal.update(macd.diff)
-            macd_diff_values.append(macd.diff)
+            macd_diff_values.append(macd.result)
             macd_signal_values.append(value)
-
-        value = filter.update(close)
-        if value != 0:
-            filter_values.append(value)
-            filter_x_values.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -175,8 +148,9 @@ def simulate(conn, client, base, currency, type="channel"):
     #fig3, = plt.plot(ema50_values, label='EMA50')
     plt.legend(handles=[symprice])
     plt.subplot(212)
-    plt.plot(macd_diff_values)
-    plt.plot(macd_signal_values)
+    fig1, = plt.plot(macd_diff_values, label='MACD DIFF')
+    fig2, = plt.plot(macd_signal_values, label='MACD SIG')
+    plt.legend(handles=[fig1, fig2])
 
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
@@ -184,14 +158,20 @@ def simulate(conn, client, base, currency, type="channel"):
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
-    #conn = sqlite3.connect('cryptocurrency_database.ticker_collection_04282018.db') #'cryptocurrency_database.miniticker_collection_04092018.db')
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04032018.db')
 
     base = 'BTC'
     currency='USDT'
+    filename = 'cryptocurrency_database.miniticker_collection_04092018.db'
+    if len(sys.argv) == 4:
+        base=sys.argv[1]
+        currency = sys.argv[2]
+        filename = sys.argv[3]
     if len(sys.argv) == 3:
         base=sys.argv[1]
         currency = sys.argv[2]
+
+    print("Loading {}".format(filename))
+    conn = sqlite3.connect(filename)
 
     simulate(conn, client, base, currency, type="MACD")
     conn.close()

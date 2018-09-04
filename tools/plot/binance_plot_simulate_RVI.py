@@ -123,14 +123,20 @@ def simulate(conn, client, base, currency, type="channel"):
 
 if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
-    #conn = sqlite3.connect('cryptocurrency_database.ticker_collection_04282018.db') #'cryptocurrency_database.miniticker_collection_04092018.db')
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04032018.db')
 
     base = 'BTC'
     currency='USDT'
+    filename = 'cryptocurrency_database.miniticker_collection_04092018.db'
+    if len(sys.argv) == 4:
+        base=sys.argv[1]
+        currency = sys.argv[2]
+        filename = sys.argv[3]
     if len(sys.argv) == 3:
         base=sys.argv[1]
         currency = sys.argv[2]
+
+    print("Loading {}".format(filename))
+    conn = sqlite3.connect(filename)
 
     simulate(conn, client, base, currency, type="MACD")
     conn.close()

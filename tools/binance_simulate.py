@@ -121,6 +121,10 @@ def filter_assets_by_minqty(assets_info, balances):
     return result
 
 if __name__ == '__main__':
+    filename = 'cryptocurrency_database.miniticker_collection_04092018.db'
+    if len(sys.argv) == 2:
+        filename=sys.argv[1]
+
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
@@ -134,12 +138,14 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
 
     client = Client(MY_API_KEY, MY_API_SECRET)
-    conn = sqlite3.connect('cryptocurrency_database.miniticker_collection_04092018.db')
+    conn = sqlite3.connect(filename)
 
     # start the Web API
     #thread = threading.Thread(target=WebThread, args=(strategy,))
     #thread.daemon = True
     #thread.start()
+
+    logger.info("Running simulate with {}".format(filename))
 
     try:
         simulate(conn, client, logger)
