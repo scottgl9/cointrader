@@ -1,12 +1,12 @@
-from trader.indicator.SMMA import SMMA
+from trader.indicator.SMA import SMA
 
 
 class RSI:
     def __init__(self, weight=14):
         self.lastClose = None
         self.weight = weight
-        self.avgU = SMMA(self.weight)
-        self.avgD = SMMA(self.weight)
+        self.avgU = SMA(self.weight)
+        self.avgD = SMA(self.weight)
         self.u = 0.0
         self.d = 0.0
         self.rs = 0.0

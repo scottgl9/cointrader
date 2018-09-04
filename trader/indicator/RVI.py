@@ -1,5 +1,5 @@
 # Relative Volatility Index (RVI)
-from trader.indicator.SMMA import SMMA
+from trader.indicator.SMA import SMA
 from trader.indicator.STDDEV import STDDEV
 
 
@@ -7,8 +7,8 @@ class RVI:
     def __init__(self, window=20):
         self.window = window
         self.stddev = STDDEV(window=window)
-        self.avgU = SMMA(self.window)
-        self.avgD = SMMA(self.window)
+        self.avgU = SMA(self.window)
+        self.avgD = SMA(self.window)
         self.last_close = 0
         self.result = 0
         self.age = 0
@@ -30,6 +30,11 @@ class RVI:
         Usum = self.avgU.update(u)
         Dsum = self.avgD.update(d)
 
-        self.result = 100.0 * Usum / (Usum + Dsum)
+        if Usum == 0 and Dsum == 0:
+            self.result = 0
+        else:
+            self.result = 100.0 * Usum / (Usum + Dsum)
+
+        self.last_close = close
 
         return self.result
