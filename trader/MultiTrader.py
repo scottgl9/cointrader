@@ -5,6 +5,7 @@ from trader.strategy import *
 from trader.TradePair import TradePair
 from trader.indicator.SMA import SMA
 from trader.lib.MessageHandler import Message, MessageHandler
+from trader.lib.Order import Order
 from trader.notify.Email import Email
 import sqlite3
 import os.path
@@ -51,9 +52,8 @@ class MultiTrader(object):
         self.current_ts = 0
         self.last_ts = 0
         self.check_ts = 3600 * 1000 * 4
+        self.open_orders = {}
 
-        #if self.simulate:
-        #    self.trade_db_init("trade_simulate.db")
         if not self.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
@@ -141,6 +141,9 @@ class MultiTrader(object):
                 self.current_ts = msg['E']
             symbol_trader.update_tickers(self.tickers)
             symbol_trader.run_update(msg)
+
+            if msg['s'] in self.open_orders.keys():
+                self.process_limit_order(msg)
         else:
             for part in msg:
                 if 's' not in part.keys(): continue
@@ -162,6 +165,9 @@ class MultiTrader(object):
                 symbol_trader.update_tickers(self.tickers)
                 symbol_trader.run_update(part)
 
+                if part['s'] in self.open_orders.keys():
+                    self.process_limit_order(part)
+
         # print alive check message once every 4 hours
         if not self.accnt.simulate:
             if self.last_ts == 0 and self.current_ts != 0:
@@ -176,32 +182,77 @@ class MultiTrader(object):
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
                 if msg.cmd == Message.MSG_MARKET_BUY:
-                    self.place_buy_order(msg.src_id, msg.price, msg.size)
+                    self.place_buy_market_order(msg.src_id, msg.price, msg.size)
+                    msg.mark_read()
                 elif msg.cmd == Message.MSG_MARKET_SELL:
-                    self.place_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+                    self.place_sell_market_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+                    msg.mark_read()
                 elif msg.cmd == Message.MSG_MARKET_SELL_ALL:
-                    self.sell_all()
-            self.msg_handler.clear()
+                    self.sell_market_all()
+                    msg.mark_read()
+                elif msg.cmd == Message.MSG_STOP_LOSS_BUY:
+                    self.place_buy_stop_loss_order(msg.src_id, msg.price, msg.size)
+                    msg.mark_read()
+                elif msg.cmd == Message.MSG_STOP_LOSS_SELL:
+                    self.place_sell_stop_loss_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+                    msg.mark_read()
+            #self.msg_handler.clear()
+            self.msg_handler.clear_read()
+
+    def process_limit_order(self, msg):
+        order = self.open_orders[msg['s']]
+        close = float(msg['c'])
+        if order.type == Message.MSG_STOP_LOSS_BUY and close >= order.price:
+            result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
+            if ('status' in result and result['status'] == 'FILLED'):
+                self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size)
+        elif order.type == Message.MSG_STOP_LOSS_SELL and close <= order.price:
+            result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
+            if ('status' in result and result['status'] == 'FILLED'):
+                self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
+
+    def place_buy_stop_loss_order(self, ticker_id, price, size):
+        result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
+        if not self.accnt.simulate:
+            self.logger.info(result)
+
+        if ticker_id in self.open_orders.keys():
+            return
+
+        order = Order(symbol=ticker_id, price=price, size=size, type=Message.MSG_STOP_LOSS_BUY)
+        self.open_orders[ticker_id] = order
+
+
+    def place_sell_stop_loss_order(self, ticker_id, price, size, buy_price):
+        result = self.accnt.sell_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
+        if not self.accnt.simulate:
+            self.logger.info(result)
+
+        if ticker_id in self.open_orders.keys():
+            return
+
+        order = Order(symbol=ticker_id, price=price, size=size, type=Message.MSG_STOP_LOSS_SELL)
+        self.open_orders[ticker_id] = order
 
 
     # sell off everything that was bought
-    def sell_all(self):
+    def sell_market_all(self):
         for trader in self.trade_pairs.values():
             buy_price = trader.strategy.buy_price
             buy_size = trader.strategy.buy_size
             ticker_id = trader.strategy.ticker_id
             if float(buy_price) == 0 or float(buy_size) == 0:
                 continue
-            self.place_sell_order(ticker_id, 0, buy_size, buy_price)
+            self.place_sell_market_order(ticker_id, 0, buy_size, buy_price)
             trader.strategy.buy_price = 0.0
             trader.strategy.buy_size = 0.0
             trader.strategy.buy_order_id = None
 
 
-    def place_buy_order(self, ticker_id, price, size):
+    def place_buy_market_order(self, ticker_id, price, size):
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate:
-            print(result)
+            self.logger.info(result)
 
         message = "buy({}, {}) @ {}".format(ticker_id, size, price)
         self.logger.info(message)
@@ -227,9 +278,13 @@ class MultiTrader(object):
         #self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
 
 
-    def place_sell_order(self, ticker_id, price, size, buy_price):
+    def place_sell_market_order(self, ticker_id, price, size, buy_price):
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
+        if not self.accnt.simulate:
+            self.logger.info(result)
+
         if not self.accnt.simulate and not result: return
+
         message=''
         if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
             pprofit = 100.0 * (price - buy_price) / buy_price

@@ -1,4 +1,5 @@
 import uuid
+from trader.lib.Message import Message
 
 
 class OrderList(object):
@@ -46,14 +47,14 @@ class OrderList(object):
 
 
 class Order(object):
-    def __init__(self, price, size, side='buy', type='limit', orderid=None, state='open'):
+    def __init__(self, symbol, price, size, type=Message.MSG_MARKET_BUY, orderid=None, state='open'):
         if not orderid:
             self.orderid = uuid.uuid4()
         else:
             self.orderid = id
+        self.symbol = symbol
         self.price = float(price)
         self.size = float(size)
-        self.side = side
         self.type = type
         self.state = state
 
@@ -76,4 +77,4 @@ class Order(object):
         return self.size
 
     def __repr__(self):
-        return {'id': self.orderid, 'price': self.price, 'size': self.size, 'side': self.side}
+        return {'id': self.orderid, 'price': self.price, 'size': self.size, 'type': self.type}

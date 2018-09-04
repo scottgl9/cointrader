@@ -5,6 +5,10 @@ class Message(object):
     MSG_MARKET_SELL = 3
     MSG_LIMIT_BUY = 4
     MSG_LIMIT_SELL = 5
+    MSG_STOP_LOSS_BUY = 6
+    MSG_STOP_LOSS_SELL = 7
+    MSG_BUY_COMPLETE = 8
+    MSG_SELL_COMPLETE = 9
 
     def __init__(self, src_id, dst_id, cmd, price=0.0, size=0.0, buy_price=0.0):
         self.src_id = src_id
@@ -13,3 +17,7 @@ class Message(object):
         self.price = price
         self.size = size
         self.buy_price = buy_price
+        self.read = False
+
+    def mark_read(self):
+        self.read = True

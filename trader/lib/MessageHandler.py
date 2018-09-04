@@ -16,6 +16,12 @@ class MessageHandler(object):
     def clear(self):
         self.remove_by_dst_id(Message.ID_MULTI)
 
+    def clear_read(self):
+        for i in range(0, len(global_message_queue)):
+            message = global_message_queue[i]
+            if message.read:
+                del global_message_queue[i]
+
     def add_message(self, src_id, dst_id, cmd, price=0.0, size=0.0, buy_price=0.0):
         msg = Message(src_id, dst_id, cmd, price, size, buy_price)
         global_message_queue.append(msg)
@@ -78,3 +84,9 @@ class MessageHandler(object):
 
     def sell_market(self, ticker_id, price, size, buy_price=0.0):
         self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_MARKET_SELL, price, size, buy_price)
+
+    def buy_stop_loss(self, ticker_id, price, size):
+        self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_STOP_LOSS_BUY, price, size)
+
+    def sell_stop_loss(self, ticker_id, price, size, buy_price=0.0):
+        self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_STOP_LOSS_SELL, price, size, buy_price)
