@@ -27,7 +27,7 @@ class BinanceTrader:
         self.found = False
         self.tickers = {}
         self.multitrader = MultiTrader(client,
-                                       'macd_signal_strategy',
+                                       'macd_signal_market_strategy',
                                        assets_info=assets_info,
                                        volumes=volumes,
                                        simulate=False,

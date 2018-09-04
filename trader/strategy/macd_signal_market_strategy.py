@@ -46,7 +46,7 @@ def percent_p1_lt_p2(p1, p2, percent):
     return True
 
 
-class macd_signal_strategy(object):
+class macd_signal_market_strategy(object):
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None, logger=None):
         self.strategy_name = 'macd_signal_strategy'
         self.logger = logger
