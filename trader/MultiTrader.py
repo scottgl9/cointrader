@@ -206,10 +206,12 @@ class MultiTrader(object):
             result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
             if ('status' in result and result['status'] == 'FILLED'):
                 self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size)
+                self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
         elif order.type == Message.MSG_STOP_LOSS_SELL and close <= order.price:
             result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
             if ('status' in result and result['status'] == 'FILLED'):
                 self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
+                self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
 
     def place_buy_stop_loss_order(self, ticker_id, price, size):
         result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)

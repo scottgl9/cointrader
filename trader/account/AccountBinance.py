@@ -452,64 +452,95 @@ class AccountBinance(AccountBase):
         else:
             return self.order_market_sell(symbol=ticker_id, quantity=size)
 
-    def buy_limit_simulate(self, price, size):
-        price = self.round_quote(price)
-        size = self.round_base(size)
+    # use for both limit orders and stop loss orders
+    def buy_limit_complete(self, price, size, ticker_id=None):
+        if self.simulate:
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+            usd_value = float(price) * float(size) #self.round_quote(price * size)
+            if usd_value > cavailable: return
+            #print("buy_market({}, {}, {}".format(size, price, ticker_id))
+            self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
+            self.update_asset_balance(currency, cbalance - usd_value, cavailable)
+        else:
+            self.get_account_balances()
 
-        print("buy_limit_simulate({}, {})".format(price, size))
+    # use for both limit orders and stop loss orders
+    def sell_limit_complete(self, price, size, ticker_id=None):
+        if self.simulate:
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
 
-        usd_value = self.round_quote(self.market_price * size)
-        if usd_value <= 0.0: return
-        if self.quote_currency_available >= usd_value:
-            self.quote_currency_available -= usd_value
-            return True
-        return False
+            if float(size) > bavailable: return
 
-    def sell_limit_simulate(self, price, size):
-        price = self.round_quote(price)
-        size = self.round_base(size)
-        print("sell_limit_simulate({}, {})".format(price, size))
-        if size < self.base_min_size: return False
-        if self.funds_available >= size:
-            self.funds_available -= size
-            return True
-        return False
+            usd_value = float(price) * float(size)
+            self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable))
+            self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
+        else:
+            self.get_account_balances()
 
     def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
         if self.simulate:
-            return
-        timeInForce = Client.TIME_IN_FORCE_GTC
-        return self.client.order_limit_buy(timeInForce=timeInForce,
-                                           symbol=ticker_id,
-                                           quantity=size,
-                                           price=price,
-                                           stopPrice=stop_price)
+            base, currency = self.split_ticker_id(ticker_id)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+            usd_value = float(price) * float(size)  # self.round_quote(price * size)
+
+            if usd_value > cavailable: return
+
+            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+        else:
+            timeInForce = Client.TIME_IN_FORCE_GTC
+            return self.client.order_limit_buy(timeInForce=timeInForce,
+                                               symbol=ticker_id,
+                                               quantity=size,
+                                               price=price,
+                                               stopPrice=stop_price)
+
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
         if self.simulate:
-            return
-        timeInForce = Client.TIME_IN_FORCE_GTC
-        return self.client.order_limit_sell(timeInForce=timeInForce,
-                                           symbol=ticker_id,
-                                           quantity=size,
-                                           price=price,
-                                           stopPrice=stop_price)
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+
+            if float(size) > bavailable: return
+
+            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+        else:
+            timeInForce = Client.TIME_IN_FORCE_GTC
+            return self.client.order_limit_sell(timeInForce=timeInForce,
+                                               symbol=ticker_id,
+                                               quantity=size,
+                                               price=price,
+                                               stopPrice=stop_price)
+
 
     def buy_limit(self, price, size, post_only=True, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
         if self.simulate:
-            return self.buy_limit_simulate(price, size)
-        timeInForce = Client.TIME_IN_FORCE_GTC
-        return self.client.order_limit_buy(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+            base, currency = self.split_ticker_id(ticker_id)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+            usd_value = float(price) * float(size)  # self.round_quote(price * size)
+
+            if usd_value > cavailable: return
+
+            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+        else:
+            timeInForce = Client.TIME_IN_FORCE_GTC
+            return self.client.order_limit_buy(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+
 
     def sell_limit(self, price, size, post_only=True, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
         if self.simulate:
-            return self.sell_limit_simulate(price, size)
-        timeInForce = Client.TIME_IN_FORCE_GTC
-        return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+
+            if float(size) > bavailable: return
+
+            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+        else:
+            timeInForce = Client.TIME_IN_FORCE_GTC
+            return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
     def cancel_order(self, orderid, ticker_id=None):
         if not ticker_id:
