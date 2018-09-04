@@ -287,14 +287,15 @@ class macd_signal_stop_loss_strategy(object):
             if self.min_trade_size_qty != 1.0:
                 min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-            buy_price = price
+            buy_price = price + self.quote_increment
             buy_size = min_trade_size
 
             self.msg_handler.buy_stop_loss(self.ticker_id, buy_price, buy_size)
             self.buy_pending = True
 
         if not self.sell_pending and self.sell_signal(price):
-            self.msg_handler.sell_stop_loss(self.ticker_id, price, self.buy_size, self.buy_price)
+            sell_price = price - self.quote_increment
+            self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, self.buy_size, self.buy_price)
             self.sell_pending = True
 
             if self.min_trade_size_qty != 1.0:

@@ -17,10 +17,12 @@ class MessageHandler(object):
         self.remove_by_dst_id(Message.ID_MULTI)
 
     def clear_read(self):
-        for i in range(0, len(global_message_queue)):
-            message = global_message_queue[i]
+        if len(global_message_queue) == 0:
+            return
+
+        for message in global_message_queue:
             if message.read:
-                del global_message_queue[i]
+                global_message_queue.remove(message)
 
     def add_message(self, src_id, dst_id, cmd, price=0.0, size=0.0, buy_price=0.0):
         msg = Message(src_id, dst_id, cmd, price, size, buy_price)
