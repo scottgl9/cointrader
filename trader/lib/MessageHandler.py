@@ -26,6 +26,13 @@ class MessageHandler(object):
         msg = Message(src_id, dst_id, cmd, price, size, buy_price)
         global_message_queue.append(msg)
 
+    def get_first_message(self, src_id, dst_id):
+        for message in global_message_queue:
+            if message.dst_id == dst_id and message.src_id == src_id:
+                return message
+
+        return None
+
     # get all messages by id matching src_id or dst_id
     def get_messages_by_id(self, id):
         messages = []
