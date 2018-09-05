@@ -114,7 +114,6 @@ class macd_signal_stop_loss_strategy(object):
         self.usdt_trade_size = 10.0
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
         self.min_trade_size_qty = 1.0
-        #self.accnt.get_account_balances()
         self.tickers = None
         self.min_price = 0.0
         self.max_price = 0.0
@@ -189,7 +188,6 @@ class macd_signal_stop_loss_strategy(object):
             balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
             size = self.round_base(float(balance_available) / float(price))
         else:
-            self.accnt.get_account_balances()
             size=self.accnt.get_asset_balance(self.currency)['available']
 
         self.compute_min_trade_size(price)
@@ -212,9 +210,6 @@ class macd_signal_stop_loss_strategy(object):
 
 
     def sell_signal(self, price):
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
-
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size):

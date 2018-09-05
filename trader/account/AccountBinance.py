@@ -5,8 +5,9 @@ from trader.account.AccountBase import AccountBase
 #logger = logging.getLogger(__name__)
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name='BTC', asset='USD', simulation=False):
+    def __init__(self, client, name='BTC', asset='USD', simulation=False, logger=None):
         self.account_type = 'Binance'
+        self.logger = logger
         self.balance = 0.0
         self.funds_available = 0.0
         self.quote_currency_balance = 0.0
@@ -446,6 +447,7 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
             self.update_asset_balance(currency, cbalance - usd_value, cavailable - usd_value)
         else:
+            self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
             return self.order_market_buy(symbol=ticker_id, quantity=size)
 
     def sell_market(self, size, price=0.0, ticker_id=None):
@@ -460,6 +462,7 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable) - float(size))
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
         else:
+            self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
             return self.order_market_sell(symbol=ticker_id, quantity=size)
 
     # use for both limit orders and stop loss orders

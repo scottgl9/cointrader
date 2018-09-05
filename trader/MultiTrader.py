@@ -39,7 +39,7 @@ class MultiTrader(object):
         if accnt:
             self.accnt = accnt
         else:
-            self.accnt = AccountBinance(self.client, simulation=simulate)  # , account_name='Binance')
+            self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)  # , account_name='Binance')
         self.assets_info = assets_info
         self.volumes = volumes
         self.rank = RankManager()
