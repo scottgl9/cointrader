@@ -2,7 +2,6 @@
 
 import json
 import threading
-import sys
 
 from autobahn.twisted.websocket import WebSocketClientFactory, \
     WebSocketClientProtocol, \
@@ -15,6 +14,9 @@ from .client import Client
 
 
 class BinanceClientProtocol(WebSocketClientProtocol):
+
+    def __init__(self):
+        super(BinanceClientProtocol, self).__init__()
 
     def onConnect(self, response):
         # reset the delay after reconnecting
@@ -67,13 +69,15 @@ class BinanceSocketManager(threading.Thread):
     WEBSOCKET_DEPTH_10 = '10'
     WEBSOCKET_DEPTH_20 = '20'
 
-    _user_timeout = 30 * 60  # 30 minutes
+    DEFAULT_USER_TIMEOUT = 30 * 60  # 30 minutes
 
-    def __init__(self, client):
+    def __init__(self, client, user_timeout=DEFAULT_USER_TIMEOUT):
         """Initialise the BinanceSocketManager
 
         :param client: Binance API client
         :type client: binance.Client
+        :param user_timeout: Custom websocket timeout
+        :type user_timeout: int
 
         """
         threading.Thread.__init__(self)
@@ -82,6 +86,7 @@ class BinanceSocketManager(threading.Thread):
         self._user_listen_key = None
         self._user_callback = None
         self._client = client
+        self._user_timeout = user_timeout
 
     def _start_socket(self, path, callback, prefix='ws/'):
         if path in self._conns:
@@ -502,8 +507,6 @@ class BinanceSocketManager(threading.Thread):
         # stop the timer
         self._user_timer.cancel()
         self._user_timer = None
-        # close the stream
-        self._client.stream_close(listenKey=self._user_listen_key)
         self._user_listen_key = None
 
     def run(self):
@@ -512,9 +515,6 @@ class BinanceSocketManager(threading.Thread):
         except ReactorAlreadyRunning:
             # Ignore error about reactor already running
             pass
-        except (KeyboardInterrupt, SystemExit):
-            self.close()
-            sys.exit(0)
 
     def close(self):
         """Close all connections
