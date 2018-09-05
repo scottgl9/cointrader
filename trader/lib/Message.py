@@ -9,6 +9,8 @@ class Message(object):
     MSG_STOP_LOSS_SELL = 7
     MSG_BUY_COMPLETE = 8
     MSG_SELL_COMPLETE = 9
+    MSG_BUY_REPLACE = 10
+    MSG_SELL_REPLACE = 11
 
     def __init__(self, src_id, dst_id, cmd, price=0.0, size=0.0, buy_price=0.0):
         self.src_id = src_id

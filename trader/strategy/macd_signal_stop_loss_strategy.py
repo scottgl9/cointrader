@@ -298,12 +298,24 @@ class macd_signal_stop_loss_strategy(object):
             self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, self.buy_size, self.buy_price)
             self.sell_pending = True
 
-            if self.min_trade_size_qty != 1.0:
-                self.min_trade_size_qty = 1.0
-
         if self.buy_pending:
             msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
-            if not msg: return
+            if not msg:
+                if self.buy_signal(price):
+                    # if we received a new buy signal with order pending, cancel order and replace
+                    buy_price = price + self.quote_increment
+                    buy_size = self.min_trade_size
+
+                    if self.min_trade_size_qty != 1.0:
+                        buy_size = float(buy_size) * self.min_trade_size_qty
+
+                    self.msg_handler.add_message(self.ticker_id,
+                                                 Message.ID_MULTI,
+                                                 Message.MSG_BUY_REPLACE,
+                                                 buy_price,
+                                                 buy_size)
+                    return
+                return
             self.buy_price = float(msg.price)
             self.buy_size = float(msg.size)
             self.buy_timestamp = self.timestamp
@@ -311,9 +323,21 @@ class macd_signal_stop_loss_strategy(object):
             self.last_buy_obv = self.obv.result
             self.buy_pending = False
             msg.mark_read()
+            self.msg_handler.clear_read()
         elif self.sell_pending:
             msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
-            if not msg: return
+            if not msg:
+                if self.sell_signal(price):
+                    # if we received a new sell signal with order pending, cancel order and replace
+                    sell_price = price - self.quote_increment
+                    self.msg_handler.add_message(self.ticker_id,
+                                                 Message.ID_MULTI,
+                                                 Message.MSG_SELL_REPLACE,
+                                                 sell_price,
+                                                 self.buy_size,
+                                                 self.buy_price)
+                    return
+                return
             self.last_buy_price = self.buy_price
             self.buy_price = 0.0
             self.buy_size = 0.0
@@ -322,7 +346,12 @@ class macd_signal_stop_loss_strategy(object):
             self.last_sell_obv = self.obv.result
             self.buy_timestamp = 0
             self.sell_pending = False
+
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
+
             msg.mark_read()
+            self.msg_handler.clear_read()
 
 
     def run_update_orderbook(self, msg):
