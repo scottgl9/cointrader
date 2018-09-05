@@ -459,7 +459,7 @@ class AccountBinance(AccountBase):
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
             usd_value = float(price) * float(size) #self.round_quote(price * size)
-            if usd_value > cavailable: return
+            if usd_value > cbalance: return
             #print("buy_market({}, {}, {}".format(size, price, ticker_id))
             self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
             self.update_asset_balance(currency, cbalance - usd_value, cavailable)
@@ -473,7 +473,7 @@ class AccountBinance(AccountBase):
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
 
-            if float(size) > bavailable: return
+            if float(size) > bbalance: return
 
             usd_value = float(price) * float(size)
             self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable))

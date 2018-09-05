@@ -304,8 +304,8 @@ class macd_signal_stop_loss_strategy(object):
         if self.buy_pending:
             msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
             if not msg: return
-            self.buy_price = msg.price
-            self.buy_size = msg.size
+            self.buy_price = float(msg.price)
+            self.buy_size = float(msg.size)
             self.buy_timestamp = self.timestamp
             self.last_buy_ts = self.timestamp
             self.last_buy_obv = self.obv.result

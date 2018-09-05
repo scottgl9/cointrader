@@ -47,13 +47,14 @@ class OrderList(object):
 
 
 class Order(object):
-    def __init__(self, symbol, price, size, type=Message.MSG_MARKET_BUY, orderid=None, state='open'):
+    def __init__(self, symbol, price, size, buy_price=0, type=Message.MSG_MARKET_BUY, orderid=None, state='open'):
         if not orderid:
             self.orderid = uuid.uuid4()
         else:
             self.orderid = id
         self.symbol = symbol
         self.price = float(price)
+        self.buy_price = float(buy_price)
         self.size = float(size)
         self.type = type
         self.state = state

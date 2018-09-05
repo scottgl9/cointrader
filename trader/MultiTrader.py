@@ -204,14 +204,15 @@ class MultiTrader(object):
         close = float(msg['c'])
         if order.type == Message.MSG_STOP_LOSS_BUY and close >= order.price:
             if self.simulate:
-                self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-                self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
-                self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
+                self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size)
+                self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
                     self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size)
                     self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
+            self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
+            del self.open_orders[msg['s']]
         elif order.type == Message.MSG_STOP_LOSS_SELL and close <= order.price:
             if self.simulate:
                 self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
@@ -221,6 +222,10 @@ class MultiTrader(object):
                 if ('status' in result and result['status'] == 'FILLED'):
                     self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
                     self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
+            pprofit = 100.0 * (order.price - order.buy_price) / order.buy_price
+            self.logger.info("sell({}, {}) @ {} (bought @ {}, {}%)".format(order.symbol, order.size, order.price, order.buy_price, round(pprofit, 2)))
+            del self.open_orders[msg['s']]
+
 
     def place_buy_stop_loss_order(self, ticker_id, price, size):
         result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
@@ -242,7 +247,7 @@ class MultiTrader(object):
         if ticker_id in self.open_orders.keys():
             return
 
-        order = Order(symbol=ticker_id, price=price, size=size, type=Message.MSG_STOP_LOSS_SELL)
+        order = Order(symbol=ticker_id, price=price, size=size, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
         self.open_orders[ticker_id] = order
 
 
