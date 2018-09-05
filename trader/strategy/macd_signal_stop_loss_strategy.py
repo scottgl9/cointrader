@@ -102,6 +102,8 @@ class macd_signal_stop_loss_strategy(object):
         self.last_price = 0.0
         self.buy_pending = False
         self.sell_pending = False
+        self.buy_pending_price = 0.0
+        self.sell_pending_price = 0.0
         #if not self.accnt.simulate:
         #    self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
         #    if len(self.buy_price_list) > 0:
@@ -187,6 +189,7 @@ class macd_signal_stop_loss_strategy(object):
             balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
             size = self.round_base(float(balance_available) / float(price))
         else:
+            self.accnt.get_account_balances()
             size=self.accnt.get_asset_balance(self.currency)['available']
 
         self.compute_min_trade_size(price)
@@ -209,6 +212,9 @@ class macd_signal_stop_loss_strategy(object):
 
 
     def sell_signal(self, price):
+        if not self.accnt.simulate:
+            self.accnt.get_account_balances()
+
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size):
@@ -292,11 +298,13 @@ class macd_signal_stop_loss_strategy(object):
 
             self.msg_handler.buy_stop_loss(self.ticker_id, buy_price, buy_size)
             self.buy_pending = True
+            self.buy_pending_price = buy_price
 
         if not self.sell_pending and self.sell_signal(price):
             sell_price = price - self.quote_increment
             self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, self.buy_size, self.buy_price)
             self.sell_pending = True
+            self.sell_pending_price = sell_price
 
         if self.buy_pending:
             msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
@@ -315,6 +323,20 @@ class macd_signal_stop_loss_strategy(object):
                                                  buy_price,
                                                  buy_size)
                     return
+                elif self.buy_pending_price != 0 and abs(price - self.buy_pending_price) / self.buy_pending_price > 0.01:
+                    # price has fallen another 5%, cancel old order and create new lower one
+                    buy_price = price + self.quote_increment
+                    self.buy_pending_price = buy_price
+                    buy_size = self.min_trade_size
+
+                    if self.min_trade_size_qty != 1.0:
+                        buy_size = float(buy_size) * self.min_trade_size_qty
+
+                    self.msg_handler.add_message(self.ticker_id,
+                                                 Message.ID_MULTI,
+                                                 Message.MSG_BUY_REPLACE,
+                                                 buy_price,
+                                                 buy_size)
                 return
             self.buy_price = float(msg.price)
             self.buy_size = float(msg.size)
@@ -337,6 +359,17 @@ class macd_signal_stop_loss_strategy(object):
                                                  self.buy_size,
                                                  self.buy_price)
                     return
+                elif self.sell_pending_price != 0 and abs(price - self.sell_pending_price) / self.sell_pending_price > 0.01:
+                    # price has risen another 5%, cancel old order and create new higher one
+                    sell_price = price - self.quote_increment
+                    self.sell_pending_price = sell_price
+
+                    self.msg_handler.add_message(self.ticker_id,
+                                                 Message.ID_MULTI,
+                                                 Message.MSG_SELL_REPLACE,
+                                                 sell_price,
+                                                 self.buy_size,
+                                                 self.buy_price)
                 return
             self.last_buy_price = self.buy_price
             self.buy_price = 0.0
