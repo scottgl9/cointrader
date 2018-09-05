@@ -207,7 +207,7 @@ class MultiTrader(object):
     def process_limit_order(self, msg):
         order = self.open_orders[msg['s']]
         close = float(msg['c'])
-        if order.type == Message.MSG_STOP_LOSS_BUY and close > order.price:
+        if order.type == Message.MSG_STOP_LOSS_BUY and close >= order.price:
             bought = False
             if self.simulate:
                 self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size)
@@ -222,7 +222,7 @@ class MultiTrader(object):
             if bought:
                 self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
                 del self.open_orders[msg['s']]
-        elif order.type == Message.MSG_STOP_LOSS_SELL and close < order.price:
+        elif order.type == Message.MSG_STOP_LOSS_SELL and close <= order.price:
             sold = False
             if self.simulate:
                 self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)

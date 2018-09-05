@@ -9,12 +9,20 @@ except ImportError:
 from trader.account.binance import client
 from trader.config import *
 
-
+def get_all_tickers(client):
+    result = []
+    for key, value in client.get_exchange_info().items():
+        if key != 'symbols': continue
+        for asset in value:
+            #if asset['symbol'].endswith('USDT'): continue
+            result.append(asset['symbol'])
+    return result
 
 if __name__ == '__main__':
     client = client.Client(MY_API_KEY, MY_API_SECRET)
+    tickers = get_all_tickers(client)
     btc_usd_price = float(client.get_symbol_ticker(symbol='BTCUSDT')['price'])
-    print(btc_usd_price)
+    print("BTC/USDT={}".format(btc_usd_price))
     total_balance_usd = 0.0
     total_balance_btc = 0.0
     for accnt in client.get_account()['balances']:
@@ -23,7 +31,10 @@ if __name__ == '__main__':
             price_usd = 0.0
             price_btc = 0.0
             if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
-                price = float(client.get_symbol_ticker(symbol="{}BTC".format(accnt['asset']))['price'])
+                symbol = "{}BTC".format(accnt['asset'])
+                if symbol not in tickers:
+                    continue
+                price = float(client.get_symbol_ticker(symbol=symbol)['price'])
                 total_amount = float(accnt['free']) + float(accnt['locked'])
                 price_btc = price * total_amount
             elif accnt['asset'] != 'USDT':

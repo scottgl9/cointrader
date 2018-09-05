@@ -151,6 +151,13 @@ class AccountBinance(AccountBase):
 
     def get_account_total_value(self):
         btc_usd_price = float(self.client.get_symbol_ticker(symbol='BTCUSDT')['price'])
+        tickers = []
+        for key, value in self.client.get_exchange_info().items():
+            if key != 'symbols': continue
+            for asset in value:
+                # if asset['symbol'].endswith('USDT'): continue
+                tickers.append(asset['symbol'])
+
         print(btc_usd_price)
         total_balance_usd = 0.0
         total_balance_btc = 0.0
@@ -160,7 +167,10 @@ class AccountBinance(AccountBase):
                 price_usd = 0.0
                 price_btc = 0.0
                 if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
-                    price = float(self.client.get_symbol_ticker(symbol="{}BTC".format(accnt['asset']))['price'])
+                    symbol = "{}BTC".format(accnt['asset'])
+                    if symbol not in tickers:
+                        continue
+                    price = float(self.client.get_symbol_ticker(symbol)['price'])
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = price * total_amount
                 elif accnt['asset'] != 'USDT':
