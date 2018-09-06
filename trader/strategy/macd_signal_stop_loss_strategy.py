@@ -190,6 +190,15 @@ class macd_signal_stop_loss_strategy(object):
         else:
             size=self.accnt.get_asset_balance(self.currency)['available']
 
+        if self.ticker_id.endswith('BTC') and size < self.btc_trade_size:
+            return False
+        elif self.ticker_id.endswith('ETH') and size < self.eth_trade_size:
+            return False
+        elif self.ticker_id.endswith('BNB') and size < self.bnb_trade_size:
+            return False
+        elif self.ticker_id.endswith('USDT') and size < self.usdt_trade_size:
+            return False
+
         self.compute_min_trade_size(price)
 
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
