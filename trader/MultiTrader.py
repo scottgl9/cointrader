@@ -356,6 +356,16 @@ class MultiTrader(object):
 
 
     def place_sell_market_order(self, ticker_id, price, size, buy_price):
+        # if available balance on coin changed after buy, update available size
+        if not self.accnt.simulate:
+            self.accnt.get_account_balances()
+            base, currency = self.accnt.split_ticker_id(ticker_id)
+            available_size = self.accnt.round_base(self.accnt.get_asset_balance(base)['available'])
+            if available_size == 0:
+                return
+            if available_size < size:
+                size = available_size
+
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate:
             self.logger.info(result)

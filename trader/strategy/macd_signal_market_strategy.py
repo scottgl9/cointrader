@@ -238,7 +238,7 @@ class macd_signal_market_strategy(object):
     def sell_signal(self, price):
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
-        if balance_available < float(self.min_trade_size):
+        if balance_available < float(self.min_trade_size) or balance_available == 0.0:
             return False
 
         if float(self.buy_price) == 0.0:

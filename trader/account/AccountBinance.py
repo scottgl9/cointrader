@@ -53,10 +53,14 @@ class AccountBinance(AccountBase):
         pass
 
     def round_base(self, price):
-        return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
+        if self.base_min_size != 0.0:
+            return round(price, '{:.9f}'.format(self.base_min_size).index('1') - 1)
+        return price
 
     def round_quote(self, price):
-        return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
+        if self.quote_increment != 0.0:
+            return round(price, '{:.9f}'.format(self.quote_increment).index('1') - 1)
+        return price
 
     #def get_ticker_id(self):
     #    return '%s%s' % (self.base_currency, self.currency)
