@@ -11,6 +11,8 @@ class Message(object):
     MSG_SELL_COMPLETE = 9
     MSG_BUY_REPLACE = 10
     MSG_SELL_REPLACE = 11
+    MSG_BUY_FAILED = 12
+    MSG_SELL_FAILED = 13
 
     def __init__(self, src_id, dst_id, cmd, price=0.0, size=0.0, buy_price=0.0):
         self.src_id = src_id

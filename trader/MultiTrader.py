@@ -345,11 +345,16 @@ class MultiTrader(object):
                     return
                 orderid = result['orderId']
                 self.buy_order_id = orderid
-
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
-            if self.notify:
-                self.notify.send(subject="MultiTrader", text=message)
+                self.accnt.get_account_balances()
+                if self.notify:
+                    self.notify.send(subject="MultiTrader", text=message)
+        #elif not self.accnt.simulate:
+        #    self.msg_handler.add_message(src_id=Message.ID_MULTI,
+        #                                 dst_id=ticker_id,
+        #                                 cmd=Message.MSG_BUY_FAILED,
+        #                                 price=price,
+        #                                 size=size
+        #                                 )
 
         # add to trader db for tracking
         #self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
@@ -364,7 +369,7 @@ class MultiTrader(object):
             if available_size == 0:
                 return
             if available_size < size:
-                size = available_size
+                return
 
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate:
@@ -392,14 +397,18 @@ class MultiTrader(object):
                                                                     round(pprofit, 2))
 
             self.logger.info(message)
-
             if not self.accnt.simulate:
-                total_usd, total_btc = self.accnt.get_account_total_value()
-                self.logger.info("Total balance USD = {}, BTC={}".format(total_usd, total_btc))
-        if not self.accnt.simulate:
-            self.accnt.get_account_balances()
-            if self.notify:
-                self.notify.send(subject="MultiTrader", text=message)
+                self.accnt.get_account_balances()
+                if self.notify:
+                    self.notify.send(subject="MultiTrader", text=message)
+        #elif not self.accnt.simulate:
+        #    self.msg_handler.add_message(src_id=Message.ID_MULTI,
+        #                                 dst_id=ticker_id,
+        #                                 cmd=Message.MSG_SELL_FAILED,
+        #                                 price=price,
+        #                                 size=size,
+        #                                 buy_price=buy_price
+        #                                 )
 
         # remove from trade db since it has been sold
         #self.trader_db.remove_trade(ticker_id)
