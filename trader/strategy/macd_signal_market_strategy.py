@@ -61,10 +61,6 @@ class macd_signal_market_strategy(object):
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler(logger=logger)
         self.signal_handler.add(MACD_Crossover())
-        #self.signal_handler.add(OBV_Crossover())
-        #self.signal_handler.add(Bollinger_Bands_Signal())
-        #self.signal_handler.add(EMA_OBV_Crossover())
-        #self.signal_handler.add(KST_Crossover())
 
         self.obv = OBV()
         self.low_short = self.high_short = 0.0
@@ -227,11 +223,6 @@ class macd_signal_market_strategy(object):
             #    return False
 
         if self.signal_handler.buy_signal():
-            #if self.rank_decreases >= self.rank_increases:
-            #    return False
-            #if self.last_roc != 0.0 and self.roc != 0.0 and self.roc > self.last_roc:
-            #    self.min_trade_size_qty = 3.0
-            #if self.rank_increases > self.rank_decreases:
             return True
 
         return False
@@ -253,27 +244,6 @@ class macd_signal_market_strategy(object):
                 self.buy_order_id = None
                 return False
 
-        #if self.rank_top and self.ticker_id in dict(self.rank.rank_descending_bottom()).keys() and self.signal_handler.sell_signal():
-        #    self.rank_top = False
-        #    pchange = (price - self.buy_price) / self.buy_price
-        #    if pchange >= 0.0:
-        #        return True
-
-
-        # if we receive a sell signal less than 10 minutes after the buy,
-        # sell it unconditionally
-        #if (self.timestamp - self.buy_timestamp) < 600 and self.signal_handler.sell_signal():
-        #    return True
-
-        sell_signal = False
-
-        #if self.signal_handler.sell_signal():
-        #    sell_signal = True
-        #    #if (self.signal_handler.buy_type == SigType.SIGNAL_SHORT and
-        #    #        self.signal_handler.sell_type == SigType.SIGNAL_LONG and
-        #    #        price >= float(self.buy_price)):
-        #    #    return True
-
         if price < float(self.buy_price):
             return False
 
@@ -285,8 +255,6 @@ class macd_signal_market_strategy(object):
                 return False
 
         if self.signal_handler.sell_signal():
-            self.rank_increases = 0
-            self.rank_decreases = 0
             return True
 
         return False

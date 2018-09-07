@@ -1,0 +1,78 @@
+<html>
+<header>
+<style>
+div.stats {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 5px;
+    left: 1480px;
+    width: 300px;
+    height: 300px;
+    border: 3px solid #73AD21;
+}
+div.prices {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 5px;
+    left: 1080px;
+    width: 120px;
+    height: 915px;
+    border: 3px solid #73AD21;
+}
+div.chart {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 5px;
+    left: 0px;
+    width: 1080px;
+    height: 720px;
+    border: 3px solid #73AD21;
+}
+div.order {
+    color: #ced2d5;
+    background-color: #15232c;
+    position: absolute;
+    padding-top: 25px;
+    padding-left: 5px;
+    top: 720px;
+    left: 0px;
+    width: 1080px;
+    height: 200px;
+    border: 3px solid #73AD21;
+}
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
+    <style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+    <script>
+        window.onload = function() {
+    	    $.ajax({url: "/get_multi_trader_status", success: function(result){
+                $("#order").html(result);
+            }});
+        };
+	</script>
+<script type="text/javascript">
+</script>
+</header>
+<body>
+<div class='chart' id='chart'>
+    <canvas id="canvas"></canvas>
+</div>
+<div class='order' id='order'></div>
+<div class='prices' id='prices'></div>
+</body>
+</html>

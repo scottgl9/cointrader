@@ -11,7 +11,9 @@ from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 import collections
 import logging
+import threading
 import signal
+from trader.WebHandler import WebThread
 from trader.config import *
 
 
@@ -33,6 +35,10 @@ class BinanceTrader:
                                        simulate=False,
                                        logger=logger)
 
+        # start the Web API
+        thread = threading.Thread(target=WebThread, args=(self.multitrader,))
+        thread.daemon = True
+        thread.start()
 
 
     def get_websocket_kline(self, msg):
@@ -102,10 +108,6 @@ def get_products_sorted_by_volume(client, currency='BTC'):
     for ticker in tickers:
         if ticker['symbol'].endswith(currency) == False: continue
         if ticker['symbol'] not in pdict.keys(): continue
-
-        # fraction_movement = count_frames_direction_from_klines_name(ticker['symbol'])
-        # print(fraction_movement)
-        # if fraction_movement < 1.0: continue
 
         product = pdict[ticker['symbol']]
         #percent = ((float(ticker['price']) - float(product['open'])) / float(product['open'])) * 100.0
@@ -196,9 +198,6 @@ def filter_by_balances(assets, balances):
           result.append(name)
     return result
 
-
-def sig_test(a, b):
-    log.info("Received INT")
 
 if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")

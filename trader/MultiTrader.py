@@ -51,6 +51,8 @@ class MultiTrader(object):
         self.last_ts = 0
         self.check_ts = 3600 * 1000 * 4
         self.open_orders = {}
+        self.stopped = False
+        self.running = True
 
         self.global_strategy = None
         self.global_en = global_en

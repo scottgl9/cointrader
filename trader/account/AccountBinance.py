@@ -62,6 +62,9 @@ class AccountBinance(AccountBase):
             return round(price, '{:.9f}'.format(self.quote_increment).index('1') - 1)
         return price
 
+    def my_float(self, value):
+        return str("{:.9f}".format(float(value)))
+
     #def get_ticker_id(self):
     #    return '%s%s' % (self.base_currency, self.currency)
 
