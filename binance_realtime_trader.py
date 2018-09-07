@@ -27,6 +27,7 @@ class BinanceTrader:
     def __init__(self, client, assets_info=None, volumes=None, logger=None):
         self.client = client
         self.found = False
+        self.logger = logger
         self.tickers = {}
         self.multitrader = MultiTrader(client,
                                        'macd_signal_market_strategy',
@@ -36,9 +37,9 @@ class BinanceTrader:
                                        logger=logger)
 
         # start the Web API
-        thread = threading.Thread(target=WebThread, args=(self.multitrader,))
-        thread.daemon = True
-        thread.start()
+        self.thread = threading.Thread(target=WebThread, args=(self.multitrader,))
+        self.thread.daemon = True
+        self.thread.start()
 
 
     def get_websocket_kline(self, msg):
@@ -51,7 +52,6 @@ class BinanceTrader:
         kline.append(float(msg['v']))
         return kline
 
-
     # update tickers dict to contain kline ticker values for all traded symbols
     def process_websocket_message(self, msg):
         for ticker in msg:
@@ -59,8 +59,12 @@ class BinanceTrader:
             self.tickers[ticker['s']] = self.get_websocket_kline(ticker)
             return self.tickers[ticker['s']]
 
-
     def process_message(self, msg):
+        if keyboard.is_pressed('q'):
+            print("Exiting...")
+            self.bm.close()
+            return
+
         self.process_websocket_message(msg)
 
         if not self.found and 'BTCUSDT' in self.tickers.keys():
@@ -74,16 +78,19 @@ class BinanceTrader:
 
         self.multitrader.process_message(msg)
 
-
     def run(self):
-        bm = BinanceSocketManager(self.client)
-        bm.start_miniticker_socket(self.process_message)
-        #bm.daemon = True
-        try:
-            bm.start()
-            #bm.join()
-        except (KeyboardInterrupt, SystemExit):
-            sys.exit(0)
+        self.bm = BinanceSocketManager(self.client)
+        self.bm.daemon = True
+        self.bm.start_miniticker_socket(self.process_message)
+        self.bm.start()
+        while True:
+            ch = sys.stdin.read(1)
+            if ch == 'q': break
+
+        self.logger.info("Shutting down...")
+        self.bm.close()
+        self.bm.join()
+        self.thread.join()
 
 
 def get_prices_from_klines(klines):
@@ -235,7 +242,4 @@ if __name__ == '__main__':
                 sell_list.append("{}{}".format(symbol, currency))
 
     bt = BinanceTrader(client, assets_info, volumes=volumes_list, logger=logger)
-    try:
-        bt.run()
-    except (KeyboardInterrupt, SystemExit):
-        sys.exit(0)
+    bt.run()

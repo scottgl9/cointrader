@@ -525,3 +525,4 @@ class BinanceSocketManager(threading.Thread):
             self.stop_socket(key)
 
         self._conns = {}
+        reactor.callLater(3, reactor.stop)
