@@ -6,6 +6,7 @@ from trader.TradePair import TradePair
 from trader.indicator.SMA import SMA
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.lib.Order import Order
+from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from trader.notify.Email import Email
 import sqlite3
 import os.path
@@ -30,7 +31,7 @@ def split_symbol(symbol):
 # for those that do not yet exist
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
-                 account_name='Binance', simulate=False, accnt=None, ranking=False, logger=None):
+                 account_name='Binance', simulate=False, accnt=None, logger=None, global_en=True):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
@@ -42,9 +43,6 @@ class MultiTrader(object):
             self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)  # , account_name='Binance')
         self.assets_info = assets_info
         self.volumes = volumes
-        self.rank = RankManager()
-        self.ranking = ranking
-        self.roc_ema = SMA(50)
         self.tickers = None
         self.msg_handler = MessageHandler()
         self.logger = logger
@@ -53,6 +51,11 @@ class MultiTrader(object):
         self.last_ts = 0
         self.check_ts = 3600 * 1000 * 4
         self.open_orders = {}
+
+        self.global_strategy = None
+        self.global_en = global_en
+        if self.global_en:
+            self.global_strategy = global_obv_strategy()
 
         if not self.simulate:
             self.trade_db_init("trade.db")
@@ -107,7 +110,6 @@ class MultiTrader(object):
                                    account_handler=self.accnt,
                                    base_min_size=base_min_size,
                                    tick_size=quote_increment,
-                                   rank=self.rank,
                                    logger=self.logger)
 
         trade_pair = TradePair(self.client, self.accnt, strategy, base_name, currency_name)
@@ -133,14 +135,13 @@ class MultiTrader(object):
             if msg['s'] not in self.trade_pairs.keys(): return
 
             symbol_trader = self.trade_pairs[msg['s']]
-            if self.ranking and symbol_trader.last_close != 0.0:
-                close = float(msg['c'])
-                roc = 100.0 * (close / symbol_trader.last_close - 1)
-                self.rank.update(msg['s'], self.roc_ema.update(roc))
             if 'E' in msg:
                 self.current_ts = msg['E']
             symbol_trader.update_tickers(self.tickers)
             symbol_trader.run_update(msg)
+
+            if self.global_strategy:
+                self.global_strategy.run_update(msg)
 
             if msg['s'] in self.open_orders.keys():
                 self.process_limit_order(msg)
@@ -155,15 +156,13 @@ class MultiTrader(object):
                 #if self.volumes and part['s'] not in self.volumes.keys(): continue
 
                 symbol_trader = self.trade_pairs[part['s']]
-                if self.ranking and symbol_trader.last_close != 0.0:
-                    print(part)
-                    close = float(part['c'])
-                    roc = 100.0 * (close / symbol_trader.last_close - 1)
-                    self.rank.update(part['s'], self.roc_ema.update(roc))
                 if 'E' in part:
                     self.current_ts = part['E']
                 symbol_trader.update_tickers(self.tickers)
                 symbol_trader.run_update(part)
+
+                if self.global_strategy:
+                    self.global_strategy.run_update(part)
 
                 if part['s'] in self.open_orders.keys():
                     self.process_limit_order(part)
@@ -326,6 +325,10 @@ class MultiTrader(object):
             trader.strategy.buy_order_id = None
 
 
+    # {u'orderId': 38614135, u'clientOrderId': u'S0FDkNNluyHgdfZt44Ktty', u'origQty': u'0.24000000', u'fills': [{u'commission': u'0.00015000', u'price': u'0.04514300',
+    # u'commissionAsset': u'BNB', u'tradeId': 8948934, u'qty': u'0.20000000'}, {u'commission': u'0.00003000', u'price': u'0.04514400', u'commissionAsset': u'BNB', u'tradeId': 8948935,
+    # u'qty': u'0.04000000'}], u'symbol': u'BNBETH', u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1536316266040, u'type': u'MARKET', u'price': u'0.00000000',
+    #  u'executedQty': u'0.24000000', u'cummulativeQuoteQty': u'0.01083436'}
     def place_buy_market_order(self, ticker_id, price, size):
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate:
@@ -335,26 +338,22 @@ class MultiTrader(object):
         self.logger.info(message)
 
         if not self.accnt.simulate and not result:
+            self.msg_handler.buy_failed(ticker_id, price, size)
             return
 
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
+        if self.accnt.simulate:
             self.buy_order_id = None
-            if not self.accnt.simulate:
-                if 'orderId' not in result:
-                    self.logger.warn("orderId not found for {}".format(ticker_id))
-                    return
-                orderid = result['orderId']
-                self.buy_order_id = orderid
-                self.accnt.get_account_balances()
-                if self.notify:
-                    self.notify.send(subject="MultiTrader", text=message)
-        #elif not self.accnt.simulate:
-        #    self.msg_handler.add_message(src_id=Message.ID_MULTI,
-        #                                 dst_id=ticker_id,
-        #                                 cmd=Message.MSG_BUY_FAILED,
-        #                                 price=price,
-        #                                 size=size
-        #                                 )
+        elif ('status' in result and result['status'] == 'FILLED'):
+            if 'orderId' not in result:
+                self.logger.warn("orderId not found for {}".format(ticker_id))
+                return
+            orderid = result['orderId']
+            self.buy_order_id = orderid
+            self.accnt.get_account_balances()
+            if self.notify:
+                self.notify.send(subject="MultiTrader", text=message)
+        else:
+            self.msg_handler.buy_failed(ticker_id, price, size)
 
         # add to trader db for tracking
         #self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
@@ -368,14 +367,17 @@ class MultiTrader(object):
             available_size = self.accnt.round_base(self.accnt.get_asset_balance(base)['available'])
             if available_size == 0:
                 return
-            if available_size < size:
-                return
+            #if available_size < size:
+            #    return
 
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
+
         if not self.accnt.simulate:
             self.logger.info(result)
 
-        if not self.accnt.simulate and not result: return
+        if not self.accnt.simulate and not result:
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price)
+            return
 
         message=''
         if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
@@ -401,14 +403,8 @@ class MultiTrader(object):
                 self.accnt.get_account_balances()
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
-        #elif not self.accnt.simulate:
-        #    self.msg_handler.add_message(src_id=Message.ID_MULTI,
-        #                                 dst_id=ticker_id,
-        #                                 cmd=Message.MSG_SELL_FAILED,
-        #                                 price=price,
-        #                                 size=size,
-        #                                 buy_price=buy_price
-        #                                 )
+        elif not self.accnt.simulate:
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price)
 
         # remove from trade db since it has been sold
         #self.trader_db.remove_trade(ticker_id)

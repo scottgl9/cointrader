@@ -99,3 +99,9 @@ class MessageHandler(object):
 
     def sell_stop_loss(self, ticker_id, price, size, buy_price=0.0):
         self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_STOP_LOSS_SELL, price, size, buy_price)
+
+    def buy_failed(self, ticker_id, price, size):
+        self.add_message(Message.ID_MULTI, ticker_id, Message.MSG_BUY_FAILED, price, size)
+
+    def sell_failed(self, ticker_id, price, size, buy_price=0.0):
+        self.add_message(Message.ID_MULTI, ticker_id, Message.MSG_SELL_FAILED, price, size, buy_price)

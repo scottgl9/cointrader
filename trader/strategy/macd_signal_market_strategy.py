@@ -1,3 +1,4 @@
+from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.OBV_Crossover import OBV_Crossover
@@ -342,6 +343,21 @@ class macd_signal_market_strategy(object):
 
 
     def run_update_price(self, price):
+        if not self.msg_handler.empty():
+            msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
+            if msg and msg.cmd == Message.MSG_BUY_FAILED:
+                if self.min_trade_size_qty != 1.0:
+                    self.min_trade_size_qty = 1.0
+                self.buy_price = 0.0
+                self.buy_size = 0.0
+                self.buy_timestamp = 0
+                msg.mark_read()
+                self.msg_handler.clear_read()
+            elif msg and msg.cmd == Message.MSG_SELL_FAILED:
+                self.buy_price = self.last_buy_price
+                msg.mark_read()
+                self.msg_handler.clear_read()
+
         if self.buy_signal(price):
             if 'e' in str(self.min_trade_size):
                 return
