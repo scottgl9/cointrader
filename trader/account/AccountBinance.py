@@ -37,8 +37,6 @@ class AccountBinance(AccountBase):
         self.ticker_id = '{}{}'.format(name, asset)
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
-        if not self.simulate:
-            self.get_account_balances()
 
     def html_run_stats(self):
         results = str('')
@@ -205,18 +203,27 @@ class AccountBinance(AccountBase):
                     return False
         return True
 
-    def get_total_btc_value(self, tickers):
+    def get_total_btc_value(self, tickers=None):
         total_balance_btc = 0.0
-        for symbol, price in self.balances.items():
-            price_btc = 0.0
-            if symbol == 'BTC':
-                price_btc = float(self.balances['BTC']['balance'])
-            else:
-                ticker_id = "{}BTC".format(symbol)
-                amount = float(self.balances[symbol]['balance'])
-                price_btc = tickers[ticker_id] * amount
 
-            total_balance_btc += price_btc
+        if not tickers:
+            tickers = {}
+            for entry in self.client.get_orderbook_tickers():
+                tickers[entry["symbol"]] = float(entry["bidPrice"])
+
+
+        for symbol, size in self.balances.items():
+            size_btc = 0.0
+            if symbol == 'BTC':
+                size_btc = float(self.balances['BTC']['balance'])
+            elif symbol != 'USDT':
+                ticker_id = "{}BTC".format(symbol)
+                if ticker_id not in tickers.keys():
+                    continue
+                amount = float(self.balances[symbol]['balance'])
+                size_btc = tickers[ticker_id] * amount
+
+            total_balance_btc += size_btc
 
         return total_balance_btc
 

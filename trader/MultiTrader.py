@@ -62,8 +62,12 @@ class MultiTrader(object):
         if not self.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
+            self.accnt.get_account_balances()
+            self.initial_btc = self.accnt.get_total_btc_value()
+        else:
+            self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
 
-        self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
+        self.logger.info("Initial BTC value = {}".format(self.initial_btc))
 
         if self.simulate:
             self.logger.info("Running MultiTrader as simulation with strategy {}".format(self.strategy_name))

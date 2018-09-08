@@ -13,6 +13,7 @@ import collections
 import logging
 import threading
 import signal
+import time
 from trader.WebHandler import WebThread
 from trader.config import *
 
@@ -60,11 +61,6 @@ class BinanceTrader:
             return self.tickers[ticker['s']]
 
     def process_message(self, msg):
-        if keyboard.is_pressed('q'):
-            print("Exiting...")
-            self.bm.close()
-            return
-
         self.process_websocket_message(msg)
 
         if not self.found and 'BTCUSDT' in self.tickers.keys():
@@ -84,13 +80,13 @@ class BinanceTrader:
         self.bm.start_miniticker_socket(self.process_message)
         self.bm.start()
         while True:
-            ch = sys.stdin.read(1)
-            if ch == 'q': break
-
-        self.logger.info("Shutting down...")
-        self.bm.close()
-        self.bm.join()
-        self.thread.join()
+            try:
+                time.sleep(5)
+            except KeyboardInterrupt:
+                self.logger.info("Shutting down...")
+                self.bm.close()
+                #self.bm.join()
+                break
 
 
 def get_prices_from_klines(klines):
