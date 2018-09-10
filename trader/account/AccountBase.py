@@ -32,10 +32,6 @@ class AccountBase(object):
     def get_account_history(self):
         pass
 
-    @abstractmethod
-    def update_account_balance(self, currency_balance, currency_available, balance, available):
-        pass
-
     #@abstractmethod
     #def set_market_price(self, price):
     #    pass
