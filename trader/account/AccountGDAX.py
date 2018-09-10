@@ -1,5 +1,4 @@
 from trader import AccountBase
-from trader.myhelpers import *
 from datetime import timedelta, datetime
 from trader.account.gdax.public_client import PublicClient
 import aniso8601
@@ -92,7 +91,7 @@ class AccountGDAX(AccountBase):
         self.volume_24hr = float(stats['volume'])
 
     def get_4hr_stats(self):
-        klines = retrieve_klines_last_hour(self.ticker_id, hours=4)
+        #klines = retrieve_klines_last_hour(self.ticker_id, hours=4)
         low = 0.0
         high = 0.0
         for kline in klines:

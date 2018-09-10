@@ -230,13 +230,6 @@ class AccountBinance(AccountBase):
     def get_account_status(self):
         return self.client.get_account_status()
 
-    def update_account_balance(self, currency_balance, currency_available, balance, available):
-        if self.simulate:
-            self.quote_currency_balance = currency_balance
-            self.quote_currency_available = currency_available
-            self.balance = balance
-            self.funds_available = available
-
     def update_asset_balance(self, name, balance, available):
         if self.simulate:
             if name in self.balances.keys() and balance == 0.0 and available == 0.0:
