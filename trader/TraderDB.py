@@ -59,6 +59,8 @@ class TraderDB(object):
             self.db.commit()
 
     def remove_trade(self, symbol):
+        if len(self.db.get_trades(symbol)) == 0:
+            return
         cur = self.db.cursor()
         sql = """DELETE FROM trades WHERE symbol={}""".format(symbol)
         cur.execute(sql)

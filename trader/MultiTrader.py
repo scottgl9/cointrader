@@ -53,6 +53,7 @@ class MultiTrader(object):
         self.open_orders = {}
         self.stopped = False
         self.running = True
+        self.trader_db = None
 
         self.global_strategy = None
         self.global_en = global_en
@@ -76,11 +77,13 @@ class MultiTrader(object):
 
 
     def trade_db_init(self, filename):
+        if self.simulate:
+            return
+
         if os.path.exists(filename):
             self.trader_db = TraderDB(filename)
             self.trader_db.connect()
             self.logger.info("{} already exists, restoring open trades...".format(filename))
-            #self.trade_db_load()
         else:
             # create database which keeps track of buy trades (not sold), so can reload trades
             self.trader_db = TraderDB(filename)
@@ -89,11 +92,12 @@ class MultiTrader(object):
 
 
     # load computed buy orders from the db which have not yet been sold, and load into traid pair strategy
-    def trade_db_load(self):
-        for trade in self.trader_db.get_all_trades():
-            if trade['symbol'] not in self.trade_pairs.keys():
-                self.add_trade_pair(trade['symbol'])
+    def trade_db_load_symbol(self, symbol):
+        trades = self.trader_db.get_trades(symbol)
+        if len(trades) == 0:
+            return
 
+        for trade in trades:
             symbol_trader = self.trade_pairs[trade['symbol']]
             symbol_trader.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'])
 
@@ -119,8 +123,10 @@ class MultiTrader(object):
                                    logger=self.logger)
 
         trade_pair = TradePair(self.client, self.accnt, strategy, base_name, currency_name)
-
         self.trade_pairs[symbol] = trade_pair
+
+        if self.trader_db:
+            self.trade_db_load_symbol(symbol)
 
 
     def get_trader(self, symbol):
@@ -356,13 +362,12 @@ class MultiTrader(object):
             orderid = result['orderId']
             self.buy_order_id = orderid
             self.accnt.get_account_balances()
+            # add to trader db for tracking
+            self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
             if self.notify:
                 self.notify.send(subject="MultiTrader", text=message)
         else:
             self.msg_handler.buy_failed(ticker_id, price, size)
-
-        # add to trader db for tracking
-        #self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
 
 
     def place_sell_market_order(self, ticker_id, price, size, buy_price):
@@ -407,13 +412,12 @@ class MultiTrader(object):
             self.logger.info(message)
             if not self.accnt.simulate:
                 self.accnt.get_account_balances()
+                # remove from trade db since it has been sold
+                self.trader_db.remove_trade(ticker_id)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price)
-
-        # remove from trade db since it has been sold
-        #self.trader_db.remove_trade(ticker_id)
 
 
     def update_tickers(self, tickers):

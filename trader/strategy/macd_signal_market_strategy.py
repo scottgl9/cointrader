@@ -269,11 +269,10 @@ class macd_signal_market_strategy(object):
 
 
     def set_buy_price_size(self, buy_price, buy_size):
-        if self.buy_price == 0:
+        if self.buy_price == 0 and self.buy_size == 0:
             self.buy_price = buy_price
-        if self.buy_size == 0:
             self.buy_size = buy_size
-        print("loading into {} price={} size={}".format(self.ticker_id, buy_price, buy_size))
+            self.logger.info("loading into {} price={} size={}".format(self.ticker_id, buy_price, buy_size))
 
 
     # NOTE: low and high do not update for each kline with binance
