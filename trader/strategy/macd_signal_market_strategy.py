@@ -172,9 +172,9 @@ class macd_signal_market_strategy(object):
             min_trade_size = self.round_base(self.eth_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size)
+                    self.min_trade_size = self.my_float(min_trade_size * 3)
                 else:
-                    self.min_trade_size = self.my_float(min_trade_size)
+                    self.min_trade_size = self.my_float(min_trade_size * 3)
         elif self.ticker_id.endswith('BNB'):
             min_trade_size = self.round_base(self.bnb_trade_size / price)
             if min_trade_size != 0.0:
