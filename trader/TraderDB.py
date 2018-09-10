@@ -4,33 +4,82 @@
 import sqlite3
 import os.path
 import sys
-try:
-    from sqlwrapper import sqlitewrapper
-except ImportError:
-    print("WARNING: Failed to load sqlwrapper, continuing...")
-
 
 class TraderDB(object):
     def __init__(self, filename):
-        self.db = sqlitewrapper()
+        self.db = None
         self.filename = filename
 
     def connect(self):
-        exists = True
-        if not os.path.exists(self.filename):
-            exists = False
+        exists = False
+        if os.path.exists(self.filename):
+            exists = True
 
-        self.db.connect(self.filename)
+        self.db = self.create_db_connection(self.filename)
 
         if not exists:
-            self.db.create_table('trades', ['id', 'ts', 'symbol', 'price', 'qty', 'bought'],
-                                 ['integer', 'integer', 'text', 'real', 'real', 'boolean'], 'id')
+            self.create_table()
 
-    def load_trades(self):
-        return self.db.fetch_all('trades')
+    def get_all_trades(self):
+        trades = []
+        if self.db:
+            cur = self.db.cursor()
+            cur.execute("""SELECT ts, symbol, price, qty, bought from trades""")
+            for row in cur:
+                trade = {}
+                trade['ts'] = row[0]
+                trade['symbol'] = row[1]
+                trade['price'] = row[2]
+                trade['qty'] = row[3]
+                trade['bought'] = row[4]
+                trades.append(trade)
+        return trades
+
+    def get_trades(self, symbol):
+        trades = []
+        if self.db:
+            cur = self.db.cursor()
+            cur.execute("""SELECT ts, symbol, price, qty, bought from trades where symbol={}""".format(symbol))
+            for row in cur:
+                trade = {}
+                trade['ts'] = row[0]
+                trade['symbol'] = row[1]
+                trade['price'] = row[2]
+                trade['qty'] = row[3]
+                trade['bought'] = row[4]
+                trades.append(trade)
+        return trades
 
     def insert_trade(self, ts, symbol, price, qty, bought=True):
-        self.db.insert('trades', ['ts', 'symbol', 'price', 'qty', 'bought'], [ts, symbol, price, qty, bought])
+        if self.db:
+            values = [ts, symbol, price, qty, bought]
+            cur = self.db.cursor()
+            sql = """INSERT INTO trades (ts, symbol, price, qty, bought) values(?, ?, ?, ?, ?)"""
+            cur.execute(sql, values)
+            self.db.commit()
 
     def remove_trade(self, symbol):
-        self.db.delete('trades', "symbol='{}'".format(symbol))
+        cur = self.db.cursor()
+        sql = """DELETE FROM trades WHERE symbol={}""".format(symbol)
+        cur.execute(sql)
+        self.db.commit()
+
+    def create_db_connection(self, filename):
+        try:
+            conn = sqlite3.connect(filename, check_same_thread=False)
+            return conn
+        except sqlite3.Error as e:
+            print(e)
+
+        return None
+
+    def create_table(self):
+        cur = self.db.cursor()
+        sql = """CREATE TABLE IF NOT EXISTS trades (id integer, ts integer, symbol text, price real, qty real, bought boolean)"""
+        cur.execute(sql)
+        self.db.commit()
+
+    def close(self):
+        if self.db:
+            self.db.close()
+            self.db = None

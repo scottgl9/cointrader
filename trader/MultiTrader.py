@@ -90,7 +90,7 @@ class MultiTrader(object):
 
     # load computed buy orders from the db which have not yet been sold, and load into traid pair strategy
     def trade_db_load(self):
-        for trade in self.trader_db.load_trades():
+        for trade in self.trader_db.get_all_trades():
             if trade['symbol'] not in self.trade_pairs.keys():
                 self.add_trade_pair(trade['symbol'])
 
