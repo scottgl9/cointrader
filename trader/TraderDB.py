@@ -39,7 +39,7 @@ class TraderDB(object):
         trades = []
         if self.db:
             cur = self.db.cursor()
-            cur.execute("""SELECT ts, symbol, price, qty, bought from trades where symbol={}""".format(symbol))
+            cur.execute("""SELECT ts, symbol, price, qty, bought from trades WHERE symbol='{}'""".format(symbol))
             for row in cur:
                 trade = {}
                 trade['ts'] = row[0]
