@@ -2,7 +2,7 @@
 from trader.lib.Message import Message
 from trader.lib.Order import Order
 from trader.notify.Email import Email
-from trader.TraderDB import TraderDB
+from trader.lib.TraderDB import TraderDB
 import time
 import os
 

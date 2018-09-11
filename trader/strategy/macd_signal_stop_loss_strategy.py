@@ -72,11 +72,6 @@ class macd_signal_stop_loss_strategy(object):
         self.buy_signal_count = self.sell_signal_count = 0
         self.high_24hr = self.low_24hr = 0.0
         self.open_24hr = self.close_24hr = self.volume_24hr = 0.0
-        self.rank_value = -1
-        self.last_rank_value = -1
-        self.rank_increases = 0
-        self.rank_decreases = 0
-        self.rank_top = False
         self.timestamp = 0
         self.last_timestamp = 0
         self.last_high_24hr = 0.0
@@ -94,7 +89,6 @@ class macd_signal_stop_loss_strategy(object):
         self.trend_downward_count = 0
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
-        self.buy_price_list = []
         self.buy_price = 0.0
         self.buy_size = 0.0
         self.buy_timestamp = 0
@@ -104,10 +98,6 @@ class macd_signal_stop_loss_strategy(object):
         self.sell_pending = False
         self.buy_pending_price = 0.0
         self.sell_pending_price = 0.0
-        #if not self.accnt.simulate:
-        #    self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
-        #    if len(self.buy_price_list) > 0:
-        #        self.buy_price = self.buy_price_list[-1]
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
         self.bnb_trade_size = 0.8
@@ -261,19 +251,19 @@ class macd_signal_stop_loss_strategy(object):
 
 
     # NOTE: low and high do not update for each kline with binance
-    def run_update(self, kline):
+    def run_update(self, msg):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return
-        close = float(kline['c'])
-        low = float(kline['l'])
-        high = float(kline['h'])
-        volume = float(kline['v'])
+        close = float(msg['c'])
+        low = float(msg['l'])
+        high = float(msg['h'])
+        volume = float(msg['v'])
 
         if close == 0 or volume == 0:
             return
 
-        self.timestamp = int(kline['E'])
+        self.timestamp = int(msg['E'])
 
         self.obv.update(close, volume)
 
