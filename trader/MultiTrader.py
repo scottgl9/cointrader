@@ -1,19 +1,10 @@
 # handle multiple TraiePairs, one for each base / currency we want to trade
 from trader.account.AccountBinance import AccountBinance
-from trader.RankManager import RankManager
 from trader.OrderHandler import OrderHandler
 from trader.strategy import *
 from trader.TradePair import TradePair
-from trader.indicator.SMA import SMA
 from trader.lib.MessageHandler import Message, MessageHandler
-from trader.lib.Order import Order
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
-from trader.notify.Email import Email
-import sqlite3
-import os.path
-import sys
-import time
-from trader.TraderDB import TraderDB
 
 def split_symbol(symbol):
     base_name = None
