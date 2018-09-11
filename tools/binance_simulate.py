@@ -34,7 +34,7 @@ def simulate(conn, client, logger):
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
-    multitrader = MultiTrader(client, 'macd_signal_market_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, logger=logger)
+    multitrader = MultiTrader(client, 'hybrid_signal_market_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, logger=logger)
 
     print(multitrader.accnt.balances)
 

@@ -1,6 +1,7 @@
 from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
+from trader.signal.Hybrid_Crossover import Hybrid_Crossover
 from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
 from trader.lib.SupportResistLevels import SupportResistLevels
@@ -42,9 +43,9 @@ def percent_p1_lt_p2(p1, p2, percent):
     return True
 
 
-class macd_signal_market_strategy(object):
+class hybrid_signal_market_strategy(object):
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None, logger=None):
-        self.strategy_name = 'macd_signal_market_strategy'
+        self.strategy_name = 'hybrid_signal_market_strategy'
         self.logger = logger
         self.client = client
         self.accnt = account_handler
@@ -55,7 +56,8 @@ class macd_signal_market_strategy(object):
 
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler(logger=logger)
-        self.signal_handler.add(MACD_Crossover())
+        #self.signal_handler.add(MACD_Crossover())
+        self.signal_handler.add(Hybrid_Crossover())
 
         self.obv = OBV()
         self.low_short = self.high_short = 0.0

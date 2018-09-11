@@ -54,6 +54,7 @@ def simulate(conn, client, base, currency, type="channel"):
     ema12 = EMA(12, scale=24, lagging=True)
     ema26 = EMA(26, scale=24, lagging=True)
     ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
+    ema200 = EMA(200, scale=24, lagging=True, lag_window=5)
     hma = HMA(window=26)
     obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24, lagging=True)
     obv_ema26 = DZLEMA(26, scale=24) #EMA(26, scale=24, lagging=True)
@@ -77,6 +78,7 @@ def simulate(conn, client, base, currency, type="channel"):
     ema12_values = []
     ema26_values = []
     ema50_values = []
+    ema200_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -111,6 +113,8 @@ def simulate(conn, client, base, currency, type="channel"):
         ema26_values.append(ema26.update(close))
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
+        ema200_value = ema200.update(close)
+        ema200_values.append(ema200_value)
 
 
         value = filter.update(close)
@@ -147,11 +151,13 @@ def simulate(conn, client, base, currency, type="channel"):
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
-    plt.legend(handles=[symprice, fig1, fig2, fig3])
+    fig4, = plt.plot(ema200_values, label='EMA200')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    plt.plot(obv_ema12_values)
-    plt.plot(obv_ema26_values)
-    plt.plot(obv_ema50_values)
+    fig21, = plt.plot(obv_ema12_values, label='OBV12')
+    fig22, = plt.plot(obv_ema26_values, label='OBV26')
+    fig23, = plt.plot(obv_ema50_values, label='OBV50')
+    plt.legend(handles=[fig21, fig22, fig23])
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()
