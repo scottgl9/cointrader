@@ -1,4 +1,4 @@
-from trader.account.binance.client import Client
+from trader.account.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
 
 
@@ -455,7 +455,12 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(currency, cbalance - usd_value, cavailable - usd_value)
         else:
             self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
-            return self.order_market_buy(symbol=ticker_id, quantity=size)
+            try:
+                result = self.order_market_buy(symbol=ticker_id, quantity=size)
+            except BinanceAPIException:
+                result = None
+            return result
+
 
     def sell_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
@@ -470,7 +475,12 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
         else:
             self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
-            return self.order_market_sell(symbol=ticker_id, quantity=size)
+            try:
+                result = self.order_market_sell(symbol=ticker_id, quantity=size)
+            except BinanceAPIException:
+                result = None
+            return result
+
 
     # use for both limit orders and stop loss orders
     def buy_limit_complete(self, price, size, ticker_id=None):
@@ -485,6 +495,7 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(currency, cbalance - usd_value, cavailable)
         else:
             self.get_account_balances()
+
 
     # use for both limit orders and stop loss orders
     def sell_limit_complete(self, price, size, ticker_id=None):

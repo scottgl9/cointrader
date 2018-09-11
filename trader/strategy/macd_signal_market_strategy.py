@@ -280,6 +280,7 @@ class macd_signal_market_strategy(object):
         if not self.msg_handler.empty():
             msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
             if msg and msg.cmd == Message.MSG_BUY_FAILED:
+                self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id, msg.price, msg.size))
                 if self.min_trade_size_qty != 1.0:
                     self.min_trade_size_qty = 1.0
                 self.buy_price = 0.0
@@ -288,6 +289,7 @@ class macd_signal_market_strategy(object):
                 msg.mark_read()
                 self.msg_handler.clear_read()
             elif msg and msg.cmd == Message.MSG_SELL_FAILED:
+                self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id, msg.price, msg.buy_price, msg.size))
                 self.buy_price = self.last_buy_price
                 msg.mark_read()
                 self.msg_handler.clear_read()
