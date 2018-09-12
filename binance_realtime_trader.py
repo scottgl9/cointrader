@@ -31,7 +31,7 @@ class BinanceTrader:
         self.logger = logger
         self.tickers = {}
         self.multitrader = MultiTrader(client,
-                                       'macd_signal_market_strategy',
+                                       'hybrid_signal_market_strategy',
                                        assets_info=assets_info,
                                        volumes=volumes,
                                        simulate=False,

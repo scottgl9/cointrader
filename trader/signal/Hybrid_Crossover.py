@@ -27,11 +27,14 @@ class Hybrid_Crossover(object):
         self.macd_cross = Crossover2(window=10, cutoff=0.0)
         self.macd_zero_cross = Crossover2(window=10, cutoff=0.0)
         self.cross_long = Crossover2(window=10, cutoff=0.0)
+        self.obv_cross = Crossover2(window=10, cutoff=0.0)
 
         self.trend_down_count = 0
         self.trend_up_count = 0
         self.trending_up = False
         self.trending_down = False
+        self.obv_trending_up = False
+        self.obv_trending_down = False
         self.low = 0
         self.high = 0
         self.prev_low = 0
@@ -40,6 +43,7 @@ class Hybrid_Crossover(object):
         self.max_price = 0
         self.ts = 0
         self.last_cross_ts = 0
+        self.last_obv_cross_ts = 0
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
 
@@ -61,10 +65,6 @@ class Hybrid_Crossover(object):
         value1 = self.ema50.update(close)
         value2 = self.ema200.update(close)
 
-        self.obv_ema12.update(obv_value)
-        self.obv_ema26.update(obv_value)
-        self.obv_ema50.update(obv_value)
-
         self.macd.update(close)
         self.macd_cross.update(self.macd.result, self.macd.result_signal)
         self.macd_zero_cross.update(self.macd.result, 0)
@@ -78,6 +78,21 @@ class Hybrid_Crossover(object):
             self.trending_down = True
             self.trending_up = False
             self.last_cross_ts = ts
+
+        self.obv_ema12.update(obv_value)
+        self.obv_ema26.update(obv_value)
+        self.obv_ema50.update(obv_value)
+
+        self.obv_cross.update(self.obv_ema26.result, self.obv_ema50.result)
+
+        if self.obv_cross.crossup_detected():
+            self.obv_trending_up = True
+            self.obv_trending_down = False
+            self.last_obv_cross_ts = ts
+        elif self.obv_cross.crossdown_detected():
+            self.obv_trending_up = False
+            self.obv_trending_down = False
+            self.last_obv_cross_ts = ts
 
 
     def post_update(self, close, volume):
@@ -93,13 +108,17 @@ class Hybrid_Crossover(object):
         if self.obv_ema50.result < self.obv_ema50.last_result:
             return False
 
-        if self.obv_ema26.result <= self.obv_ema26.last_result and self.ema26.result <= self.ema26.last_result:
+        if self.obv_ema26.result < self.obv_ema26.last_result and self.ema26.result < self.ema26.last_result:
             return False
 
-        if self.obv_ema12.result <= self.obv_ema12.last_result and self.ema12.result <= self.ema12.last_result:
+        if self.obv_ema12.result < self.obv_ema12.last_result and self.ema12.result < self.ema12.last_result:
             return False
 
-        if self.trending_down and self.last_cross_ts != 0 and (self.ts - self.last_cross_ts) > (3600 * 1000):
+        # it has been over an hour since last crossover, and last crossover was a cross down
+        if (self.trending_down and self.last_cross_ts != 0 and (self.ts - self.last_cross_ts) > (3600 * 1000)):
+            return False
+
+        if (self.obv_trending_down and self.last_obv_cross_ts != 0 and (self.ts - self.last_obv_cross_ts) > (3600 * 1000)):
             return False
 
         if self.macd_cross.crossup_detected():
@@ -110,10 +129,13 @@ class Hybrid_Crossover(object):
             self.buy_type = SigType.SIGNAL_SHORT
             return True
 
-        #if self.cross_long.crossup_detected() and self.obv_ema12.result > self.obv_ema12.last_result and self.obv_ema26.result > self.obv_ema26.last_result:
-        #    self.buy_type = SigType.SIGNAL_LONG
-        #    return True
+        return False
 
+    def sell_long_signal(self):
+        if (self.trending_down and self.last_cross_ts != 0 and (self.ts - self.last_cross_ts) > (3600 * 1000 * 4)
+            and self.ema200.result <= self.ema200.last_result):
+            self.sell_type = SigType.SIGNAL_LONG
+            return True
         return False
 
     def sell_signal(self):
@@ -133,9 +155,5 @@ class Hybrid_Crossover(object):
         if self.macd_zero_cross.crossdown_detected():
             self.sell_type = SigType.SIGNAL_SHORT
             return True
-
-        #if self.cross_long.crossdown_detected():
-        #    self.sell_type = SigType.SIGNAL_LONG
-        #    return True
 
         return False

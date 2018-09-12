@@ -49,6 +49,16 @@ class SignalHandler(object):
 
         return False
 
+    def sell_long_signal(self):
+        if len(self.handlers) == 0:
+            return False
+
+        for handler in self.handlers:
+            if handler.sell_long_signal():
+                return True
+
+        return False
+
     def sell_signal(self):
         if len(self.handlers) == 0:
             return False

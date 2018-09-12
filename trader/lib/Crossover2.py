@@ -47,17 +47,22 @@ class Crossover2(object):
         self.age = (self.age + 1) % self.window
 
     # detect if value1 crosses up over value2
-    def crossup_detected(self):
+    def crossup_detected(self, clear=True):
         result = False
         if self.crossup:
             result = True
-            self.crossup = False
+            if clear:
+                self.crossup = False
         return result
 
-    def crossdown_detected(self):
+    def crossdown_detected(self, clear=True):
         result = False
         if self.crossdown:
             result = True
-            self.crossdown = False
+            if clear:
+                self.crossdown = False
         return result
 
+    def clear(self):
+        self.crossup = False
+        self.crossdown = False

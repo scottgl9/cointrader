@@ -216,6 +216,10 @@ class hybrid_signal_market_strategy(object):
                 self.buy_order_id = None
                 return False
 
+        if self.signal_handler.sell_long_signal():
+            if (price - self.buy_price) / self.buy_price <= -0.1:
+                return True
+
         if price < float(self.buy_price):
             return False
 
