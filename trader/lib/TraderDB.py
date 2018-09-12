@@ -62,7 +62,7 @@ class TraderDB(object):
         count = 0
         if self.db:
             cur = self.db.cursor()
-            count = int(cur.execute("""SELECT COUNT(*) FROM table_name""").fetchone()[0])
+            count = int(cur.execute("""SELECT COUNT(*) FROM trades""").fetchone()[0])
 
         return count
 
