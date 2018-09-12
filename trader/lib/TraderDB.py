@@ -10,6 +10,7 @@ class TraderDB(object):
         self.db = None
         self.filename = filename
 
+
     def connect(self):
         exists = False
         if os.path.exists(self.filename):
@@ -20,9 +21,12 @@ class TraderDB(object):
         if not exists:
             self.create_table()
 
+
     def get_all_trades(self):
         trades = []
         if self.db:
+            if self.get_trade_count() == 0:
+                return trades
             cur = self.db.cursor()
             cur.execute("""SELECT ts, symbol, price, qty, bought from trades""")
             for row in cur:
@@ -35,9 +39,12 @@ class TraderDB(object):
                 trades.append(trade)
         return trades
 
+
     def get_trades(self, symbol):
         trades = []
         if self.db:
+            if self.get_trade_count() == 0:
+                return trades
             cur = self.db.cursor()
             cur.execute("""SELECT ts, symbol, price, qty, bought from trades WHERE symbol='{}'""".format(symbol))
             for row in cur:
@@ -50,6 +57,16 @@ class TraderDB(object):
                 trades.append(trade)
         return trades
 
+
+    def get_trade_count(self):
+        count = 0
+        if self.db:
+            cur = self.db.cursor()
+            count = int(cur.execute("""SELECT COUNT(*) FROM table_name""").fetchone()[0])
+
+        return count
+
+
     def insert_trade(self, ts, symbol, price, qty, bought=True):
         if self.db:
             values = [ts, symbol, price, qty, bought]
@@ -58,13 +75,15 @@ class TraderDB(object):
             cur.execute(sql, values)
             self.db.commit()
 
+
     def remove_trade(self, symbol):
-        if len(self.db.get_trades(symbol)) == 0:
+        if self.get_trade_count() == 0:
             return
         cur = self.db.cursor()
         sql = """DELETE FROM trades WHERE symbol={}""".format(symbol)
         cur.execute(sql)
         self.db.commit()
+
 
     def create_db_connection(self, filename):
         try:
@@ -75,11 +94,13 @@ class TraderDB(object):
 
         return None
 
+
     def create_table(self):
         cur = self.db.cursor()
         sql = """CREATE TABLE IF NOT EXISTS trades (id integer, ts integer, symbol text, price real, qty real, bought boolean)"""
         cur.execute(sql)
         self.db.commit()
+
 
     def close(self):
         if self.db:
