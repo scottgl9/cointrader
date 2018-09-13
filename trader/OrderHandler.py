@@ -30,17 +30,14 @@ class OrderHandler(object):
             return
 
         if os.path.exists(filename):
-            self.trader_db = TraderDB(filename)
+            self.trader_db = TraderDB(filename, logger=self.logger)
             self.trader_db.connect()
             self.logger.info("{} already exists, restoring open trades...".format(filename))
         else:
             # create database which keeps track of buy trades (not sold), so can reload trades
-            self.trader_db = TraderDB(filename)
+            self.trader_db = TraderDB(filename, logger=self.logger)
             self.trader_db.connect()
             self.logger.info("created {} to track trades".format(filename))
-
-        # load computed buy orders from the db which have not yet been sold, and load into traid pair strategy
-
 
 
     def trade_db_load_symbol(self, symbol, trade_pair):

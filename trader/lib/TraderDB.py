@@ -6,9 +6,10 @@ import os.path
 import sys
 
 class TraderDB(object):
-    def __init__(self, filename):
+    def __init__(self, filename, logger=None):
         self.db = None
         self.filename = filename
+        self.logger = logger
 
 
     def connect(self):
@@ -68,21 +69,32 @@ class TraderDB(object):
 
 
     def insert_trade(self, ts, symbol, price, qty, bought=True):
-        if self.db:
-            values = [ts, symbol, price, qty, bought]
-            cur = self.db.cursor()
-            sql = """INSERT INTO trades (ts, symbol, price, qty, bought) values(?, ?, ?, ?, ?)"""
+        if not self.db:
+            return
+        values = [ts, symbol, price, qty, bought]
+        cur = self.db.cursor()
+        sql = """INSERT INTO trades (ts, symbol, price, qty, bought) values(?, ?, ?, ?, ?)"""
+        try:
             cur.execute(sql, values)
             self.db.commit()
+        except sqlite3.OperationalError:
+            if self.logger:
+                self.logger.info("FAILED to insert {} into {}".format(symbol, self.filename))
 
 
     def remove_trade(self, symbol):
+        if not self.db:
+            return
         if self.get_trade_count() == 0:
             return
         cur = self.db.cursor()
-        sql = """DELETE FROM trades WHERE symbol={}""".format(symbol)
-        cur.execute(sql)
-        self.db.commit()
+        sql = """DELETE FROM trades WHERE symbol='{}'""".format(symbol)
+        try:
+            cur.execute(sql)
+            self.db.commit()
+        except sqlite3.OperationalError:
+            if self.logger:
+                self.logger.warning("FAILED to remove {} from {}".format(symbol, self.filename))
 
 
     def create_db_connection(self, filename):
