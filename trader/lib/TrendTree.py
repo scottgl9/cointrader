@@ -1,6 +1,7 @@
 class TrendNode(object):
     def __init__(self):
         self.children = []
+        self.parent = None
         self.direction = 0
         self.start_price = 0
         self.last_price = 0
@@ -29,10 +30,28 @@ class TrendNode(object):
             return True
         return False
 
+    def get_children(self):
+        return self.children
+
+    # get child's children
+    def get_children_of_child(self, index):
+        if len(self.children) <= index:
+            return None
+        return self.children[index].get_children()
+
+    def get_child(self, index):
+        if len(self.children) <= index:
+            return None
+        return self.children[index]
 
     def clear_children(self):
         self.children = []
 
+    def get_parent(self):
+        return self.parent
+
+    def set_parent(self, parent):
+        self.parent = parent
 
     def contains(self, node):
         if self.end_price == 0 and self.last_price != 0:
@@ -143,8 +162,23 @@ class TrendTree(TrendNode):
     def no_children(self):
         return self.root_node.no_children()
 
+    def get_children(self):
+        return self.root_node.get_children()
+
+    def get_children_of_child(self, index):
+        return self.root_node.get_children_of_child(index)
+
+    def get_child(self, index):
+        return self.root_node.get_child(index)
+
     def clear_children(self):
         self.root_node.clear_children()
+
+    def get_parent(self):
+        return self.root_node.get_parent()
+
+    def set_parent(self, parent):
+        self.root_node.set_parent(parent)
 
     def contains(self, node):
         return self.root_node.contains(node)
@@ -154,3 +188,17 @@ class TrendTree(TrendNode):
 
     def extend(self, node):
         return self.root_node.extend(node)
+
+
+class TrendTreeProcessor(object):
+    def __init__(self, indicator, root_node=None):
+        self.indicator = indicator
+        self.direction = 0
+
+        if root_node:
+            self.root_node = root_node
+        else:
+            self.root_node = TrendTree()
+
+    def update(self, price, ts=0):
+        self.indicator.update(price)
