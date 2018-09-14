@@ -1,13 +1,18 @@
 class TrendNode(object):
-    def __init__(self, start_price, direction=0, ts=0):
+    def __init__(self):
         self.children = []
-        self.direction = direction
-        self.start_price = start_price
+        self.direction = 0
+        self.start_price = 0
         self.last_price = 0
         self.end_price = 0
-        self.start_ts = ts
+        self.start_ts = 0
         self.last_ts = 0
         self.end_ts = 0
+
+    def create(self, start_price, direction=0, ts=0):
+        self.direction = direction
+        self.start_price = start_price
+        self.start_ts = ts
 
 
     def add_child(self, child):
@@ -116,11 +121,36 @@ class TrendNode(object):
         return self.extends(node, update=True)
 
 
-class TrendTree(object):
+class TrendTree(TrendNode):
     def __init__(self, root_node=None):
-        self.root_node = root_node
-
+        if root_node:
+            self.root_node = root_node
+        else:
+            super(TrendTree, self).__init__()
 
     def set_root(self, node):
         self.root_node = node
 
+    def create(self, start_price, direction=0, ts=0):
+        self.root_node.create(start_price, direction, ts)
+
+    def add_child(self, child):
+        return self.root_node.add_child(child)
+
+    def remove_child(self, child):
+        return self.root_node.remove_child(child)
+
+    def no_children(self):
+        return self.root_node.no_children()
+
+    def clear_children(self):
+        self.root_node.clear_children()
+
+    def contains(self, node):
+        return self.root_node.contains(node)
+
+    def extends(self, node, update=False):
+        return self.root_node.extends(node, update)
+
+    def extend(self, node):
+        return self.root_node.extend(node)
