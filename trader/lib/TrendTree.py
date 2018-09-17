@@ -8,39 +8,57 @@ class TrendTreeProcessor(object):
         self.direction = 0
         self.last_direction = 0
         self.cross_zero = Crossover2(window=10)
+        self.time_node_end = 1000 * 3600 # 1 hour
 
         if root_node:
             self.root_node = root_node
         else:
             self.root_node = TrendTree()
 
+    def check_node_ended(self, node, ts):
+        if node.last_ts == 0:
+            return False
+        if node.is_ended() or (ts - node.last_ts) > self.time_node_end:
+            return True
+        return False
+
     def update(self, price, ts=0):
+        crossed = False
         value = self.indicator.update(price)
         self.cross_zero.update(value, 0)
 
         # if trending upward
         if self.cross_zero.crossup_detected():
             self.direction = 1
-            if not self.root_node.is_created():
-                self.root_node.create(price, self.direction, ts)
-            elif self.last_direction != self.direction:
-                child = TrendNode()
-                child.create(price, self.direction, ts)
-                self.root_node.add_child(child)
-            else:
-                self.root_node.update(last_price=price, last_ts=ts)
-
-            self.last_direction = self.direction
+            crossed = True
         # if trending downward
         elif self.cross_zero.crossdown_detected():
             self.direction = -1
+            crossed = True
+
+        if crossed:
+            # if root node hasn't been created, create it
             if not self.root_node.is_created():
                 self.root_node.create(price, self.direction, ts)
-            elif self.last_direction != self.direction:
-                child = TrendNode()
-                child.create(price, self.direction, ts)
-                self.root_node.add_child(child)
+            # if trend direction is opposite of root node
+            elif self.direction != self.root_node.direction:
+                # if root node has no children, create child
+                if self.root_node.no_children():
+                    child = TrendNode()
+                    child.create(price, self.direction, ts)
+                    self.root_node.add_child(child)
+                else:
+                    last_child = self.root_node.get_last_child()
+                    if self.check_node_ended(last_child, ts):
+                        child = TrendNode()
+                        child.create(price, self.direction, ts)
+                        self.root_node.add_child(child)
+                        # mark last child as done
+                        last_child.end()
+                    else:
+                        last_child.update(last_price=price, last_ts=ts)
             else:
+                # trend direction hasn't changed, so update root node
                 self.root_node.update(last_price=price, last_ts=ts)
 
             self.last_direction = self.direction
@@ -111,6 +129,11 @@ class TrendNode(object):
             return None
         return self.children[index]
 
+    def get_last_child(self):
+        if self.no_children():
+            return None
+        return self.children[-1]
+
     def clear_children(self):
         self.children = []
 
@@ -141,6 +164,7 @@ class TrendNode(object):
                 if self.start_price < node.start_price < self.last_price and node.last_price > self.last_price:
                     if update:
                         self.last_price = node.last_price
+                        self.last_ts = node.last_ts
                     return True
         elif self.direction == -1:
             if self.last_price != 0 and node.last_price != 0:
@@ -148,6 +172,7 @@ class TrendNode(object):
                 if self.start_price > node.start_price > self.last_price and node.last_price < self.last_price:
                     if update:
                         self.last_price = node.last_price
+                        self.last_ts = node.last_ts
                     return True
 
         return False
@@ -200,6 +225,9 @@ class TrendTree(TrendNode):
 
     def get_child(self, index):
         return self.root_node.get_child(index)
+
+    def get_last_child(self):
+        return self.root_node.get_last_child()
 
     def clear_children(self):
         self.root_node.clear_children()
