@@ -34,6 +34,16 @@ from trader.lib.Crossover2 import Crossover2
 from trader.indicator.WMA import WMA
 from scipy import optimize
 
+
+def get_rows_as_msgs(c):
+    msgs = []
+    for row in c:
+        msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
+               'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
+        msgs.append(msg)
+    return msgs
+
+
 def simulate(conn, client, base, currency, type="channel"):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
@@ -46,6 +56,10 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24, lagging=True)
     obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24, lagging=True)
     obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lagging=True, lag_window=5)
+    rvi_ema12 = EMA(12, scale=24)
+    rvi_ema26 = EMA(26, scale=24)
+    rvi_ema12_values = []
+    rvi_ema26_values = []
     fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
@@ -67,9 +81,7 @@ def simulate(conn, client, base, currency, type="channel"):
     volumes = []
 
     i=0
-    for row in c:
-        msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
-               'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
+    for msg in get_rows_as_msgs(c):
         close = float(msg['c'])
         low = float(msg['l'])
         high = float(msg['h'])
@@ -91,6 +103,8 @@ def simulate(conn, client, base, currency, type="channel"):
         rvi.update(close)
         if rvi.result != 0:
             rvi_values.append(rvi.result)
+            rvi_ema12_values.append(rvi_ema12.update(rvi.result))
+            rvi_ema26_values.append(rvi_ema26.update(rvi.result))
 
         close_prices.append(close)
         open_prices.append(open)
@@ -116,6 +130,8 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.legend(handles=[symprice])
     plt.subplot(212)
     plt.plot(rvi_values)
+    plt.plot(rvi_ema12_values)
+    plt.plot(rvi_ema26_values)
 
     #plt.plot(signal_values)
     #plt.plot(tsi_values)

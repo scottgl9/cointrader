@@ -40,6 +40,15 @@ from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.PriceFilter import PriceFilter
 
 
+def get_rows_as_msgs(c):
+    msgs = []
+    for row in c:
+        msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
+               'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
+        msgs.append(msg)
+    return msgs
+
+
 def simulate(conn, client, base, currency, type="channel"):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
