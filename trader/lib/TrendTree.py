@@ -1,20 +1,37 @@
 from trader.lib.Crossover2 import Crossover2
+from trader.indicator.EMA import EMA
+from trader.indicator.SLOPE import SLOPE
 
+class EMA_SLOPE(object):
+    def __init__(self, window=50):
+        self.ema = EMA(weight=window, scale=24)
+        self.slope = SLOPE(window=window)
+        self.result = 0
+
+    def update(self, value):
+        self.ema.update(value)
+        self.slope.update(self.ema.result)
+        self.result = self.slope.result
+        return self.result
 
 # create root node, and process price/ts updates
 class TrendTreeProcessor(object):
-    def __init__(self, indicator, root_node=None, logger=None):
-        self.indicator = indicator
+    def __init__(self, indicator=None, root_node=None, logger=None):
+        if not indicator:
+            self.indicator = EMA_SLOPE()
+        else:
+            self.indicator = indicator
         self.direction = 0
         self.last_direction = 0
         self.cross_zero = Crossover2(window=10)
         self.time_node_end = 1000 * 3600 # 1 hour
         self.logger = logger
+        self.tree_values = []
 
         if root_node:
             self.root_node = root_node
         else:
-            self.root_node = TrendTree()
+            self.root_node = TrendNode()
 
     def check_node_ended(self, node, ts):
         if node.last_ts == 0:
@@ -23,28 +40,31 @@ class TrendTreeProcessor(object):
             return True
         return False
 
-    def print_tree(self, node=None):
+    def print_tree(self, node=None, level=0):
         if not node:
             node = self.root_node
 
         if not node.is_created():
             return
 
-        self.logger.info("NODE: {} {} {} {} {}".format(node.start_price,
-                                                       node.start_ts,
-                                                       node.last_price,
-                                                       node.last_ts,
-                                                       node.direction))
+        if self.logger:
+            self.logger.info("{}: {} {} {} {} {}".format(level, node.start_price,
+                                                         node.last_price,
+                                                         node.start_ts,
+                                                         node.last_ts,
+                                                         node.direction))
+
+        self.tree_values.append([level, node.start_price, node.last_price, node.start_ts, node.last_ts, node.direction])
 
         if node.no_children():
             return
         for child in node.get_children():
-            self.print_tree(child)
+            self.print_tree(child, level + 1)
 
     def update(self, price, ts=0):
         crossed = False
-        value = self.indicator.update(price)
-        self.cross_zero.update(value, 0)
+        self.indicator.update(price)
+        self.cross_zero.update(self.indicator.result, 0)
 
         # if trending upward
         if self.cross_zero.crossup_detected():
@@ -58,7 +78,7 @@ class TrendTreeProcessor(object):
         if crossed:
             # if root node hasn't been created, create it
             if not self.root_node.is_created():
-                self.root_node.create(price, self.direction, ts)
+                self.root_node.create(price, direction=self.direction, ts=ts)
             # if trend direction is opposite of root node
             elif self.direction != self.root_node.direction:
                 # if root node has no children, create child
@@ -82,7 +102,7 @@ class TrendTreeProcessor(object):
                             self.root_node = last_child
                             old_root_node.remove_child(last_child)
                             self.root_node.add_child(old_root_node)
-                        # last_child upward trend supercedes root, so replace root with child
+                        #last_child upward trend supercedes root, so replace root with child
                         elif self.root_node.direction == -1 and price > self.root_node.start_price:
                             old_root_node = self.root_node
                             self.root_node = last_child
@@ -218,13 +238,16 @@ class TrendTree(TrendNode):
         if root_node:
             self.root_node = root_node
         else:
-            self.root_node = super(TrendTree, self).__init__()
+            self.root_node = TrendNode()
+        super(TrendTree, self).__init__()
 
     def set_root(self, node):
         self.root_node = node
 
     def is_created(self):
-        return self.root_node.is_created()
+        if self.root_node:
+            return self.root_node.is_created()
+        return False
 
     def is_ended(self):
         return self.root_node.is_ended()
