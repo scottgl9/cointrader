@@ -3,12 +3,13 @@ from trader.lib.Crossover2 import Crossover2
 
 # create root node, and process price/ts updates
 class TrendTreeProcessor(object):
-    def __init__(self, indicator, root_node=None):
+    def __init__(self, indicator, root_node=None, logger=None):
         self.indicator = indicator
         self.direction = 0
         self.last_direction = 0
         self.cross_zero = Crossover2(window=10)
         self.time_node_end = 1000 * 3600 # 1 hour
+        self.logger = logger
 
         if root_node:
             self.root_node = root_node
@@ -21,6 +22,24 @@ class TrendTreeProcessor(object):
         if node.is_ended() or (ts - node.last_ts) > self.time_node_end:
             return True
         return False
+
+    def print_tree(self, node=None):
+        if not node:
+            node = self.root_node
+
+        if not node.is_created():
+            return
+
+        self.logger.info("NODE: {} {} {} {} {}".format(node.start_price,
+                                                       node.start_ts,
+                                                       node.last_price,
+                                                       node.last_ts,
+                                                       node.direction))
+
+        if node.no_children():
+            return
+        for child in node.get_children():
+            self.print_tree(child)
 
     def update(self, price, ts=0):
         crossed = False
@@ -57,11 +76,23 @@ class TrendTreeProcessor(object):
                         last_child.end()
                     else:
                         last_child.update(last_price=price, last_ts=ts)
+                        # last_child downward trend supercedes root, so replace root with child
+                        if self.root_node.direction == 1 and price < self.root_node.start_price:
+                            old_root_node = self.root_node
+                            self.root_node = last_child
+                            old_root_node.remove_child(last_child)
+                            self.root_node.add_child(old_root_node)
+                        # last_child upward trend supercedes root, so replace root with child
+                        elif self.root_node.direction == -1 and price > self.root_node.start_price:
+                            old_root_node = self.root_node
+                            self.root_node = last_child
+                            old_root_node.remove_child(last_child)
+                            self.root_node.add_child(old_root_node)
             else:
                 # trend direction hasn't changed, so update root node
                 self.root_node.update(last_price=price, last_ts=ts)
 
-            self.last_direction = self.direction
+            #self.last_direction = self.direction
 
 
 class TrendNode(object):
