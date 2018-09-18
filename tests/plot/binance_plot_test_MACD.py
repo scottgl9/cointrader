@@ -14,12 +14,7 @@ import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
 from trader.indicator.MACD import MACD
 from trader.indicator.MINMAX import MINMAX
-from trader.indicator.RSI import RSI
-from trader.indicator.REMA import REMA
-from trader.indicator.RSQUARE import RSQUARE
-from trader.indicator.KAMA import KAMA
 from trader.indicator.OBV import OBV
-from trader.indicator.LinReg import LinReg
 from trader.indicator.test.PriceChannel import PriceChannel
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
@@ -34,7 +29,7 @@ def plot_emas_product(plt, klines, product, hours=0):
     close_prices = []
     low_prices = []
     high_prices = []
-    macd = MACD(12.0, 26.0, 9.0, scale=24.0)
+    macd = MACD(12.0, 26.0, 9.0, scale=24.0, plot_mode=True)
     macd_diff_values = []
     macd_signal_values = []
     timestamps = []
@@ -86,7 +81,7 @@ def plot_emas_product(plt, klines, product, hours=0):
         ema50_obv_values.append(ema50_obv.update(obv_value))
 
         macd.update(open_price)
-        if macd.result_signal != 0:
+        if macd.result != 0 and macd.result_signal != 0:
             macd_diff_values.append(macd.result)
             macd_signal_values.append(macd.result_signal)
 
@@ -98,15 +93,14 @@ def plot_emas_product(plt, klines, product, hours=0):
 
     xvalues = np.linspace(0, hours, num=len(close_prices))
     symprice, = plt.plot(xvalues, close_prices, label=product) #, color='black')
-    ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
-    ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
+    fig11, = plt.plot(xvalues, ema12_prices, label='EMA12')
+    fig12, = plt.plot(xvalues, ema26_prices, label='EMA26')
 
     #plt.legend(handles=[symprice, ema4, ema5, ema6])
     plt.subplot(212)
     macd_xvalues = np.linspace(0, hours, num=len(macd_diff_values))
     fig1, = plt.plot(macd_xvalues, macd_diff_values, label="MACD DIFF")
     fig2, = plt.plot(macd_xvalues, macd_signal_values, label="MACD SIG")
-    #fig3, = plt.plot(obv_values, label="OBP")
     plt.legend(handles=[fig1, fig2])
 
 def abs_average(values):
