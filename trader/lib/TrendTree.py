@@ -3,8 +3,8 @@ from trader.indicator.EMA import EMA
 from trader.indicator.SLOPE import SLOPE
 
 class EMA_SLOPE(object):
-    def __init__(self, window=50):
-        self.ema = EMA(weight=200, scale=24)
+    def __init__(self, window=20):
+        self.ema = EMA(weight=26, scale=120)
         self.slope = SLOPE(window=window)
         self.result = 0
 
@@ -107,11 +107,11 @@ class TrendTreeProcessor(object):
                 self.root_node.update(last_price=price, last_ts=ts)
 
                 # fix direction if initial guess was incorrect
-                if self.root_node.no_children():
-                    if self.root_node.start_price < self.root_node.last_price:
-                        self.root_node.direction = 1
-                    elif self.root_node.start_price > self.root_node.last_price:
-                        self.root_node.direction = -1
+                #if self.root_node.no_children():
+                #    if self.root_node.start_price < self.root_node.last_price:
+                #        self.root_node.direction = 1
+                #    elif self.root_node.start_price > self.root_node.last_price:
+                #        self.root_node.direction = -1
 
             #self.last_direction = self.direction
 

@@ -26,8 +26,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
-from trader.indicator.SLOPE import SLOPE
-from trader.lib.TrendTree import TrendTreeProcessor
+from trader.lib.TrendTree import TrendTreeProcessor, EMA_SLOPE
 
 
 def get_rows_as_msgs(c):
@@ -52,7 +51,7 @@ def simulate(conn, client, base, currency, type="channel"):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    ema12 = EMA(12, scale=24, lagging=True)
+    ema12 = EMA(12, scale=120, lagging=True)
     ema26 = EMA(26, scale=24, lagging=True)
     ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
     ema200 = EMA(200, scale=24, lagging=True, lag_window=5)
@@ -63,9 +62,8 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    slope = SLOPE(window=50)
+    slope = EMA_SLOPE()
     slope_values = []
-    slope_ema = EMA(50, scale=24)
 
     ttp = TrendTreeProcessor(logger=logger)
 
@@ -114,7 +112,7 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        value = slope.update(ema26.result)
+        value = slope.update(close)
         slope_values.append(value)
 
         close_prices.append(close)
@@ -147,10 +145,10 @@ def simulate(conn, client, base, currency, type="channel"):
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
-    fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    #fig2, = plt.plot(ema26_values, label='EMA26')
+    #fig3, = plt.plot(ema50_values, label='EMA50')
+    #fig4, = plt.plot(ema200_values, label='EMA200')
+    plt.legend(handles=[symprice, fig1])
     plt.subplot(212)
     #fig21, = plt.plot(macd_diff_values, label='MACDDIFF')
     #fig22, = plt.plot(macd_signal_values, label='MACDSIG')
