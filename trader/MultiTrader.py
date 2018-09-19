@@ -41,7 +41,8 @@ class MultiTrader(object):
         self.notify = None
         self.current_ts = 0
         self.last_ts = 0
-        self.check_ts = 3600 * 1000 * 4
+        self.check_ts = 3600 * 1000 # 1 hour
+        self.check_count = 0
         self.stopped = False
         self.running = True
         self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger)
@@ -138,9 +139,14 @@ class MultiTrader(object):
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
                 if (self.current_ts - self.last_ts) > self.check_ts:
-                    self.logger.info("MultiTrader still running...")
-                    self.logger.info(self.accnt.get_account_balances())
+                    balances = self.accnt.get_account_balances()
                     self.last_ts = self.current_ts
+                    self.check_count += 1
+                    if self.check_count > 4:
+                        self.logger.info("MultiTrader still running...")
+                        self.logger.info(balances)
+                        self.check_count = 0
+
 
         # handle incoming messages
         self.order_handler.process_order_messages()

@@ -4,7 +4,7 @@ from trader.indicator.SLOPE import SLOPE
 
 class EMA_SLOPE(object):
     def __init__(self, window=50):
-        self.ema = EMA(weight=window, scale=24)
+        self.ema = EMA(weight=200, scale=24)
         self.slope = SLOPE(window=window)
         self.result = 0
 
@@ -23,7 +23,7 @@ class TrendTreeProcessor(object):
             self.indicator = indicator
         self.direction = 0
         self.last_direction = 0
-        self.cross_zero = Crossover2(window=10)
+        self.cross_zero = Crossover2(window=15)
         self.time_node_end = 1000 * 3600 # 1 hour
         self.logger = logger
         self.tree_values = []
@@ -97,13 +97,7 @@ class TrendTreeProcessor(object):
                     else:
                         last_child.update(last_price=price, last_ts=ts)
                         # last_child downward trend supercedes root, so replace root with child
-                        if self.root_node.direction == 1 and price < self.root_node.start_price:
-                            old_root_node = self.root_node
-                            self.root_node = last_child
-                            old_root_node.remove_child(last_child)
-                            self.root_node.add_child(old_root_node)
-                        #last_child upward trend supercedes root, so replace root with child
-                        elif self.root_node.direction == -1 and price > self.root_node.start_price:
+                        if last_child.contains(self.root_node):
                             old_root_node = self.root_node
                             self.root_node = last_child
                             old_root_node.remove_child(last_child)
@@ -111,6 +105,13 @@ class TrendTreeProcessor(object):
             else:
                 # trend direction hasn't changed, so update root node
                 self.root_node.update(last_price=price, last_ts=ts)
+
+                # fix direction if initial guess was incorrect
+                if self.root_node.no_children():
+                    if self.root_node.start_price < self.root_node.last_price:
+                        self.root_node.direction = 1
+                    elif self.root_node.start_price > self.root_node.last_price:
+                        self.root_node.direction = -1
 
             #self.last_direction = self.direction
 
