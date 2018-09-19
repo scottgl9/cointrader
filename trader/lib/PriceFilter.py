@@ -1,58 +1,24 @@
 # filter prices which are already in prices window
-
+from trader.indicator.EMA import EMA
+from trader.indicator.ZLEMA import ZLEMA
+from trader.indicator.STDDEV import STDDEV
 
 class PriceFilter(object):
-    def __init__(self, window=20, range_filter=False, minmax_filter=False):
-        self.prices = []
+    def __init__(self, window=5):
+        self.stddev = STDDEV(window=window)
+        self.ema = ZLEMA(window, scale=60)
         self.window = window
-        self.age = 0
-        self.result = 0
-        self.range_filter = range_filter
-        self.minmax_filter = minmax_filter
-        self.min_price = 0
-        self.max_price = 0
         self.last_price = 0
-        self.prev_last_price = 0
-        self.prev_prev_last_price = 0
+        self.result = 0
 
     def update(self, price):
-        # prices outside of range of prices have to retest price to be entered into prices
-        if self.minmax_filter and len(self.prices) > 0:
-            if self.min_price == 0:
-                if price < min(self.prices):
-                    self.min_price = price
-                    self.result = 0
-                    return self.result
-            if self.max_price == 0:
-                if price > max(self.prices):
-                    self.max_price = price
-                    self.result = 0
-                    return self.result
+        self.stddev.update(float(price))
+        self.ema.update(float(price))
 
-        if self.range_filter and len(self.prices) > 0:
-            if min(self.prices) <= float(price) <= max(self.prices):
-                return self.result
-
-        if float(price) in self.prices:
-            return self.result
-
-        if len(self.prices) < self.window:
-            self.prices.append(float(price))
+        if abs(price - self.ema.result) > 0.5 * self.stddev.result:
+            self.result = self.ema.result
         else:
-            self.prices[int(self.age)] = float(price)
+            self.result = float(price)
 
-        if (self.prev_last_price == 0 or
-            self.last_price == 0 or
-            float(price) > self.last_price > self.prev_last_price or
-            float(price) < self.last_price < self.prev_last_price):
-            self.result = self.last_price
-            if self.last_price != self.prev_last_price:
-                self.prev_last_price = self.last_price
-            self.last_price = float(price)
-        else:
-            self.result = self.prev_last_price
-            self.last_price = float(price)
-
-        self.age = (self.age + 1) % self.window
-
+        self.last_price = self.result
         return self.result
