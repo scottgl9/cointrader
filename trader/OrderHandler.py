@@ -67,6 +67,12 @@ class OrderHandler(object):
                 #elif msg.cmd == Message.MSG_MARKET_SELL_ALL:
                 #    self.sell_market_all()
                 #    msg.mark_read()
+                elif msg.cmd == Message.MSG_LIMIT_BUY:
+                    self.place_buy_limit_order(msg.src_id, msg.price, msg.size)
+                    msg.mark_read()
+                elif msg.cmd == Message.MSG_LIMIT_SELL:
+                    self.place_sell_limit_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+                    msg.mark_read()
                 elif msg.cmd == Message.MSG_STOP_LOSS_BUY:
                     self.place_buy_stop_loss_order(msg.src_id, msg.price, msg.size)
                     msg.mark_read()
@@ -88,7 +94,8 @@ class OrderHandler(object):
 
         order = self.open_orders[msg['s']]
         close = float(msg['c'])
-        if order.type == Message.MSG_STOP_LOSS_BUY and close >= order.price:
+        if ((order.type == Message.MSG_STOP_LOSS_BUY and close >= order.price) or
+            (order.type == Message.MSG_LIMIT_BUY and close <= order.price)):
             bought = False
             if self.accnt.simulate:
                 self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size)
@@ -103,7 +110,8 @@ class OrderHandler(object):
             if bought:
                 self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
                 del self.open_orders[msg['s']]
-        elif order.type == Message.MSG_STOP_LOSS_SELL and close <= order.price:
+        elif ((order.type == Message.MSG_STOP_LOSS_SELL and close <= order.price) or
+              (order.type == Message.MSG_LIMIT_SELL and close >= order.price)):
             sold = False
             if self.accnt.simulate:
                 self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
@@ -167,6 +175,30 @@ class OrderHandler(object):
         del self.open_orders[ticker_id]
 
         self.place_sell_stop_loss_order(ticker_id, price, size, buy_price)
+
+
+    def place_buy_limit_order(self, ticker_id, price, size):
+        if ticker_id in self.open_orders.keys():
+            return
+
+        result = self.accnt.buy_limit(price=price, size=size, ticker_id=ticker_id)
+        if not self.accnt.simulate:
+            self.logger.info(result)
+
+        order = Order(symbol=ticker_id, price=price, size=size, type=Message.MSG_LIMIT_BUY)
+        self.open_orders[ticker_id] = order
+
+
+    def place_sell_limit_order(self, ticker_id, price, size, buy_price):
+        if ticker_id in self.open_orders.keys():
+            return
+
+        result = self.accnt.sell_limit(price=price, size=size, ticker_id=ticker_id)
+        if not self.accnt.simulate:
+            self.logger.info(result)
+
+        order = Order(symbol=ticker_id, price=price, size=size, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
+        self.open_orders[ticker_id] = order
 
 
     def place_buy_stop_loss_order(self, ticker_id, price, size):
