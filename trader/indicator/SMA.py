@@ -1,3 +1,5 @@
+# Simple Moving Average (SMA)
+
 class SMA:
     def __init__(self, window):
         self.window = window
@@ -20,3 +22,6 @@ class SMA:
             self.result = self.sum / float(len(self.prices))
         self.age = (self.age + 1) % self.window
         return self.result
+
+    def length(self):
+        return len(self.prices)

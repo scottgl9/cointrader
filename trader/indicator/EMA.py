@@ -57,3 +57,7 @@ class EMA:
             self.slope.update(self.result)
 
         return self.result
+
+    def length(self):
+        return self.count
+

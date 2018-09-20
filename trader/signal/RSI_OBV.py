@@ -2,31 +2,39 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.lib.Crossover2 import Crossover2
+from trader.signal.SigType import SigType
 from trader.lib.SimplePeak import SimplePeak
 
 class RSI_OBV(object):
     def __init__(self, window=26):
         self.window = window
-        #self.obv = OBV()
-        self.rsi = RSI()
+        self.obv = OBV()
+        self.obv_ema12 = EMA(12, scale=24)
+        self.obv_ema26 = EMA(26, scale=24, lag_window=5)
+        self.obv_ema50 = EMA(50, scale=24, lag_window=5)
+        self.ema12 = EMA(12, scale=24)
+        self.ema26 = EMA(26, scale=24, lag_window=5)
+        self.rsi = RSI(window=30, smoother=EMA(12, scale=24))
+        self.rsi2 = RSI(window=30, smoother=EMA(26, scale=24))
         #self.obv_ema26 = EMA(self.window, scale=24)
         #self.rsi_ema26 = EMA(self.window, scale=24)
-        self.max_rsi = 0
-        self.rsi_cross_low = Crossover2(window=10)
-        self.rsi_cross_high = Crossover2(window=10)
-        self.peak = SimplePeak()
+        self.rsi_cross = Crossover2(window=10)
+        self.buy_type = SigType.SIGNAL_NONE
+        self.sell_type = SigType.SIGNAL_NONE
 
     def pre_update(self, close, volume, ts):
-        #obv_value = self.obv.update(close=float(close), volume=float(volume))
-        rsi_result = self.rsi.update(float(close))
+        obv_value = self.obv.update(close=close, volume=volume)
+        self.obv_ema12.update(obv_value)
+        self.obv_ema26.update(obv_value)
+        self.obv_ema50.update(obv_value)
 
-        if rsi_result:
-            if rsi_result > self.max_rsi: self.max_rsi = rsi_result
-            #self.obv_ema26.update(obv_value)
-            #self.rsi_ema26.update(rsi_result)
-            self.rsi_cross_low.update(rsi_result, 30)
-            self.rsi_cross_high.update(rsi_result, 70)
-            self.peak.update(rsi_result)
+        self.ema12.update(close)
+        self.ema26.update(close)
+
+        #obv_value = self.obv.update(close=float(close), volume=float(volume))
+        rsi_value1 = self.rsi.update(float(close))
+        rsi_value2 = self.rsi2.update(float(close))
+        self.rsi_cross.update(rsi_value1, rsi_value2)
 
     def post_update(self, close, volume):
         pass
@@ -35,25 +43,43 @@ class RSI_OBV(object):
         #if self.obv_ema26.result == 0 or self.obv_ema26.last_result == 0:
         #    return False
 
-        if self.rsi.result == 0: # or self.rsi_ema26.result == 0 or self.rsi_ema26.last_result == 0:
+        if self.rsi.result == 0 or self.rsi2.result == 0: # or self.rsi_ema26.result == 0 or self.rsi_ema26.last_result == 0:
             return False
 
-        if self.rsi_cross_low.crossup_detected():
+        if self.obv_ema50.last_result == 0 or self.obv_ema12.last_result == 0 or self.obv_ema26.last_result == 0:
+            return False
+
+        if self.obv_ema50.result < self.obv_ema50.last_result:
+            return False
+
+        if self.obv_ema26.result < self.obv_ema26.last_result and self.ema26.result < self.ema26.last_result:
+            return False
+
+        if self.obv_ema12.result < self.obv_ema12.last_result and self.ema12.result < self.ema12.last_result:
+            return False
+
+        if self.rsi_cross.crossup_detected():
             return True
 
+        return False
+
+    def sell_long_signal(self):
         return False
 
     def sell_signal(self):
         #if self.obv_ema26.result == 0 or self.obv_ema26.last_result == 0:
         #    return False
 
-        if self.rsi.result == 0: # or self.rsi_ema26.result == 0 or self.rsi_ema26.last_result == 0:
+        if self.rsi.result == 0 or self.rsi2.result == 0: # or self.rsi_ema26.result == 0 or self.rsi_ema26.last_result == 0:
             return False
 
-        if self.rsi_cross_high.crossdown_detected():
-            return True
+        if self.obv_ema50.last_result == 0 or self.obv_ema12.last_result == 0 or self.obv_ema26.last_result == 0:
+            return False
 
-        if self.rsi.result >= 70 and self.peak.peak():
+        if self.obv_ema12.result > self.obv_ema12.last_result and self.ema12.result > self.ema12.last_result:
+            return False
+
+        if self.rsi_cross.crossdown_detected():
             return True
 
         return False

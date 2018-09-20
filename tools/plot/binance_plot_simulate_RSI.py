@@ -57,12 +57,10 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    rsi = RSI()
+    rsi = RSI(window=30, smoother=EMA(12, scale=24))
     rsi_values = []
-    rsi_ema26 = EMA(26, scale=24)
-    rsi_ema50 = EMA(50, scale=24)
-    rsi_ema26_values = []
-    rsi_ema50_values = []
+    rsi2 = RSI(window=30, smoother=EMA(50, scale=24))
+    rsi2_values = []
 
     obv = OBV()
     ema12_values = []
@@ -100,12 +98,12 @@ def simulate(conn, client, base, currency, type="channel"):
         ema50_values.append(ema50_value)
 
         rsi.update(close)
-        if rsi.result != 0 and rsi.result != 100:
+        if rsi.result != 0:
             rsi_values.append(rsi.result)
-            rsi_ema26.update(rsi.result)
-            rsi_ema50.update(rsi.result)
-            rsi_ema26_values.append(rsi_ema26.result)
-            rsi_ema50_values.append(rsi_ema50.result)
+
+        rsi2.update(close)
+        if rsi2.result != 0:
+            rsi2_values.append(rsi2.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -119,22 +117,12 @@ def simulate(conn, client, base, currency, type="channel"):
     ax = fig.add_subplot(2,1,1)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
-
-    #plt.plot(filter_x_values, filter_values)
-    #plt.plot(low_prices)
-    #plt.plot(high_prices)
-    #plt.plot(lstsqs_x_values, support1_values)
-    #plt.plot(lstsqs_x_values, support2_values)
-    #fig1, = plt.plot(ema12_values, label='EMA12')
-    #fig2, = plt.plot(ema26_values, label='EMA26')
-    #fig3, = plt.plot(ema50_values, label='EMA50')
     plt.legend(handles=[symprice])
     plt.subplot(212)
     #plt.plot(rsi_values)
-    plt.plot(rsi_ema26_values)
-    plt.plot(rsi_ema50_values)
-    #plt.plot(signal_values)
-    #plt.plot(tsi_values)
+    fig11, = plt.plot(rsi_values, label="RSI")
+    fig12, = plt.plot(rsi2_values, label="RSI2")
+    plt.legend(handles=[fig11, fig12])
     plt.show()
 
 if __name__ == '__main__':
@@ -154,5 +142,5 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    simulate(conn, client, base, currency, type="MACD")
+    simulate(conn, client, base, currency, type="RSI")
     conn.close()

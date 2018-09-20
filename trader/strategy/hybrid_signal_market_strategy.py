@@ -2,6 +2,7 @@ from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
+from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
 from trader.lib.SupportResistLevels import SupportResistLevels
@@ -58,6 +59,7 @@ class hybrid_signal_market_strategy(object):
         self.signal_handler = SignalHandler(logger=logger)
         #self.signal_handler.add(MACD_Crossover())
         self.signal_handler.add(Hybrid_Crossover())
+        #self.signal_handler.add(RSI_OBV())
 
         self.obv = OBV()
         self.low_short = self.high_short = 0.0
