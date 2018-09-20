@@ -11,9 +11,9 @@ class PPO_OBV(object):
         self.win_long = win_long
         self.ppo = PPO(scale=24)
         self.obv = OBV()
-        self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
-        self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True)
-        self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
+        self.obv_ema12 = EMA(self.win_short, scale=24)
+        self.obv_ema26 = EMA(self.win_med, scale=24)
+        self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.ppo_cross = Crossover()
 
     def pre_update(self, close, volume):

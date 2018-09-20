@@ -9,7 +9,6 @@ except ImportError:
 
 import numpy as np
 import matplotlib.pyplot as plt
-from trader.myhelpers import *
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.PMO import PMO

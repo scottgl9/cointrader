@@ -1,9 +1,12 @@
+# Exponential Moving Average (EMA)
+from trader.indicator.SLOPE import SLOPE
 from trader.indicator.SMA import SMA
 from trader.lib.ValueLag import ValueLag
 
+# TODO: Idea to add auto scaling based on number of price updates per time unit
 
 class EMA:
-    def __init__(self, weight=26, scale=1.0, lagging=False, lag_window=3, custom=False):
+    def __init__(self, weight=26, scale=1.0, lag_window=3, slope_window=0, custom=False):
         self.result = 0.0
         self.last_result = 0.0
         self.weight = float(weight)
@@ -11,11 +14,17 @@ class EMA:
         self.sma = SMA(weight)
         self.count = 0
         self.esf = 0.0
-        self.lagging = lagging
         self.value_lag = None
+        self.lag_window = lag_window
+        self.slope_window = slope_window
+        self.slope = None
         self.custom = custom
-        if self.lagging:
+
+        if self.lag_window != 0:
             self.value_lag = ValueLag(window=lag_window)
+
+        if self.slope_window != 0:
+            self.slope = SLOPE(window=self.slope_window)
 
     def update(self, price):
         if self.count < self.weight:
@@ -37,11 +46,14 @@ class EMA:
                 else:
                     self.esf = 2.0 / (self.weight * self.scale + 1.0)
 
-            if self.lagging:
+            if self.lag_window != 0:
                 self.last_result = self.value_lag.update(self.result)
             else:
                 self.last_result = self.result
 
             self.result = last_result + self.esf * (float(price) - last_result)
+
+        if self.slope:
+            self.slope.update(self.result)
 
         return self.result

@@ -13,9 +13,9 @@ class BOX_OBV(object):
         self.prev_high = 0.0
         self.close = 0.0
         self.obv = OBV()
-        self.obv_ema12 = EMA(12, scale=24, lagging=True)
-        self.obv_ema26 = EMA(26, scale=24, lagging=True)
-        self.obv_ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
+        self.obv_ema12 = EMA(12, scale=24)
+        self.obv_ema26 = EMA(26, scale=24)
+        self.obv_ema50 = EMA(50, scale=24, lag_window=5)
 
     def pre_update(self, close, volume):
         obv_value = self.obv.update(close=close, volume=volume)

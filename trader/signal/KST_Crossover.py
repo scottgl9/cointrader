@@ -14,10 +14,10 @@ class KST_Crossover(object):
         self.win_med = win_med
         self.win_long = win_long
         self.obv = OBV()
-        self.ema12 = EMA(self.win_short, scale=24, lagging=True)
-        self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
-        self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
-        self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
+        self.ema12 = EMA(self.win_short, scale=24)
+        self.obv_ema12 = EMA(self.win_short, scale=24)
+        self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
+        self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.kst = KST()
         self.kst_cross = Crossover2(window=10, cutoff=0.0)
         self.kst_cross_zero = Crossover2(window=10, cutoff=0.0)

@@ -11,10 +11,10 @@ class Bollinger_Bands_Signal(object):
         self.win_long = win_long
         self.bb = BollingerBands(dev_count=3.0)
         self.obv = OBV()
-        self.ema12 = EMA(self.win_short, scale=24, lagging=True)
-        self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
-        self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
-        self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
+        self.ema12 = EMA(self.win_short, scale=24)
+        self.obv_ema12 = EMA(self.win_short, scale=24)
+        self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
+        self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.close_price = 0
 
     def pre_update(self, close, volume, ts):

@@ -10,8 +10,8 @@ class TSI_Signal(object):
         self.window = window
         #self.obv = OBV()
         self.tsi = TSI()
-        #self.obv_ema26 = EMA(self.window, scale=24, lagging=True)
-        #self.rsi_ema26 = EMA(self.window, scale=24, lagging=True)
+        #self.obv_ema26 = EMA(self.window, scale=24)
+        #self.rsi_ema26 = EMA(self.window, scale=24)
         self.tsi_cross_low = Crossover2(window=10)
         self.tsi_cross_zero = Crossover2(window=10)
         self.tsi_cross_high = Crossover2(window=10)

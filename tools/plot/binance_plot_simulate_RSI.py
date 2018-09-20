@@ -46,12 +46,12 @@ def simulate(conn, client, base, currency, type="channel"):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    ema12 = EMA(12, scale=24, lagging=True)
-    ema26 = EMA(26, scale=24, lagging=True)
-    ema50 = EMA(50, scale=24, lagging=True, lag_window=5)
-    obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24, lagging=True)
-    obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24, lagging=True)
-    obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lagging=True, lag_window=5)
+    ema12 = EMA(12, scale=24)
+    ema26 = EMA(26, scale=24)
+    ema50 = EMA(50, scale=24, lag_window=5)
+    obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
+    obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
+    obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
     fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []

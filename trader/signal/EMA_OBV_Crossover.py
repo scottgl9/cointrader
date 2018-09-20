@@ -11,17 +11,17 @@ class EMA_OBV_Crossover(object):
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
-        self.ema12 = EMA(self.win_short, scale=24, lagging=True)
-        self.ema26 = EMA(self.win_med, scale=24, lagging=True)
-        self.ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
+        self.ema12 = EMA(self.win_short, scale=24)
+        self.ema26 = EMA(self.win_med, scale=24)
+        self.ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.cross_short = Crossover2(window=10, cutoff=0.0)
         self.cross_long = Crossover2(window=10, cutoff=0.0)
         self.cross_double = CrossoverDouble(window=10)
         self.kst = KST()
         self.obv = OBV()
-        self.obv_ema12 = EMA(self.win_short, scale=24, lagging=True)
-        self.obv_ema26 = EMA(self.win_med, scale=24, lagging=True, lag_window=5)
-        self.obv_ema50 = EMA(self.win_long, scale=24, lagging=True, lag_window=5)
+        self.obv_ema12 = EMA(self.win_short, scale=24)
+        self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
+        self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
 
         self.trend_down_count = 0
         self.trend_up_count = 0

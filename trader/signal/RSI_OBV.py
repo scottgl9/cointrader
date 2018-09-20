@@ -9,8 +9,8 @@ class RSI_OBV(object):
         self.window = window
         #self.obv = OBV()
         self.rsi = RSI()
-        #self.obv_ema26 = EMA(self.window, scale=24, lagging=True)
-        #self.rsi_ema26 = EMA(self.window, scale=24, lagging=True)
+        #self.obv_ema26 = EMA(self.window, scale=24)
+        #self.rsi_ema26 = EMA(self.window, scale=24)
         self.max_rsi = 0
         self.rsi_cross_low = Crossover2(window=10)
         self.rsi_cross_high = Crossover2(window=10)
