@@ -11,6 +11,8 @@ class InstantTrendline(object):
         self.value3 = CircularArray(window=5)
         self.Inphase = CircularArray(window=4)
         self.Quadrature = CircularArray(window=3)
+        self.last_phase = 0
+        self.phase = 0
         self.result = 0
         self.Imult = 0.635
         self.Qmult = 0.338
@@ -50,3 +52,47 @@ class InstantTrendline(object):
             Phase = 180 + Phase
         if self.Inphase.last() > 0 and self.Quadrature.last() < 0:
             Phase = 360 - Phase
+
+        self.last_phase = self.phase
+        self.phase = Phase
+
+        # Compute a differential phase, resolve phase wraparound, and limit delta phase errors
+        DeltaPhase = self.last_phase - self.phase               #Phase[1] - Phase
+        if self.last_phase < 90 and self.phase > 270:           #Phase[1] < 90 and Phase > 270:
+            DeltaPhase = 360 + self.last_phase - self.phase     #Phase[1] - Phase
+        if DeltaPhase < 7:
+            DeltaPhase = 7
+        if DeltaPhase > 60:
+            DeltaPhase = 60
+
+        # Sum DeltaPhases to reach 360 degrees. The sum is the instantaneous period.
+        InstPeriod = 0
+        Value4 = 0
+        for count in range(0, 40):
+            Value4 = Value4 + DeltaPhase[count]
+            if Value4 > 360 and InstPeriod == 0:
+                InstPeriod = count
+        # Next
+
+        # Resolve Instantaneous Period errors and smooth
+        if InstPeriod == 0:
+            InstPeriod = InstPeriod[1]
+
+        Value5 = .25 * InstPeriod + .75 * Value5[1]
+
+        # Compute Trendline as simple average over the measured dominant cycle period
+        Period = np.rint(Value5) # ROUND(Value5)
+        Trendline = 0
+        for count in range(0, Period + 1):
+            Trendline = Trendline + Price[count]
+        # Next
+        if Period > 0:
+            Trendline = Trendline / (Period + 2)
+
+        Value11 = .33 * (Price + .5 * (Price - Price[3])) + .67 * Value11[1]
+
+        if barindex < 26:
+            Trendline = Price
+            Value11 = Price
+
+        # Return Trendline as "TR", Value11 as "ZL"
