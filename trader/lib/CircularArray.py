@@ -28,10 +28,21 @@ class CircularArray(object):
         else:
             return self.carray[int(self.age)]
 
-    def last(self):
+    # reverse indexing: last(0) = last added, last(1) = second to last added, etc
+    def last(self, index=0):
         if len(self.carray) == 0:
             return None
-        return self.carray[int(self.last_age)]
+
+        age = int(self.last_age)
+
+        if index != 0:
+            while index > 0:
+                index -= 1
+                age -= 1
+                if age < 0:
+                    age = self.window - 1
+
+        return self.carray[age]
 
     def values(self):
         return self.carray
