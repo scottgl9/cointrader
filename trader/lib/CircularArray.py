@@ -1,12 +1,29 @@
 class CircularArray(object):
-    def __init__(self, window):
+    def __init__(self, window, dne=None, reverse=True):
         self.window = window
         self.carray = []
+        # if value at index doesn't exist, return value set in dne
+        self.dne = dne
+        # reverse indexing if class treated like an array
+        self.reverse = reverse
         self.last_age = 0
         self.age = 0
 
     def __len__(self):
         return len(self.carray)
+
+    # allow us to index CircularArray like a regular array with reverse indexing
+    def __getitem__(self, key):
+        if self.reverse:
+            return self.last(index=key)
+        else:
+            return self.first(index=key)
+
+    def length(self):
+        return len(self.carray)
+
+    def empty(self):
+        return len(self.carray) == 0
 
     def full(self):
         return len(self.carray) == self.window
@@ -20,18 +37,29 @@ class CircularArray(object):
         self.last_age = self.age
         self.age = (self.age + 1) % self.window
 
-    def first(self):
+    # forward indexing: first(0) = first added, first(1) = second added, etc
+    def first(self, index=0):
         if len(self.carray) == 0:
-            return None
+            return self.dne
+
         if len(self.carray) < self.window:
-            return self.carray[0]
+            if index >= len(self.carray):
+                return self.dne
+            return self.carray[index]
         else:
-            return self.carray[int(self.age)]
+            age = int(self.age)
+            if index != 0:
+                age = (age + index) % self.window
+            return self.carray[age]
 
     # reverse indexing: last(0) = last added, last(1) = second to last added, etc
     def last(self, index=0):
         if len(self.carray) == 0:
-            return None
+            return self.dne
+
+        if len(self.carray) < self.window:
+            if index >= len(self.carray):
+                return self.dne
 
         age = int(self.last_age)
 
