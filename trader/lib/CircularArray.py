@@ -19,6 +19,8 @@ class CircularArray(object):
         else:
             return self.first(index=key)
 
+    #def __setitem__(self, key, value):
+
     def length(self):
         return len(self.carray)
 
@@ -28,6 +30,7 @@ class CircularArray(object):
     def full(self):
         return len(self.carray) == self.window
 
+    # Add value to circular array
     def add(self, value):
         if len(self.carray) < self.window:
             self.carray.append(float(value))
@@ -72,9 +75,11 @@ class CircularArray(object):
 
         return self.carray[age]
 
+    # return un-ordered values
     def values(self):
         return self.carray
 
+    # return as ordered array of values from oldest to newest
     def values_ordered(self):
         values = []
         age = self.age

@@ -7,15 +7,19 @@ from trader.lib.CircularArray import CircularArray
 class InstantTrendline(object):
     def __init__(self, window=8):
         self.window = window
-        self.prices = CircularArray(window=self.window)
-        self.value3 = CircularArray(window=5)
-        self.Inphase = CircularArray(window=4)
-        self.Quadrature = CircularArray(window=3)
+        self.prices = CircularArray(window=self.window, reverse=True, dne=0)
+        self.value3 = CircularArray(window=5, reverse=True, dne=0)
+        self.Inphase = CircularArray(window=4, reverse=True, dne=0)
+        self.Quadrature = CircularArray(window=3, reverse=True, dne=0)
+        self.DeltaPhase = CircularArray(window=40, reverse=True, dne=0)
+        self.value5 = CircularArray(window=3, reverse=True, dne=0)
+        self.value11 = CircularArray(window=3, reverse=True, dne=0)
         self.last_phase = 0
         self.phase = 0
         self.result = 0
         self.Imult = 0.635
         self.Qmult = 0.338
+        self.barindex = 0
 
 
     def update(self, price):
@@ -24,75 +28,76 @@ class InstantTrendline(object):
         if len(self.prices) < self.window:
             return self.result
 
-        self.value3.add(self.prices.last() - self.prices.last(7))
+        self.value3.add(self.prices[0] - self.prices[7])
 
-        if len(self.value3) < 5:
+        if len(self.value3) < self.value3.window:
             return self.result
 
-        if len(self.Inphase) < 4:
-            self.Inphase.add(1.25 * self.value3.last(4) - self.Imult * self.value3.last(2))
-        else:
-            self.Inphase.add(1.25 * self.value3.last(4) - self.Imult * self.value3.last(2) + self.Imult * self.Inphase.last(3))
+        # Compute InPhase and Quadrature components
+        self.Inphase.add(1.25 * self.value3[4] - self.Imult * self.value3[2] + self.Imult * self.Inphase[3])
+        self.Quadrature.add(self.value3[2] - self.Qmult * self.value3[0] + self.Qmult * self.Quadrature[2])
 
-        if len(self.Quadrature) < 3:
-            self.Quadrature.add(self.value3.last(2) - self.Qmult * self.value3.last())
-        else:
-            self.Quadrature.add(self.value3.last(2) - self.Qmult * self.value3.last() + self.Qmult * self.Quadrature.last(2))
+        if len(self.Inphase) < self.Inphase.window or len(self.Quadrature) < self.Quadrature.window:
+            return self.result
 
-        if len(self.Inphase) > 2 and abs(self.Inphase.last() + self.Inphase.last(1)):
-            a = np.abs((self.Quadrature.last() + self.Quadrature.last(1)) / self.Inphase.last() + self.Inphase.last(1))
+        # Use ArcTangent to compute the current phase
+        if abs(self.Inphase[0] + self.Inphase[1]) > 0:
+            a = np.abs((self.Quadrature[0] + self.Quadrature[1]) / self.Inphase[0] + self.Inphase[1])
             Phase = np.arctan(a)
-        else:
-            return self.result
 
         # Resolve the ArcTangent ambiguity
-        if self.Inphase.last() < 0 and self.Quadrature.last() > 0:
+        if self.Inphase[0] < 0 and self.Quadrature[0] > 0:
             Phase = 180 - Phase
-        if self.Inphase.last() < 0 and self.Quadrature.last() < 0:
+        if self.Inphase[0] < 0 and self.Quadrature[0] < 0:
             Phase = 180 + Phase
-        if self.Inphase.last() > 0 and self.Quadrature.last() < 0:
+        if self.Inphase[0] > 0 and self.Quadrature[0] < 0:
             Phase = 360 - Phase
 
         self.last_phase = self.phase
         self.phase = Phase
 
         # Compute a differential phase, resolve phase wraparound, and limit delta phase errors
-        DeltaPhase = self.last_phase - self.phase               #Phase[1] - Phase
+        deltaPhase = self.last_phase - self.phase               #Phase[1] - Phase
         if self.last_phase < 90 and self.phase > 270:           #Phase[1] < 90 and Phase > 270:
-            DeltaPhase = 360 + self.last_phase - self.phase     #Phase[1] - Phase
-        if DeltaPhase < 7:
-            DeltaPhase = 7
-        if DeltaPhase > 60:
-            DeltaPhase = 60
+            deltaPhase = 360 + self.last_phase - self.phase     #Phase[1] - Phase
+        if deltaPhase < 7:
+            deltaPhase = 7
+        if deltaPhase > 60:
+            deltaPhase = 60
+
+        self.DeltaPhase.add(deltaPhase)
 
         # Sum DeltaPhases to reach 360 degrees. The sum is the instantaneous period.
         InstPeriod = 0
         Value4 = 0
         for count in range(0, 40):
-            Value4 = Value4 + DeltaPhase[count]
+            Value4 = Value4 + self.DeltaPhase[count]
             if Value4 > 360 and InstPeriod == 0:
                 InstPeriod = count
-        # Next
 
         # Resolve Instantaneous Period errors and smooth
         if InstPeriod == 0:
             InstPeriod = InstPeriod[1]
 
-        Value5 = .25 * InstPeriod + .75 * Value5[1]
+        self.value5.add(0.25 * InstPeriod + .75 * self.value5[1])
 
         # Compute Trendline as simple average over the measured dominant cycle period
-        Period = np.rint(Value5) # ROUND(Value5)
+        Period = np.rint(self.value5[0]) # ROUND(Value5)
         Trendline = 0
         for count in range(0, Period + 1):
-            Trendline = Trendline + Price[count]
-        # Next
+            Trendline = Trendline + self.prices[count]
+
         if Period > 0:
             Trendline = Trendline / (Period + 2)
 
-        Value11 = .33 * (Price + .5 * (Price - Price[3])) + .67 * Value11[1]
+        self.value11.add(0.33 * (self.prices[0] + 0.5 * (self.prices[0] - self.prices[3])) + 0.67 * self.value11[1])
 
-        if barindex < 26:
-            Trendline = Price
-            Value11 = Price
+        self.result = self.value11[0]
+
+        #if self.barindex < 26:
+        #    Trendline = Price
+        #    Value11 = Price
 
         # Return Trendline as "TR", Value11 as "ZL"
+
+        return self.result

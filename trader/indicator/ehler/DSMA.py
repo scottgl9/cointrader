@@ -1,5 +1,9 @@
 # Deviation Scaled Moving Average (DSMA)
 # https://www.prorealcode.com/prorealtime-indicators/deviation-scaled-moving-average-dsma/
+# The DSMA is an adaptive moving average that features rapid adaptation to volatility in price movement.
+# It accomplishes this adaptation by modifying the alpha term of an EMA byt he amplitude of an oscillator scaled
+# in standard deviations from the mean. The DSMA's responsiveness can be changed by using different values
+# for the input parameter period.
 import numpy as np
 from trader.lib.CircularArray import CircularArray
 
