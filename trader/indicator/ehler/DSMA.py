@@ -33,7 +33,7 @@ class DSMA(object):
         if len(self.zeros) < 3:
             return self.result
 
-        self.filt.add(self.c1*(self.zeros[0] + self.zeros[1]) / 2 + self.c2*self.filt[1] + c3*self.filt[2])
+        self.filt.add(self.c1*(self.zeros[0] + self.zeros[1]) / 2 + self.c2*self.filt[1] + self.c3*self.filt[2])
 
         RMS = 0
         for count in range(0, self.period - 1):
@@ -44,7 +44,7 @@ class DSMA(object):
         #Rescale Filt in terms of Standard Deviations
         ScaledFilt = self.filt[0] / RMS
         alpha1 = np.abs(ScaledFilt) * 5 / self.period
-        self.DSMA.add(alpha1 * self.closes[0] + (1 - alpha1) * DSMA[1])
+        self.DSMA.add(alpha1 * self.closes[0] + (1 - alpha1) * self.DSMA[1])
         self.result = self.DSMA[0]
 
         return self.result
