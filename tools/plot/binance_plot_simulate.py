@@ -19,6 +19,8 @@ from trader.config import *
 import numpy as np
 import matplotlib.pyplot as plt
 from trader.indicator.ehler.FREMA import FREMA
+from trader.indicator.ehler.DSMA import DSMA
+from trader.indicator.ehler.InstantTrendline import InstantTrendline
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -42,6 +44,10 @@ def simulate(conn, client, base, currency, indicator_name):
     indicator = None
     if indicator_name == 'FREMA':
         indicator = FREMA()
+    elif indicator_name == 'DSMA':
+        indicator = DSMA()
+    elif indicator_name == 'InstantTrendline':
+        indicator = InstantTrendline()
 
     indicator_values = []
 

@@ -5,17 +5,19 @@ import numpy as np
 from trader.lib.CircularArray import CircularArray
 
 class InstantTrendline(object):
-    def __init__(self, window=8):
+    def __init__(self, window=40):
         self.window = window
-        self.prices = CircularArray(window=self.window, reverse=True, dne=0)
+        self.prices = CircularArray(window=8, reverse=True, dne=0)
         self.value3 = CircularArray(window=5, reverse=True, dne=0)
         self.Inphase = CircularArray(window=4, reverse=True, dne=0)
         self.Quadrature = CircularArray(window=3, reverse=True, dne=0)
-        self.DeltaPhase = CircularArray(window=40, reverse=True, dne=0)
+        self.DeltaPhase = CircularArray(window=self.window, reverse=True, dne=0)
         self.value5 = CircularArray(window=3, reverse=True, dne=0)
         self.value11 = CircularArray(window=3, reverse=True, dne=0)
         self.last_phase = 0
         self.phase = 0
+        self.instperiod = 0
+        self.last_instperiod = 0
         self.result = 0
         self.Imult = 0.635
         self.Qmult = 0.338
@@ -68,21 +70,22 @@ class InstantTrendline(object):
         self.DeltaPhase.add(deltaPhase)
 
         # Sum DeltaPhases to reach 360 degrees. The sum is the instantaneous period.
-        InstPeriod = 0
+        self.last_instperiod = self.instperiod
+        self.instperiod = 0
         Value4 = 0
         for count in range(0, 40):
             Value4 = Value4 + self.DeltaPhase[count]
-            if Value4 > 360 and InstPeriod == 0:
-                InstPeriod = count
+            if Value4 > 360 and self.instperiod == 0:
+                self.instperiod = count
 
         # Resolve Instantaneous Period errors and smooth
-        if InstPeriod == 0:
-            InstPeriod = InstPeriod[1]
+        if self.instperiod == 0:
+            self.instperiod = self.last_instperiod
 
-        self.value5.add(0.25 * InstPeriod + .75 * self.value5[1])
+        self.value5.add(0.25 * self.instperiod + .75 * self.value5[1])
 
         # Compute Trendline as simple average over the measured dominant cycle period
-        Period = np.rint(self.value5[0]) # ROUND(Value5)
+        Period = int(np.rint(self.value5[0])) # ROUND(Value5)
         Trendline = 0
         for count in range(0, Period + 1):
             Trendline = Trendline + self.prices[count]
@@ -92,6 +95,7 @@ class InstantTrendline(object):
 
         self.value11.add(0.33 * (self.prices[0] + 0.5 * (self.prices[0] - self.prices[3])) + 0.67 * self.value11[1])
 
+        #if len(self.value11) == self.value11.window:
         self.result = self.value11[0]
 
         #if self.barindex < 26:
