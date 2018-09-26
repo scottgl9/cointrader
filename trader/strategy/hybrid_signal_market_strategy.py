@@ -7,6 +7,7 @@ from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
 from trader.lib.SupportResistLevels import SupportResistLevels
 from trader.lib.StatTracker import StatTracker
+from trader.lib.TickFilter import TickFilter
 from datetime import datetime
 
 
@@ -54,12 +55,19 @@ class hybrid_signal_market_strategy(object):
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
         self.last_close = 0.0
+        self.low = 0
+        self.last_low = 0
+        self.high = 0
+        self.last_high = 0
+        self.base_min_size = float(base_min_size)
+        self.quote_increment = float(tick_size)
 
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler(logger=logger)
         #self.signal_handler.add(MACD_Crossover())
         self.signal_handler.add(Hybrid_Crossover())
         #self.signal_handler.add(RSI_OBV())
+        #self.tick_filter = TickFilter(tick_size=self.quote_increment, window=3)
 
         self.obv = OBV()
         self.low_short = self.high_short = 0.0
@@ -85,12 +93,11 @@ class hybrid_signal_market_strategy(object):
         self.last_buy_obv = 0
         self.last_sell_ts = 0
         self.last_sell_obv = 0
+        self.first_sell_signal = False
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
         self.trend_downward_count = 0
-        self.base_min_size = float(base_min_size)
-        self.quote_increment = float(tick_size)
         self.buy_price = 0.0
         self.buy_size = 0.0
         self.buy_timestamp = 0
@@ -196,18 +203,27 @@ class hybrid_signal_market_strategy(object):
             #elif price > self.last_sell_price and self.obv.result < self.last_sell_obv:
             #    return False
 
+        #if self.low < self.last_low and self.high <= self.last_high:
+        #    return False
+
+        #if not self.first_sell_signal:
+        #    return False
+
         if self.signal_handler.buy_signal():
             return True
 
         return False
 
     def sell_signal(self, price):
+        if float(self.buy_price) == 0.0:
+            #if not self.first_sell_signal:
+            #    if self.signal_handler.sell_signal():
+            #        self.first_sell_signal = True
+            return False
+
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size) or balance_available == 0.0:
-            return False
-
-        if float(self.buy_price) == 0.0:
             return False
 
         if not self.accnt.simulate and self.buy_order_id:
@@ -259,9 +275,11 @@ class hybrid_signal_market_strategy(object):
         #if self.currency == 'USDT':
         #    return
         close = float(msg['c'])
-        low = float(msg['l'])
-        high = float(msg['h'])
+        self.low = float(msg['l'])
+        self.high = float(msg['h'])
         volume = float(msg['v'])
+
+        #close = self.tick_filter.update(close)
 
         if close == 0 or volume == 0:
             return
@@ -277,6 +295,8 @@ class hybrid_signal_market_strategy(object):
         self.last_timestamp = self.timestamp
         self.last_price = close
         self.last_close = close
+        self.last_low = self.low
+        self.last_high = self.high
 
 
     def run_update_price(self, price):

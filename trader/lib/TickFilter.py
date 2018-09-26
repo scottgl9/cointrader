@@ -10,6 +10,9 @@ class TickFilter(object):
         self.last_result = 0
 
     def update(self, price):
+        if self.tick_size == 0:
+            return float(price)
+
         self.prices.add(float(price))
 
         if len(self.prices) < self.prices.window:
@@ -20,7 +23,7 @@ class TickFilter(object):
 
         for i in range(1, self.window):
             if abs(self.prices[0] - self.prices[i]) > self.tick_size:
-                self.result = self.last_result
+                self.result = 0 #self.last_result
                 break
 
         return self.result
