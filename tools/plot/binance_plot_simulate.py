@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 from trader.indicator.ehler.FREMA import FREMA
 from trader.indicator.ehler.DSMA import DSMA
 from trader.indicator.ehler.InstantTrendline import InstantTrendline
+from trader.lib.TickFilter import TickFilter
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -30,6 +31,21 @@ def get_rows_as_msgs(c):
         msgs.append(msg)
     return msgs
 
+def get_info_all_assets(client):
+    assets = {}
+    for key, value in client.get_exchange_info().items():
+        if key != 'symbols':
+            continue
+        for asset in value:
+            minQty = ''
+            tickSize = ''
+            for filter in asset['filters']:
+                if 'minQty' in filter:
+                    minQty = filter['minQty']
+                if 'tickSize' in filter:
+                    tickSize = filter['tickSize']
+            assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
+    return assets
 
 def simulate(conn, client, base, currency, indicator_name):
     ticker_id = "{}{}".format(base, currency)
@@ -48,6 +64,9 @@ def simulate(conn, client, base, currency, indicator_name):
         indicator = DSMA()
     elif indicator_name == 'InstantTrendline':
         indicator = InstantTrendline()
+    elif indicator_name == 'TickFilter':
+        assets = get_info_all_assets(client)
+        indicator = TickFilter(tick_size=assets[ticker_id]['tickSize'])
 
     indicator_values = []
 
