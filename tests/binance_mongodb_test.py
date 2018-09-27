@@ -1,10 +1,17 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
+
 from pymongo import MongoClient
 from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
-from trader.binance.client import Client
+from trader.account.binance.client import Client
 
 from trader.config import *
 client = Client(MY_API_KEY, MY_API_SECRET)

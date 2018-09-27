@@ -1,10 +1,16 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import to_rgb
-from trader.myhelpers import *
-from trader.TradeRange import TradeRange
+from trader.lib.TradeRange import TradeRange
 
 if __name__ == '__main__':
     ticker = 'ETH-BTC'

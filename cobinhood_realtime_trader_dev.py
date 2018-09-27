@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
+
 #from pymongo import MongoClient
 from trader.account.cobinhood.ws import feed
 from trader.account.cobinhood.ws.response import Trade

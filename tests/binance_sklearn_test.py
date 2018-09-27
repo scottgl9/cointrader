@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
+
 import numpy as np
 from sklearn import tree
 import matplotlib.pyplot as plt

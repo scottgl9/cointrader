@@ -1,6 +1,12 @@
 #!/usr/bin/python
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
 
-from trader.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.account.binance.exceptions import BinanceAPIException
 from trader.config import *

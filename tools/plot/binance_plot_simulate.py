@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 from trader.indicator.ehler.FREMA import FREMA
 from trader.indicator.ehler.DSMA import DSMA
 from trader.indicator.ehler.InstantTrendline import InstantTrendline
+from trader.indicator.test.ZigZag import ZigZag
 from trader.lib.TickFilter import TickFilter
 
 def get_rows_as_msgs(c):
@@ -58,15 +59,24 @@ def simulate(conn, client, base, currency, indicator_name):
     low_prices = []
     high_prices = []
     indicator = None
+    plot_num = 1
     if indicator_name == 'FREMA':
         indicator = FREMA()
+        plot_num = 2
     elif indicator_name == 'DSMA':
         indicator = DSMA()
+        plot_num = 2
     elif indicator_name == 'InstantTrendline':
         indicator = InstantTrendline()
+        plot_num = 2
     elif indicator_name == 'TickFilter':
         assets = get_info_all_assets(client)
         indicator = TickFilter(tick_size=assets[ticker_id]['tickSize'])
+        plot_num = 2
+    elif indicator_name == 'ZigZag':
+        print("Using {}".format(indicator_name))
+        indicator = ZigZag(cutoff=0.2)
+        plot_num = 2
 
     indicator_values = []
 
@@ -93,9 +103,12 @@ def simulate(conn, client, base, currency, indicator_name):
     ax = fig.add_subplot(2,1,1)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
+    if plot_num == 1:
+        plt.plot(indicator_values)
     plt.legend(handles=[symprice])
     plt.subplot(212)
-    plt.plot(indicator_values)
+    if plot_num == 2:
+        plt.plot(indicator_values)
     plt.show()
 
 if __name__ == '__main__':

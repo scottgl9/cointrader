@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
+
 #from pymongo import MongoClient
 import time
 import trader.account.gdax as gdax

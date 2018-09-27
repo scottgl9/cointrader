@@ -1,8 +1,15 @@
 #!/usr/bin/python
 
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+    import trader
+
 from pymongo import MongoClient
-from trader.binance.client import Client
-from trader.binance import BinanceSocketManager
+from trader.account.binance.client import Client
+from trader.account.binance.websockets import BinanceSocketManager
 import time
 import sys
 
