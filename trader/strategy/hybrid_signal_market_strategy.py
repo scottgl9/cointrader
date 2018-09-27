@@ -215,7 +215,7 @@ class hybrid_signal_market_strategy(object):
         return False
 
     def sell_signal(self, price):
-        if float(self.buy_price) == 0.0:
+        if float(self.buy_price) == 0.0 or float(self.buy_size) == 0.0:
             #if not self.first_sell_signal:
             #    if self.signal_handler.sell_signal():
             #        self.first_sell_signal = True
