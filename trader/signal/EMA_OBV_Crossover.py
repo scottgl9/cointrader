@@ -8,6 +8,7 @@ from trader.lib.CrossoverDouble import CrossoverDouble
 class EMA_OBV_Crossover(object):
     def __init__(self, win_short=12, win_med=26, win_long=50):
         self.signal_name = "EMA_OBV_Crossover"
+        self.id = 0
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -33,6 +34,9 @@ class EMA_OBV_Crossover(object):
         self.prev_high = 0
         self.min_price = 0
         self.max_price = 0
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume, ts):
         if self.min_price == 0 or close < self.min_price:

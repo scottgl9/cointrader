@@ -7,6 +7,8 @@ from trader.lib.SimplePeak import SimplePeak
 
 class RSI_OBV(object):
     def __init__(self, window=26):
+        self.signal_name = "RSI_OBV"
+        self.id = 0
         self.window = window
         self.obv = OBV()
         self.obv_ema12 = EMA(12, scale=24)
@@ -21,6 +23,9 @@ class RSI_OBV(object):
         self.rsi_cross = Crossover2(window=10)
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume, ts):
         obv_value = self.obv.update(close=close, volume=volume)

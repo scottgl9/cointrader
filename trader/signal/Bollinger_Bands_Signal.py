@@ -6,6 +6,7 @@ from trader.lib.Crossover2 import Crossover2
 class Bollinger_Bands_Signal(object):
     def __init__(self, win_short=12, win_med=26, win_long=50):
         self.signal_name = "Bollinger_Bands_Signal"
+        self.id = 0
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -16,6 +17,9 @@ class Bollinger_Bands_Signal(object):
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.close_price = 0
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume, ts):
         self.close_price = close

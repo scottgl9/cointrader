@@ -5,6 +5,8 @@ from trader.indicator.OBV import OBV
 
 class BOX_OBV(object):
     def __init__(self, window=50):
+        self.signal_name = "BOX_OBV"
+        self.id = 0
         self.window = window
         self.box = BOX()
         self.low = 0.0
@@ -16,6 +18,9 @@ class BOX_OBV(object):
         self.obv_ema12 = EMA(12, scale=24)
         self.obv_ema26 = EMA(26, scale=24)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume):
         obv_value = self.obv.update(close=close, volume=volume)

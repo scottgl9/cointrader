@@ -5,6 +5,7 @@ from trader.indicator.OBV import OBV
 class sustained_volume_spike_signal(object):
     def __init__(self, window=50, factor=10, min_spike_count=5):
         self.signal_name = "sustained_volume_spike_signal"
+        self.id = 0
         self.window = window
         self.factor = float(factor)
         self.min_spike_count = min_spike_count
@@ -19,6 +20,9 @@ class sustained_volume_spike_signal(object):
         self.obv = OBV()
         self.obv_ema26 = EMA(26, scale=24, lag_window=5)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume, ts):
         self.volume = float(volume)

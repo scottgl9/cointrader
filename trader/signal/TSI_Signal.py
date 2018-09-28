@@ -7,6 +7,8 @@ from trader.lib.SimplePeak import SimplePeak
 
 class TSI_Signal(object):
     def __init__(self, window=26):
+        self.signal_name = "TSI_Signal"
+        self.id = 0
         self.window = window
         #self.obv = OBV()
         self.tsi = TSI()
@@ -16,6 +18,9 @@ class TSI_Signal(object):
         self.tsi_cross_zero = Crossover2(window=10)
         self.tsi_cross_high = Crossover2(window=10)
         self.peak = SimplePeak()
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume, ts):
         #obv_value = self.obv.update(close=float(close), volume=float(volume))

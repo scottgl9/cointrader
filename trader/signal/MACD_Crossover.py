@@ -11,6 +11,7 @@ from trader.signal.SigType import SigType
 class MACD_Crossover(object):
     def __init__(self, win_short=12, win_med=26, win_long=50):
         self.signal_name = "MACD_Crossover"
+        self.id = 0
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -38,6 +39,9 @@ class MACD_Crossover(object):
         self.ts = 0
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume, ts):
         if self.min_price == 0 or close < self.min_price:

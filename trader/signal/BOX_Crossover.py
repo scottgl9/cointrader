@@ -5,6 +5,8 @@ from trader.indicator.OBV import OBV
 
 class BOX_Crossover(object):
     def __init__(self, window=50):
+        self.signal_name = "BOX_Crossover"
+        self.id = 0
         self.window = window
         self.box = BOX()
         self.low = 0.0
@@ -21,6 +23,9 @@ class BOX_Crossover(object):
         self.ema50 = EMA(50, scale=24, lag_window=5)
         self.below_box = False
         self.above_box = False
+
+    def set_id(self, id):
+        self.id = id
 
     def pre_update(self, close, volume):
         obv_value = self.obv.update(close=close, volume=volume)
