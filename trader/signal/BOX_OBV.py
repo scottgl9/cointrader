@@ -19,6 +19,13 @@ class BOX_OBV(object):
         self.obv_ema26 = EMA(26, scale=24)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
 
+        self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_timestamp = 0
+        self.buy_order_id = None
+        self.last_buy_price = 0.0
+        self.last_sell_price = 0.0
+
     def set_id(self, id):
         self.id = id
 

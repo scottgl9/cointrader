@@ -18,6 +18,13 @@ class Bollinger_Bands_Signal(object):
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.close_price = 0
 
+        self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_timestamp = 0
+        self.buy_order_id = None
+        self.last_buy_price = 0.0
+        self.last_sell_price = 0.0
+
     def set_id(self, id):
         self.id = id
 

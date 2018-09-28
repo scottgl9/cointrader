@@ -12,14 +12,15 @@ class SignalHandler(object):
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
         self.last_handler_signaled = None
-        self.last_handler_buy_signaled = None
-        self.last_handler_sell_signaled = None
         self.cur_id = 1
+        self.buy_signal_id = 0
+        self.sell_signal_id = 0
 
     def empty(self):
         return len(self.handlers) == 0
 
     def add(self, handler):
+        handler.set_id(self.cur_id)
         self.cur_id += 1
         self.handlers.append(handler)
 
@@ -44,11 +45,32 @@ class SignalHandler(object):
     def get_handlers(self):
         return self.handlers
 
+    def get_handler(self, id):
+        for handler in self.handlers:
+            if handler.id == id:
+                return handler
+        return None
+
+    def get_buy_signal_id(self, clear=True):
+        id = self.buy_signal_id
+        if clear:
+            self.buy_signal_id = 0
+        return id
+
+    def get_sell_signal_id(self, clear=True):
+        id = self.sell_signal_id
+        if clear:
+            self.sell_signal_id = 0
+        return id
+
     def get_handler_signaled(self, clear=True):
         handler = self.last_handler_signaled
         if clear:
-            self.last_handler_signaled = None
+            self.clear_handler_signaled()
         return handler
+
+    def clear_handler_signaled(self):
+        self.last_handler_signaled = None
 
     def buy_signal(self):
         if len(self.handlers) == 0:
@@ -59,6 +81,7 @@ class SignalHandler(object):
                 if self.sigtype == self.SIGNAL_ONE:
                     self.buy_type = handler.buy_type
                     self.last_handler_signaled = handler
+                    self.buy_signal_id = handler.id
                     return True
             elif self.sigtype == self.SIGNAL_ALL:
                 return False
@@ -75,6 +98,7 @@ class SignalHandler(object):
         for handler in self.handlers:
             if handler.sell_long_signal():
                 self.last_handler_signaled = handler
+                self.sell_signal_id = handler.id
                 return True
 
         return False
@@ -89,6 +113,7 @@ class SignalHandler(object):
                     self.buy_type = handler.buy_type
                     self.sell_type = handler.sell_type
                     self.last_handler_signaled = handler
+                    self.sell_signal_id = handler.id
                     return True
             elif self.sigtype == self.SIGNAL_ALL:
                 return False

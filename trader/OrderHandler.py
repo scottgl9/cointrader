@@ -59,10 +59,10 @@ class OrderHandler(object):
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
                 if msg.cmd == Message.MSG_MARKET_BUY:
-                    self.place_buy_market_order(msg.src_id, msg.price, msg.size)
+                    self.place_buy_market_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_MARKET_SELL:
-                    self.place_sell_market_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+                    self.place_sell_market_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
                 #elif msg.cmd == Message.MSG_MARKET_SELL_ALL:
                 #    self.sell_market_all()
@@ -243,7 +243,7 @@ class OrderHandler(object):
     # u'commissionAsset': u'BNB', u'tradeId': 8948934, u'qty': u'0.20000000'}, {u'commission': u'0.00003000', u'price': u'0.04514400', u'commissionAsset': u'BNB', u'tradeId': 8948935,
     # u'qty': u'0.04000000'}], u'symbol': u'BNBETH', u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1536316266040, u'type': u'MARKET', u'price': u'0.00000000',
     #  u'executedQty': u'0.24000000', u'cummulativeQuoteQty': u'0.01083436'}
-    def place_buy_market_order(self, ticker_id, price, size):
+    def place_buy_market_order(self, ticker_id, price, size, sig_id=0):
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate:
             self.logger.info(result)
@@ -272,7 +272,7 @@ class OrderHandler(object):
             self.msg_handler.buy_failed(ticker_id, price, size)
 
 
-    def place_sell_market_order(self, ticker_id, price, size, buy_price):
+    def place_sell_market_order(self, ticker_id, price, size, buy_price, sig_id=0):
         # if available balance on coin changed after buy, update available size
         if not self.accnt.simulate:
             self.accnt.get_account_balances()

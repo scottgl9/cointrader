@@ -37,6 +37,7 @@ class TraderDB(object):
                 trade['price'] = row[2]
                 trade['qty'] = row[3]
                 trade['bought'] = row[4]
+                trade['sigid'] = row[5]
                 trades.append(trade)
         return trades
 
@@ -55,6 +56,7 @@ class TraderDB(object):
                 trade['price'] = row[2]
                 trade['qty'] = row[3]
                 trade['bought'] = row[4]
+                trade['sigid'] = row[5]
                 trades.append(trade)
         return trades
 
@@ -68,12 +70,12 @@ class TraderDB(object):
         return count
 
 
-    def insert_trade(self, ts, symbol, price, qty, bought=True):
+    def insert_trade(self, ts, symbol, price, qty, bought=True, sig_id=0):
         if not self.db:
             return
-        values = [ts, symbol, price, qty, bought]
+        values = [ts, symbol, price, qty, bought, sig_id]
         cur = self.db.cursor()
-        sql = """INSERT INTO trades (ts, symbol, price, qty, bought) values(?, ?, ?, ?, ?)"""
+        sql = """INSERT INTO trades (ts, symbol, price, qty, bought, sigid) values(?, ?, ?, ?, ?, ?)"""
         try:
             cur.execute(sql, values)
             self.db.commit()
@@ -82,13 +84,16 @@ class TraderDB(object):
                 self.logger.info("FAILED to insert {} into {}".format(symbol, self.filename))
 
 
-    def remove_trade(self, symbol):
+    def remove_trade(self, symbol, sig_id=0):
         if not self.db:
             return
         if self.get_trade_count() == 0:
             return
         cur = self.db.cursor()
-        sql = """DELETE FROM trades WHERE symbol='{}'""".format(symbol)
+        if sig_id != 0:
+            sql = """DELETE FROM trades WHERE symbol='{}' AND sigid={}""".format(symbol, sig_id)
+        else:
+            sql = """DELETE FROM trades WHERE symbol='{}'""".format(symbol)
         try:
             cur.execute(sql)
             self.db.commit()
@@ -109,7 +114,7 @@ class TraderDB(object):
 
     def create_table(self):
         cur = self.db.cursor()
-        sql = """CREATE TABLE IF NOT EXISTS trades (id integer, ts integer, symbol text, price real, qty real, bought boolean)"""
+        sql = """CREATE TABLE IF NOT EXISTS trades (id integer, ts integer, symbol text, price real, qty real, bought boolean, sigid integer)"""
         cur.execute(sql)
         self.db.commit()
 

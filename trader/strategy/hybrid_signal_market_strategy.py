@@ -319,6 +319,7 @@ class hybrid_signal_market_strategy(object):
 
         if self.buy_signal(price):
             if 'e' in str(self.min_trade_size):
+                self.signal_handler.clear_handler_signaled()
                 return
 
             min_trade_size = self.min_trade_size
@@ -332,10 +333,13 @@ class hybrid_signal_market_strategy(object):
             self.last_buy_ts = self.timestamp
             self.last_buy_obv = self.obv.result
 
-            self.msg_handler.buy_market(self.ticker_id, price, self.buy_size)
+            id = self.signal_handler.get_buy_signal_id(clear=True)
+
+            self.msg_handler.buy_market(self.ticker_id, price, self.buy_size, sig_id=id)
 
         if self.sell_signal(price):
-            self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price)
+            id = self.signal_handler.get_sell_signal_id(clear=True)
+            self.msg_handler.sell_market(self.ticker_id, price, self.buy_size, self.buy_price, sig_id=id)
 
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0

@@ -14,10 +14,11 @@ class Message(object):
     MSG_BUY_FAILED = 12
     MSG_SELL_FAILED = 13
 
-    def __init__(self, src_id, dst_id, cmd, price=0.0, size=0.0, buy_price=0.0):
+    def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0):
         self.src_id = src_id
         self.dst_id = dst_id
         self.cmd = cmd
+        self.sig_id = sig_id
         self.price = price
         self.size = size
         self.buy_price = buy_price

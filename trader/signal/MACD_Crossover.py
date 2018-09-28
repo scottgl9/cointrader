@@ -40,6 +40,13 @@ class MACD_Crossover(object):
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
 
+        self.buy_price = 0.0
+        self.buy_size = 0.0
+        self.buy_timestamp = 0
+        self.buy_order_id = None
+        self.last_buy_price = 0.0
+        self.last_sell_price = 0.0
+
     def set_id(self, id):
         self.id = id
 
