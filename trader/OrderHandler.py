@@ -47,7 +47,7 @@ class OrderHandler(object):
 
         for trade in trades:
             if trade_pair:
-                trade_pair.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'])
+                trade_pair.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'], sig_id=trade['sigid'])
 
 
     def update_tickers(self, tickers):
