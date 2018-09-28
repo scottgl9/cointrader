@@ -200,14 +200,6 @@ class hybrid_signal_market_strategy(object):
         if self.last_buy_price != 0 and self.last_sell_price != 0:
             if self.last_buy_price <= price <= self.last_sell_price:
                 return False
-            #elif price > self.last_sell_price and self.obv.result < self.last_sell_obv:
-            #    return False
-
-        #if self.low < self.last_low and self.high <= self.last_high:
-        #    return False
-
-        #if not self.first_sell_signal:
-        #    return False
 
         if self.signal_handler.buy_signal():
             return True
@@ -334,7 +326,6 @@ class hybrid_signal_market_strategy(object):
             self.last_buy_obv = self.obv.result
 
             id = self.signal_handler.get_buy_signal_id(clear=True)
-
             self.msg_handler.buy_market(self.ticker_id, price, self.buy_size, sig_id=id)
 
         if self.sell_signal(price):

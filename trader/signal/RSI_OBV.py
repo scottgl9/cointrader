@@ -4,11 +4,12 @@ from trader.indicator.RSI import RSI
 from trader.lib.Crossover2 import Crossover2
 from trader.signal.SigType import SigType
 from trader.lib.SimplePeak import SimplePeak
+from trader.signal.SignalBase import SignalBase
 
-class RSI_OBV(object):
+class RSI_OBV(SignalBase):
     def __init__(self, window=26):
+        super(RSI_OBV, self).__init__()
         self.signal_name = "RSI_OBV"
-        self.id = 0
         self.window = window
         self.obv = OBV()
         self.obv_ema12 = EMA(12, scale=24)
@@ -21,18 +22,6 @@ class RSI_OBV(object):
         #self.obv_ema26 = EMA(self.window, scale=24)
         #self.rsi_ema26 = EMA(self.window, scale=24)
         self.rsi_cross = Crossover2(window=10)
-        self.buy_type = SigType.SIGNAL_NONE
-        self.sell_type = SigType.SIGNAL_NONE
-
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-
-    def set_id(self, id):
-        self.id = id
 
     def pre_update(self, close, volume, ts):
         obv_value = self.obv.update(close=close, volume=volume)

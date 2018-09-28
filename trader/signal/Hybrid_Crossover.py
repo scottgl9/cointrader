@@ -7,12 +7,14 @@ from trader.indicator.ROC import ROC
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 from trader.signal.SigType import SigType
+from trader.signal.SignalBase import SignalBase
 
 
-class Hybrid_Crossover(object):
+class Hybrid_Crossover(SignalBase):
     def __init__(self, win_short=12, win_med=26, win_long=50):
+        super(Hybrid_Crossover, self).__init__()
         self.signal_name = "MACD_Crossover"
-        self.id = 0
+        #self.id = 0
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -45,18 +47,17 @@ class Hybrid_Crossover(object):
         self.ts = 0
         self.last_cross_ts = 0
         self.last_obv_cross_ts = 0
-        self.buy_type = SigType.SIGNAL_NONE
-        self.sell_type = SigType.SIGNAL_NONE
+        #self.buy_type = SigType.SIGNAL_NONE
+        #self.sell_type = SigType.SIGNAL_NONE
+        #self.buy_price = 0.0
+        #self.buy_size = 0.0
+        #self.buy_timestamp = 0
+        #self.buy_order_id = None
+        #self.last_buy_price = 0.0
+        #self.last_sell_price = 0.0
 
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-
-    def set_id(self, id):
-        self.id = id
+    #def set_id(self, id):
+    #    self.id = id
 
     def pre_update(self, close, volume, ts):
         if self.min_price == 0 or close < self.min_price:
