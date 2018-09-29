@@ -58,6 +58,8 @@ class OrderHandler(object):
         # handle incoming messages
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
+                if msg.is_read():
+                    continue
                 if msg.cmd == Message.MSG_MARKET_BUY:
                     self.place_buy_market_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
@@ -248,24 +250,25 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.logger.info(result)
 
-        message = "buy({}, {}) @ {}".format(ticker_id, size, price)
-        self.logger.info(message)
-
         if not self.accnt.simulate and not result:
             self.msg_handler.buy_failed(ticker_id, price, size)
             return
 
         if self.accnt.simulate:
             self.buy_order_id = None
+            message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
+            self.logger.info(message)
         elif ('status' in result and result['status'] == 'FILLED'):
             if 'orderId' not in result:
                 self.logger.warn("orderId not found for {}".format(ticker_id))
                 return
             orderid = result['orderId']
             self.buy_order_id = orderid
+            message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
+            self.logger.info(message)
             self.accnt.get_account_balances()
             # add to trader db for tracking
-            self.trader_db.insert_trade(int(time.time()), ticker_id, price, size)
+            self.trader_db.insert_trade(int(time.time()), ticker_id, price, size, sig_id)
             if self.notify:
                 self.notify.send(subject="MultiTrader", text=message)
         else:
@@ -298,14 +301,16 @@ class OrderHandler(object):
             if self.tickers and self.initial_btc != 0:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
                 tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                message = "sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(ticker_id,
+                message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sig_id,
+                                                                         ticker_id,
                                                                          size,
                                                                          price,
                                                                          buy_price,
                                                                          round(pprofit, 2),
                                                                          round(tpprofit, 2))
             else:
-                message = "sell({}, {}) @ {} (bought @ {}, {}%)".format(ticker_id,
+                message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)".format(sig_id,
+                                                                    ticker_id,
                                                                     size,
                                                                     price,
                                                                     buy_price,
@@ -315,7 +320,7 @@ class OrderHandler(object):
             if not self.accnt.simulate:
                 self.accnt.get_account_balances()
                 # remove from trade db since it has been sold
-                self.trader_db.remove_trade(ticker_id)
+                self.trader_db.remove_trade(ticker_id, sig_id)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
             elif not self.accnt.simulate:

@@ -75,12 +75,13 @@ def simulate(conn, client, logger):
     pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
     print("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
     for pair in multitrader.trade_pairs.values():
-        if pair.strategy.buy_price != 0.0:
-            buy_price = float(pair.strategy.buy_price)
-            last_price = float(pair.strategy.last_price)
-            symbol = pair.strategy.ticker_id
-            pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
-            print("{}: {}%".format(symbol, pprofit))
+        for signal in pair.strategy.get_signals():
+            if signal.buy_price != 0.0:
+                buy_price = float(signal.buy_price)
+                last_price = float(pair.strategy.last_price)
+                symbol = pair.strategy.ticker_id
+                pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
+                print("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
 def get_info_all_assets(client):
     assets = {}

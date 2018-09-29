@@ -87,8 +87,8 @@ class hybrid_signal_market_strategy(object):
         self.last_high_24hr = 0.0
         self.last_low_24hr = 0.0
         self.interval_price = 0.0
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
+        #self.last_buy_price = 0.0
+        #self.last_sell_price = 0.0
         #self.last_buy_ts = 0
         #self.last_buy_obv = 0
         #self.last_sell_ts = 0
@@ -98,10 +98,10 @@ class hybrid_signal_market_strategy(object):
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
         self.trend_downward_count = 0
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
+        #self.buy_price = 0.0
+        #self.buy_size = 0.0
+        #self.buy_timestamp = 0
+        #self.buy_order_id = None
         self.last_price = 0.0
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
@@ -115,6 +115,9 @@ class hybrid_signal_market_strategy(object):
 
     def get_ticker_id(self):
         return self.ticker_id
+
+    def get_signals(self):
+        return self.signal_handler.get_handlers()
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -226,7 +229,7 @@ class hybrid_signal_market_strategy(object):
                 signal.buy_order_id = None
                 return False
 
-        if self.signal_handler.sell_long_signal():
+        if signal.sell_long_signal():
             if (price - signal.buy_price) / signal.buy_price <= -0.1:
                 return True
 

@@ -26,3 +26,6 @@ class Message(object):
 
     def mark_read(self):
         self.read = True
+
+    def is_read(self):
+        return self.read
