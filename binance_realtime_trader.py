@@ -72,6 +72,7 @@ class BinanceTrader:
                 self.multitrader.initial_btc_total = total_btc
                 print("Initial BTC={}".format(total_btc))
 
+        self.multitrader.update_tickers(self.tickers)
         self.multitrader.process_message(msg)
 
     def run(self):
