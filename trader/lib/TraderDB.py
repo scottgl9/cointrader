@@ -29,7 +29,7 @@ class TraderDB(object):
             if self.get_trade_count() == 0:
                 return trades
             cur = self.db.cursor()
-            cur.execute("""SELECT ts, symbol, price, qty, bought from trades""")
+            cur.execute("""SELECT ts, symbol, price, qty, bought, sigid from trades""")
             for row in cur:
                 trade = {}
                 trade['ts'] = row[0]
@@ -48,7 +48,7 @@ class TraderDB(object):
             if self.get_trade_count() == 0:
                 return trades
             cur = self.db.cursor()
-            cur.execute("""SELECT ts, symbol, price, qty, bought from trades WHERE symbol='{}'""".format(symbol))
+            cur.execute("""SELECT ts, symbol, price, qty, bought, sigid from trades WHERE symbol='{}'""".format(symbol))
             for row in cur:
                 trade = {}
                 trade['ts'] = row[0]
