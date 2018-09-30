@@ -5,6 +5,7 @@ class SignalHandler(object):
     SIGNAL_ONE = 1
     SIGNAL_ALL = 2
 
+    # prevent double buy prevents more than one signal from buying at the same price with the same ts
     def __init__(self, sigtype=SIGNAL_ONE, logger=None):
         self.handlers = []
         self.sigtype = sigtype
@@ -13,8 +14,8 @@ class SignalHandler(object):
         self.sell_type = SigType.SIGNAL_NONE
         self.last_handler_signaled = None
         self.cur_id = 1
-        self.buy_signal_id = 0
-        self.sell_signal_id = 0
+        #self.buy_signal_id = 0
+        #self.sell_signal_id = 0
 
     def empty(self):
         return len(self.handlers) == 0
@@ -51,17 +52,23 @@ class SignalHandler(object):
                 return handler
         return None
 
-    def get_buy_signal_id(self, clear=True):
-        id = self.buy_signal_id
-        if clear:
-            self.buy_signal_id = 0
-        return id
+    def is_duplicate_buy(self, price, timestamp):
+        for handle in self.get_handlers():
+            if price == handle.buy_price and timestamp == handle.buy_timestamp:
+                return True
+        return False
 
-    def get_sell_signal_id(self, clear=True):
-        id = self.sell_signal_id
-        if clear:
-            self.sell_signal_id = 0
-        return id
+    #def get_buy_signal_id(self, clear=True):
+    #    id = self.buy_signal_id
+    #    if clear:
+    #        self.buy_signal_id = 0
+    #    return id
+
+    #def get_sell_signal_id(self, clear=True):
+    #    id = self.sell_signal_id
+    #    if clear:
+    #        self.sell_signal_id = 0
+    #    return id
 
     def get_handler_signaled(self, clear=True):
         handler = self.last_handler_signaled

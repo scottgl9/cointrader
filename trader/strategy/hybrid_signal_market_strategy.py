@@ -1,13 +1,14 @@
 from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
-from trader.signal.MACD_Crossover import MACD_Crossover
+
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
+from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
+from trader.signal.PMO_Crossover import PMO_Crossover
+
+
 from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
-from trader.lib.SupportResistLevels import SupportResistLevels
-from trader.lib.StatTracker import StatTracker
-from trader.lib.TickFilter import TickFilter
 from datetime import datetime
 
 
@@ -66,16 +67,12 @@ class hybrid_signal_market_strategy(object):
         self.signal_handler = SignalHandler(logger=logger)
         #self.signal_handler.add(MACD_Crossover())
         self.signal_handler.add(Hybrid_Crossover())
+        self.signal_handler.add(Hybrid_Crossover())
+        #self.signal_handler.add(PMO_Crossover())
         #self.signal_handler.add(RSI_OBV())
         #self.tick_filter = TickFilter(tick_size=self.quote_increment, window=3)
 
         self.obv = OBV()
-        self.low_short = self.high_short = 0.0
-        self.low_long = self.high_long = 0.0
-        self.prev_low_long = self.prev_high_long = 0.0
-        self.prev_low_short = self.prev_high_short = 0.0
-
-        self.stats = StatTracker()
 
         self.base = name
         self.currency = currency
@@ -98,10 +95,7 @@ class hybrid_signal_market_strategy(object):
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
         self.trend_downward_count = 0
-        #self.buy_price = 0.0
-        #self.buy_size = 0.0
-        #self.buy_timestamp = 0
-        #self.buy_order_id = None
+
         self.last_price = 0.0
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
@@ -121,9 +115,10 @@ class hybrid_signal_market_strategy(object):
 
     # clear pending sell trades which have been bought
     def reset(self):
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_order_id = None
+        for signal in self.signal_handler.get_handlers():
+            signal.buy_price = 0.0
+            signal.buy_size = 0.0
+            signal.buy_order_id = None
 
     def html_run_stats(self):
         results = str('')
@@ -211,9 +206,6 @@ class hybrid_signal_market_strategy(object):
 
     def sell_signal(self, price, signal):
         if float(signal.buy_price) == 0.0 or float(signal.buy_size) == 0.0:
-            #if not self.first_sell_signal:
-            #    if self.signal_handler.sell_signal():
-            #        self.first_sell_signal = True
             return False
 
         # check balance to see if we have enough to sell
@@ -221,7 +213,7 @@ class hybrid_signal_market_strategy(object):
         if balance_available < float(self.min_trade_size) or balance_available == 0.0:
             return False
 
-        if not self.accnt.simulate and self.buy_order_id:
+        if not self.accnt.simulate and signal.buy_order_id:
             if price > float(signal.buy_price):
                 # assume that this is the actual price that the market order executed at
                 print("Updated buy_price from {} to {}".format(signal.buy_price, price))
@@ -318,6 +310,10 @@ class hybrid_signal_market_strategy(object):
                 self.msg_handler.clear_read()
 
         for signal in self.signal_handler.get_handlers():
+            # prevent buying at the same price with the same timestamp with more than one signal
+            if self.signal_handler.is_duplicate_buy(price, self.timestamp):
+                continue
+
             if self.buy_signal(price, signal):
                 if 'e' in str(self.min_trade_size):
                     self.signal_handler.clear_handler_signaled()
@@ -329,12 +325,11 @@ class hybrid_signal_market_strategy(object):
                     min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
                 id = signal.id
+
                 signal.buy_price = price
                 signal.buy_size = min_trade_size
                 signal.buy_timestamp = self.timestamp
                 self.msg_handler.buy_market(self.ticker_id, price, signal.buy_size, sig_id=id)
-                #self.last_buy_ts = self.timestamp
-                # self.last_buy_obv = self.obv.result
 
             if self.sell_signal(price, signal):
                 id = signal.id
@@ -347,8 +342,6 @@ class hybrid_signal_market_strategy(object):
                 signal.buy_price = 0.0
                 signal.buy_size = 0.0
                 signal.last_sell_price = price
-                #self.last_sell_ts = self.timestamp
-                #self.last_sell_obv = self.obv.result
                 signal.buy_timestamp = 0
 
 
