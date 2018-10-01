@@ -1,12 +1,12 @@
 from trader.indicator.test.BOX import BOX
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
+from trader.signal.SignalBase import SignalBase
 
-
-class BOX_OBV(object):
+class BOX_OBV(SignalBase):
     def __init__(self, window=50):
+        super(BOX_OBV, self).__init__()
         self.signal_name = "BOX_OBV"
-        self.id = 0
         self.window = window
         self.box = BOX()
         self.low = 0.0
@@ -19,17 +19,7 @@ class BOX_OBV(object):
         self.obv_ema26 = EMA(26, scale=24)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
 
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-
-    def set_id(self, id):
-        self.id = id
-
-    def pre_update(self, close, volume):
+    def pre_update(self, close, volume, ts=0):
         obv_value = self.obv.update(close=close, volume=volume)
         self.close = obv_value
         if self.prev_low != self.low:

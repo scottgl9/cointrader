@@ -1,12 +1,12 @@
 from trader.indicator.test.BOX import BOX
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
+from trader.signal.SignalBase import SignalBase
 
-
-class BOX_Crossover(object):
+class BOX_Crossover(SignalBase):
     def __init__(self, window=50):
+        super(BOX_Crossover, self).__init__()
         self.signal_name = "BOX_Crossover"
-        self.id = 0
         self.window = window
         self.box = BOX()
         self.low = 0.0
@@ -24,17 +24,7 @@ class BOX_Crossover(object):
         self.below_box = False
         self.above_box = False
 
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-
-    def set_id(self, id):
-        self.id = id
-
-    def pre_update(self, close, volume):
+    def pre_update(self, close, volume, ts=0):
         obv_value = self.obv.update(close=close, volume=volume)
         self.close = obv_value
         if self.prev_low != self.low:

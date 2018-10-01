@@ -47,17 +47,6 @@ class Hybrid_Crossover(SignalBase):
         self.ts = 0
         self.last_cross_ts = 0
         self.last_obv_cross_ts = 0
-        #self.buy_type = SigType.SIGNAL_NONE
-        #self.sell_type = SigType.SIGNAL_NONE
-        #self.buy_price = 0.0
-        #self.buy_size = 0.0
-        #self.buy_timestamp = 0
-        #self.buy_order_id = None
-        #self.last_buy_price = 0.0
-        #self.last_sell_price = 0.0
-
-    #def set_id(self, id):
-    #    self.id = id
 
     def pre_update(self, close, volume, ts):
         if self.min_price == 0 or close < self.min_price:

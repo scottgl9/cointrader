@@ -2,11 +2,12 @@
 from trader.lib.CircularArray import CircularArray
 from trader.lib.FakeKline import FakeKline
 from trader.lib.PriceFilter import PriceFilter
+from trader.signal.SignalBase import SignalBase
 
-class TD_Sequential_Signal(object):
+class TD_Sequential_Signal(SignalBase):
     def __init__(self, window=13, close_count=9):
+        super(TD_Sequential_Signal, self).__init__()
         self.signal_name = "TD_Sequential_Signal"
-        self.id = 0
         self.close_prices = CircularArray(window=window)
         self.low_prices = CircularArray(window=window)
         self.high_prices = CircularArray(window=window)
@@ -29,16 +30,6 @@ class TD_Sequential_Signal(object):
         self.sellCountdownCompleted = False
         self.sSetupCounter = 0
         self.sCountDownCounter = 0
-
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-
-    def set_id(self, id):
-        self.id = id
 
     # You count only the bars that close higher (lower) or equal to the high (low) of Sell (Buy) Countdown close 2 bars earlier.
     def get_next_countdown(self):

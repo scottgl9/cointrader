@@ -1,23 +1,14 @@
 from trader.indicator.test.PriceChannel import PriceChannel
+from trader.signal.SignalBase import SignalBase
 
-
-class price_channel_signal(object):
+class price_channel_signal(SignalBase):
     def __init__(self, window=26):
+        super(price_channel_signal, self).__init__()
         self.signal_name = "price_channel_signal"
         self.id = 0
         self.window = window
         #self.obv = OBV()
         self.pc = PriceChannel()
-
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-
-    def set_id(self, id):
-        self.id = id
 
     def pre_update(self, close, volume, ts):
         self.pc.update(close)

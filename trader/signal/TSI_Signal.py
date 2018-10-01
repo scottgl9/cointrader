@@ -3,12 +3,12 @@ from trader.indicator.OBV import OBV
 from trader.indicator.TSI import TSI
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.SimplePeak import SimplePeak
+from trader.signal.SignalBase import SignalBase
 
-
-class TSI_Signal(object):
+class TSI_Signal(SignalBase):
     def __init__(self, window=26):
+        super(TSI_Signal, self).__init__()
         self.signal_name = "TSI_Signal"
-        self.id = 0
         self.window = window
         #self.obv = OBV()
         self.tsi = TSI()
@@ -18,16 +18,6 @@ class TSI_Signal(object):
         self.tsi_cross_zero = Crossover2(window=10)
         self.tsi_cross_high = Crossover2(window=10)
         self.peak = SimplePeak()
-
-        self.buy_price = 0.0
-        self.buy_size = 0.0
-        self.buy_timestamp = 0
-        self.buy_order_id = None
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-
-    def set_id(self, id):
-        self.id = id
 
     def pre_update(self, close, volume, ts):
         #obv_value = self.obv.update(close=float(close), volume=float(volume))
