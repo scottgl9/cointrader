@@ -63,7 +63,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
-    ema50 = EMA(50, scale=24, lag_window=5)
+    ema50 = EMA(100, scale=24, lag_window=5)
     ema200 = EMA(200, scale=24, lag_window=5)
     hma = HMA(window=26)
     obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24)

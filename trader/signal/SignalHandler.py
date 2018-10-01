@@ -6,8 +6,9 @@ class SignalHandler(object):
     SIGNAL_ALL = 2
 
     # prevent double buy prevents more than one signal from buying at the same price with the same ts
-    def __init__(self, sigtype=SIGNAL_ONE, logger=None):
+    def __init__(self, symbol, sigtype=SIGNAL_ONE, logger=None):
         self.handlers = []
+        self.symbol = symbol
         self.sigtype = sigtype
         self.logger = logger
         self.buy_type = SigType.SIGNAL_NONE
@@ -21,6 +22,7 @@ class SignalHandler(object):
         return len(self.handlers) == 0
 
     def add(self, handler):
+        handler.set_symbol(self.symbol)
         handler.set_id(self.cur_id)
         self.cur_id += 1
         self.handlers.append(handler)

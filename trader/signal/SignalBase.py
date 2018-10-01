@@ -1,8 +1,12 @@
 from trader.signal.SigType import SigType
 
 class SignalBase(object):
+    FLAG_SELL_BOUGHT = 1
+    FLAG_SELL_ALL = 2
     def __init__(self):
         self.id = 0
+        self.symbol = None
+        self.flag = self.FLAG_SELL_BOUGHT
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
 
@@ -13,8 +17,23 @@ class SignalBase(object):
         self.last_buy_price = 0.0
         self.last_sell_price = 0.0
 
+    def get_id(self):
+        return self.id
+
     def set_id(self, id):
         self.id = id
+
+    def get_symbol(self):
+        return self.symbol
+
+    def set_symbol(self, symbol):
+        self.symbol = symbol
+
+    def get_flag(self):
+        return self.flag
+
+    def set_flag(self, flag):
+        self.flag = flag
 
     def pre_update(self, close, volume, ts):
         pass

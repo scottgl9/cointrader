@@ -1,7 +1,9 @@
 from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 
+from trader.signal.SignalBase import SignalBase
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
+from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.PMO_Crossover import PMO_Crossover
@@ -64,10 +66,10 @@ class hybrid_signal_market_strategy(object):
         self.quote_increment = float(tick_size)
 
         self.msg_handler = MessageHandler()
-        self.signal_handler = SignalHandler(logger=logger)
+        self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
         #self.signal_handler.add(MACD_Crossover())
         self.signal_handler.add(Hybrid_Crossover())
-        self.signal_handler.add(Hybrid_Crossover())
+        self.signal_handler.add(Currency_EMA_Long())
         #self.signal_handler.add(PMO_Crossover())
         #self.signal_handler.add(RSI_OBV())
         #self.tick_filter = TickFilter(tick_size=self.quote_increment, window=3)
@@ -314,6 +316,11 @@ class hybrid_signal_market_strategy(object):
             if self.signal_handler.is_duplicate_buy(price, self.timestamp):
                 continue
 
+            if signal.get_flag() == SignalBase.FLAG_SELL_ALL:
+                balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
+                if balance_available != 0 and signal.sell_signal():
+                    self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
+
             if self.buy_signal(price, signal):
                 if 'e' in str(self.min_trade_size):
                     self.signal_handler.clear_handler_signaled()
@@ -324,16 +331,13 @@ class hybrid_signal_market_strategy(object):
                 if self.min_trade_size_qty != 1.0:
                     min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-                id = signal.id
-
                 signal.buy_price = price
                 signal.buy_size = min_trade_size
                 signal.buy_timestamp = self.timestamp
-                self.msg_handler.buy_market(self.ticker_id, price, signal.buy_size, sig_id=id)
+                self.msg_handler.buy_market(self.ticker_id, price, signal.buy_size, sig_id=signal.id)
 
             if self.sell_signal(price, signal):
-                id = signal.id
-                self.msg_handler.sell_market(self.ticker_id, price, signal.buy_size, signal.buy_price, sig_id=id)
+                self.msg_handler.sell_market(self.ticker_id, price, signal.buy_size, signal.buy_price, sig_id=signal.id)
 
                 if self.min_trade_size_qty != 1.0:
                     self.min_trade_size_qty = 1.0
