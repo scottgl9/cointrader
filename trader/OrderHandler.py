@@ -66,9 +66,6 @@ class OrderHandler(object):
                 elif msg.cmd == Message.MSG_MARKET_SELL:
                     self.place_sell_market_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
-                #elif msg.cmd == Message.MSG_MARKET_SELL_ALL:
-                #    self.sell_market_all()
-                #    msg.mark_read()
                 elif msg.cmd == Message.MSG_LIMIT_BUY:
                     self.place_buy_limit_order(msg.src_id, msg.price, msg.size)
                     msg.mark_read()
@@ -227,31 +224,17 @@ class OrderHandler(object):
         self.open_orders[ticker_id] = order
 
 
-    # sell off everything that was bought
-    #def sell_market_all(self):
-    #    for trader in self.trade_pairs.values():
-    #        buy_price = trader.strategy.buy_price
-    #        buy_size = trader.strategy.buy_size
-    #        ticker_id = trader.strategy.ticker_id
-    #        if float(buy_price) == 0 or float(buy_size) == 0:
-    #            continue
-    #        self.place_sell_market_order(ticker_id, 0, buy_size, buy_price)
-    #        trader.strategy.buy_price = 0.0
-    #        trader.strategy.buy_size = 0.0
-    #        trader.strategy.buy_order_id = None
-
-
     # {u'orderId': 38614135, u'clientOrderId': u'S0FDkNNluyHgdfZt44Ktty', u'origQty': u'0.24000000', u'fills': [{u'commission': u'0.00015000', u'price': u'0.04514300',
     # u'commissionAsset': u'BNB', u'tradeId': 8948934, u'qty': u'0.20000000'}, {u'commission': u'0.00003000', u'price': u'0.04514400', u'commissionAsset': u'BNB', u'tradeId': 8948935,
     # u'qty': u'0.04000000'}], u'symbol': u'BNBETH', u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1536316266040, u'type': u'MARKET', u'price': u'0.00000000',
     #  u'executedQty': u'0.24000000', u'cummulativeQuoteQty': u'0.01083436'}
-    def place_buy_market_order(self, ticker_id, price, size, sig_id=0):
+    def place_buy_market_order(self, ticker_id, price, size, sig_id):
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate:
             self.logger.info(result)
 
         if not self.accnt.simulate and not result:
-            self.msg_handler.buy_failed(ticker_id, price, size)
+            self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
             return
 
         if self.accnt.simulate:
@@ -272,16 +255,18 @@ class OrderHandler(object):
             if self.notify:
                 self.notify.send(subject="MultiTrader", text=message)
         else:
-            self.msg_handler.buy_failed(ticker_id, price, size)
+            self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
 
 
-    def place_sell_market_order(self, ticker_id, price, size, buy_price, sig_id=0):
+    def place_sell_market_order(self, ticker_id, price, size, buy_price, sig_id):
         # if available balance on coin changed after buy, update available size
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
             base, currency = self.accnt.split_ticker_id(ticker_id)
             available_size = self.accnt.round_base(self.accnt.get_asset_balance(base)['available'])
             if available_size == 0:
+                self.trader_db.remove_trade(ticker_id, sig_id)
+                self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
                 return
             #if available_size < size:
             #    return
@@ -292,7 +277,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         if not self.accnt.simulate and not result:
-            self.msg_handler.sell_failed(ticker_id, price, size, buy_price)
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             return
 
         message=''
@@ -323,5 +308,6 @@ class OrderHandler(object):
                 self.trader_db.remove_trade(ticker_id, sig_id)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
-            elif not self.accnt.simulate:
-                self.msg_handler.sell_failed(ticker_id, price, size, buy_price)
+
+        elif not self.accnt.simulate:
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)

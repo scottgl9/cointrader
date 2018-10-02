@@ -221,7 +221,9 @@ class AccountBinance(AccountBase):
                 if ticker_id not in tickers.keys():
                     continue
                 amount = float(self.balances[symbol]['balance'])
-                self.logger.info("ticker {} = {}".format(ticker_id, tickers[ticker_id]))
+                if not self.simulate and self.logger:
+                    self.logger.info("ticker {} = {}".format(ticker_id, tickers[ticker_id]))
+
                 size_btc = float(tickers[ticker_id]) * amount
 
             total_balance_btc += size_btc
