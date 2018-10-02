@@ -28,10 +28,15 @@ class MessageHandler(object):
         msg = Message(src_id, dst_id, cmd, sig_id, price, size, buy_price)
         global_message_queue.append(msg)
 
-    def get_first_message(self, src_id, dst_id):
-        for message in global_message_queue:
-            if message.dst_id == dst_id and message.src_id == src_id:
-                return message
+    def get_first_message(self, src_id, dst_id, sig_id=0):
+        if sig_id == 0:
+            for msg in global_message_queue:
+                if msg.dst_id == dst_id and msg.src_id == src_id:
+                    return msg
+        else:
+            for msg in global_message_queue:
+                if msg.dst_id == dst_id and msg.src_id == src_id and msg.sig_id == sig_id:
+                    return msg
 
         return None
 

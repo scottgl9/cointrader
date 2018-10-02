@@ -17,6 +17,12 @@ class SignalBase(object):
         self.last_buy_price = 0.0
         self.last_sell_price = 0.0
 
+        # for limit / stop loss orders
+        self.buy_pending = False
+        self.buy_pending_price = 0.0
+        self.sell_pending = False
+        self.sell_pending_price = 0.0
+
     def get_id(self):
         return self.id
 
