@@ -47,7 +47,7 @@ class OrderList(object):
 
 
 class Order(object):
-    def __init__(self, symbol, price, size, buy_price=0, type=Message.MSG_MARKET_BUY, orderid=None, state='open'):
+    def __init__(self, symbol, price, size, sig_id, buy_price=0, type=Message.MSG_MARKET_BUY, orderid=None, state='open'):
         if not orderid:
             self.orderid = uuid.uuid4()
         else:
@@ -56,8 +56,10 @@ class Order(object):
         self.price = float(price)
         self.buy_price = float(buy_price)
         self.size = float(size)
+        self.sig_id = sig_id
         self.type = type
         self.state = state
+
 
     def __lt__(self, other):
         return self.price < other.price

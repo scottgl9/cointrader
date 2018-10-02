@@ -77,27 +77,19 @@ class hybrid_signal_stop_loss_strategy(object):
         self.last_high_24hr = 0.0
         self.last_low_24hr = 0.0
         self.interval_price = 0.0
-        self.last_buy_price = 0.0
-        self.last_sell_price = 0.0
-        self.last_buy_ts = 0
-        self.last_buy_obv = 0
-        self.last_sell_ts = 0
-        self.last_sell_obv = 0
+        #self.last_buy_price = 0.0
+        #self.last_sell_price = 0.0
+        #self.last_buy_ts = 0
+        #self.last_buy_obv = 0
+        #self.last_sell_ts = 0
+        #self.last_sell_obv = 0
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.trend_upward_count = 0
         self.trend_downward_count = 0
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
-        #self.buy_price = 0.0
-        #self.buy_size = 0.0
-        #self.buy_timestamp = 0
-        #self.buy_order_id = None
         self.last_price = 0.0
-        #self.buy_pending = False
-        #self.sell_pending = False
-        #self.buy_pending_price = 0.0
-        #self.sell_pending_price = 0.0
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
         self.bnb_trade_size = 0.8
@@ -116,7 +108,7 @@ class hybrid_signal_stop_loss_strategy(object):
         for signal in self.signal_handler.get_handlers():
             signal.buy_price = 0.0
             signal.buy_size = 0.0
-            #self.buy_order_id = None
+            signal.buy_order_id = None
 
 
     def html_run_stats(self):
