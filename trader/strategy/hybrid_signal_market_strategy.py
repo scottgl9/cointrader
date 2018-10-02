@@ -253,6 +253,12 @@ class hybrid_signal_market_strategy(object):
 
     def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
         signal = self.signal_handler.get_handler(id=sig_id)
+        if not signal:
+            self.logger.info("set_buy_price(): sigid {} not in signal_handler for {}: price={}, size={}".format(sig_id,
+                                                                                                                self.ticker_id,
+                                                                                                                buy_price,
+                                                                                                                buy_size))
+            return
         #if signal.buy_price == 0 and signal.buy_size == 0:
         signal.buy_price = buy_price
         signal.buy_size = buy_size
