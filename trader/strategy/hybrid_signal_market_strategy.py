@@ -69,7 +69,7 @@ class hybrid_signal_market_strategy(object):
         self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
         #self.signal_handler.add(MACD_Crossover())
         self.signal_handler.add(Hybrid_Crossover())
-        self.signal_handler.add(Currency_EMA_Long())
+        #self.signal_handler.add(Currency_EMA_Long())
         #self.signal_handler.add(PMO_Crossover())
         #self.signal_handler.add(RSI_OBV())
         #self.tick_filter = TickFilter(tick_size=self.quote_increment, window=3)
@@ -253,10 +253,10 @@ class hybrid_signal_market_strategy(object):
 
     def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
         signal = self.signal_handler.get_handler(id=sig_id)
-        if signal.buy_price == 0 and signal.buy_size == 0:
-            signal.buy_price = buy_price
-            signal.buy_size = buy_size
-            self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
+        #if signal.buy_price == 0 and signal.buy_size == 0:
+        signal.buy_price = buy_price
+        signal.buy_size = buy_size
+        self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
 
     # NOTE: low and high do not update for each kline with binance
