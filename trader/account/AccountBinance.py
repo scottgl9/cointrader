@@ -224,7 +224,10 @@ class AccountBinance(AccountBase):
                 if not self.simulate and self.logger:
                     self.logger.info("ticker {} = {}".format(ticker_id, tickers[ticker_id]))
 
-                size_btc = float(tickers[ticker_id]) * amount
+                if len(tickers[ticker_id]) == 6:
+                    size_btc = float(tickers[ticker_id][4]) * amount
+                else:
+                    size_btc = float(tickers[ticker_id]) * amount
 
             total_balance_btc += size_btc
 
