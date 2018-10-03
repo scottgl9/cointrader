@@ -142,28 +142,32 @@ class hybrid_signal_market_strategy(object):
         return str("{:.9f}".format(float(value)))
 
     def compute_min_trade_size(self, price):
+        min_trade_size = 0
         if self.ticker_id.endswith('BTC'):
             min_trade_size = self.round_base(self.btc_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'ETH' or self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size * 3)
+                    min_trade_size = self.my_float(min_trade_size * 3)
                 else:
-                    self.min_trade_size = self.my_float(min_trade_size * 3)
+                    min_trade_size = self.my_float(min_trade_size * 3)
         elif self.ticker_id.endswith('ETH'):
             min_trade_size = self.round_base(self.eth_trade_size / price)
             if min_trade_size != 0.0:
                 if self.base == 'BNB':
-                    self.min_trade_size = self.my_float(min_trade_size * 3)
+                    min_trade_size = self.my_float(min_trade_size * 3)
                 else:
-                    self.min_trade_size = self.my_float(min_trade_size * 3)
+                    min_trade_size = self.my_float(min_trade_size * 3)
         elif self.ticker_id.endswith('BNB'):
             min_trade_size = self.round_base(self.bnb_trade_size / price)
             if min_trade_size != 0.0:
-                self.min_trade_size = self.my_float(min_trade_size)
+                min_trade_size = self.my_float(min_trade_size)
         elif self.ticker_id.endswith('USDT'):
             min_trade_size = self.round_base(self.usdt_trade_size / price)
             if min_trade_size != 0.0:
-                self.min_trade_size = self.my_float(min_trade_size)
+                min_trade_size = self.my_float(min_trade_size)
+
+        return min_trade_size
+
 
     def buy_signal(self, price, signal):
         if float(signal.buy_price) != 0.0: return False
@@ -188,7 +192,7 @@ class hybrid_signal_market_strategy(object):
         elif self.ticker_id.endswith('USDT') and size < self.usdt_trade_size:
             return False
 
-        self.compute_min_trade_size(price)
+        self.min_trade_size = self.compute_min_trade_size(price)
 
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return False
