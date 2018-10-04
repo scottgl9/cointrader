@@ -54,7 +54,7 @@ class hybrid_signal_stop_loss_strategy(object):
         self.last_close = 0.0
 
         self.msg_handler = MessageHandler()
-        self.signal_handler = SignalHandler(logger=logger)
+        self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
         self.signal_handler.add(Hybrid_Crossover())
 
         self.obv = OBV()
@@ -290,13 +290,13 @@ class hybrid_signal_stop_loss_strategy(object):
                 buy_price = price + self.quote_increment
                 buy_size = min_trade_size
 
-                self.msg_handler.buy_stop_loss(self.ticker_id, buy_price, buy_size)
+                self.msg_handler.buy_stop_loss(self.ticker_id, buy_price, buy_size, signal.id)
                 signal.buy_pending = True
                 signal.buy_pending_price = buy_price
 
             if not signal.sell_pending and self.sell_signal(price, signal):
                 sell_price = price - self.quote_increment
-                self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, signal.buy_size, signal.buy_price)
+                self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
                 signal.sell_pending = True
                 signal.sell_pending_price = sell_price
 
@@ -332,6 +332,7 @@ class hybrid_signal_stop_loss_strategy(object):
                                                      buy_price,
                                                      buy_size)
                     return
+
                 signal.buy_price = float(msg.price)
                 signal.buy_size = float(msg.size)
                 signal.buy_timestamp = self.timestamp
