@@ -40,6 +40,15 @@ class MessageHandler(object):
 
         return None
 
+    def get_messages(self, src_id, dst_id):
+        messages = []
+
+        for message in global_message_queue:
+            if message.dst_id == dst_id and message.src_id == src_id:
+                messages.append(message)
+
+        return messages
+
     # get all messages by id matching src_id or dst_id
     def get_messages_by_id(self, id):
         messages = []
