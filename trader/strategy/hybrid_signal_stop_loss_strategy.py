@@ -333,7 +333,9 @@ class hybrid_signal_stop_loss_strategy(object):
                                                      buy_size)
                     return
 
+                self.logger.info("price={}".format(msg.price))
                 signal.buy_price = float(msg.price)
+                self.logger.info("size={}".format(msg.size))
                 signal.buy_size = float(msg.size)
                 signal.buy_timestamp = self.timestamp
                 #self.last_buy_ts = self.timestamp

@@ -290,16 +290,6 @@ class hybrid_signal_market_strategy(object):
 
         self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp)
 
-        self.run_update_price(close)
-
-        self.last_timestamp = self.timestamp
-        self.last_price = close
-        self.last_close = close
-        self.last_low = self.low
-        self.last_high = self.high
-
-
-    def run_update_price(self, price):
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages(src_id=Message.ID_MULTI, dst_id=self.ticker_id):
                 if msg and msg.cmd == Message.MSG_BUY_FAILED:
@@ -321,41 +311,51 @@ class hybrid_signal_market_strategy(object):
             self.msg_handler.clear_read()
 
         for signal in self.signal_handler.get_handlers():
-            # prevent buying at the same price with the same timestamp with more than one signal
-            if self.signal_handler.is_duplicate_buy(price, self.timestamp):
-                continue
+            self.run_update_signal(signal, close)
 
-            if signal.get_flag() == SignalBase.FLAG_SELL_ALL:
-                balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
-                if balance_available != 0 and signal.sell_signal():
-                    self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
+        self.last_timestamp = self.timestamp
+        self.last_price = close
+        self.last_close = close
+        self.last_low = self.low
+        self.last_high = self.high
 
-            if self.buy_signal(price, signal):
-                if 'e' in str(self.min_trade_size):
-                    self.signal_handler.clear_handler_signaled()
-                    return
 
-                min_trade_size = self.min_trade_size
+    def run_update_signal(self, signal, price):
+        # prevent buying at the same price with the same timestamp with more than one signal
+        if self.signal_handler.is_duplicate_buy(price, self.timestamp):
+            return
 
-                if self.min_trade_size_qty != 1.0:
-                    min_trade_size = float(min_trade_size) * self.min_trade_size_qty
+        if signal.get_flag() == SignalBase.FLAG_SELL_ALL:
+            balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
+            if balance_available != 0 and signal.sell_signal():
+                self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
 
-                signal.buy_price = price
-                signal.buy_size = min_trade_size
-                signal.buy_timestamp = self.timestamp
-                self.msg_handler.buy_market(self.ticker_id, price, signal.buy_size, sig_id=signal.id)
+        if self.buy_signal(price, signal):
+            if 'e' in str(self.min_trade_size):
+                self.signal_handler.clear_handler_signaled()
+                return
 
-            if self.sell_signal(price, signal):
-                self.msg_handler.sell_market(self.ticker_id, price, signal.buy_size, signal.buy_price, sig_id=signal.id)
+            min_trade_size = self.min_trade_size
 
-                if self.min_trade_size_qty != 1.0:
-                    self.min_trade_size_qty = 1.0
+            if self.min_trade_size_qty != 1.0:
+                min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-                signal.last_buy_price = signal.buy_price
-                signal.buy_price = 0.0
-                signal.buy_size = 0.0
-                signal.last_sell_price = price
-                signal.buy_timestamp = 0
+            signal.buy_price = price
+            signal.buy_size = min_trade_size
+            signal.buy_timestamp = self.timestamp
+            self.msg_handler.buy_market(self.ticker_id, price, signal.buy_size, sig_id=signal.id)
+
+        if self.sell_signal(price, signal):
+            self.msg_handler.sell_market(self.ticker_id, price, signal.buy_size, signal.buy_price, sig_id=signal.id)
+
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
+
+            signal.last_buy_price = signal.buy_price
+            signal.buy_price = 0.0
+            signal.buy_size = 0.0
+            signal.last_sell_price = price
+            signal.buy_timestamp = 0
 
 
     def run_update_orderbook(self, msg):

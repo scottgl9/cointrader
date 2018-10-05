@@ -103,19 +103,52 @@ class MessageHandler(object):
                 del global_message_queue[i]
 
     def buy_market(self, ticker_id, price, size, sig_id):
-        self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_MARKET_BUY, sig_id, price, size)
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_MARKET_BUY,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size)
 
     def sell_market(self, ticker_id, price, size, buy_price, sig_id):
-        self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_MARKET_SELL, sig_id, price, size, buy_price)
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_MARKET_SELL,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         buy_price=buy_price)
 
     def buy_stop_loss(self, ticker_id, price, size, sig_id):
-        self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_STOP_LOSS_BUY, sig_id, price, size)
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_STOP_LOSS_BUY,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size)
 
     def sell_stop_loss(self, ticker_id, price, size, buy_price, sig_id):
-        self.add_message(ticker_id, Message.ID_MULTI, Message.MSG_STOP_LOSS_SELL, sig_id, price, size, buy_price)
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_STOP_LOSS_SELL,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         buy_price=buy_price)
 
     def buy_failed(self, ticker_id, price, size, sig_id):
-        self.add_message(Message.ID_MULTI, ticker_id, Message.MSG_BUY_FAILED, sig_id, price, size)
+        self.add_message(Message.ID_MULTI,
+                         ticker_id,
+                         Message.MSG_BUY_FAILED,
+                         sig_id,
+                         price,
+                         size)
 
     def sell_failed(self, ticker_id, price, size, buy_price, sig_id):
-        self.add_message(Message.ID_MULTI, ticker_id, Message.MSG_SELL_FAILED, sig_id, price, size, buy_price)
+        self.add_message(Message.ID_MULTI,
+                         ticker_id,
+                         Message.MSG_SELL_FAILED,
+                         sig_id,
+                         price,
+                         size,
+                         buy_price)
