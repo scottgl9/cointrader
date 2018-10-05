@@ -79,10 +79,10 @@ class OrderHandler(object):
                     self.place_sell_stop_loss_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_BUY_REPLACE:
-                    self.replace_buy_order(msg.src_id, msg.price, msg.size)
+                    self.replace_buy_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_SELL_REPLACE:
-                    self.replace_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price)
+                    self.replace_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
             self.msg_handler.clear_read()
 
@@ -97,7 +97,7 @@ class OrderHandler(object):
             (order.type == Message.MSG_LIMIT_BUY and close <= order.price)):
             bought = False
             if self.accnt.simulate:
-                self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size, order)
+                self.msg_handler.buy_complete(ticker_id=msg['s'], sig_id=order.sig_id, price=order.price, size=order.size)
                 self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
                 bought = True
             else:
@@ -113,7 +113,7 @@ class OrderHandler(object):
               (order.type == Message.MSG_LIMIT_SELL and close >= order.price)):
             sold = False
             if self.accnt.simulate:
-                self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
+                self.msg_handler.sell_complete(ticker_id=msg['s'], sig_id=order.sig_id, price=order.price, size=order.size, buy_price=order.buy_price)
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
                 sold = True
             else:

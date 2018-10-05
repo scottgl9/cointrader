@@ -136,19 +136,36 @@ class MessageHandler(object):
                          size=size,
                          buy_price=buy_price)
 
+    def buy_complete(self, ticker_id, price, size, sig_id):
+        self.add_message(src_id=Message.ID_MULTI,
+                         dst_id=ticker_id,
+                         cmd=Message.MSG_BUY_COMPLETE,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size)
+
+    def sell_complete(self, ticker_id, price, size, buy_price, sig_id):
+        self.add_message(src_id=Message.ID_MULTI,
+                         dst_id=ticker_id,
+                         cmd=Message.MSG_SELL_COMPLETE,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         buy_price=buy_price)
+
     def buy_failed(self, ticker_id, price, size, sig_id):
-        self.add_message(Message.ID_MULTI,
-                         ticker_id,
-                         Message.MSG_BUY_FAILED,
-                         sig_id,
-                         price,
-                         size)
+        self.add_message(src_id=Message.ID_MULTI,
+                         dst_id=ticker_id,
+                         cmd=Message.MSG_BUY_FAILED,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size)
 
     def sell_failed(self, ticker_id, price, size, buy_price, sig_id):
-        self.add_message(Message.ID_MULTI,
-                         ticker_id,
-                         Message.MSG_SELL_FAILED,
-                         sig_id,
-                         price,
-                         size,
-                         buy_price)
+        self.add_message(src_id=Message.ID_MULTI,
+                         dst_id=ticker_id,
+                         cmd=Message.MSG_SELL_FAILED,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         buy_price=buy_price)

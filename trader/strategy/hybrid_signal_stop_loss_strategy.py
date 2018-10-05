@@ -97,6 +97,9 @@ class hybrid_signal_stop_loss_strategy(object):
     def get_ticker_id(self):
         return self.ticker_id
 
+    def get_signals(self):
+        return self.signal_handler.get_handlers()
+
     # clear pending sell trades which have been bought
     def reset(self):
         for signal in self.signal_handler.get_handlers():
@@ -269,119 +272,121 @@ class hybrid_signal_stop_loss_strategy(object):
 
         self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp)
 
-        self.run_update_price(close)
+        for signal in self.signal_handler.get_handlers():
+            self.run_update_signal(signal, close)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
         self.last_close = close
 
 
-    def run_update_price(self, price):
-        for signal in self.signal_handler.get_handlers():
-            if not signal.buy_pending and self.buy_signal(price, signal):
-                if 'e' in str(self.min_trade_size):
-                    return
+    def run_update_signal(self, signal, price):
+        if not signal.buy_pending and self.buy_signal(price, signal):
+            if 'e' in str(self.min_trade_size):
+                return
 
-                min_trade_size = self.min_trade_size
+            min_trade_size = self.min_trade_size
 
-                if self.min_trade_size_qty != 1.0:
-                    min_trade_size = float(min_trade_size) * self.min_trade_size_qty
+            if self.min_trade_size_qty != 1.0:
+                min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-                buy_price = price + self.quote_increment
-                buy_size = min_trade_size
+            buy_price = price + self.quote_increment
+            buy_size = min_trade_size
 
-                self.msg_handler.buy_stop_loss(self.ticker_id, buy_price, buy_size, signal.id)
-                signal.buy_pending = True
-                signal.buy_pending_price = buy_price
+            self.msg_handler.buy_stop_loss(self.ticker_id, buy_price, buy_size, signal.id)
+            signal.buy_pending = True
+            signal.buy_pending_price = buy_price
 
-            if not signal.sell_pending and self.sell_signal(price, signal):
-                sell_price = price - self.quote_increment
-                self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
-                signal.sell_pending = True
-                signal.sell_pending_price = sell_price
+        if not signal.sell_pending and self.sell_signal(price, signal):
+            sell_price = price - self.quote_increment
+            self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
+            signal.sell_pending = True
+            signal.sell_pending_price = sell_price
 
-            if signal.buy_pending:
-                msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
-                if not msg:
-                    if self.buy_signal(price, signal):
-                        # if we received a new buy signal with order pending, cancel order and replace
-                        buy_price = price + self.quote_increment
-                        buy_size = self.min_trade_size
+        if signal.buy_pending:
+            msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
+            if not msg:
+                # if self.buy_signal(price, signal):
+                #     # if we received a new buy signal with order pending, cancel order and replace
+                #     buy_price = price + self.quote_increment
+                #     buy_size = self.min_trade_size
+                #
+                #     if self.min_trade_size_qty != 1.0:
+                #         buy_size = float(buy_size) * self.min_trade_size_qty
+                #
+                #     self.msg_handler.add_message(self.ticker_id,
+                #                                  Message.ID_MULTI,
+                #                                  Message.MSG_BUY_REPLACE,
+                #                                  signal.id,
+                #                                  buy_price,
+                #                                  buy_size)
+                #     return
+                # elif signal.buy_pending_price != 0 and abs(price - signal.buy_pending_price) / signal.buy_pending_price > 0.01:
+                #     # price has fallen another 5%, cancel old order and create new lower one
+                #     buy_price = price + self.quote_increment
+                #     signal.buy_pending_price = buy_price
+                #     buy_size = self.min_trade_size
+                #
+                #     if self.min_trade_size_qty != 1.0:
+                #         buy_size = float(buy_size) * self.min_trade_size_qty
+                #
+                #     self.msg_handler.add_message(self.ticker_id,
+                #                                  Message.ID_MULTI,
+                #                                  Message.MSG_BUY_REPLACE,
+                #                                  signal.id,
+                #                                  buy_price,
+                #                                  buy_size)
+                return
 
-                        if self.min_trade_size_qty != 1.0:
-                            buy_size = float(buy_size) * self.min_trade_size_qty
+            signal.buy_price = float(msg.price)
+            signal.buy_size = float(msg.size)
+            signal.buy_timestamp = self.timestamp
+            #self.last_buy_ts = self.timestamp
+            #self.last_buy_obv = self.obv.result
+            signal.buy_pending = False
+            msg.mark_read()
+            self.msg_handler.clear_read()
+        elif signal.sell_pending:
+            msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
+            if not msg:
+                # if self.sell_signal(price, signal):
+                #     # if we received a new sell signal with order pending, cancel order and replace
+                #     sell_price = price - self.quote_increment
+                #     self.msg_handler.add_message(self.ticker_id,
+                #                                  Message.ID_MULTI,
+                #                                  Message.MSG_SELL_REPLACE,
+                #                                  sell_price,
+                #                                  signal.id,
+                #                                  signal.buy_size,
+                #                                  signal.buy_price)
+                #     return
+                # elif signal.sell_pending_price != 0 and abs(price - signal.sell_pending_price) / signal.sell_pending_price > 0.01:
+                #     # price has risen another 5%, cancel old order and create new higher one
+                #     sell_price = price - self.quote_increment
+                #     signal.sell_pending_price = sell_price
+                #
+                #     self.msg_handler.add_message(self.ticker_id,
+                #                                  Message.ID_MULTI,
+                #                                  Message.MSG_SELL_REPLACE,
+                #                                  signal.id,
+                #                                  sell_price,
+                #                                  signal.buy_size,
+                #                                  signal.buy_price)
+                return
+            signal.last_buy_price = signal.buy_price
+            signal.buy_price = 0.0
+            signal.buy_size = 0.0
+            signal.last_sell_price = msg.price
+            #self.last_sell_ts = self.timestamp
+            #self.last_sell_obv = self.obv.result
+            signal.buy_timestamp = 0
+            signal.sell_pending = False
 
-                        self.msg_handler.add_message(self.ticker_id,
-                                                     Message.ID_MULTI,
-                                                     Message.MSG_BUY_REPLACE,
-                                                     buy_price,
-                                                     buy_size)
-                        return
-                    elif signal.buy_pending_price != 0 and abs(price - signal.buy_pending_price) / signal.buy_pending_price > 0.01:
-                        # price has fallen another 5%, cancel old order and create new lower one
-                        buy_price = price + self.quote_increment
-                        signal.buy_pending_price = buy_price
-                        buy_size = self.min_trade_size
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
 
-                        if self.min_trade_size_qty != 1.0:
-                            buy_size = float(buy_size) * self.min_trade_size_qty
-
-                        self.msg_handler.add_message(self.ticker_id,
-                                                     Message.ID_MULTI,
-                                                     Message.MSG_BUY_REPLACE,
-                                                     buy_price,
-                                                     buy_size)
-                    return
-
-                self.logger.info("price={}".format(msg.price))
-                signal.buy_price = float(msg.price)
-                self.logger.info("size={}".format(msg.size))
-                signal.buy_size = float(msg.size)
-                signal.buy_timestamp = self.timestamp
-                #self.last_buy_ts = self.timestamp
-                #self.last_buy_obv = self.obv.result
-                signal.buy_pending = False
-                msg.mark_read()
-                self.msg_handler.clear_read()
-            elif signal.sell_pending:
-                msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
-                if not msg:
-                    if self.sell_signal(price, signal):
-                        # if we received a new sell signal with order pending, cancel order and replace
-                        sell_price = price - self.quote_increment
-                        self.msg_handler.add_message(self.ticker_id,
-                                                     Message.ID_MULTI,
-                                                     Message.MSG_SELL_REPLACE,
-                                                     sell_price,
-                                                     signal.buy_size,
-                                                     signal.buy_price)
-                        return
-                    elif signal.sell_pending_price != 0 and abs(price - signal.sell_pending_price) / signal.sell_pending_price > 0.01:
-                        # price has risen another 5%, cancel old order and create new higher one
-                        sell_price = price - self.quote_increment
-                        signal.sell_pending_price = sell_price
-
-                        self.msg_handler.add_message(self.ticker_id,
-                                                     Message.ID_MULTI,
-                                                     Message.MSG_SELL_REPLACE,
-                                                     sell_price,
-                                                     signal.buy_size,
-                                                     signal.buy_price)
-                    return
-                signal.last_buy_price = signal.buy_price
-                signal.buy_price = 0.0
-                signal.buy_size = 0.0
-                signal.last_sell_price = msg.price
-                #self.last_sell_ts = self.timestamp
-                #self.last_sell_obv = self.obv.result
-                signal.buy_timestamp = 0
-                signal.sell_pending = False
-
-                if self.min_trade_size_qty != 1.0:
-                    self.min_trade_size_qty = 1.0
-
-                msg.mark_read()
-                self.msg_handler.clear_read()
+            msg.mark_read()
+            self.msg_handler.clear_read()
 
 
     def run_update_orderbook(self, msg):
