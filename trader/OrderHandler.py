@@ -93,8 +93,8 @@ class OrderHandler(object):
 
         order = self.open_orders[msg['s']]
         close = float(msg['c'])
-        if ((order.type == Message.MSG_STOP_LOSS_BUY and close >= order.price) or
-            (order.type == Message.MSG_LIMIT_BUY and close <= order.price)):
+        if ((order.type == Message.MSG_STOP_LOSS_BUY and close > order.price) or
+            (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
             bought = False
             if self.accnt.simulate:
                 self.msg_handler.buy_complete(ticker_id=msg['s'], sig_id=order.sig_id, price=order.price, size=order.size)
@@ -109,8 +109,8 @@ class OrderHandler(object):
             if bought:
                 self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
                 del self.open_orders[msg['s']]
-        elif ((order.type == Message.MSG_STOP_LOSS_SELL and close <= order.price) or
-              (order.type == Message.MSG_LIMIT_SELL and close >= order.price)):
+        elif ((order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
+              (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
             sold = False
             if self.accnt.simulate:
                 self.msg_handler.sell_complete(ticker_id=msg['s'], sig_id=order.sig_id, price=order.price, size=order.size, buy_price=order.buy_price)
@@ -157,6 +157,8 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=orderid)
 
+        self.logger.info("cancel_buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
+
         del self.open_orders[ticker_id]
 
         self.place_buy_stop_loss_order(ticker_id, price, size, sig_id)
@@ -171,6 +173,7 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=orderid)
 
+        self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
         del self.open_orders[ticker_id]
 
         self.place_sell_stop_loss_order(ticker_id, price, size, buy_price, sig_id)
