@@ -314,12 +314,7 @@ class hybrid_signal_stop_loss_strategy(object):
                     if self.min_trade_size_qty != 1.0:
                         buy_size = float(buy_size) * self.min_trade_size_qty
 
-                    self.msg_handler.add_message(self.ticker_id,
-                                                 Message.ID_MULTI,
-                                                 Message.MSG_BUY_REPLACE,
-                                                 signal.id,
-                                                 buy_price,
-                                                 buy_size)
+                    self.msg_handler.buy_replace(self.ticker_id, buy_price, buy_size, signal.id)
                     return
                 elif signal.buy_pending_price != 0 and abs(price - signal.buy_pending_price) / signal.buy_pending_price > 0.01:
                     # price has fallen another 5%, cancel old order and create new lower one
@@ -330,12 +325,7 @@ class hybrid_signal_stop_loss_strategy(object):
                     if self.min_trade_size_qty != 1.0:
                         buy_size = float(buy_size) * self.min_trade_size_qty
 
-                    self.msg_handler.add_message(self.ticker_id,
-                                                 Message.ID_MULTI,
-                                                 Message.MSG_BUY_REPLACE,
-                                                 signal.id,
-                                                 buy_price,
-                                                 buy_size)
+                    self.msg_handler.buy_replace(self.ticker_id, buy_price, buy_size, signal.id)
                 return
 
             signal.buy_price = float(msg.price)
@@ -352,26 +342,14 @@ class hybrid_signal_stop_loss_strategy(object):
                 if self.sell_signal(price, signal):
                     # if we received a new sell signal with order pending, cancel order and replace
                     sell_price = price - self.quote_increment
-                    self.msg_handler.add_message(self.ticker_id,
-                                                 Message.ID_MULTI,
-                                                 Message.MSG_SELL_REPLACE,
-                                                 signal.id,
-                                                 sell_price,
-                                                 signal.buy_size,
-                                                 signal.buy_price)
+                    self.msg_handler.sell_replace(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
                     return
                 elif signal.sell_pending_price != 0 and abs(price - signal.sell_pending_price) / signal.sell_pending_price > 0.01:
                     # price has risen another 5%, cancel old order and create new higher one
                     sell_price = price - self.quote_increment
                     signal.sell_pending_price = sell_price
 
-                    self.msg_handler.add_message(self.ticker_id,
-                                                 Message.ID_MULTI,
-                                                 Message.MSG_SELL_REPLACE,
-                                                 signal.id,
-                                                 sell_price,
-                                                 signal.buy_size,
-                                                 signal.buy_price)
+                    self.msg_handler.sell_replace(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
                 return
             signal.last_buy_price = signal.buy_price
             signal.buy_price = 0.0

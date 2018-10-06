@@ -169,3 +169,20 @@ class MessageHandler(object):
                          price=price,
                          size=size,
                          buy_price=buy_price)
+
+    def buy_replace(self, ticker_id, price, size, sig_id):
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_BUY_REPLACE,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size)
+
+    def sell_replace(self, ticker_id, price, size, buy_price, sig_id):
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_SELL_REPLACE,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         buy_price=buy_price)
