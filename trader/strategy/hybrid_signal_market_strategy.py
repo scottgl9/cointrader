@@ -169,7 +169,7 @@ class hybrid_signal_market_strategy(object):
         return min_trade_size
 
 
-    def buy_signal(self, price, signal):
+    def buy_signal(self, signal, price):
         if float(signal.buy_price) != 0.0: return False
 
         # if more than 500 seconds between price updates, ignore signal
@@ -210,7 +210,7 @@ class hybrid_signal_market_strategy(object):
 
         return False
 
-    def sell_signal(self, price, signal):
+    def sell_signal(self, signal, price):
         if float(signal.buy_price) == 0.0 or float(signal.buy_size) == 0.0:
             return False
 
@@ -330,7 +330,7 @@ class hybrid_signal_market_strategy(object):
             if balance_available != 0 and signal.sell_signal():
                 self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
 
-        if self.buy_signal(price, signal):
+        if self.buy_signal(signal, price):
             if 'e' in str(self.min_trade_size):
                 self.signal_handler.clear_handler_signaled()
                 return
@@ -345,7 +345,7 @@ class hybrid_signal_market_strategy(object):
             signal.buy_timestamp = self.timestamp
             self.msg_handler.buy_market(self.ticker_id, price, signal.buy_size, sig_id=signal.id)
 
-        if self.sell_signal(price, signal):
+        if self.sell_signal(signal, price):
             self.msg_handler.sell_market(self.ticker_id, price, signal.buy_size, signal.buy_price, sig_id=signal.id)
 
             if self.min_trade_size_qty != 1.0:

@@ -156,6 +156,7 @@ class OrderHandler(object):
         orderid = order.orderid
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=orderid)
+            self.logger.info(result)
 
         self.logger.info("cancel_buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
@@ -172,6 +173,7 @@ class OrderHandler(object):
         orderid = order.orderid
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=orderid)
+            self.logger.info(result)
 
         self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
         del self.open_orders[ticker_id]

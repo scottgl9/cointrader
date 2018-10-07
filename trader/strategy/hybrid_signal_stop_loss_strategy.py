@@ -164,7 +164,7 @@ class hybrid_signal_stop_loss_strategy(object):
         return min_trade_size
 
 
-    def buy_signal(self, price, signal):
+    def buy_signal(self, signal, price):
         if float(signal.buy_price) != 0.0: return False
 
         # if more than 500 seconds between price updates, ignore signal
@@ -206,7 +206,7 @@ class hybrid_signal_stop_loss_strategy(object):
         return False
 
 
-    def sell_signal(self, price, signal):
+    def sell_signal(self, signal, price):
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size):
@@ -281,7 +281,9 @@ class hybrid_signal_stop_loss_strategy(object):
 
 
     def run_update_signal(self, signal, price):
-        if not signal.buy_pending and self.buy_signal(price, signal):
+        buy_price = price + self.quote_increment * 2
+        sell_price = price - self.quote_increment * 2
+        if not signal.buy_pending and self.buy_signal(signal, price):
             if 'e' in str(self.min_trade_size):
                 return
 
@@ -290,25 +292,25 @@ class hybrid_signal_stop_loss_strategy(object):
             if self.min_trade_size_qty != 1.0:
                 min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-            buy_price = price + self.quote_increment
+            #buy_price = price + self.quote_increment
             buy_size = min_trade_size
 
             self.msg_handler.buy_stop_loss(self.ticker_id, buy_price, buy_size, signal.id)
             signal.buy_pending = True
             signal.buy_pending_price = buy_price
 
-        if not signal.sell_pending and self.sell_signal(price, signal):
+        if not signal.sell_pending and self.sell_signal(signal, price):
             sell_price = price - self.quote_increment
             self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
             signal.sell_pending = True
             signal.sell_pending_price = sell_price
 
         if signal.buy_pending:
-            msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
+            msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id, sig_id=signal.id)
             if not msg:
-                if self.buy_signal(price, signal):
+                if self.buy_signal(signal, price):
                     # if we received a new buy signal with order pending, cancel order and replace
-                    buy_price = price + self.quote_increment
+                    #buy_price = price + self.quote_increment
                     buy_size = self.min_trade_size
 
                     if self.min_trade_size_qty != 1.0:
@@ -316,9 +318,9 @@ class hybrid_signal_stop_loss_strategy(object):
 
                     self.msg_handler.buy_replace(self.ticker_id, buy_price, buy_size, signal.id)
                     return
-                elif signal.buy_pending_price != 0 and abs(price - signal.buy_pending_price) / signal.buy_pending_price > 0.01:
+                elif signal.buy_pending_price != 0 and abs(price - signal.buy_pending_price) / signal.buy_pending_price > 0.02:
                     # price has fallen another 5%, cancel old order and create new lower one
-                    buy_price = price + self.quote_increment
+                    #buy_price = price + self.quote_increment
                     signal.buy_pending_price = buy_price
                     buy_size = self.min_trade_size
 
@@ -331,22 +333,20 @@ class hybrid_signal_stop_loss_strategy(object):
             signal.buy_price = float(msg.price)
             signal.buy_size = float(msg.size)
             signal.buy_timestamp = self.timestamp
-            #self.last_buy_ts = self.timestamp
-            #self.last_buy_obv = self.obv.result
             signal.buy_pending = False
             msg.mark_read()
             self.msg_handler.clear_read()
         elif signal.sell_pending:
-            msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id)
+            msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id, sig_id=signal.id)
             if not msg:
-                if self.sell_signal(price, signal):
+                if self.sell_signal(signal, price):
                     # if we received a new sell signal with order pending, cancel order and replace
-                    sell_price = price - self.quote_increment
+                    #sell_price = price - self.quote_increment
                     self.msg_handler.sell_replace(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
                     return
                 elif signal.sell_pending_price != 0 and abs(price - signal.sell_pending_price) / signal.sell_pending_price > 0.01:
                     # price has risen another 5%, cancel old order and create new higher one
-                    sell_price = price - self.quote_increment
+                    #sell_price = price - self.quote_increment
                     signal.sell_pending_price = sell_price
 
                     self.msg_handler.sell_replace(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
@@ -355,8 +355,6 @@ class hybrid_signal_stop_loss_strategy(object):
             signal.buy_price = 0.0
             signal.buy_size = 0.0
             signal.last_sell_price = msg.price
-            #self.last_sell_ts = self.timestamp
-            #self.last_sell_obv = self.obv.result
             signal.buy_timestamp = 0
             signal.sell_pending = False
 
