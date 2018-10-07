@@ -330,12 +330,27 @@ class hybrid_signal_stop_loss_strategy(object):
                     self.msg_handler.buy_replace(self.ticker_id, buy_price, buy_size, signal.id)
                 return
 
-            signal.buy_price = float(msg.price)
-            signal.buy_size = float(msg.size)
-            signal.buy_timestamp = self.timestamp
-            signal.buy_pending = False
-            msg.mark_read()
-            self.msg_handler.clear_read()
+            if msg.cmd == Message.MSG_BUY_COMPLETE:
+                signal.buy_price = float(msg.price)
+                signal.buy_size = float(msg.size)
+                signal.buy_timestamp = self.timestamp
+                signal.buy_pending = False
+                msg.mark_read()
+                self.msg_handler.clear_read()
+            elif msg.cmd == Message.MSG_BUY_FAILED:
+                id = msg.sig_id
+                self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
+                                                                             msg.price,
+                                                                             msg.size))
+                if self.min_trade_size_qty != 1.0:
+                    self.min_trade_size_qty = 1.0
+                signal.buy_price = 0.0
+                signal.buy_size = 0.0
+                signal.buy_timestamp = 0
+                signal.buy_pending = False
+                signal.buy_pending_price = 0
+                msg.mark_read()
+                self.msg_handler.clear_read()
         elif signal.sell_pending:
             msg = self.msg_handler.get_first_message(src_id=Message.ID_MULTI, dst_id=self.ticker_id, sig_id=signal.id)
             if not msg:
@@ -351,19 +366,27 @@ class hybrid_signal_stop_loss_strategy(object):
 
                     self.msg_handler.sell_replace(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
                 return
-            signal.last_buy_price = signal.buy_price
-            signal.buy_price = 0.0
-            signal.buy_size = 0.0
-            signal.last_sell_price = msg.price
-            signal.buy_timestamp = 0
-            signal.sell_pending = False
 
-            if self.min_trade_size_qty != 1.0:
-                self.min_trade_size_qty = 1.0
+            if msg.cmd == Message.MSG_SELL_COMPLETE:
+                signal.last_buy_price = signal.buy_price
+                signal.buy_price = 0.0
+                signal.buy_size = 0.0
+                signal.last_sell_price = msg.price
+                signal.buy_timestamp = 0
+                signal.sell_pending = False
 
-            msg.mark_read()
-            self.msg_handler.clear_read()
+                if self.min_trade_size_qty != 1.0:
+                    self.min_trade_size_qty = 1.0
 
+                msg.mark_read()
+                self.msg_handler.clear_read()
+            elif msg.cmd == Message.MSG_SELL_FAILED:
+                self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
+                                                                                           msg.price,
+                                                                                           msg.buy_price,
+                                                                                           msg.size))
+                msg.mark_read()
+                self.msg_handler.clear_read()
 
     def run_update_orderbook(self, msg):
         pass

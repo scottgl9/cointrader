@@ -295,7 +295,9 @@ class hybrid_signal_market_strategy(object):
                 if msg and msg.cmd == Message.MSG_BUY_FAILED:
                     id = msg.sig_id
                     signal = self.signal_handler.get_handler(id=id)
-                    self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id, msg.price, msg.size))
+                    self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
+                                                                                 msg.price,
+                                                                                 msg.size))
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
                     signal.buy_price = 0.0
@@ -305,7 +307,10 @@ class hybrid_signal_market_strategy(object):
                 elif msg and msg.cmd == Message.MSG_SELL_FAILED:
                     id = msg.sig_id
                     signal = self.signal_handler.get_handler(id=id)
-                    self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id, msg.price, msg.buy_price, msg.size))
+                    self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
+                                                                                               msg.price,
+                                                                                               msg.buy_price,
+                                                                                               msg.size))
                     signal.buy_price = signal.last_buy_price
                     msg.mark_read()
             self.msg_handler.clear_read()

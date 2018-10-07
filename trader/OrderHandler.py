@@ -162,7 +162,12 @@ class OrderHandler(object):
 
         del self.open_orders[ticker_id]
 
-        self.place_buy_stop_loss_order(ticker_id, price, size, sig_id)
+        if order.type == Message.MSG_STOP_LOSS_BUY:
+            self.place_buy_stop_loss_order(ticker_id, price, size, sig_id)
+        elif order.type == Message.MSG_LIMIT_BUY:
+            self.place_buy_limit_order(ticker_id, price, size, sig_id)
+        else:
+            self.logger.warn("unknown order type {} for {}".format(order.type, ticker_id))
 
 
     def replace_sell_order(self, ticker_id, price, size, buy_price, sig_id):
@@ -178,7 +183,12 @@ class OrderHandler(object):
         self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
         del self.open_orders[ticker_id]
 
-        self.place_sell_stop_loss_order(ticker_id, price, size, buy_price, sig_id)
+        if order.type == Message.MSG_STOP_LOSS_SELL:
+            self.place_sell_stop_loss_order(ticker_id, price, size, buy_price, sig_id)
+        elif order.type == Message.MSG_LIMIT_SELL:
+            self.place_sell_limit_order(ticker_id, price, size, buy_price, sig_id)
+        else:
+            self.logger.warn("unknown order type {} for {}".format(order.type, ticker_id))
 
 
     def place_buy_limit_order(self, ticker_id, price, size, sig_id):
@@ -191,6 +201,7 @@ class OrderHandler(object):
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_LIMIT_BUY)
         self.open_orders[ticker_id] = order
+        self.logger.info("place_buy_limit({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
     def place_sell_limit_order(self, ticker_id, price, size, buy_price, sig_id):
@@ -203,6 +214,7 @@ class OrderHandler(object):
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
         self.open_orders[ticker_id] = order
+        self.logger.info("place_sell_limit({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
     def place_buy_stop_loss_order(self, ticker_id, price, size, sig_id):
@@ -215,6 +227,7 @@ class OrderHandler(object):
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
         self.open_orders[ticker_id] = order
+        self.logger.info("place_buy_stop({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
     def place_sell_stop_loss_order(self, ticker_id, price, size, buy_price, sig_id):
@@ -227,6 +240,8 @@ class OrderHandler(object):
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
         self.open_orders[ticker_id] = order
+
+        self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
     # {u'orderId': 38614135, u'clientOrderId': u'S0FDkNNluyHgdfZt44Ktty', u'origQty': u'0.24000000', u'fills': [{u'commission': u'0.00015000', u'price': u'0.04514300',
