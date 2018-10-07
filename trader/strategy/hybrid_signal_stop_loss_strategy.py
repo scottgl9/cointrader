@@ -1,5 +1,6 @@
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
+from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
 from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
@@ -42,19 +43,20 @@ def percent_p1_lt_p2(p1, p2, percent):
     return True
 
 
-class hybrid_signal_stop_loss_strategy(object):
+class hybrid_signal_stop_loss_strategy(StrategyBase):
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None, logger=None):
+        super(hybrid_signal_stop_loss_strategy, self).__init__(client,
+                                                               name,
+                                                               currency,
+                                                               account_handler,
+                                                               base_min_size,
+                                                               tick_size,
+                                                               logger)
         self.strategy_name = 'hybrid_signal_stop_loss_strategy'
-        self.logger = logger
-        self.client = client
-        self.accnt = account_handler
         self.rank = rank
-        self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
         self.last_close = 0.0
 
-        self.msg_handler = MessageHandler()
-        self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
         self.signal_handler.add(Hybrid_Crossover())
 
         self.obv = OBV()
@@ -63,13 +65,6 @@ class hybrid_signal_stop_loss_strategy(object):
         self.prev_low_long = self.prev_high_long = 0.0
         self.prev_low_short = self.prev_high_short = 0.0
 
-        self.stats = StatTracker()
-
-        self.base = name
-        self.currency = currency
-
-        self.count_prices_added = 0
-        self.buy_signal_count = self.sell_signal_count = 0
         self.high_24hr = self.low_24hr = 0.0
         self.open_24hr = self.close_24hr = self.volume_24hr = 0.0
         self.timestamp = 0
@@ -77,12 +72,8 @@ class hybrid_signal_stop_loss_strategy(object):
         self.last_high_24hr = 0.0
         self.last_low_24hr = 0.0
         self.interval_price = 0.0
-        self.last_50_prices = []
-        self.prev_last_50_prices = []
         self.trend_upward_count = 0
         self.trend_downward_count = 0
-        self.base_min_size = float(base_min_size)
-        self.quote_increment = float(tick_size)
         self.last_price = 0.0
         self.btc_trade_size = 0.0011
         self.eth_trade_size = 0.011
@@ -90,15 +81,8 @@ class hybrid_signal_stop_loss_strategy(object):
         self.usdt_trade_size = 10.0
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
         self.min_trade_size_qty = 1.0
-        self.tickers = None
         self.min_price = 0.0
         self.max_price = 0.0
-
-    def get_ticker_id(self):
-        return self.ticker_id
-
-    def get_signals(self):
-        return self.signal_handler.get_handlers()
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -111,30 +95,6 @@ class hybrid_signal_stop_loss_strategy(object):
             signal.buy_pending_price = 0.0
             signal.sell_pending_price = 0.0
             signal.last_sell_price = 0.0
-
-
-    def html_run_stats(self):
-        results = str('')
-        results += "buy_signal_count: {}<br>".format(self.buy_signal_count)
-        results += "sell_signal_count: {}<br>".format(self.sell_signal_count)
-        return results
-
-
-    def round_base(self, price):
-        if self.base_min_size != 0.0:
-            return round(price, '{:.9f}'.format(self.base_min_size).index('1') - 1)
-        return price
-
-
-    def round_quote(self, price):
-        if self.quote_increment != 0.0:
-            return round(price, '{:.9f}'.format(self.quote_increment).index('1') - 1)
-        return price
-
-
-    def my_float(self, value):
-        return str("{:.9f}".format(float(value)))
-
 
     def compute_min_trade_size(self, price):
         min_trade_size = 0
@@ -229,14 +189,6 @@ class hybrid_signal_stop_loss_strategy(object):
             return True
 
         return False
-
-
-    def update_last_50_prices(self, price):
-        self.last_50_prices.append(price)
-        if len(self.last_50_prices) > 50:
-            diff_size = len(self.last_50_prices) - 50
-            self.last_50_prices = self.last_50_prices[diff_size:]
-        self.count_prices_added += 1
 
 
     def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
@@ -387,11 +339,3 @@ class hybrid_signal_stop_loss_strategy(object):
                                                                                            msg.size))
                 msg.mark_read()
                 self.msg_handler.clear_read()
-
-    def run_update_orderbook(self, msg):
-        pass
-
-
-    def close(self):
-        #logger.info("close()")
-        pass
