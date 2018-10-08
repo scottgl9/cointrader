@@ -13,7 +13,7 @@ from trader.indicator.OBV import OBV
 
 
 class hybrid_signal_market_strategy(StrategyBase):
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None, logger=None):
+    def __init__(self, client, name='BTC', currency='USD', account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
         super(hybrid_signal_market_strategy, self).__init__(client,
                                                             name,
                                                             currency,
@@ -22,7 +22,6 @@ class hybrid_signal_market_strategy(StrategyBase):
                                                             tick_size,
                                                             logger)
         self.strategy_name = 'hybrid_signal_market_strategy'
-        self.rank = rank
         self.last_price = self.price = 0.0
         self.last_close = 0.0
         self.low = 0
@@ -59,7 +58,7 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.min_trade_size_qty = 1.0
         self.min_price = 0.0
         self.max_price = 0.0
-        self.trade_size_handler = static_trade_size(name, currency, base_min_size, tick_size)
+        self.trade_size_handler = static_trade_size(name, currency, base_min_size, tick_size, usdt=10)
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -164,21 +163,21 @@ class hybrid_signal_market_strategy(StrategyBase):
 
 
     # NOTE: low and high do not update for each kline with binance
-    def run_update(self, msg):
+    def run_update(self, kline):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return
-        close = float(msg['c'])
-        self.low = float(msg['l'])
-        self.high = float(msg['h'])
-        volume = float(msg['v'])
+        close = float(kline['c'])
+        self.low = float(kline['l'])
+        self.high = float(kline['h'])
+        volume = float(kline['v'])
 
         #close = self.tick_filter.update(close)
 
         if close == 0 or volume == 0:
             return
 
-        self.timestamp = int(msg['E'])
+        self.timestamp = int(kline['E'])
 
         self.obv.update(close, volume)
 

@@ -18,6 +18,7 @@ class StrategyBase(object):
         self.make_ticker_id()
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
+        self.trade_size_handler = None
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.count_prices_added = 0
@@ -66,7 +67,7 @@ class StrategyBase(object):
     def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
         pass
 
-    def run_update(self, msg):
+    def run_update(self, kline):
         pass
 
     def run_update_signal(self, signal, price):
@@ -74,6 +75,11 @@ class StrategyBase(object):
 
     def run_update_orderbook(self, msg):
         pass
+
+    def update_tickers(self, tickers):
+        self.tickers = tickers
+        if self.trade_size_handler:
+            self.trade_size_handler.update_tickers(tickers)
 
     def close(self):
         pass

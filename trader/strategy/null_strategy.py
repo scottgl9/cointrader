@@ -1,7 +1,6 @@
 from datetime import datetime
-#import logging
+from trader.strategy.StrategyBase import StrategyBase
 
-#logger = logging.getLogger(__name__)
 
 def datetime_to_float(d):
     epoch = datetime.utcfromtimestamp(0)
@@ -10,11 +9,19 @@ def datetime_to_float(d):
     return float(total_seconds)
 
 
-class null_strategy:
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0):
+class null_strategy(StrategyBase):
+    def __init__(self, client, name='BTC', currency='USD', account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
+        super(null_strategy, self).__init__(client,
+                                            name,
+                                            currency,
+                                            account_handler,
+                                            base_min_size,
+                                            tick_size,
+                                            logger)
         self.strategy_name = 'null_strategy'
         self.client = client
         self.accnt = account_handler
+        self.logger = logger
         self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
         self.rsi_result = 0.0
@@ -59,37 +66,5 @@ class null_strategy:
         results += "sell_signal_count: {}<br>".format(self.sell_signal_count)
         return results
 
-    def round_base(self, price):
-        return round(price, '{:f}'.format(self.base_min_size).index('1') - 1)
-
-    def round_quote(self, price):
-        return round(price, '{:f}'.format(self.quote_increment).index('1') - 1)
-
-    def buy_signal(self, price):
-        pass
-
-    def sell_signal(self, price):
-        pass
-
-    def update_last_50_prices(self, price):
-        self.last_50_prices.append(price)
-        if len(self.last_50_prices) > 50:
-            diff_size = len(self.last_50_prices) - 50
-            self.last_50_prices = self.last_50_prices[diff_size:]
-        self.count_prices_added += 1
-
     def run_update(self, kline):
         self.update_last_50_prices(float(kline['c']))
-        self.run_update_price(float(kline['o']))
-        self.run_update_price(float(kline['c']))
-
-    def run_update_price(self, price):
-        pass
-
-    def run_update_orderbook(self, msg):
-        pass
-    #    self.orderbook.process_update(msg)
-
-    def close(self):
-        #logger.info("close()")
-        pass

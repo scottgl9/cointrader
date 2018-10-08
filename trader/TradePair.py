@@ -53,10 +53,9 @@ class TradePair(object):
     def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
         self.strategy.set_buy_price_size(buy_price, buy_size, sig_id)
 
-    def run_update(self, msg):
-        self.strategy.tickers = self.tickers
+    def run_update(self, kline):
         self.last_close = self.strategy.last_close
-        result = self.strategy.run_update(msg)
+        result = self.strategy.run_update(kline)
         self.last_50_prices = self.strategy.last_50_prices
         self.prev_last_50_prices = self.strategy.prev_last_50_prices
         self.count_prices_added = self.strategy.count_prices_added
@@ -73,3 +72,5 @@ class TradePair(object):
 
     def update_tickers(self, tickers):
         self.tickers = tickers
+        self.strategy.update_tickers(tickers)
+

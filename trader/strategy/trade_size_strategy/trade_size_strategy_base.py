@@ -1,10 +1,10 @@
 class trade_size_strategy_base(object):
     def __init__(self, base, currency, base_min_size=0.0, tick_size=0.0):
-        self.ticker_id = None
         self.base = base
         self.currency = currency
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
+        self.tickers = None
 
     def compute_trade_size(self, price):
         pass
@@ -21,3 +21,6 @@ class trade_size_strategy_base(object):
 
     def my_float(self, value):
         return str("{:.9f}".format(float(value)))
+
+    def update_tickers(self, tickers):
+        self.tickers = tickers
