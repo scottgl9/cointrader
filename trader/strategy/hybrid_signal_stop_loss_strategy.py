@@ -9,40 +9,6 @@ from trader.lib.StatTracker import StatTracker
 from datetime import datetime
 
 
-def datetime_to_float(d):
-    epoch = datetime.utcfromtimestamp(0)
-    total_seconds =  (d.replace(tzinfo=None) - epoch).total_seconds()
-    # total_seconds will be in decimals (millisecond precision)
-    return float(total_seconds)
-
-
-# compute if p1 is greater than p2 by X percent
-def percent_p1_gt_p2(p1, p2, percent):
-    if p1 == 0: return False
-    result = 100.0 * (float(p1) - float(p2)) / float(p1)
-    if result <= percent:
-        return False
-    return True
-
-
-def percent_p2_gt_p1(p1, p2, percent):
-    if p1 == 0: return False
-    if p2 <= p1: return False
-    result = 100.0 * (float(p2) - float(p1)) / float(p1)
-    if result <= percent:
-        return False
-    return True
-
-
-# compute if p1 is less than p2 by X percent (p1 is "threshold")
-def percent_p1_lt_p2(p1, p2, percent):
-    if p1 == 0: return False
-    result = 100.0 * (float(p2) - float(p1)) / float(p1)
-    if result >= percent:
-        return False
-    return True
-
-
 class hybrid_signal_stop_loss_strategy(StrategyBase):
     def __init__(self, client, name='BTC', currency='USD', account_handler=None, order_handler=None, base_min_size=0.0, tick_size=0.0, rank=None, logger=None):
         super(hybrid_signal_stop_loss_strategy, self).__init__(client,
@@ -179,10 +145,10 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
             return False
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not percent_p2_gt_p1(signal.buy_price, price, 1.0):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
                 return False
         else:
-            if not percent_p2_gt_p1(signal.buy_price, price, 1.0):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
                 return False
 
         if signal.sell_signal():
