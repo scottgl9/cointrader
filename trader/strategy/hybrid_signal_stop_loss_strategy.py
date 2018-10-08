@@ -1,6 +1,7 @@
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
 from trader.strategy.StrategyBase import StrategyBase
+from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.signal.SignalBase import SignalBase
 from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
@@ -22,7 +23,6 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         self.rank = rank
         self.last_price = self.price = 0.0
         self.last_close = 0.0
-
         self.signal_handler.add(Hybrid_Crossover())
 
         self.obv = OBV()
@@ -49,6 +49,7 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         self.min_trade_size_qty = 1.0
         self.min_price = 0.0
         self.max_price = 0.0
+        self.trade_size_handler = static_trade_size(name, currency, base_min_size, tick_size)
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -61,33 +62,6 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
             signal.buy_pending_price = 0.0
             signal.sell_pending_price = 0.0
             signal.last_sell_price = 0.0
-
-    def compute_min_trade_size(self, price):
-        min_trade_size = 0
-        if self.ticker_id.endswith('BTC'):
-            min_trade_size = self.round_base(self.btc_trade_size / price)
-            if min_trade_size != 0.0:
-                if self.base == 'ETH' or self.base == 'BNB':
-                    min_trade_size = self.my_float(min_trade_size * 3)
-                else:
-                    min_trade_size = self.my_float(min_trade_size * 3)
-        elif self.ticker_id.endswith('ETH'):
-            min_trade_size = self.round_base(self.eth_trade_size / price)
-            if min_trade_size != 0.0:
-                if self.base == 'BNB':
-                    min_trade_size = self.my_float(min_trade_size * 3)
-                else:
-                    min_trade_size = self.my_float(min_trade_size * 3)
-        elif self.ticker_id.endswith('BNB'):
-            min_trade_size = self.round_base(self.bnb_trade_size / price)
-            if min_trade_size != 0.0:
-                min_trade_size = self.my_float(min_trade_size)
-        elif self.ticker_id.endswith('USDT'):
-            min_trade_size = self.round_base(self.usdt_trade_size / price)
-            if min_trade_size != 0.0:
-                min_trade_size = self.my_float(min_trade_size)
-
-        return min_trade_size
 
 
     def buy_signal(self, signal, price):
@@ -113,7 +87,8 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         elif self.ticker_id.endswith('USDT') and size < self.usdt_trade_size:
             return False
 
-        self.min_trade_size = self.compute_min_trade_size(price)
+        #self.min_trade_size = self.compute_min_trade_size(price)
+        self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
 
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return False
