@@ -20,10 +20,11 @@ from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.account.AccountBinance import AccountBinance
 from trader.config import *
+import argparse
 import logging
 
 
-def simulate(conn, client, logger):
+def simulate(conn, client, strategy, logger):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
@@ -34,7 +35,7 @@ def simulate(conn, client, logger):
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
-    multitrader = MultiTrader(client, 'hybrid_signal_stop_loss_strategy', assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, logger=logger)
+    multitrader = MultiTrader(client, strategy, assets_info=assets_info, volumes=None, simulate=True, accnt=accnt, logger=logger)
 
     print(multitrader.accnt.balances)
 
@@ -122,9 +123,16 @@ def filter_assets_by_minqty(assets_info, balances):
     return result
 
 if __name__ == '__main__':
-    filename = 'cryptocurrency_database.miniticker_collection_04092018.db'
-    if len(sys.argv) == 2:
-        filename=sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', action='store', dest='filename',
+                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        help='filename of kline sqlite db')
+
+    parser.add_argument('-s', action='store', dest='strategy',
+                        default='hybrid_signal_stop_loss_strategy',
+                        help='name of strategy to use')
+
+    results = parser.parse_args()
 
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
@@ -139,17 +147,17 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
 
     client = Client(MY_API_KEY, MY_API_SECRET)
-    conn = sqlite3.connect(filename)
+    conn = sqlite3.connect(results.filename)
 
     # start the Web API
     #thread = threading.Thread(target=WebThread, args=(strategy,))
     #thread.daemon = True
     #thread.start()
 
-    logger.info("Running simulate with {}".format(filename))
+    logger.info("Running simulate with {}".format(results.filename))
 
     try:
-        simulate(conn, client, logger)
+        simulate(conn, client, results.strategy, logger)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()

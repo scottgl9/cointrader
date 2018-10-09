@@ -1,5 +1,5 @@
 from trader.lib.MessageHandler import Message, MessageHandler
-from trader.signal.Hybrid_Crossover import Hybrid_Crossover
+from trader.signal import select_signal_name
 from trader.strategy.StrategyBase import StrategyBase
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.signal.SignalBase import SignalBase
@@ -22,7 +22,7 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         self.strategy_name = 'hybrid_signal_stop_loss_strategy'
         self.last_price = self.price = 0.0
         self.last_close = 0.0
-        self.signal_handler.add(Hybrid_Crossover())
+        self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
 
         self.obv = OBV()
         self.low_short = self.high_short = 0.0
