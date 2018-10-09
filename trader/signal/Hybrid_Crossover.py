@@ -33,7 +33,8 @@ class Hybrid_Crossover(SignalBase):
         self.obv_cross = Crossover2(window=10, cutoff=0.0)
 
         self.rsi = RSI(window=30)
-        self.rsi_cross = Crossover2(window=10, cutoff=0.0)
+        self.rsi_cross70 = Crossover2(window=10, cutoff=0.0)
+        self.rsi_cross30 = Crossover2(window=10, cutoff=0.0)
 
         self.trend_down_count = 0
         self.trend_up_count = 0
@@ -61,7 +62,8 @@ class Hybrid_Crossover(SignalBase):
         self.ts = ts
 
         self.rsi.update(close)
-        self.rsi_cross.update(self.rsi.result, 70)
+        self.rsi_cross70.update(self.rsi.result, 70)
+        self.rsi_cross30.update(self.rsi.result, 30)
 
         obv_value = self.obv.update(close=close, volume=volume)
         self.prev_low = self.low
@@ -128,7 +130,10 @@ class Hybrid_Crossover(SignalBase):
         if (self.obv_trending_down and self.last_obv_cross_ts != 0 and (self.ts - self.last_obv_cross_ts) > (3600 * 1000)):
             return False
 
-        if self.rsi_cross.crossup_detected():
+        if self.rsi.result < 25:
+            return False
+
+        if self.rsi_cross70.crossup_detected():
             return True
 
         if self.macd_cross.crossup_detected():
@@ -157,6 +162,9 @@ class Hybrid_Crossover(SignalBase):
 
         if self.obv_ema12.result > self.obv_ema12.last_result and self.ema12.result > self.ema12.last_result:
             return False
+
+        if self.rsi_cross30.crossdown_detected():
+            return True
 
         if self.macd_cross.crossdown_detected():
             self.sell_type = SigType.SIGNAL_SHORT

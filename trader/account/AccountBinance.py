@@ -35,6 +35,7 @@ class AccountBinance(AccountBase):
 
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
+        self.asset_info_list = None
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
@@ -79,6 +80,25 @@ class AccountBinance(AccountBase):
                 currency_name = currency
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
+
+    def get_asset_status(self, name=None):
+        if not self.asset_info_list:
+            result = self.client.get_asset_details()
+            if 'assetDetail' in result.keys():
+                self.asset_info_list = result['assetDetail']
+            else:
+                self.asset_info_list = result
+
+        if name and name in self.asset_info_list.keys():
+            return self.asset_info_list[name]
+
+        return None
+
+    def deposit_asset_disabled(self, name):
+        status = self.get_asset_status(name)
+        if status and 'depositStatus' in status:
+            return (status['depositStatus'] == False)
+        return False
 
     def get_deposit_address(self, name=None):
         if not name:

@@ -69,6 +69,11 @@ class MultiTrader(object):
         base_name, currency_name = split_symbol(symbol)
         if not base_name or not currency_name: return
 
+        # if an asset has deposit disabled, means its probably suspended
+        # or de-listed so DO NOT trade this coin
+        if self.accnt.deposit_asset_disabled(base_name):
+            return
+
         strategy = select_strategy(self.strategy_name,
                                    self.client,
                                    base_name,
