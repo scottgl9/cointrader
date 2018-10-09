@@ -4,11 +4,7 @@ from trader.strategy.trade_size_strategy.static_trade_size import static_trade_s
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
-from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
-from trader.signal.MACD_Crossover import MACD_Crossover
-from trader.signal.RSI_OBV import RSI_OBV
-from trader.signal.PMO_Crossover import PMO_Crossover
-from trader.signal.SignalHandler import SignalHandler
+from trader.signal import select_signal_name
 from trader.indicator.OBV import OBV
 
 
@@ -29,13 +25,7 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.high = 0
         self.last_high = 0
 
-        #self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
-        #self.signal_handler.add(MACD_Crossover())
-        self.signal_handler.add(Hybrid_Crossover())
-        #self.signal_handler.add(Currency_EMA_Long())
-        #self.signal_handler.add(PMO_Crossover())
-        #self.signal_handler.add(RSI_OBV())
-        #self.tick_filter = TickFilter(tick_size=self.quote_increment, window=3)
+        self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
 
         self.obv = OBV()
 

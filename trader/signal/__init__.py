@@ -14,3 +14,20 @@ from trader.signal.SigType import SigType
 from trader.signal.sustained_volume_spike_signal import sustained_volume_spike_signal
 from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TSI_Signal import TSI_Signal
+
+def select_signal_name(name):
+    if name =="Bollinger_Bands_Signal": return Bollinger_Bands_Signal()
+    elif name == "Currency_Long_EMA": return Currency_EMA_Long()
+    elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover()
+    elif name == "Hybrid_Crossover": return Hybrid_Crossover()
+    elif name == "KST_Crossover": return KST_Crossover()
+    elif name == "MACD_Crossover": return MACD_Crossover()
+    elif name == "OBV_Crossover": return OBV_Crossover()
+    elif name == "PPO_OBV": return PPO_OBV()
+    elif name == "price_channel_signal": return price_channel_signal()
+    elif name == "PMO_Crossover": return PMO_Crossover()
+    elif name == "RSI_OBV": return RSI_OBV()
+    elif name == "sustained_volume_spike_signal": return sustained_volume_spike_signal()
+    elif name == "TD_Sequential_Signal": return TD_Sequential_Signal()
+    elif name == "TSI_Signal": return TSI_Signal()
+    return None
