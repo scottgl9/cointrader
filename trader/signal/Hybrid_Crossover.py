@@ -3,7 +3,7 @@ from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
 from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
-from trader.indicator.ROC import ROC
+from trader.indicator.RSI import RSI
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 from trader.signal.SigType import SigType
@@ -32,6 +32,9 @@ class Hybrid_Crossover(SignalBase):
         self.cross_long = Crossover2(window=10, cutoff=0.0)
         self.obv_cross = Crossover2(window=10, cutoff=0.0)
 
+        self.rsi = RSI(window=30)
+        self.rsi_cross = Crossover2(window=10, cutoff=0.0)
+
         self.trend_down_count = 0
         self.trend_up_count = 0
         self.trending_up = False
@@ -56,6 +59,9 @@ class Hybrid_Crossover(SignalBase):
             self.max_price = close
 
         self.ts = ts
+
+        self.rsi.update(close)
+        self.rsi_cross.update(self.rsi.result, 70)
 
         obv_value = self.obv.update(close=close, volume=volume)
         self.prev_low = self.low
@@ -121,6 +127,9 @@ class Hybrid_Crossover(SignalBase):
 
         if (self.obv_trending_down and self.last_obv_cross_ts != 0 and (self.ts - self.last_obv_cross_ts) > (3600 * 1000)):
             return False
+
+        if self.rsi_cross.crossup_detected():
+            return True
 
         if self.macd_cross.crossup_detected():
             self.buy_type = SigType.SIGNAL_SHORT

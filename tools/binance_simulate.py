@@ -129,7 +129,7 @@ if __name__ == '__main__':
                         help='filename of kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='strategy',
-                        default='hybrid_signal_stop_loss_strategy',
+                        default='hybrid_signal_market_strategy',
                         help='name of strategy to use')
 
     results = parser.parse_args()
