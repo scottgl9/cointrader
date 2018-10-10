@@ -8,6 +8,18 @@ class static_trade_size(trade_size_strategy_base):
         self.eth_trade_size = 0
         self.bnb_trade_size = 0
 
+    def check_buy_trade_size(self, size):
+        if self.currency == 'BTC' and size < self.btc_trade_size:
+            return False
+        elif self.currency == 'ETH' and size < self.eth_trade_size:
+            return False
+        elif self.currency == 'BNB' and size < self.bnb_trade_size:
+            return False
+        elif self.currency == 'USDT' and size < self.usdt_trade_size:
+            return False
+
+        return True
+
     def compute_trade_size(self, price):
         trade_size = 0
         if float(self.btc_trade_size) == 0:
@@ -24,7 +36,7 @@ class static_trade_size(trade_size_strategy_base):
         if float(self.eth_trade_size) == 0:
             if self.tickers and 'ETHUSDT' in self.tickers.keys():
                 #eth_usdt = float(self.tickers['ETHUSDT'])
-                if isinstance(self.tickers['BTCUSDT'], float):
+                if isinstance(self.tickers['ETHUSDT'], float):
                     eth_usdt = float(self.tickers['ETHUSDT'])
                 else:
                     eth_usdt = float(self.tickers['ETHUSDT'][4])

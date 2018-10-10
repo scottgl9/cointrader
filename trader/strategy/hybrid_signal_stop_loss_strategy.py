@@ -40,10 +40,6 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         self.trend_upward_count = 0
         self.trend_downward_count = 0
         self.last_price = 0.0
-        self.btc_trade_size = 0.0011
-        self.eth_trade_size = 0.011
-        self.bnb_trade_size = 0.8
-        self.usdt_trade_size = 10.0
         self.min_trade_size = 0.0 #self.base_min_size * 20.0
         self.min_trade_size_qty = 1.0
         self.min_price = 0.0
@@ -77,17 +73,10 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         else:
             size=self.accnt.get_asset_balance(self.currency)['available']
 
-        if self.ticker_id.endswith('BTC') and size < self.btc_trade_size:
-            return False
-        elif self.ticker_id.endswith('ETH') and size < self.eth_trade_size:
-            return False
-        elif self.ticker_id.endswith('BNB') and size < self.bnb_trade_size:
-            return False
-        elif self.ticker_id.endswith('USDT') and size < self.usdt_trade_size:
-            return False
-
-        #self.min_trade_size = self.compute_min_trade_size(price)
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
+
+        if not self.trade_size_handler.check_buy_trade_size(size):
+            return False
 
         if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
             return False

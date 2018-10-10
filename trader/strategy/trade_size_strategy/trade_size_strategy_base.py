@@ -9,6 +9,9 @@ class trade_size_strategy_base(object):
     def compute_trade_size(self, price):
         pass
 
+    def check_buy_trade_size(self, size):
+        pass
+
     def round_base(self, price):
         if self.base_min_size != 0.0:
             return round(price, '{:.9f}'.format(self.base_min_size).index('1') - 1)
