@@ -12,20 +12,32 @@ class static_trade_size(trade_size_strategy_base):
         trade_size = 0
         if float(self.btc_trade_size) == 0:
             if self.tickers and 'BTCUSDT' in self.tickers.keys():
-                btc_usdt = float(self.tickers['BTCUSDT'])
+                if isinstance(self.tickers['BTCUSDT'], float):
+                    btc_usdt = float(self.tickers['BTCUSDT'])
+                else:
+                    btc_usdt = float(self.tickers['BTCUSDT'][4])
+                #btc_usdt = float(self.tickers['BTCUSDT'])
                 self.btc_trade_size = self.usdt_trade_size / btc_usdt
             else:
                 self.btc_trade_size = 0.0011
 
         if float(self.eth_trade_size) == 0:
             if self.tickers and 'ETHUSDT' in self.tickers.keys():
-                eth_usdt = float(self.tickers['ETHUSDT'])
+                #eth_usdt = float(self.tickers['ETHUSDT'])
+                if isinstance(self.tickers['BTCUSDT'], float):
+                    eth_usdt = float(self.tickers['ETHUSDT'])
+                else:
+                    eth_usdt = float(self.tickers['ETHUSDT'][4])
                 self.eth_trade_size = self.usdt_trade_size / eth_usdt
             else:
                 self.eth_trade_size = 0.011
         if float(self.bnb_trade_size) == 0:
             if self.tickers and 'BNBSDT' in self.tickers.keys():
-                bnb_usdt = float(self.tickers['BNBUSDT'])
+                #bnb_usdt = float(self.tickers['BNBUSDT'])
+                if isinstance(self.tickers['BNBUSDT'], float):
+                    bnb_usdt = float(self.tickers['BNBUSDT'])
+                else:
+                    bnb_usdt = float(self.tickers['BNBUSDT'][4])
                 self.bnb_trade_size = self.usdt_trade_size / bnb_usdt
             else:
                 self.bnb_trade_size = 0.8
