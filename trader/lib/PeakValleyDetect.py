@@ -46,20 +46,25 @@ class PeakValleyDetect(object):
                             self.positive_slope = True
                     elif self.negative_slope and not self.positive_slope:
                         if positive_slope and not negative_slope:
-                            if float(value) < self.last_valley:
+                            if (self.last_valley == 0 or float(value) < self.last_valley): # and self.percent_change() > 0.01:
                                 self.valley = True
-                            self.negative_slope = False
-                            self.last_valley = float(value)
+                                self.negative_slope = False
+                                self.last_valley = float(value)
                     elif not self.negative_slope and self.positive_slope:
                         if negative_slope and not positive_slope:
-                            if float(value) > self.last_peak:
+                            if (self.last_peak == 0 or float(value) > self.last_peak): # and self.percent_change() > 0.01:
                                 self.peak = True
-                            self.positive_slope = False
-                            self.last_peak = float(value)
+                                self.positive_slope = False
+                                self.last_peak = float(value)
 
                 self.slope_age = (self.slope_age + 1) % self.window
 
         self.age = (self.age + 1) % self.window
+
+    def percent_change(self):
+        low = min(self.values)
+        high = max(self.values)
+        return 100 * (high - low) / low
 
     def peak_detect(self):
         if self.peak:

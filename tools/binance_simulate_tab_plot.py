@@ -20,6 +20,9 @@ import matplotlib.animation as animation
 from PyQt4 import QtGui, QtCore
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.WebHandler import WebThread
+from trader.indicator.EMA import EMA
+from trader.lib.PeakValleyDetect import PeakValleyDetect
+
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.account.AccountBinance import AccountBinance
@@ -177,6 +180,21 @@ class mainWindow(QtGui.QTabWidget):
             elif trade['type'] == 'sell':
                 ax.axvline(x=trade['index'], color='red')
         ax.plot(data)
+
+        ema100 = EMA(100, scale=24)
+        ema100_prices = []
+        detector = PeakValleyDetect()
+        i=0
+        for price in data:
+            value = ema100.update(float(price))
+            detector.update(value)
+            if detector.peak_detect():
+                ax.axvline(x=i, color='orange')
+            if detector.valley_detect():
+                ax.axvline(x=i, color='blue')
+            ema100_prices.append(value)
+            i+=1
+        ax.plot(ema100_prices)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
+from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -22,6 +23,8 @@ class Hybrid_Crossover(SignalBase):
         self.ema12 = EMA(self.win_short, scale=24)
         self.ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.ema50 = EMA(self.win_long, scale=24, lag_window=5)
+        self.ema100 = EMA(100, scale=24, lag_window=5)
+        self.detector = PeakValleyDetect()
         self.ema200 = EMA(200, scale=24, lag_window=5)
         self.obv_ema12 = EMA(self.win_short, scale=24)
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
@@ -73,6 +76,9 @@ class Hybrid_Crossover(SignalBase):
         self.ema26.update(close)
         value1 = self.ema50.update(close)
         value2 = self.ema200.update(close)
+
+        self.ema100.update(close)
+        self.detector.update(self.ema100.result)
 
         self.macd.update(close)
         self.macd_cross.update(self.macd.result, self.macd.result_signal)
@@ -144,6 +150,9 @@ class Hybrid_Crossover(SignalBase):
             self.buy_type = SigType.SIGNAL_SHORT
             return True
 
+        if self.detector.valley_detect():
+            return True
+
         return False
 
     def sell_long_signal(self):
@@ -172,6 +181,9 @@ class Hybrid_Crossover(SignalBase):
 
         if self.macd_zero_cross.crossdown_detected():
             self.sell_type = SigType.SIGNAL_SHORT
+            return True
+
+        if self.detector.peak_detect():
             return True
 
         return False
