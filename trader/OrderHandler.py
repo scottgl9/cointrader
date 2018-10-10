@@ -16,7 +16,8 @@ class OrderHandler(object):
         self.tickers = None
         self.store_trades = store_trades
         self.trades = {}
-        self.counter = 0
+        self.counters = {}
+
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
@@ -58,8 +59,6 @@ class OrderHandler(object):
 
 
     def process_order_messages(self):
-        if self.store_trades:
-            self.counter += 1
         # handle incoming messages
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
@@ -93,6 +92,13 @@ class OrderHandler(object):
 
 
     def process_limit_order(self, msg):
+        if self.store_trades:
+            symbol = msg['s']
+            if symbol not in self.counters:
+                self.counters[symbol] = 1
+            else:
+                self.counters[symbol] += 1
+
         if msg['s'] not in self.open_orders.keys():
             return
 
@@ -272,13 +278,13 @@ class OrderHandler(object):
                                         'size': size,
                                         'price': price,
                                         'type': 'buy',
-                                        'index': self.counter}]
+                                        'index': self.counters[ticker_id]}]
                 else:
                     self.trades[ticker_id].append({'symbol': ticker_id,
                                         'size': size,
                                         'price': price,
                                         'type': 'buy',
-                                        'index': self.counter})
+                                        'index': self.counters[ticker_id]})
         elif ('status' in result and result['status'] == 'FILLED'):
             if 'orderId' not in result:
                 self.logger.warn("orderId not found for {}".format(ticker_id))
@@ -346,13 +352,13 @@ class OrderHandler(object):
                                         'size': size,
                                         'price': price,
                                         'type': 'sell',
-                                        'index': self.counter}]
+                                        'index': self.counters[ticker_id]}]
                 else:
                     self.trades[ticker_id].append({'symbol': ticker_id,
                                         'size': size,
                                         'price': price,
                                         'type': 'sell',
-                                        'index': self.counter})
+                                        'index': self.counters[ticker_id]})
 
             if not self.accnt.simulate:
                 self.accnt.get_account_balances()

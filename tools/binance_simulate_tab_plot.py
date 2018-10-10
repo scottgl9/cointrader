@@ -15,6 +15,10 @@ from trader.strategy import *
 from datetime import datetime, timedelta
 import threading
 import sys
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from PyQt4 import QtGui, QtCore
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
@@ -131,6 +135,50 @@ def filter_assets_by_minqty(assets_info, balances):
                 result[name] = balance
     return result
 
+class TabType:
+    def __init__(self, name):
+        self.name = name
+        self.tab = None
+        self.figure = None
+        self.canvas = None
+
+class mainWindow(QtGui.QTabWidget):
+    def __init__(self, parent = None):
+        super(mainWindow, self).__init__(parent)
+        self.tabs = {}
+
+    def process(self, conn, trades):
+        symbols=trades.keys()
+        c = conn.cursor()
+        for s in symbols:
+            data = []
+            c.execute("SELECT c FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
+            for row in c:
+                data.append(float(row[0]))
+            self.create_tab(s)
+            self.plot_tab(s, data, trades[s])
+
+    def create_tab(self, name):
+        tabtype = TabType(name)
+        tabtype.tab = QtGui.QWidget()
+        self.addTab(tabtype.tab, name)
+        tabtype.figure = plt.figure(figsize=(10,5))
+        tabtype.canvas = FigureCanvas(tabtype.figure)
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(tabtype.canvas)
+        tabtype.tab.setLayout(layout)
+        self.tabs[name] = tabtype
+
+    def plot_tab(self, name, data=None, trades=None):
+        ax = self.tabs[name].figure.add_subplot(111)
+        for trade in trades:
+            if trade['type'] == 'buy':
+                ax.axvline(x=trade['index'], color='green')
+            elif trade['type'] == 'sell':
+                ax.axvline(x=trade['index'], color='red')
+        ax.plot(data)
+        self.tabs[name].canvas.draw()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
@@ -146,9 +194,9 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
-    fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "simulate"))
-    fileHandler.setFormatter(logFormatter)
-    logger.addHandler(fileHandler)
+    #fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "simulate"))
+    #fileHandler.setFormatter(logFormatter)
+    #logger.addHandler(fileHandler)
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
@@ -167,8 +215,15 @@ if __name__ == '__main__':
 
     try:
         trades = simulate(conn, client, results.strategy, logger)
-        print(trades)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
         sys.exit(0)
+
+    logger.info("Plotting results...")
+    app = QtGui.QApplication(sys.argv)
+    main = mainWindow()
+    main.process(conn, trades)
+    main.show()
+    sys.exit(app.exec_())
+

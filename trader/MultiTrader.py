@@ -47,7 +47,6 @@ class MultiTrader(object):
         self.running = True
         self.store_trades = store_trades
         self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger, self.store_trades)
-
         self.global_strategy = None
         self.global_en = global_en
         if self.global_en:
