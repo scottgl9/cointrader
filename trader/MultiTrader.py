@@ -3,6 +3,7 @@ from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
 from trader.strategy import *
 from trader.TradePair import TradePair
+from trader.lib.Kline import Kline
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 
@@ -98,47 +99,60 @@ class MultiTrader(object):
         return self.trade_pairs[symbol]
 
 
-    def process_message(self, msg):
-        if len(msg) == 0: return
+    def process_message(self, kline):
+        if kline.symbol not in self.trade_pairs.keys():
+            self.add_trade_pair(kline.symbol)
 
-        if not isinstance(msg, list):
-            if 's' not in msg.keys(): return
+        if kline.symbol not in self.trade_pairs.keys():
+            return
 
-            if msg['s'] not in self.trade_pairs.keys():
-                self.add_trade_pair(msg['s'])
+        symbol_trader = self.trade_pairs[kline.symbol]
+        symbol_trader.update_tickers(self.tickers)
+        symbol_trader.run_update(kline)
 
-            if msg['s'] not in self.trade_pairs.keys(): return
+        if self.global_strategy:
+            self.global_strategy.run_update(kline)
 
-            symbol_trader = self.trade_pairs[msg['s']]
-            if 'E' in msg:
-                self.current_ts = msg['E']
-            symbol_trader.update_tickers(self.tickers)
-            symbol_trader.run_update(msg)
+        self.order_handler.process_limit_order(kline)
 
-            if self.global_strategy:
-                self.global_strategy.run_update(msg)
-
-            self.order_handler.process_limit_order(msg)
-        else:
-            for part in msg:
-                if 's' not in part.keys(): continue
-
-                if part['s'] not in self.trade_pairs.keys():
-                    self.add_trade_pair(part['s'])
-
-                if part['s'] not in self.trade_pairs.keys(): continue
-                #if self.volumes and part['s'] not in self.volumes.keys(): continue
-
-                symbol_trader = self.trade_pairs[part['s']]
-                if 'E' in part:
-                    self.current_ts = part['E']
-                symbol_trader.update_tickers(self.tickers)
-                symbol_trader.run_update(part)
-
-                if self.global_strategy:
-                    self.global_strategy.run_update(part)
-
-                self.order_handler.process_limit_order(part)
+        # if not isinstance(msg, list):
+        #     if 's' not in msg.keys(): return
+        #
+        #     if msg['s'] not in self.trade_pairs.keys():
+        #         self.add_trade_pair(msg['s'])
+        #
+        #     if msg['s'] not in self.trade_pairs.keys(): return
+        #
+        #     symbol_trader = self.trade_pairs[msg['s']]
+        #     if 'E' in msg:
+        #         self.current_ts = msg['E']
+        #     symbol_trader.update_tickers(self.tickers)
+        #     symbol_trader.run_update(msg)
+        #
+        #     if self.global_strategy:
+        #         self.global_strategy.run_update(msg)
+        #
+        #     self.order_handler.process_limit_order(msg)
+        # else:
+        #     for part in msg:
+        #         if 's' not in part.keys(): continue
+        #
+        #         if part['s'] not in self.trade_pairs.keys():
+        #             self.add_trade_pair(part['s'])
+        #
+        #         if part['s'] not in self.trade_pairs.keys(): continue
+        #         #if self.volumes and part['s'] not in self.volumes.keys(): continue
+        #
+        #         symbol_trader = self.trade_pairs[part['s']]
+        #         if 'E' in part:
+        #             self.current_ts = part['E']
+        #         symbol_trader.update_tickers(self.tickers)
+        #         symbol_trader.run_update(part)
+        #
+        #         if self.global_strategy:
+        #             self.global_strategy.run_update(part)
+        #
+        #         self.order_handler.process_limit_order(part)
 
         # print alive check message once every 4 hours
         if not self.accnt.simulate:

@@ -91,46 +91,45 @@ class OrderHandler(object):
             self.msg_handler.clear_read()
 
 
-    def process_limit_order(self, msg):
+    def process_limit_order(self, kline):
         if self.store_trades:
-            symbol = msg['s']
-            if symbol not in self.counters:
-                self.counters[symbol] = 1
+            if kline.symbol not in self.counters:
+                self.counters[kline.symbol] = 1
             else:
-                self.counters[symbol] += 1
+                self.counters[kline.symbol] += 1
 
-        if msg['s'] not in self.open_orders.keys():
+        if kline.symbol not in self.open_orders.keys():
             return
 
-        order = self.open_orders[msg['s']]
-        close = float(msg['c'])
+        order = self.open_orders[kline.symbol]
+        close = kline.close
         if ((order.type == Message.MSG_STOP_LOSS_BUY and close > order.price) or
             (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
             bought = False
             if self.accnt.simulate:
-                self.msg_handler.buy_complete(ticker_id=msg['s'], sig_id=order.sig_id, price=order.price, size=order.size)
+                self.msg_handler.buy_complete(ticker_id=kline.symbol, sig_id=order.sig_id, price=order.price, size=order.size)
                 self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
                 bought = True
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
-                    self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_BUY_COMPLETE, order.price, order.size)
+                    self.msg_handler.add_message(Message.ID_MULTI, kline.symbol, Message.MSG_BUY_COMPLETE, order.price, order.size)
                     self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
                     bought = True
             if bought:
                 self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-                del self.open_orders[msg['s']]
+                del self.open_orders[kline.symbol]
         elif ((order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
               (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
             sold = False
             if self.accnt.simulate:
-                self.msg_handler.sell_complete(ticker_id=msg['s'], sig_id=order.sig_id, price=order.price, size=order.size, buy_price=order.buy_price)
+                self.msg_handler.sell_complete(ticker_id=kline.symbol, sig_id=order.sig_id, price=order.price, size=order.size, buy_price=order.buy_price)
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
                 sold = True
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
-                    self.msg_handler.add_message(Message.ID_MULTI, msg['s'], Message.MSG_SELL_COMPLETE, order.price, order.size)
+                    self.msg_handler.add_message(Message.ID_MULTI, kline.symbol, Message.MSG_SELL_COMPLETE, order.price, order.size)
                     self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
                     sold = True
 
@@ -156,7 +155,7 @@ class OrderHandler(object):
                                                                     round(pprofit, 2))
 
             self.logger.info(message)
-            del self.open_orders[msg['s']]
+            del self.open_orders[kline.symbol]
 
 
     def replace_buy_order(self, ticker_id, price, size, sig_id):

@@ -17,10 +17,10 @@ class global_obv_strategy(object):
         self.result = 0
         self.disable_buy_btc = False
 
-    def run_update(self, msg):
-        symbol = str(msg['s'])
-        close = float(msg['c'])
-        volume = float(msg['v'])
+    def run_update(self, kline):
+        symbol = kline.symbol
+        close = kline.close
+        volume = kline.volume
 
         if symbol.endswith('BTC'):
             if symbol not in self.last_price.keys():

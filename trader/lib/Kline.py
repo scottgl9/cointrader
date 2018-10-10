@@ -2,7 +2,8 @@ import collections
 
 
 class Kline(object):
-    def __init__(self, open=None, close=None, low=None, high=None, volume=None, ts=None):
+    def __init__(self, symbol=None, open=None, close=None, low=None, high=None, volume=None, ts=None):
+        self.symbol = symbol
         self.open = open
         self.close = close
         self.low = low

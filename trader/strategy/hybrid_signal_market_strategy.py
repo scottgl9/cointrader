@@ -147,17 +147,17 @@ class hybrid_signal_market_strategy(StrategyBase):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return
-        close = float(kline['c'])
-        self.low = float(kline['l'])
-        self.high = float(kline['h'])
-        volume = float(kline['v'])
+        close = kline.close
+        self.low = kline.low
+        self.high = kline.high
+        volume = kline.volume
 
         #close = self.tick_filter.update(close)
 
         if close == 0 or volume == 0:
             return
 
-        self.timestamp = int(kline['E'])
+        self.timestamp = kline.ts
 
         self.obv.update(close, volume)
 

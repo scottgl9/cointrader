@@ -18,6 +18,7 @@ import sys
 from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
+from trader.lib.Kline import Kline
 from trader.account.AccountBinance import AccountBinance
 from trader.config import *
 import argparse
@@ -73,7 +74,16 @@ def simulate(conn, client, strategy, logger):
                 print("Initial BTC={}".format(total_btc))
 
         multitrader.update_tickers(tickers)
-        multitrader.process_message(msg)
+
+        kline = Kline(symbol=msg['s'],
+                      open=float(msg['o']),
+                      close=float(msg['c']),
+                      low=float(msg['l']),
+                      high=float(msg['h']),
+                      volume=float(msg['v']),
+                      ts=int(msg['E']))
+
+        multitrader.process_message(kline)
 
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
     print("total time (hours): {}".format(round(total_time_hours, 2)))

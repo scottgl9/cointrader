@@ -9,6 +9,7 @@ except ImportError:
 from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
+from trader.lib.Kline import Kline
 import collections
 import logging
 import threading
@@ -73,7 +74,31 @@ class BinanceTrader:
                 print("Initial BTC={}".format(total_btc))
 
         self.multitrader.update_tickers(self.tickers)
-        self.multitrader.process_message(msg)
+
+        if not isinstance(msg, list):
+            if 's' not in msg.keys(): return
+            kline = Kline(symbol=msg['s'],
+                          open=float(msg['o']),
+                          close=float(msg['c']),
+                          low=float(msg['l']),
+                          high=float(msg['h']),
+                          volume=float(msg['v']),
+                          ts=int(msg['E']))
+
+            self.multitrader.process_message(kline)
+        else:
+            for part in msg:
+                if 's' not in part.keys(): continue
+
+                kline = Kline(symbol=part['s'],
+                              open=float(part['o']),
+                              close=float(part['c']),
+                              low=float(part['l']),
+                              high=float(part['h']),
+                              volume=float(part['v']),
+                              ts=int(part['E']))
+
+                self.multitrader.process_message(kline)
 
     def run(self):
         self.bm = BinanceSocketManager(self.client)
