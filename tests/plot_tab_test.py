@@ -8,13 +8,17 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import random
 
+class TabType:
+    def __init__(self, name):
+        self.name = name
+        self.tab = None
+        self.figure = None
+        self.canvas = None
+
 class mainWindow(QtGui.QTabWidget):
     def __init__(self, parent = None):
         super(mainWindow, self).__init__(parent)
-        self.tab_names = []
         self.tabs = {}
-        self.figures = {}
-        self.canvases = {}
 
         self.create_tab("tab1")
         self.plot_tab("tab1")
@@ -22,19 +26,21 @@ class mainWindow(QtGui.QTabWidget):
         self.plot_tab("tab2")
 
     def create_tab(self, name):
-        self.tab_names.append(name)
-        self.tabs[name] = QtGui.QWidget()
-        self.addTab(self.tabs[name], name)
-        self.figures[name] = plt.figure(figsize=(10,5))
-        self.canvases[name] = FigureCanvas(self.figures[name])
+        tabtype = TabType(name)
+        tabtype.tab = QtGui.QWidget()
+        self.addTab(tabtype.tab, name)
+        tabtype.figure = plt.figure(figsize=(10,5))
+        tabtype.canvas = FigureCanvas(tabtype.figure)
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(self.canvases[name])
-        self.tabs[name].setLayout(layout)
+        layout.addWidget(tabtype.canvas)
+        tabtype.tab.setLayout(layout)
+        self.tabs[name] = tabtype
 
-    def plot_tab(self, name, data):
-        ax = self.figures[name].add_subplot(111)
+    def plot_tab(self, name, data=None):
+        data = [random.random() for i in range(10)]
+        ax = self.tabs[name].figure.add_subplot(111)
         ax.plot(data, '*-')
-        self.canvases[name].draw()
+        self.tabs[name].canvas.draw()
 
 def main():
     app = QtGui.QApplication(sys.argv)
