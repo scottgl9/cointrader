@@ -37,7 +37,6 @@ class mainWindow(QtGui.QTabWidget):
         self.tabs[name] = tabtype
 
     def plot_tab(self, name, data=None):
-        data = [random.random() for i in range(10)]
         ax = self.tabs[name].figure.add_subplot(111)
         ax.plot(data, '*-')
         self.tabs[name].canvas.draw()

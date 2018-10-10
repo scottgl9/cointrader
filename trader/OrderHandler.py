@@ -7,13 +7,16 @@ import time
 import os
 
 class OrderHandler(object):
-    def __init__(self, accnt, msg_handler, logger):
+    def __init__(self, accnt, msg_handler, logger, store_trades=False):
         self.accnt = accnt
         self.msg_handler = msg_handler
         self.logger = logger
         self.open_orders = {}
         self.trader_db = None
         self.tickers = None
+        self.store_trades = store_trades
+        self.trades = {}
+        self.counter = 0
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
@@ -55,6 +58,8 @@ class OrderHandler(object):
 
 
     def process_order_messages(self):
+        if self.store_trades:
+            self.counter += 1
         # handle incoming messages
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
@@ -261,6 +266,19 @@ class OrderHandler(object):
             self.buy_order_id = None
             message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
             self.logger.info(message)
+            if self.store_trades:
+                if ticker_id not in self.trades:
+                    self.trades[ticker_id] = [{'symbol': ticker_id,
+                                        'size': size,
+                                        'price': price,
+                                        'type': 'buy',
+                                        'index': self.counter}]
+                else:
+                    self.trades[ticker_id].append({'symbol': ticker_id,
+                                        'size': size,
+                                        'price': price,
+                                        'type': 'buy',
+                                        'index': self.counter})
         elif ('status' in result and result['status'] == 'FILLED'):
             if 'orderId' not in result:
                 self.logger.warn("orderId not found for {}".format(ticker_id))
@@ -322,6 +340,20 @@ class OrderHandler(object):
                                                                     round(pprofit, 2))
 
             self.logger.info(message)
+            if self.store_trades:
+                if ticker_id not in self.trades:
+                    self.trades[ticker_id] = [{'symbol': ticker_id,
+                                        'size': size,
+                                        'price': price,
+                                        'type': 'sell',
+                                        'index': self.counter}]
+                else:
+                    self.trades[ticker_id].append({'symbol': ticker_id,
+                                        'size': size,
+                                        'price': price,
+                                        'type': 'sell',
+                                        'index': self.counter})
+
             if not self.accnt.simulate:
                 self.accnt.get_account_balances()
                 # remove from trade db since it has been sold

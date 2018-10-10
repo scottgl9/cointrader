@@ -75,21 +75,21 @@ def simulate(conn, client, strategy, logger):
         multitrader.update_tickers(tickers)
         multitrader.process_message(msg)
 
-    total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
-    print("total time (hours): {}".format(round(total_time_hours, 2)))
-
-    print(multitrader.accnt.balances)
-    final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
-    pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
-    print("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
-    for pair in multitrader.trade_pairs.values():
-        for signal in pair.strategy.get_signals():
-            if signal.buy_price != 0.0:
-                buy_price = float(signal.buy_price)
-                last_price = float(pair.strategy.last_price)
-                symbol = pair.strategy.ticker_id
-                pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
-                print("{} ({}): {}%".format(symbol, signal.id, pprofit))
+    # total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
+    # print("total time (hours): {}".format(round(total_time_hours, 2)))
+    #
+    # print(multitrader.accnt.balances)
+    # final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
+    # pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
+    # print("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
+    # for pair in multitrader.trade_pairs.values():
+    #     for signal in pair.strategy.get_signals():
+    #         if signal.buy_price != 0.0:
+    #             buy_price = float(signal.buy_price)
+    #             last_price = float(pair.strategy.last_price)
+    #             symbol = pair.strategy.ticker_id
+    #             pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
+    #             print("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
     return multitrader.get_stored_trades()
 
@@ -166,7 +166,8 @@ if __name__ == '__main__':
     logger.info("Running simulate with {}".format(results.filename))
 
     try:
-        simulate(conn, client, results.strategy, logger)
+        trades = simulate(conn, client, results.strategy, logger)
+        print(trades)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()

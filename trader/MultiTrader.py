@@ -23,7 +23,7 @@ def split_symbol(symbol):
 # for those that do not yet exist
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
-                 account_name='Binance', simulate=False, accnt=None, logger=None, global_en=True):
+                 simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
@@ -45,7 +45,8 @@ class MultiTrader(object):
         self.check_count = 0
         self.stopped = False
         self.running = True
-        self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger)
+        self.store_trades = store_trades
+        self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger, self.store_trades)
 
         self.global_strategy = None
         self.global_en = global_en
@@ -89,6 +90,8 @@ class MultiTrader(object):
         if self.order_handler.trader_db:
             self.order_handler.trade_db_load_symbol(symbol, trade_pair)
 
+    def get_stored_trades(self):
+        return self.order_handler.trades
 
     def get_trader(self, symbol):
         if symbol not in self.trade_pairs.keys():
