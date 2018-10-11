@@ -66,14 +66,16 @@ class PeakValleyDetect(object):
         high = max(self.values)
         return 100 * (high - low) / low
 
-    def peak_detect(self):
+    def peak_detect(self, clear=True):
         if self.peak:
-            self.peak = False
+            if clear:
+                self.peak = False
             return True
         return False
 
-    def valley_detect(self):
+    def valley_detect(self, clear=True):
         if self.valley:
-            self.valley = False
+            if clear:
+                self.valley = False
             return True
         return False

@@ -21,6 +21,7 @@ from PyQt4 import QtGui, QtCore
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.WebHandler import WebThread
 from trader.indicator.EMA import EMA
+from trader.indicator.RSI import RSI
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.Kline import Kline
 
@@ -183,7 +184,7 @@ class mainWindow(QtGui.QTabWidget):
         self.tabs[name] = tabtype
 
     def plot_tab(self, name, data=None, trades=None):
-        ax = self.tabs[name].figure.add_subplot(111)
+        ax = self.tabs[name].figure.add_subplot(211)
         for trade in trades:
             if trade['type'] == 'buy':
                 ax.axvline(x=trade['index'], color='green')
@@ -191,20 +192,28 @@ class mainWindow(QtGui.QTabWidget):
                 ax.axvline(x=trade['index'], color='red')
         ax.plot(data)
 
+        ema26 = EMA(26, scale=24)
+        rsi = RSI(window=30, smoother=ema26)
+        rsi_values = []
         ema100 = EMA(100, scale=24)
         ema100_prices = []
-        detector = PeakValleyDetect()
+        #detector = PeakValleyDetect()
         i=0
         for price in data:
             value = ema100.update(float(price))
-            detector.update(value)
-            if detector.peak_detect():
-                ax.axvline(x=i, color='orange')
-            if detector.valley_detect():
-                ax.axvline(x=i, color='blue')
+            rsi.update(float(price))
+            if rsi.result != 0:
+                rsi_values.append(rsi.result)
+            #detector.update(value)
+            #if detector.peak_detect():
+            #    ax.axvline(x=i, color='orange')
+            #if detector.valley_detect():
+            #    ax.axvline(x=i, color='blue')
             ema100_prices.append(value)
             i+=1
         ax.plot(ema100_prices)
+        ax2 = self.tabs[name].figure.add_subplot(212)
+        ax2.plot(rsi_values)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':

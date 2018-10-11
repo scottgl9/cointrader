@@ -19,7 +19,11 @@ class CircularArray(object):
         else:
             return self.first(index=key)
 
-    #def __setitem__(self, key, value):
+    def __setitem__(self, key, value):
+        if self.reverse:
+            self.last_set(key, value)
+        else:
+            self.first_set(key, value)
 
     def length(self):
         return len(self.carray)
@@ -74,6 +78,43 @@ class CircularArray(object):
                     age = self.window - 1
 
         return self.carray[age]
+
+    # forward indexing: first(0) = first added, first(1) = second added, etc
+    def first_set(self, index=0, value=0):
+        if len(self.carray) == 0:
+            return
+
+        if len(self.carray) < self.window:
+            if index >= len(self.carray):
+                return self.dne
+            self.carray[index] = value
+            return
+        else:
+            age = int(self.age)
+            if index != 0:
+                age = (age + index) % self.window
+            self.carray[age] = value
+            return
+
+    # reverse indexing: last(0) = last added, last(1) = second to last added, etc
+    def last_set(self, index=0, value=0):
+        if len(self.carray) == 0:
+            return
+
+        if len(self.carray) < self.window:
+            if index >= len(self.carray):
+                return
+
+        age = int(self.last_age)
+
+        if index != 0:
+            while index > 0:
+                index -= 1
+                age -= 1
+                if age < 0:
+                    age = self.window - 1
+
+        self.carray[age] = value
 
     # return un-ordered values
     def values(self):

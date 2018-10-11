@@ -139,6 +139,9 @@ class Hybrid_Crossover(SignalBase):
         if self.rsi.result < 25:
             return False
 
+        #if self.detector.peak_detect():
+        #    return False
+
         if self.rsi_cross70.crossup_detected():
             return True
 
