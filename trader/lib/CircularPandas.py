@@ -5,7 +5,9 @@ from trader.lib.CircularArray import CircularArray
 class CircularPandas(object):
     def __init__(self, window):
         self.window = window
-        self.array = CircularArray(window=window)
+        self.closes = CircularArray(window=window)
+        self.volumes = CircularArray(window=window)
+        self.timestamps = CircularArray(window=window)
         self.last_age = 0
         self.age = 0
         self.df = pd.DataFrame(columns=['close', 'volume', 'ts'])
@@ -16,14 +18,19 @@ class CircularPandas(object):
     def get_data_frame(self):
         return self.df
 
-    def update(self, close, volume, ts):
-        self.array.add((close, volume, ts))
+    def update(self, kline):
+        self.closes.add(kline.close)
+        self.volumes.add(kline.volume)
+        self.timestamps.add(kline.ts)
 
-        if len(self.array) < self.window:
+        if len(self.closes) < self.window:
             return
             #self.df = pd.DataFrame.from_records(self.array.values(), columns=['close', 'volume', 'ts'])
-        else:
-            self.df = pd.DataFrame.from_records(self.array.values_ordered(), columns=['close', 'volume', 'ts'])
+        elif self.df.empty:
+            self.df = pd.DataFrame.from_dict({'close':self.closes.values_ordered(),
+                                              'volume':self.volumes.values_ordered(),
+                                              'timestamp':self.timestamps.values_ordered()})
+
         #if self.df.empty:
         #    self.carray.append((close, volume, ts))
         #    # create initial pandas DataFrame

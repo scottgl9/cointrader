@@ -45,7 +45,7 @@ def simulate(conn, client, strategy, logger):
     # print(multitrader.accnt.balances)
 
     tickers = {}
-    cp = CircularPandas(window=100)
+    cp = CircularPandas(window=30)
     found = False
 
     initial_btc_total = 0.0
@@ -66,7 +66,7 @@ def simulate(conn, client, strategy, logger):
                       volume=float(msg['v']),
                       ts=int(msg['E']))
 
-        cp.update(close=kline.close, volume=kline.volume, ts=kline.ts)
+        cp.update(kline)
 
 
 def get_info_all_assets(client):
