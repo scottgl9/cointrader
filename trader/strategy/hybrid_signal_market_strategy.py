@@ -191,6 +191,9 @@ class hybrid_signal_market_strategy(StrategyBase):
         for signal in self.signal_handler.get_handlers():
             self.run_update_signal(signal, close)
 
+        if self.ticker_id == 'BTCUSDT':
+            self.logger.info("{}: {}".format(self.ticker_id, int(self.timestamp - self.last_timestamp)))
+
         self.last_timestamp = self.timestamp
         self.last_price = close
         self.last_close = close

@@ -11,6 +11,13 @@ class Kline(object):
         self.volume = volume
         self.ts = ts
 
+    def __repr__(self):
+        return {
+            'open': float(self.open),
+            'close': float(self.close),
+            'volume': float(self.volume),
+            'ts': int(self.ts)
+        }
 
 class KlineList(collections.MutableSequence):
     def __init__(self, *args):

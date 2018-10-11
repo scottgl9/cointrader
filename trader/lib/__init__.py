@@ -1,4 +1,5 @@
 from trader.lib.CircularArray import CircularArray
+from trader.lib.CircularPandas import CircularPandas
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 from trader.lib.FakeKline import FakeKline

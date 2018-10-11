@@ -37,9 +37,9 @@ class CircularArray(object):
     # Add value to circular array
     def add(self, value):
         if len(self.carray) < self.window:
-            self.carray.append(float(value))
+            self.carray.append(value)
         else:
-            self.carray[int(self.age)] = float(value)
+            self.carray[int(self.age)] = value
 
         self.last_age = self.age
         self.age = (self.age + 1) % self.window
