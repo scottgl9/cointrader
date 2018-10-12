@@ -32,12 +32,6 @@ def plot_emas_product(plt, klines, product, hours=0):
     low_prices = []
     high_prices = []
     timestamps = []
-    ema12 = EMA(12, scale=24)
-    ema12_prices = []
-    ema26 = EMA(26, scale=24)
-    ema26_prices = []
-    ema50 = EMA(50, scale=24)
-    ema50_prices = []
 
     ema26_obv = EMA(26, scale=24)
     ema26_obv_values = []
@@ -78,19 +72,12 @@ def plot_emas_product(plt, klines, product, hours=0):
         ema26_obv_values.append(ema26_obv.update(obv_value))
         ema50_obv_values.append(ema50_obv.update(obv_value))
 
-        ema12_price = ema12.update(close_price)
-        ema12_prices.append(ema12_price)
-        ema26_prices.append(ema26.update(close_price))
-        ema50_prices.append(ema50.update(close_price))
-
     xvalues = np.linspace(0, hours, num=len(close_prices))
     symprice, = plt.plot(close_prices, label=product) #, color='black')
-    ema4, = plt.plot(ema12_prices, label='EMA12')
-    ema5, = plt.plot(ema26_prices, label='EMA26')
-    plt.plot(emama_x_values,emama_values)
-    plt.plot(emama_x_values, efama_values)
+    fig11, = plt.plot(emama_x_values,emama_values, label="EMAMA")
+    fig12, = plt.plot(emama_x_values, efama_values, label="EFAMA")
 
-    #plt.legend(handles=[symprice, ema4, ema5, ema6])
+    plt.legend(handles=[symprice, fig11, fig12])
     plt.subplot(212)
     fig1, = plt.plot(xvalues, obv_values, label="OBV")
     fig2, = plt.plot(xvalues, ema26_obv_values, label="OBVEMA26")

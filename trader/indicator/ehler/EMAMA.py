@@ -22,6 +22,7 @@ class EMAMA(object):
         self.MAMA = CircularArray(window=3, dne=0, reverse=True)
         self.FAMA = CircularArray(window=3, dne=0, reverse=True)
         self.counter = 0
+        self.result = 0
 
     def update(self, close):
         self.Price.add(float(close))
@@ -129,5 +130,7 @@ class EMAMA(object):
         if self.counter < 48:
             self.counter += 1
             return (0, 0)
+
+        self.result = self.MAMA[0]
 
         return (self.MAMA[0], self.FAMA[0])
