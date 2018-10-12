@@ -6,6 +6,7 @@ from trader.signal.SignalBase import SignalBase
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
 from trader.signal import select_signal_name
 from trader.indicator.OBV import OBV
+from trader.indicator.test.DTWMA import DTWMA
 
 
 class hybrid_signal_market_strategy(StrategyBase):
@@ -28,6 +29,7 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
 
         self.obv = OBV()
+        self.dtwma = DTWMA(window=30)
 
         self.timestamp = 0
         self.last_timestamp = 0
@@ -147,7 +149,7 @@ class hybrid_signal_market_strategy(StrategyBase):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return
-        close = kline.close
+        close = kline.close #self.dtwma.update(kline.close, kline.ts)
         self.low = kline.low
         self.high = kline.high
         volume = kline.volume

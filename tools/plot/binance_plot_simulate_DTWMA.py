@@ -53,6 +53,12 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
+    ema26 = EMA(26, scale=24)
+    ema26_values = []
+
+    ema26_filt = EMA(26, scale=24)
+    ema26_filt_values = []
+
     obv = OBV()
     close_prices = []
     open_prices = []
@@ -86,6 +92,12 @@ def simulate(conn, client, base, currency, type="channel"):
         dtwma.update(close, ts)
         dtwma_values.append(dtwma.result)
 
+        ema26.update(close)
+        ema26_values.append(ema26.result)
+
+        ema26_filt.update(dtwma.result)
+        ema26_filt_values.append(ema26_filt.result)
+
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -99,7 +111,9 @@ def simulate(conn, client, base, currency, type="channel"):
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(dtwma_values, label='DTWMA')
-    plt.legend(handles=[symprice, fig1])
+    fig2, = plt.plot(ema26_values, label='EMA26')
+    fig3, = plt.plot(ema26_filt_values, label='EMA26_FILT')
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')

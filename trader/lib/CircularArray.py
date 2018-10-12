@@ -25,6 +25,11 @@ class CircularArray(object):
         else:
             self.first_set(key, value)
 
+    def reset(self):
+        self.carray = []
+        self.last_age = 0
+        self.age = 0
+
     def length(self):
         return len(self.carray)
 
