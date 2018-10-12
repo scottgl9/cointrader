@@ -50,6 +50,7 @@ def plot_emas_product(plt, klines, product, hours=0):
     emama = EMAMA()
     emama_x_values = []
     emama_values = []
+    efama_values = []
 
     for i in range(1, len(klines) - 1):
         ts = float(klines[i][0])
@@ -65,9 +66,10 @@ def plot_emas_product(plt, klines, product, hours=0):
         high_prices.append(high)
         timestamps.append(ts)
 
-        emama_value = emama.update(close_price)
+        emama_value, efama_value = emama.update(close_price)
         if emama_value != 0:
             emama_values.append(emama_value)
+            efama_values.append(efama_value)
             emama_x_values.append(i)
 
         obv_value = obv.update(close=close_price, volume=volume)
@@ -86,6 +88,7 @@ def plot_emas_product(plt, klines, product, hours=0):
     ema4, = plt.plot(ema12_prices, label='EMA12')
     ema5, = plt.plot(ema26_prices, label='EMA26')
     plt.plot(emama_x_values,emama_values)
+    plt.plot(emama_x_values, efama_values)
 
     #plt.legend(handles=[symprice, ema4, ema5, ema6])
     plt.subplot(212)

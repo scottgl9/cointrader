@@ -27,7 +27,7 @@ class EMAMA(object):
         self.Price.add(float(close))
 
         if len(self.Price) < self.Price.window:
-            return 0
+            return (0, 0)
 
         self.Smooth.add((4 * self.Price[0] + 3 * self.Price[1] + 2 * self.Price[2] + self.Price[3]) / 10)
         self.Detrender.add((.0962 * self.Smooth[0] + .5769 * self.Smooth[2] - .5769 * self.Smooth[4] - .0962 * self.Smooth[6]) * (
@@ -86,6 +86,6 @@ class EMAMA(object):
 
         if self.counter < 36:
             self.counter += 1
-            return 0
+            return (0, 0)
 
-        return self.MAMA[0] #, self.FAMA[0]
+        return (self.MAMA[0], self.FAMA[0])
