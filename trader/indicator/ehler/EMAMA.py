@@ -14,14 +14,20 @@ class EMAMA(object):
         self.Q1 = CircularArray(window=7, dne=0, reverse=True)
         self.I2 = CircularArray(window=3, dne=0, reverse=True)
         self.Q2 = CircularArray(window=3, dne=0, reverse=True)
+        self.Re = CircularArray(window=3, dne=0, reverse=True)
+        self.Im = CircularArray(window=3, dne=0, reverse=True)
         self.Period = CircularArray(window=3, dne=0, reverse=True)
         self.SmoothPeriod = CircularArray(window=3, dne=0, reverse=True)
         self.Phase = CircularArray(window=3, dne=0, reverse=True)
         self.MAMA = CircularArray(window=3, dne=0, reverse=True)
         self.FAMA = CircularArray(window=3, dne=0, reverse=True)
+        self.counter = 0
 
     def update(self, close):
         self.Price.add(float(close))
+
+        if len(self.Price) < self.Price.window:
+            return 0
 
         self.Smooth.add((4 * self.Price[0] + 3 * self.Price[1] + 2 * self.Price[2] + self.Price[3]) / 10)
         self.Detrender.add((.0962 * self.Smooth[0] + .5769 * self.Smooth[2] - .5769 * self.Smooth[4] - .0962 * self.Smooth[6]) * (
@@ -40,13 +46,13 @@ class EMAMA(object):
         self.I2.add(.2 * self.I2[0] + .8 * self.I2[1])
         self.Q2.add(.2 * self.Q2[0] + .8 * self.Q2[1])
 
-        Re = self.I2[0] * self.I2[1] + self.Q2[0] * self.Q2[1]
-        Im = self.I2[0] * self.Q2[1] - self.Q2[0] * self.I2[1]
-        Re = .2 * Re[0] + .8 * Re[1]
-        Im = .2 * Im[0] + .8 * Im[1]
+        self.Re.add(self.I2[0] * self.I2[1] + self.Q2[0] * self.Q2[1])
+        self.Im.add(self.I2[0] * self.Q2[1] - self.Q2[0] * self.I2[1])
+        self.Re.add(.2 * self.Re[0] + .8 * self.Re[1])
+        self.Im.add(.2 * self.Im[0] + .8 * self.Im[1])
 
-        if Im != 0 and Re != 0:
-            self.Period.add(360 / np.arctan(Im / Re))
+        if self.Im[0] != 0 and self.Re[0] != 0:
+            self.Period.add(360 / np.arctan(self.Im[0] / self.Re[0]))
 
         if self.Period[0] > 1.5 * self.Period[1]:
             self.Period[0] = 1.5 * self.Period[1]
@@ -77,3 +83,9 @@ class EMAMA(object):
 
         self.MAMA.add(alpha * self.Price[0] + (1 - alpha) * self.MAMA[1])
         self.FAMA.add(.5 * alpha * self.MAMA[0] + (1 - .5 * alpha) * self.FAMA[1])
+
+        if self.counter < 36:
+            self.counter += 1
+            return 0
+
+        return self.MAMA[0] #, self.FAMA[0]
