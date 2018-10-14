@@ -25,7 +25,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from trader.indicator.OBV import OBV
-from trader.indicator.ehler.EMAMA import EMAMA
+from trader.indicator.test.LowPass import LowPass
 from trader.lib.FakeKline import FakeKline
 from trader.indicator.ZLEMA import *
 
@@ -48,10 +48,12 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = DZLEMA(26, scale=24) #EMA(26, scale=24)
     obv_ema50 = DZLEMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
-    fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
+
+    ema26 = EMA(26, scale=24)
+    ema26_values = []
 
     obv = OBV()
     close_prices = []
@@ -60,10 +62,8 @@ def simulate(conn, client, base, currency, type="channel"):
     high_prices = []
     volumes = []
 
-    emama = EMAMA()
-    emama_x_values = []
-    emama_values = []
-    efama_values = []
+    lp = LowPass(period=30)
+    lp_values = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -72,6 +72,7 @@ def simulate(conn, client, base, currency, type="channel"):
         high = float(msg['h'])
         open = float(msg['o'])
         volume = float(msg['v'])
+        ts = int(msg['E'])
         #sar_value = sar.update(close=close, low=low, high=high)
         #if sar.bull:
         #    sar_x_values.append(i)
@@ -84,11 +85,12 @@ def simulate(conn, client, base, currency, type="channel"):
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
 
-        emama_value, efama_value = emama.update(close)
-        if emama_value != 0:
-            emama_values.append(emama_value)
-            efama_values.append(efama_value)
-            emama_x_values.append(i)
+        lp.update(close)
+        if lp.result != 0:
+            lp_values.append(lp.result)
+
+        ema26.update(close)
+        ema26_values.append(ema26.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -97,14 +99,14 @@ def simulate(conn, client, base, currency, type="channel"):
         #lstsqs_x_values.append(i)
         i += 1
 
-    #plt.subplot(211)
-    fig = plt.figure()
-    ax = fig.add_subplot(2,1,1)
+    plt.subplot(211)
+    #fig = plt.figure()
+    #ax = fig.add_subplot(2,1,1)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
-    fig1, = plt.plot(emama_x_values, emama_values, label='EMAMA')
-    fig2, = plt.plot(emama_x_values, efama_values, label='EFAMA')
-    plt.legend(handles=[symprice, fig1, fig2])
+    fig1, = plt.plot(lp_values, label='LowPass')
+    #fig2, = plt.plot(ema26_values, label='EMA26')
+    plt.legend(handles=[symprice])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')

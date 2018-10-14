@@ -22,6 +22,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.WebHandler import WebThread
 from trader.indicator.EMA import EMA
 from trader.indicator.RSI import RSI
+from trader.indicator.test.DTWMA import DTWMA
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.Kline import Kline
 
@@ -166,9 +167,9 @@ class mainWindow(QtGui.QTabWidget):
         c = conn.cursor()
         for s in symbols:
             data = []
-            c.execute("SELECT c FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
+            c.execute("SELECT c,E FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
             for row in c:
-                data.append(float(row[0]))
+                data.append((float(row[0]), int(row[1])))
             self.create_tab(s)
             self.plot_tab(s, data, trades[s])
 
@@ -191,7 +192,7 @@ class mainWindow(QtGui.QTabWidget):
             elif trade['type'] == 'sell':
                 ax.axvline(x=trade['index'], color='red')
         ax.plot(data)
-
+        dtwma = DTWMA(window=30)
         ema26 = EMA(26, scale=24)
         rsi = RSI(window=30, smoother=ema26)
         rsi_values = []
@@ -199,7 +200,8 @@ class mainWindow(QtGui.QTabWidget):
         ema100_prices = []
         #detector = PeakValleyDetect()
         i=0
-        for price in data:
+        for (price, ts) in data:
+            price = dtwma.update(price, ts)
             value = ema100.update(float(price))
             rsi.update(float(price))
             if rsi.result != 0:

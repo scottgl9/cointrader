@@ -4,6 +4,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
+from trader.indicator.test.DTWMA import DTWMA
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
 from trader.lib.PeakValleyDetect import PeakValleyDetect
@@ -35,6 +36,9 @@ class Hybrid_Crossover(SignalBase):
         self.cross_long = Crossover2(window=10, cutoff=0.0)
         self.obv_cross = Crossover2(window=10, cutoff=0.0)
 
+        # delta timestamp WMA
+        self.dtwma = DTWMA(window=30)
+
         self.rsi = RSI(window=30)
         self.rsi_cross70 = Crossover2(window=10, cutoff=0.0)
         self.rsi_cross30 = Crossover2(window=10, cutoff=0.0)
@@ -61,6 +65,14 @@ class Hybrid_Crossover(SignalBase):
 
         if self.max_price == 0 or close > self.max_price:
             self.max_price = close
+
+        if close == 0 or volume == 0:
+            return
+
+        #close = self.dtwma.update(close, ts)
+
+        if close == 0:
+            return
 
         self.ts = ts
 

@@ -3,10 +3,8 @@ from trader.lib.MessageHandler import MessageHandler
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
-from trader.signal.Hybrid_Crossover import Hybrid_Crossover
 from trader.signal import select_signal_name
 from trader.indicator.OBV import OBV
-from trader.indicator.test.DTWMA import DTWMA
 
 
 class hybrid_signal_market_strategy(StrategyBase):
@@ -29,7 +27,6 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
 
         self.obv = OBV()
-        self.dtwma = DTWMA(window=30)
 
         self.timestamp = 0
         self.last_timestamp = 0
@@ -149,12 +146,10 @@ class hybrid_signal_market_strategy(StrategyBase):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return
-        close = kline.close #self.dtwma.update(kline.close, kline.ts)
+        close = kline.close
         self.low = kline.low
         self.high = kline.high
         volume = kline.volume
-
-        #close = self.tick_filter.update(close)
 
         if close == 0 or volume == 0:
             return
@@ -195,9 +190,6 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         for signal in self.signal_handler.get_handlers():
             self.run_update_signal(signal, close)
-
-        #if self.ticker_id == 'BTCUSDT':
-        #    self.logger.info("{}: {}".format(self.ticker_id, int(self.timestamp - self.last_timestamp)))
 
         self.last_timestamp = self.timestamp
         self.last_price = close

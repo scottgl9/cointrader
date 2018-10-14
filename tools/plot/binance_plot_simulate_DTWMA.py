@@ -48,7 +48,6 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = DZLEMA(26, scale=24) #EMA(26, scale=24)
     obv_ema50 = DZLEMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
-    fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
@@ -111,9 +110,8 @@ def simulate(conn, client, base, currency, type="channel"):
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(dtwma_values, label='DTWMA')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema26_filt_values, label='EMA26_FILT')
-    plt.legend(handles=[symprice, fig1, fig2, fig3])
+    #fig2, = plt.plot(ema26_values, label='EMA26')
+    plt.legend(handles=[symprice, fig1])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')
