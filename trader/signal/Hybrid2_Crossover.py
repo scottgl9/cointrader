@@ -12,10 +12,11 @@ from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
 
-class Hybrid_Crossover(SignalBase):
+class Hybrid2_Crossover(SignalBase):
     def __init__(self, win_short=12, win_med=26, win_long=50):
-        super(Hybrid_Crossover, self).__init__()
-        self.signal_name = "Hybrid_Crossover"
+        super(Hybrid2_Crossover, self).__init__()
+        self.signal_name = "Hybrid2_Crossover"
+        #self.id = 0
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
@@ -29,7 +30,7 @@ class Hybrid_Crossover(SignalBase):
         self.obv_ema12 = EMA(self.win_short, scale=24)
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
-        self.macd = MACD(scale=24)
+        self.macd = MACD(scale=10)
         self.macd_cross = Crossover2(window=10, cutoff=0.0)
         self.macd_zero_cross = Crossover2(window=10, cutoff=0.0)
         self.cross_long = Crossover2(window=10, cutoff=0.0)
@@ -37,8 +38,9 @@ class Hybrid_Crossover(SignalBase):
 
         # delta timestamp WMA
         self.dtwma = DTWMA(window=30)
+        self.dtwma_volume = DTWMA(window=30)
 
-        self.rsi = RSI(window=30)
+        self.rsi = RSI(window=14)
         self.rsi_cross70 = Crossover2(window=10, cutoff=0.0)
         self.rsi_cross30 = Crossover2(window=10, cutoff=0.0)
 
@@ -68,9 +70,12 @@ class Hybrid_Crossover(SignalBase):
         if close == 0 or volume == 0:
             return
 
-        #close = self.dtwma.update(close, ts)
+        self.dtwma.update(close, ts)
+        close = self.dtwma.result
+        self.dtwma_volume.update(volume, ts)
+        volume = self.dtwma_volume.result
 
-        if close == 0:
+        if close == 0 or volume == 0:
             return
 
         self.ts = ts
