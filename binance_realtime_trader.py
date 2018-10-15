@@ -61,6 +61,30 @@ class BinanceTrader:
             self.tickers[ticker['s']] = self.get_websocket_kline(ticker)
             return self.tickers[ticker['s']]
 
+    # process message about user account update
+    def process_user_message(self, msg):
+        if 's' not in self.msg.keys():
+            return
+
+        if 'X' not in self.msg.keys() or 'S' not in self.msg.keys():
+            return
+
+        symbol = self.msg['s']
+        cmd = self.msg['X']
+        type = self.msg['o']
+        side = self.msg['S']
+        price = self.msg['p']
+        size = self.msg['q']
+
+        self.logger.info("{}: cmd={} type={} side={} price={} size={}".format(
+            symbol,
+            cmd,
+            type,
+            side,
+            price,
+            size
+        ))
+
     def process_message(self, msg):
         self.process_websocket_message(msg)
 
@@ -104,6 +128,7 @@ class BinanceTrader:
         self.bm = BinanceSocketManager(self.client)
         self.bm.daemon = True
         self.bm.start_miniticker_socket(self.process_message)
+        self.bm.start_user_socket(self.process_user_message)
         self.bm.start()
         while True:
             try:
