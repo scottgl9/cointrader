@@ -24,17 +24,18 @@ def split_symbol(symbol):
 # handle incoming websocket messages for all symbols, and create new tradepairs
 # for those that do not yet exist
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', assets_info=None, volumes=None,
+    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None, volumes=None,
                  simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.simulate = simulate
         self.strategy_name = strategy_name
+        self.signal_names = signal_names
         if accnt:
             self.accnt = accnt
         else:
-            self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)  # , account_name='Binance')
+            self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)
         self.assets_info = assets_info
         self.volumes = volumes
         self.tickers = None
@@ -55,10 +56,20 @@ class MultiTrader(object):
         if self.global_en:
             self.global_strategy = global_obv_strategy()
 
+        sigstr = None
+
+        if self.signal_names:
+            sigstr = ','.join(self.signal_names)
+
         if self.simulate:
-            self.logger.info("Running MultiTrader as simulation with strategy {}".format(self.strategy_name))
+            run_type = "simulation"
         else:
-            self.logger.info("Running MultiTrade live with strategy {}".format(self.strategy_name))
+            run_type = "live"
+
+        if sigstr:
+            self.logger.info("Running MultiTrade {} strategy {} signal(s) {}".format(run_type, self.strategy_name, sigstr))
+        else:
+            self.logger.info("Running MultiTrade {} strategy {}".format(run_type, self.strategy_name))
 
 
     # create new tradepair handler and select strategy
@@ -81,6 +92,7 @@ class MultiTrader(object):
                                    self.client,
                                    base_name,
                                    currency_name,
+                                   signal_names=self.signal_names,
                                    account_handler=self.accnt,
                                    base_min_size=base_min_size,
                                    tick_size=quote_increment,

@@ -38,6 +38,7 @@ def simulate(conn, client, strategy, logger):
 
     multitrader = MultiTrader(client,
                               strategy,
+                              signal_names=["Hybrid_Crossover"],
                               assets_info=assets_info,
                               volumes=None,
                               simulate=True,

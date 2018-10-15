@@ -11,9 +11,9 @@ from datetime import datetime
 
 
 class hybrid_signal_stop_loss_strategy(StrategyBase):
-    def __init__(self, client, name='BTC', currency='USD', account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
+    def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
         super(hybrid_signal_stop_loss_strategy, self).__init__(client,
-                                                               name,
+                                                               base,
                                                                currency,
                                                                account_handler,
                                                                base_min_size,
@@ -22,7 +22,12 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         self.strategy_name = 'hybrid_signal_stop_loss_strategy'
         self.last_price = self.price = 0.0
         self.last_close = 0.0
-        self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
+
+        if signal_names:
+            for name in signal_names:
+                self.signal_handler.add(select_signal_name(name))
+        else:
+            self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
 
         self.obv = OBV()
         self.low_short = self.high_short = 0.0
@@ -44,7 +49,7 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
         self.min_trade_size_qty = 1.0
         self.min_price = 0.0
         self.max_price = 0.0
-        self.trade_size_handler = static_trade_size(name, currency, base_min_size, tick_size, usdt=10)
+        self.trade_size_handler = static_trade_size(base, currency, base_min_size, tick_size, usdt=10)
 
     # clear pending sell trades which have been bought
     def reset(self):
