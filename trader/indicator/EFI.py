@@ -19,6 +19,9 @@ class EFI(object):
         fi1 = (float(price) - self.lag.result) * float(volume)
         self.ema.update(fi1)
 
+        if self.ema.count < self.ema.weight:
+            return self.result
+
         self.result = self.ema.result
 
         return self.result

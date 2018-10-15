@@ -25,7 +25,7 @@ import argparse
 import logging
 
 
-def simulate(conn, client, strategy, logger):
+def simulate(conn, client, strategy, signal_name, logger):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
@@ -38,7 +38,7 @@ def simulate(conn, client, strategy, logger):
 
     multitrader = MultiTrader(client,
                               strategy,
-                              signal_names=["Hybrid_Crossover"],
+                              signal_names=[signal_name],
                               assets_info=assets_info,
                               volumes=None,
                               simulate=True,
@@ -152,6 +152,10 @@ if __name__ == '__main__':
                         default='hybrid_signal_market_strategy',
                         help='name of strategy to use')
 
+    parser.add_argument('-g', action='store', dest='signal_name',
+                        default='Hybrid_Crossover',
+                        help='name of signal to use')
+
     results = parser.parse_args()
 
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
@@ -174,10 +178,10 @@ if __name__ == '__main__':
     #thread.daemon = True
     #thread.start()
 
-    logger.info("Running simulate with {}".format(results.filename))
+    logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
 
     try:
-        simulate(conn, client, results.strategy, logger)
+        simulate(conn, client, results.strategy, results.signal_name, logger)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()

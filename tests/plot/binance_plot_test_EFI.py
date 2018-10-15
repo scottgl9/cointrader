@@ -9,6 +9,7 @@ except ImportError:
 
 import numpy as np
 import matplotlib.pyplot as plt
+from trader.indicator.EFI import EFI
 from trader.indicator.EMA import EMA
 from trader.indicator.MINMAX import MINMAX
 from trader.indicator.OBV import OBV
@@ -40,10 +41,8 @@ def plot_emas_product(plt, klines, product, hours=0):
     ema50 = EMA(50, scale=24)
     ema50_prices = []
 
-    ema26_obv = EMA(26, scale=24)
-    ema26_obv_values = []
-    ema50_obv = EMA(50, scale=24)
-    ema50_obv_values = []
+    efi = EFI()
+    efi_values = []
 
     obv = OBV()
     obv_values = []
@@ -68,29 +67,24 @@ def plot_emas_product(plt, klines, product, hours=0):
         min_values.append(minimum)
         max_values.append(maximum)
 
-        obv_value = obv.update(close=close_price, volume=volume)
-        obv_values.append(obv_value)
-
-        ema26_obv_values.append(ema26_obv.update(obv_value))
-        ema50_obv_values.append(ema50_obv.update(obv_value))
+        efi.update(close_price, volume)
+        if efi.result != 0:
+            efi_values.append(efi.result)
 
         ema12_price = ema12.update(close_price)
         ema12_prices.append(ema12_price)
         ema26_prices.append(ema26.update(close_price))
         ema50_prices.append(ema50.update(close_price))
 
-    xvalues = np.linspace(0, hours, num=len(close_prices))
-    symprice, = plt.plot(xvalues, close_prices, label=product) #, color='black')
-    ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
-    ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
+    symprice, = plt.plot(close_prices, label=product) #, color='black')
+    ema4, = plt.plot(ema12_prices, label='EMA12')
+    ema5, = plt.plot(ema26_prices, label='EMA26')
 
     #plt.legend(handles=[symprice, ema4, ema5, ema6])
     plt.subplot(212)
-    fig1, = plt.plot(xvalues, obv_values, label="OBV")
-    fig2, = plt.plot(xvalues, ema26_obv_values, label="OBVEMA26")
-    fig3, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
+    fig1, = plt.plot(efi_values, label="EFI")
     #fig3, = plt.plot(obv_values, label="OBP")
-    plt.legend(handles=[fig1, fig2, fig3])
+    plt.legend(handles=[fig1])
 
 def abs_average(values):
     total = 0.0

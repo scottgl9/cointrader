@@ -10,6 +10,9 @@ class STDDEV:
         self.age = 0
         self.sum = 0.0
 
+    def ready(self):
+        return len(self.values) == self.window
+
     def update(self, value):
         if len(self.values) < self.window:
             self.values.append(float(value))

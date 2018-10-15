@@ -1,5 +1,6 @@
 from trader.signal.Bollinger_Bands_Signal import Bollinger_Bands_Signal
 from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
+from trader.signal.EFI_Breakout_Signal import EFI_Breakout_Signal
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
 from trader.signal.Hybrid2_Crossover import Hybrid2_Crossover
@@ -19,6 +20,7 @@ from trader.signal.TSI_Signal import TSI_Signal
 def select_signal_name(name):
     if name =="Bollinger_Bands_Signal": return Bollinger_Bands_Signal()
     elif name == "Currency_Long_EMA": return Currency_EMA_Long()
+    elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal()
     elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover()
     elif name == "Hybrid_Crossover": return Hybrid_Crossover()
     elif name == "Hybrid2_Crossover": return Hybrid2_Crossover()
