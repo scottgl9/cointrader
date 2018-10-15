@@ -10,7 +10,11 @@ class PeakValleyDetect(object):
         self.age = 0
         self.slope_age = 0
         self.negative_slope = False
+        self.negative_slope_count = 0
+        self.last_negative_slope_count = 0
         self.positive_slope = False
+        self.positive_slope_count = 0
+        self.last_positive_slope_count = 0
         self.peak = False
         self.valley = False
         self.last_peak = 0.0
@@ -39,6 +43,11 @@ class PeakValleyDetect(object):
                         elif slope > 0.0:
                             negative_slope = False
 
+                    if self.positive_slope:
+                        self.positive_slope_count += 1
+                    elif self.negative_slope:
+                        self.negative_slope_count += 1
+
                     if not self.negative_slope and not self.positive_slope:
                         if negative_slope:
                             self.negative_slope = True
@@ -46,17 +55,20 @@ class PeakValleyDetect(object):
                             self.positive_slope = True
                     elif self.negative_slope and not self.positive_slope:
                         if positive_slope and not negative_slope:
-                            if (self.last_valley == 0 or float(value) < self.last_valley): # and self.percent_change() > 0.01:
+                            if (self.last_valley == 0 or float(value) < self.last_valley):
                                 self.valley = True
                                 self.negative_slope = False
                                 self.last_valley = float(value)
+                            self.last_positive_slope_count = self.positive_slope_count
+                            self.positive_slope_count = 0
                     elif not self.negative_slope and self.positive_slope:
                         if negative_slope and not positive_slope:
-                            if (self.last_peak == 0 or float(value) > self.last_peak): # and self.percent_change() > 0.01:
+                            if (self.last_peak == 0 or float(value) > self.last_peak):
                                 self.peak = True
                                 self.positive_slope = False
                                 self.last_peak = float(value)
-
+                            self.last_negative_slope_count = self.negative_slope_count
+                            self.negative_slope_count = 0
                 self.slope_age = (self.slope_age + 1) % self.window
 
         self.age = (self.age + 1) % self.window
