@@ -6,6 +6,7 @@ class ZLEMA(object):
         self.window = window
         self.ema = EMA(weight=window, scale=scale)
         self.values = []
+        self.lag = (self.window - 1) / 2
         self.age = 0
         self.result = 0
 
@@ -17,8 +18,7 @@ class ZLEMA(object):
         else:
             self.values[int(self.age)] = float(value)
 
-            lag = ((self.age - 1) / 2) % self.window
-            self.result = self.ema.update(2.0 * self.values[int(self.age)] - self.values[lag])
+            self.result = self.ema.update(2.0 * self.values[int(self.age)] - self.values[int(self.lag)])
 
         self.age = (self.age + 1) % self.window
 

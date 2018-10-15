@@ -7,7 +7,7 @@ class DTWMA(object):
         self.timestamps = CircularArray(window=window)
         self.ts_deltas = CircularArray(window=window)
         self.prices = CircularArray(window=window)
-        self.lag = (self.window - 1) / 2.0
+        self.lag = (self.window - 1) / 2
         self.result = 0
 
     def update(self, price, ts):
@@ -31,9 +31,6 @@ class DTWMA(object):
         for i in range(0, self.window - 1):
             avg_price += deltas[i] * prices[i]
             total += deltas[i]
-
-        #avg_price += prices[-1]
-        #total += 1
 
         self.result = avg_price / total
 

@@ -1,4 +1,5 @@
 class Message(object):
+    ID_ROOT = "ROOT"
     ID_MULTI = 'MULTI'
     MSG_MARKET_SELL_ALL = 1
     MSG_MARKET_BUY = 2
@@ -13,8 +14,12 @@ class Message(object):
     MSG_SELL_REPLACE = 11
     MSG_BUY_FAILED = 12
     MSG_SELL_FAILED = 13
+    MSG_BUY_UPDATE = 14
+    MSG_SELL_UPDATE = 15
+    MSG_BUY_CANCEL = 16
+    MSG_SELL_CANCEL = 17
 
-    def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0):
+    def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0):
         self.src_id = src_id
         self.dst_id = dst_id
         self.cmd = cmd
@@ -22,6 +27,7 @@ class Message(object):
         self.price = price
         self.size = size
         self.buy_price = buy_price
+        self.ts = ts
         self.read = False
 
     def mark_read(self):

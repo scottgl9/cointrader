@@ -49,6 +49,9 @@ class SignalHandler(object):
         return self.handlers
 
     def get_handler(self, id):
+        if id == 0 and len(self.handlers) > 0:
+            return self.handlers[0]
+
         for handler in self.handlers:
             if handler.id == id:
                 return handler

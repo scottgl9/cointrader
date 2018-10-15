@@ -186,6 +186,10 @@ class hybrid_signal_market_strategy(StrategyBase):
                                                                                                msg.size))
                     signal.buy_price = signal.last_buy_price
                     msg.mark_read()
+
+            for msg in self.msg_handler.get_messages(src_id=Message.ID_ROOT, dst_id=self.ticker_id):
+                if msg and msg.cmd == Message.MSG_BUY_UPDATE:
+                    msg.mark_read()
             self.msg_handler.clear_read()
 
         for signal in self.signal_handler.get_handlers():

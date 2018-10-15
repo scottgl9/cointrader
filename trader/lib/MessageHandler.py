@@ -24,8 +24,8 @@ class MessageHandler(object):
             if message.read:
                 global_message_queue.remove(message)
 
-    def add_message(self, src_id, dst_id, cmd, sig_id, price=0.0, size=0.0, buy_price=0.0):
-        msg = Message(src_id, dst_id, cmd, sig_id, price, size, buy_price)
+    def add_message(self, src_id, dst_id, cmd, sig_id, price=0.0, size=0.0, buy_price=0.0, ts=0):
+        msg = Message(src_id, dst_id, cmd, sig_id, price, size, buy_price, ts)
         global_message_queue.append(msg)
 
     def get_first_message(self, src_id, dst_id, sig_id=0):
@@ -186,3 +186,22 @@ class MessageHandler(object):
                          price=price,
                          size=size,
                          buy_price=buy_price)
+
+    def buy_update(self, ticker_id, price, size, sig_id=0, ts=0):
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_ROOT,
+                         cmd=Message.MSG_BUY_UPDATE,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         ts=ts)
+
+    def sell_update(self, ticker_id, price, size, buy_price, sig_id=0, ts=0):
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_ROOT,
+                         cmd=Message.MSG_SELL_UPDATE,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         buy_price=buy_price,
+                         ts=ts)

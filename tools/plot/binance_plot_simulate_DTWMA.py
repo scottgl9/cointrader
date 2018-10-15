@@ -52,11 +52,8 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    ema26 = EMA(26, scale=24)
-    ema26_values = []
-
-    ema26_filt = EMA(26, scale=24)
-    ema26_filt_values = []
+    ema12 = DZLEMA(12, scale=24)
+    ema12_values = []
 
     obv = OBV()
     close_prices = []
@@ -88,14 +85,11 @@ def simulate(conn, client, base, currency, type="channel"):
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
 
+        ema12.update(close)
+        ema12_values.append(ema12.result)
+
         dtwma.update(close, ts)
         dtwma_values.append(dtwma.result)
-
-        ema26.update(close)
-        ema26_values.append(ema26.result)
-
-        ema26_filt.update(dtwma.result)
-        ema26_filt_values.append(ema26_filt.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -110,8 +104,9 @@ def simulate(conn, client, base, currency, type="channel"):
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(dtwma_values, label='DTWMA')
+    fig2, = plt.plot(ema12_values, label="EMA12")
     #fig2, = plt.plot(ema26_values, label='EMA26')
-    plt.legend(handles=[symprice, fig1])
+    plt.legend(handles=[symprice, fig1, fig2])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')
