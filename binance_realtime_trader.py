@@ -63,18 +63,18 @@ class BinanceTrader:
 
     # process message about user account update
     def process_user_message(self, msg):
-        if 's' not in self.msg.keys():
+        if 's' not in msg.keys():
             return
 
-        if 'X' not in self.msg.keys() or 'S' not in self.msg.keys():
+        if 'X' not in msg.keys() or 'S' not in msg.keys():
             return
 
-        symbol = self.msg['s']
-        cmd = self.msg['X']
-        type = self.msg['o']
-        side = self.msg['S']
-        price = self.msg['p']
-        size = self.msg['q']
+        symbol = msg['s']
+        cmd = msg['X']
+        type = msg['o']
+        side = msg['S']
+        price = msg['p']
+        size = msg['q']
 
         self.logger.info("{}: cmd={} type={} side={} price={} size={}".format(
             symbol,
