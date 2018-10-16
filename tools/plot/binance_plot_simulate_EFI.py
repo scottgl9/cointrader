@@ -64,7 +64,7 @@ def simulate(conn, client, base, currency, type="channel"):
     efi_values = []
 
     dtwma = DTWMA(window=30)
-    bb = BollingerBands(dev_count=8.0, smoother=NULL())
+    bb = BollingerBands(dev_count=8.0, smoother=EMA(26, scale=24))
 
     bb_low_values = []
     bb_high_values = []
@@ -115,6 +115,10 @@ def simulate(conn, client, base, currency, type="channel"):
         if bb.ready() and bb.low_band != 0 and bb.high_band != 0:
             bb_low_values.append(bb.low_band)
             bb_high_values.append(bb.high_band)
+            if efi.result <= bb.low_band:
+                print("LOW")
+            if efi.result >= bb.high_band:
+                print("HIGH")
 
         close_prices.append(close)
         open_prices.append(open)
@@ -132,7 +136,7 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     fig21, = plt.plot(efi_values, label='EFI')
-    #plt.plot(bb_low_values)
+    plt.plot(bb_low_values)
     plt.plot(bb_high_values)
     plt.legend(handles=[fig21])
     #plt.plot(signal_values)
