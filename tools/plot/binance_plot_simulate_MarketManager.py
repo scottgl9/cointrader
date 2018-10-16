@@ -54,7 +54,14 @@ def simulate(conn, client, base, currency, type="channel"):
     closes_corrected = []
     dtwma = DTWMA(window=30)
     dtwma_values = []
-
+    ema12 = EMA(12)
+    ema26 = EMA(26)
+    ema12_prices = []
+    ema26_prices = []
+    obv_ema12 = EMA(12)
+    obv_ema26 = EMA(26)
+    obv_ema12_prices = []
+    obv_ema26_prices = []
     i=0
     for msg in get_rows_as_msgs(c):
         close = float(msg['c'])
@@ -76,9 +83,17 @@ def simulate(conn, client, base, currency, type="channel"):
 
         if mm.ready():
             for kline in mm.get_klines():
+                ema12.update(kline.close)
+                ema12_prices.append(ema12.result)
+                ema26.update(kline.close)
+                ema26_prices.append(ema26.result)
                 closes_corrected.append(kline.close)
                 obv.update(kline.close, kline.volume)
                 obv_values.append(obv.result)
+                obv_ema12.update(obv.result)
+                obv_ema26.update(obv.result)
+                obv_ema12_prices.append(obv_ema12.result)
+                obv_ema26_prices.append(obv_ema26.result)
                 volumes.append(volume)
             mm.reset()
 
@@ -96,12 +111,16 @@ def simulate(conn, client, base, currency, type="channel"):
 
     #symprice, = plt.plot(close_prices, label=ticker_id)
     plt.plot(closes_corrected)
+    plt.plot(ema12_prices)
+    plt.plot(ema26_prices)
     #fig2, = plt.plot(ema26_values, label='EMA26')
     #plt.legend(handles=[symprice])
     plt.subplot(212)
     #plt.legend(handles=[fig21, fig22, fig23])
     #plt.plot(volumes)
     plt.plot(obv_values)
+    plt.plot(obv_ema12_prices)
+    plt.plot(obv_ema26_prices)
     plt.show()
 
 if __name__ == '__main__':
