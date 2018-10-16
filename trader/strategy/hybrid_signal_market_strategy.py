@@ -149,19 +149,27 @@ class hybrid_signal_market_strategy(StrategyBase):
 
 
     # NOTE: low and high do not update for each kline with binance
-    def run_update(self, kline):
+    ## mmkline is kline from MarketManager which is filtered and resampled
+    def run_update(self, kline, mmkline=None):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return
-        close = kline.close
-        self.low = kline.low
-        self.high = kline.high
-        volume = kline.volume
+        if mmkline:
+            close = mmkline.close
+            self.low = mmkline.low
+            self.high = mmkline.high
+            volume = mmkline.volume
+            self.timestamp = mmkline.ts
+            self.kline = kline
+        else:
+            close = kline.close
+            self.low = kline.low
+            self.high = kline.high
+            volume = kline.volume
+            self.timestamp = kline.ts
 
         if close == 0 or volume == 0:
             return
-
-        self.timestamp = kline.ts
 
         if self.timestamp == self.last_timestamp:
             return
@@ -229,13 +237,20 @@ class hybrid_signal_market_strategy(StrategyBase):
             if self.min_trade_size_qty != 1.0:
                 min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
+            #if self.mm_enabled:
+            #    signal.buy_price = self.kline.close
+            #else:
             signal.buy_price = price
             signal.buy_size = min_trade_size
             signal.buy_timestamp = self.timestamp
-            self.msg_handler.buy_market(self.ticker_id, price, signal.buy_size, sig_id=signal.id)
+            self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size, sig_id=signal.id)
 
         if self.sell_signal(signal, price):
-            self.msg_handler.sell_market(self.ticker_id, price, signal.buy_size, signal.buy_price, sig_id=signal.id)
+            #if self.mm_enabled:
+            #    sell_price = self.kline.close
+            #else:
+            sell_price = price
+            self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, sig_id=signal.id)
 
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0
@@ -243,6 +258,6 @@ class hybrid_signal_market_strategy(StrategyBase):
             signal.last_buy_price = signal.buy_price
             signal.buy_price = 0.0
             signal.buy_size = 0.0
-            signal.last_sell_price = price
+            signal.last_sell_price = sell_price
             signal.buy_timestamp = 0
 

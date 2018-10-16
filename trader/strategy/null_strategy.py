@@ -66,5 +66,6 @@ class null_strategy(StrategyBase):
         results += "sell_signal_count: {}<br>".format(self.sell_signal_count)
         return results
 
-    def run_update(self, kline):
+    ## mmkline is kline from MarketManager which is filtered and resampled
+    def run_update(self, kline, mmkline=None):
         self.update_last_50_prices(float(kline['c']))

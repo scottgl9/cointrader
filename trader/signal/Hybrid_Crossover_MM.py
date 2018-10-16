@@ -31,14 +31,14 @@ class Hybrid_Crossover_MM(SignalBase):
         self.obv_ema26 = EMA(self.win_med, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, lag_window=5)
         self.macd = MACD()
-        self.macd_cross = Crossover2(window=5, cutoff=0.0)
-        self.macd_zero_cross = Crossover2(window=5, cutoff=0.0)
-        self.cross_long = Crossover2(window=5, cutoff=0.0)
-        self.obv_cross = Crossover2(window=5, cutoff=0.0)
+        self.macd_cross = Crossover2(window=9, cutoff=0.0)
+        self.macd_zero_cross = Crossover2(window=9, cutoff=0.0)
+        self.cross_long = Crossover2(window=9, cutoff=0.0)
+        self.obv_cross = Crossover2(window=9, cutoff=0.0)
 
         self.rsi = RSI(window=14)
-        self.rsi_cross70 = Crossover2(window=5, cutoff=0.0)
-        self.rsi_cross30 = Crossover2(window=5, cutoff=0.0)
+        self.rsi_cross70 = Crossover2(window=9, cutoff=0.0)
+        self.rsi_cross30 = Crossover2(window=9, cutoff=0.0)
 
         self.trend_down_count = 0
         self.trend_up_count = 0

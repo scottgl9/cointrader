@@ -112,8 +112,9 @@ class MultiTrader(object):
             self.add_trade_pair(symbol)
         return self.trade_pairs[symbol]
 
-
     def process_message(self, kline):
+        self.current_ts = kline.ts
+
         if kline.symbol not in self.trade_pairs.keys():
             self.add_trade_pair(kline.symbol)
 
@@ -128,7 +129,7 @@ class MultiTrader(object):
             self.market_manager.update(kline.symbol, kline)
             if self.market_manager.ready():
                 for k in self.market_manager.get_klines():
-                    self.trade_pairs[k.symbol].run_update(k)
+                    self.trade_pairs[k.symbol].run_update(kline, mmkline=k)
                 self.market_manager.reset()
         else:
             symbol_trader.run_update(kline)
@@ -152,10 +153,8 @@ class MultiTrader(object):
                         self.logger.info(balances)
                         self.check_count = 0
 
-
         # handle incoming messages
         self.order_handler.process_order_messages()
-
 
     def update_tickers(self, tickers):
         self.tickers = tickers

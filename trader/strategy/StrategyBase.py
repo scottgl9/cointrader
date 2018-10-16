@@ -23,6 +23,7 @@ class StrategyBase(object):
         self.prev_last_50_prices = []
         self.count_prices_added = 0
         self.mm_enabled = False
+        self.kline = None
 
     def get_ticker_id(self):
         return self.ticker_id
@@ -68,7 +69,8 @@ class StrategyBase(object):
     def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
         pass
 
-    def run_update(self, kline):
+    ## mmkline is kline from MarketManager which is filtered and resampled
+    def run_update(self, kline, mmkline=None):
         pass
 
     def run_update_signal(self, signal, price):
