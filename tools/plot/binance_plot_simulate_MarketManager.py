@@ -47,6 +47,8 @@ def simulate(conn, client, base, currency, type="channel"):
     obv = OBV()
     obv_values = []
     close_prices = []
+    high_prices = []
+    low_prices = []
     volumes = []
     timestamps = []
     mm = MarketManager()
@@ -88,6 +90,8 @@ def simulate(conn, client, base, currency, type="channel"):
                 ema26.update(kline.close)
                 ema26_prices.append(ema26.result)
                 closes_corrected.append(kline.close)
+                high_prices.append(kline.high)
+                low_prices.append(kline.low)
                 obv.update(kline.close, kline.volume)
                 obv_values.append(obv.result)
                 obv_ema12.update(obv.result)
@@ -111,6 +115,8 @@ def simulate(conn, client, base, currency, type="channel"):
 
     #symprice, = plt.plot(close_prices, label=ticker_id)
     plt.plot(closes_corrected)
+    #plt.plot(low_prices)
+    #plt.plot(high_prices)
     plt.plot(ema12_prices)
     plt.plot(ema26_prices)
     #fig2, = plt.plot(ema26_values, label='EMA26')

@@ -51,7 +51,14 @@ class MarketItem(object):
     def update(self, kline):
         if not self.kline:
             self.kline = kline
+            self.kline.high = self.kline.close
+            self.kline.low = self.kline.close
             return
+
+        if kline.close < self.kline.low:
+            self.kline.low = kline.close
+        if kline.close > self.kline.high:
+            self.kline.high = kline.close
 
         self.dtwma.update(kline.close, kline.ts)
         self.kline.close = self.dtwma.result
