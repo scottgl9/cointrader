@@ -1,5 +1,5 @@
 # manage streaming market data, and deliver at uniform rate to strategy
-from trader.indicator.ehler.EMAMA import EMAMA
+from trader.indicator.test.DTWMA import DTWMA
 
 
 class MarketManager(object):
@@ -10,9 +10,11 @@ class MarketManager(object):
 
     def reset(self):
         self.prev_timestamp = self.timestamp
+        for item in self.market_items.values():
+            item.reset()
 
     def ready(self):
-        if (self.timestamp - self.prev_timestamp) >= 1000 * 15:
+        if (self.timestamp - self.prev_timestamp) >= 1000 * 60:
             return True
         return False
 
@@ -39,14 +41,22 @@ class MarketManager(object):
 class MarketItem(object):
     def __init__(self, symbol):
         self.symbol = symbol
-        self.emama = EMAMA()
+        self.dtwma = DTWMA(window=30)
         self.result = 0
         self.kline = None
 
+    def reset(self):
+        self.kline = None
+
     def update(self, kline):
-        self.kline = kline
-        #self.emama.update(kline.close)
-        #self.result = self.emama.result
+        if not self.kline:
+            self.kline = kline
+            return
+
+        self.dtwma.update(kline.close, kline.ts)
+        self.kline.close = self.dtwma.result
+        self.kline.volume += kline.volume
+        self.kline.ts = kline.ts
 
     def get_kline(self):
         return self.kline
