@@ -6,24 +6,15 @@ try:
 except ImportError:
     sys.path.append('.')
 
-import os.path
-import time
 import sqlite3
-from datetime import datetime, timedelta
-from pypika import Query, Table, Field, Order
-from trader.strategy import *
-from datetime import datetime, timedelta
-import threading
+from datetime import datetime
 import sys
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from trader.WebHandler import WebThread
 from trader.indicator.EMA import EMA
 from trader.indicator.RSI import RSI
-from trader.indicator.test.DTWMA import DTWMA
-from trader.lib.PeakValleyDetect import PeakValleyDetect
+from trader.indicator.DTWMA import DTWMA
 from trader.lib.Kline import Kline
 
 from trader.account.binance.client import Client

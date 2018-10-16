@@ -7,26 +7,13 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import os.path
-import time
 import sqlite3
-from datetime import datetime, timedelta
-from pypika import Query, Table, Field, Order
-from trader.strategy import *
-from datetime import datetime, timedelta
-import threading
 import sys
-from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
-from trader.MultiTrader import MultiTrader
-from trader.account.AccountBinance import AccountBinance
 from trader.config import *
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
 from trader.indicator.OBV import OBV
-from trader.indicator.test.DTWMA import DTWMA
-from trader.lib.FakeKline import FakeKline
+from trader.indicator.DTWMA import DTWMA
 from trader.indicator.ZLEMA import *
 
 

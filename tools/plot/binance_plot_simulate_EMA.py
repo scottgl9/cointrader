@@ -7,41 +7,19 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import os.path
-import time
 import sqlite3
-from datetime import datetime, timedelta
-from pypika import Query, Table, Field, Order
-from trader.strategy import *
-from datetime import datetime, timedelta
-import threading
 import sys
-from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
-from trader.MultiTrader import MultiTrader
-from trader.account.AccountBinance import AccountBinance
 from trader.config import *
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
 from trader.indicator.IchimokuCloud import IchimokuCloud
-from trader.indicator.EMA import EMA
-from trader.indicator.LinReg import LinReg
 from trader.indicator.OBV import OBV
 from trader.indicator.HMA import HMA
-from trader.indicator.RMA import RMA
-from trader.indicator.MACD import MACD
-from trader.indicator.PSAR import PSAR
-from trader.indicator.QUAD import QUAD
+from trader.indicator.test.QUAD import QUAD
 from trader.lib.FakeKline import FakeKline
-from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
-from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.PriceFilter import PriceFilter
-from trader.indicator.TSI import TSI
 from trader.indicator.ZLEMA import *
 from trader.indicator.test.PriceChannel import PriceChannel
-from trader.indicator.WMA import WMA
-from scipy import optimize
 
 
 def get_rows_as_msgs(c):

@@ -1,5 +1,5 @@
 # manage streaming market data, and deliver at uniform rate to strategy
-from trader.indicator.test.DTWMA import DTWMA
+from trader.indicator.DTWMA import DTWMA
 
 
 class MarketManager(object):

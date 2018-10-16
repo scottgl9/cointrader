@@ -8,33 +8,21 @@ except ImportError:
     import trader
 
 import numpy as np
-import matplotlib.dates as md
 #from scipy import optimize
 import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
-from trader.indicator.SMMA import SMMA
-from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
 from trader.indicator.MINMAX import MINMAX
-from trader.indicator.KST import KST
-from trader.indicator.QUAD import QUAD
-from trader.indicator.QUAD2 import QUAD2
+from trader.indicator.test.QUAD2 import QUAD2
 from trader.indicator.RSI import RSI
 from trader.indicator.REMA import REMA
 from trader.indicator.RSQUARE import RSQUARE
-from trader.indicator.KAMA import KAMA
 from trader.indicator.OBV import OBV
-from trader.indicator.LinReg import LinReg
 from trader.indicator.test.PriceChannel import PriceChannel
-from trader.indicator.IchimokuCloud import IchimokuCloud
-from trader.indicator.PSAR import PSAR
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.CrossoverDouble import CrossoverDouble
-import math
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
-from trader.account.binance.exceptions import BinanceAPIException
-import datetime as dt
 from trader.config import *
 
 

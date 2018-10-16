@@ -1,10 +1,9 @@
-from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 from trader.indicator.EFI import EFI
 from trader.indicator.EMA import EMA
 from trader.indicator.BB import BollingerBands
 from trader.lib.Crossover2 import Crossover2
-from trader.indicator.test.DTWMA import DTWMA
+
 
 class EFI_Breakout_Signal(SignalBase):
     def __init__(self):

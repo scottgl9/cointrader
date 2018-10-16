@@ -1,22 +1,16 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QVBoxLayout, QSizePolicy, QMessageBox, QWidget, QPushButton, QComboBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QSize, QRect
+from PyQt5.QtWidgets import QApplication, QMainWindow, QSizePolicy, QWidget, QComboBox
+from PyQt5.QtCore import QRect
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 
-import random
-import numpy as np
 from trader.gdax.public_client import PublicClient
 from trader.myhelpers import *
 from trader.indicator.EMA import EMA
-from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
-from trader.indicator.MACD import MACD
-from trader.indicator.QUAD import QUAD
+from trader.indicator.test.QUAD import QUAD
 
 class App(QMainWindow):
 

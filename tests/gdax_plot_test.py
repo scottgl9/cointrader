@@ -1,19 +1,16 @@
 #!/usr/bin/python
 
-import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn import datasets, linear_model
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn import linear_model
 from trader.myhelpers import *
 from trader.indicator.EMA import EMA
-from trader.indicator.SMMA import SMMA
 from trader.indicator.VWAP import VWAP
 from trader.indicator.MACD import MACD
-from trader.indicator.QUAD import QUAD
+from trader.indicator.test.QUAD import QUAD
 from trader.indicator.DiffWindow import DiffWindow
 from trader.MeasureTrend import MeasureTrend
-import math
+
 
 # kline format: [ time, low, high, open, close, volume ]
 
