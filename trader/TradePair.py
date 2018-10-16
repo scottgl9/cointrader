@@ -74,3 +74,5 @@ class TradePair(object):
         self.tickers = tickers
         self.strategy.update_tickers(tickers)
 
+    def mm_enabled(self):
+        return self.strategy.mm_enabled

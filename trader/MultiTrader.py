@@ -123,13 +123,15 @@ class MultiTrader(object):
         symbol_trader = self.trade_pairs[kline.symbol]
         symbol_trader.update_tickers(self.tickers)
 
-        #self.market_manager.update(kline.symbol, kline)
-
-        #if self.market_manager.ready():
-        #    for k in self.market_manager.get_klines():
-        #        self.trade_pairs[k.symbol].run_update(k)
-        #    self.market_manager.reset()
-        symbol_trader.run_update(kline)
+        # use market manager
+        if symbol_trader.mm_enabled():
+            self.market_manager.update(kline.symbol, kline)
+            if self.market_manager.ready():
+                for k in self.market_manager.get_klines():
+                    self.trade_pairs[k.symbol].run_update(k)
+                self.market_manager.reset()
+        else:
+            symbol_trader.run_update(kline)
 
         if self.global_strategy:
             self.global_strategy.run_update(kline)

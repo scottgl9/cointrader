@@ -26,7 +26,10 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         if signal_names:
             for name in signal_names:
-                self.signal_handler.add(select_signal_name(name))
+                signal = select_signal_name(name)
+                if signal.mm_enabled:
+                    self.mm_enabled = True
+                self.signal_handler.add(signal)
         else:
             self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
 
@@ -61,7 +64,7 @@ class hybrid_signal_market_strategy(StrategyBase):
         if float(signal.buy_price) != 0.0: return False
 
         # if more than 500 seconds between price updates, ignore signal
-        if (self.timestamp - self.last_timestamp) > 500:
+        if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 500:
             return False
 
         # if we have insufficient funds to buy

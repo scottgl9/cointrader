@@ -14,7 +14,7 @@ class MarketManager(object):
             item.reset()
 
     def ready(self):
-        if (self.timestamp - self.prev_timestamp) >= 1000 * 60:
+        if (self.timestamp - self.prev_timestamp) >= 1000 * 15:
             return True
         return False
 

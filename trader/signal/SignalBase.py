@@ -9,6 +9,7 @@ class SignalBase(object):
         self.flag = self.FLAG_SELL_BOUGHT
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
+        self.mm_enabled = False
 
         self.buy_price = 0.0
         self.buy_size = 0.0

@@ -22,6 +22,7 @@ class StrategyBase(object):
         self.last_50_prices = []
         self.prev_last_50_prices = []
         self.count_prices_added = 0
+        self.mm_enabled = False
 
     def get_ticker_id(self):
         return self.ticker_id
