@@ -6,21 +6,18 @@ class ValueLag:
         self.window = window
         self.values = []
         self.result = 0.0
-        self.current_value = 0.0
-        self.last_value = 0.0
         self.age = 0
+
+    def full(self):
+        return len(self.values) == self.window
 
     def update(self, price):
         if len(self.values) < self.window:
-            tail = 0.0
             self.values.append(float(price))
-            self.result = 0.0
-            self.current_value = float(price)
-        else:
-            tail = self.values[int(self.age)]
-            self.values[int(self.age)] = float(price)
-            self.current_value = float(price)
-            self.last_value = tail
+            return self.result
+
+        tail = self.values[int(self.age)]
+        self.values[int(self.age)] = float(price)
 
         self.result = tail
 
