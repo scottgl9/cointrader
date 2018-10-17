@@ -73,6 +73,10 @@ class TraderDB(object):
     def insert_trade(self, ts, symbol, price, qty, bought=True, sig_id=0):
         if not self.db:
             return
+
+        if sig_id == 0:
+            sig_id = 1
+
         values = [ts, symbol, price, qty, bought, sig_id]
         cur = self.db.cursor()
         sql = """INSERT INTO trades (ts, symbol, price, qty, bought, sigid) values(?, ?, ?, ?, ?, ?)"""

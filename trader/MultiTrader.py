@@ -148,7 +148,7 @@ class MultiTrader(object):
                     balances = self.accnt.get_account_balances()
                     self.last_ts = self.current_ts
                     self.check_count += 1
-                    if self.check_count > 4:
+                    if self.check_count > 3:
                         self.logger.info("MultiTrader still running...")
                         self.logger.info(balances)
                         self.check_count = 0

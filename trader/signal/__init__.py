@@ -14,7 +14,7 @@ from trader.signal.PMO_Crossover import PMO_Crossover
 from trader.signal.RSI_OBV import RSI_OBV
 from trader.signal.SignalHandler import SignalHandler
 from trader.signal.SigType import SigType
-from trader.signal.sustained_volume_spike_signal import sustained_volume_spike_signal
+from trader.signal.Slope_Crossover import Slope_Crossover
 from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TSI_Signal import TSI_Signal
 
@@ -33,7 +33,7 @@ def select_signal_name(name):
     elif name == "price_channel_signal": return price_channel_signal()
     elif name == "PMO_Crossover": return PMO_Crossover()
     elif name == "RSI_OBV": return RSI_OBV()
-    elif name == "sustained_volume_spike_signal": return sustained_volume_spike_signal()
+    elif name == "Slope_Crossover": return Slope_Crossover()
     elif name == "TD_Sequential_Signal": return TD_Sequential_Signal()
     elif name == "TSI_Signal": return TSI_Signal()
     return None
