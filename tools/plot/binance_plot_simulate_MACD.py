@@ -24,20 +24,10 @@ from trader.config import *
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.EMA import EMA
-from trader.indicator.LinReg import LinReg
 from trader.indicator.OBV import OBV
 from trader.indicator.MACD import MACD
-from trader.lib.FakeKline import FakeKline
-from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
-from trader.lib.PeakValleyDetect import PeakValleyDetect
-from trader.lib.PriceFilter import PriceFilter
-from trader.indicator.TSI import TSI
-from trader.indicator.test.PriceChannel import PriceChannel
 from trader.lib.Crossover2 import Crossover2
-from trader.indicator.WMA import WMA
-from scipy import optimize
 
 
 def get_rows_as_msgs(c):
@@ -58,16 +48,6 @@ def simulate(conn, client, base, currency, type="channel"):
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema50 = EMA(50, scale=24, lag_window=5)
-    obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
-    obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
-    obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
-    fkline = FakeKline()
-    obv_ema12_values = []
-    obv_ema26_values = []
-    obv_ema50_values = []
-    filter = PriceFilter(window=20, range_filter=False)
-    filter_values =[]
-    filter_x_values = []
 
     macd = MACD(12.0, 26.0, 9.0, scale=24.0)
     macd_cross = Crossover2(window=10, cutoff=0.0)

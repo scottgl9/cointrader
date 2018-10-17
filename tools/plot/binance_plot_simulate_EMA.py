@@ -42,6 +42,8 @@ def simulate(conn, client, base, currency, type="channel"):
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema50 = EMA(100, scale=24, lag_window=5)
+    zlema50 = ZLEMA(50, scale=24)
+    zlema50_values = []
     ema200 = EMA(200, scale=24, lag_window=5)
     hma = HMA(window=26)
     obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24)
@@ -102,6 +104,9 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
+        zlema50.update(close)
+        zlema50_values.append(zlema50.result)
+
 
         value = filter.update(close)
         if value != 0:
@@ -138,7 +143,8 @@ def simulate(conn, client, base, currency, type="channel"):
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    fig5, = plt.plot(zlema50_values, label='ZLEMA50')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4, fig5])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')

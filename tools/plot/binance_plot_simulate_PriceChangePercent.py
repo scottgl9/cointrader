@@ -13,6 +13,7 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
+from trader.indicator.ZLEMA import ZLEMA
 from trader.indicator.DTWMA import DTWMA
 from trader.lib.PriceChangePercent import PriceChangePercent
 
@@ -38,7 +39,8 @@ def simulate(conn, client, base, currency, type="channel"):
     ema200 = EMA(200, scale=24, lag_window=5)
 
     dtwma = DTWMA(window=30)
-    pcp = PriceChangePercent()
+    pcp = PriceChangePercent(smoother=ZLEMA(12, scale=24))
+    pcp_x_values = []
     pcp_values = []
 
     ema12_values = []
@@ -75,6 +77,7 @@ def simulate(conn, client, base, currency, type="channel"):
         pcp.update(dtwma.result, ts)
         if pcp.result != 0:
             pcp_values.append(pcp.result)
+            pcp_x_values.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -91,7 +94,7 @@ def simulate(conn, client, base, currency, type="channel"):
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    fig21, = plt.plot(pcp_values, label='PCP')
+    fig21, = plt.plot(pcp_x_values, pcp_values, label='PCP')
     #fig22, = plt.plot(slope2_values, label='SLOPE26')
 
     #plt.plot(bb_low_values)

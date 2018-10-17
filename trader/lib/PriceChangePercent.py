@@ -1,7 +1,8 @@
 class PriceChangePercent(object):
-    def __init__(self, time_period=300):
+    def __init__(self, time_period=300, smoother=None):
         self.time_period = time_period
         self.klines = []
+        self.smoother = smoother
         self.result = 0
 
     def update(self, close, ts):
@@ -16,7 +17,13 @@ class PriceChangePercent(object):
             else:
                 break
 
-        self.result = 100.0 * (close - self.klines[0].close) / self.klines[0].close
+        result = 100.0 * (close - self.klines[0].close) / self.klines[0].close
+        if self.smoother:
+            self.result = self.smoother.update(result)
+        else:
+            self.result = result
+
+        return self.result
 
 class KlineSmall(object):
     def __init__(self, close, ts):

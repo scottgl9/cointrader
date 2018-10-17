@@ -6,7 +6,6 @@ from trader.signal.SignalBase import SignalBase
 from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
 from trader.lib.SupportResistLevels import SupportResistLevels
-from trader.lib.StatTracker import StatTracker
 from datetime import datetime
 
 

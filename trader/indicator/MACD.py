@@ -5,26 +5,26 @@ from trader.indicator.EMA import EMA
 
 
 class MACD:
-    def __init__(self, short_weight=12.0, long_weight=26.0, signal_weight=9.0, smoother_weight=0.0, scale=1.0, plot_mode=False):
+    def __init__(self, short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0, plot_mode=False, smoother=None):
         self.last_result = 0.0
         self.result = 0.0
         self.result_signal = 0.0
         self.shortEMA = 0.0
         self.longEMA = 0.0
         self.diff = 0.0
+        self.smoother = smoother
         self.short_weight = short_weight
         self.long_weight = long_weight
         self.signal_weight = signal_weight
-        self.smoother_weight = smoother_weight
-        self.short = EMA(self.short_weight, scale=scale)
-        self.long = EMA(self.long_weight, scale=scale)
-        self.signal = EMA(self.signal_weight, scale=scale)
+
+        if not self.smoother:
+            self.smoother = EMA
+
+        self.short = self.smoother(self.short_weight, scale=scale)
+        self.long = self.smoother(self.long_weight, scale=scale)
+        self.signal = self.smoother(self.signal_weight, scale=scale)
         self.plot_mode = plot_mode
         self.smoother = None
-
-        if self.smoother_weight != 0:
-            self.smoother= EMA(self.smoother_weight, scale=scale)
-
 
     def update(self, price):
         self.shortEMA = self.short.update(price)
@@ -38,7 +38,4 @@ class MACD:
 
         self.last_result = self.result
 
-        if self.smoother:
-            self.result = self.smoother.update(self.diff)
-        else:
-            self.result = self.diff
+        self.result = self.diff

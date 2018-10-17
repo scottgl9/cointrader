@@ -2,12 +2,17 @@ from trader.indicator.EMA import EMA
 from trader.lib.ValueLag import ValueLag
 
 class ZLEMA(object):
-    def __init__(self, window=12, scale=1.0):
+    def __init__(self, window=12, scale=1.0, lag_window=3):
         self.window = window
         self.ema = EMA(weight=window, scale=scale)
         self.values = []
         self.lag = (self.window - 1) / 2
+        self.value_lag = None
+        self.lag_window = lag_window
+        if self.lag_window != 0:
+            self.value_lag = ValueLag(window=lag_window)
         self.age = 0
+        self.last_result = 0
         self.result = 0
 
     def update(self, value):
@@ -18,11 +23,17 @@ class ZLEMA(object):
         else:
             self.values[int(self.age)] = float(value)
 
+            if self.value_lag:
+                self.last_result = self.value_lag.update(self.result)
+            else:
+                self.last_result = self.result
+
             self.result = self.ema.update(2.0 * self.values[int(self.age)] - self.values[int(self.lag)])
 
         self.age = (self.age + 1) % self.window
 
         return self.result
+
 
 class DZLEMA(object):
     def __init__(self, window=12, scale=1.0, lagging=False, lag_window=3):
