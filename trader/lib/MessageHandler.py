@@ -24,6 +24,9 @@ class MessageHandler(object):
             if message.read:
                 global_message_queue.remove(message)
 
+    def add(self, msg):
+        global_message_queue.append(msg)
+
     def add_message(self, src_id, dst_id, cmd, sig_id, price=0.0, size=0.0, buy_price=0.0, ts=0):
         msg = Message(src_id, dst_id, cmd, sig_id, price, size, buy_price, ts)
         global_message_queue.append(msg)

@@ -51,6 +51,9 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.min_price = 0.0
         self.max_price = 0.0
         self.trade_size_handler = static_trade_size(base, currency, base_min_size, tick_size, usdt=10)
+        # for more accurate simulation
+        self.delayed_buy_msg = None
+        self.delayed_sell_msg = None
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -105,14 +108,6 @@ class hybrid_signal_market_strategy(StrategyBase):
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size) or balance_available == 0.0:
             return False
-
-        if not self.accnt.simulate and signal.buy_order_id:
-            if price > float(signal.buy_price):
-                # assume that this is the actual price that the market order executed at
-                print("Updated buy_price from {} to {}".format(signal.buy_price, price))
-                signal.buy_price = price
-                signal.buy_order_id = None
-                return False
 
         if signal.sell_long_signal():
             if (price - signal.buy_price) / signal.buy_price <= -0.1:
@@ -218,6 +213,26 @@ class hybrid_signal_market_strategy(StrategyBase):
 
 
     def run_update_signal(self, signal, price):
+        # handle delayed buy/sell message
+        if self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
+            signal.buy_price = price
+            self.delayed_buy_msg.price = signal.buy_price
+            self.msg_handler.add(self.delayed_buy_msg)
+            self.delayed_buy_msg = None
+
+        if self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
+            self.delayed_sell_msg.price = price
+            self.msg_handler.add(self.delayed_sell_msg)
+            self.delayed_sell_msg = None
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
+
+            signal.last_buy_price = signal.buy_price
+            signal.buy_price = 0.0
+            signal.buy_size = 0.0
+            signal.last_sell_price = price
+            signal.buy_timestamp = 0
+
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
             return
@@ -243,21 +258,43 @@ class hybrid_signal_market_strategy(StrategyBase):
             signal.buy_price = price
             signal.buy_size = min_trade_size
             signal.buy_timestamp = self.timestamp
-            self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size, sig_id=signal.id)
+
+            # for more accurate simulation, delay buy message for one cycle in order to have the buy price
+            # be the value immediately following the price that the buy signal was triggered
+            if self.accnt.simulate and not self.delayed_buy_msg:
+                self.delayed_buy_msg = Message(self.ticker_id,
+                                               Message.ID_MULTI,
+                                               Message.MSG_MARKET_BUY,
+                                               signal.id,
+                                               price,
+                                               signal.buy_size)
+            else:
+                self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size, sig_id=signal.id)
 
         if self.sell_signal(signal, price):
             #if self.mm_enabled:
             #    sell_price = self.kline.close
             #else:
             sell_price = price
-            self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, sig_id=signal.id)
 
-            if self.min_trade_size_qty != 1.0:
-                self.min_trade_size_qty = 1.0
+            # for more accurate simulation, delay sell message for one cycle in order to have the buy price
+            # be the value immediately following the price that the buy signal was triggered
+            if self.accnt.simulate and not self.delayed_sell_msg:
+                self.delayed_sell_msg = Message(self.ticker_id,
+                                                Message.ID_MULTI,
+                                                Message.MSG_MARKET_SELL,
+                                                signal.id,
+                                                sell_price,
+                                                signal.buy_size,
+                                                signal.buy_price)
+            else:
+                self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, sig_id=signal.id)
 
-            signal.last_buy_price = signal.buy_price
-            signal.buy_price = 0.0
-            signal.buy_size = 0.0
-            signal.last_sell_price = sell_price
-            signal.buy_timestamp = 0
+                if self.min_trade_size_qty != 1.0:
+                    self.min_trade_size_qty = 1.0
 
+                signal.last_buy_price = signal.buy_price
+                signal.buy_price = 0.0
+                signal.buy_size = 0.0
+                signal.last_sell_price = sell_price
+                signal.buy_timestamp = 0
