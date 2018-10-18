@@ -38,7 +38,7 @@ def simulate(conn, client, base, currency, type="channel"):
     ema200 = EMA(200, scale=24, lag_window=5)
 
     dtwma = DTWMA(window=30)
-    angle = Angle(window=1000)
+    angle = Angle(window=100)
     angle_values = []
     ema12_values = []
     ema26_values = []
