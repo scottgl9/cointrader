@@ -38,7 +38,7 @@ def simulate(conn, client, base, currency, type="channel"):
     ema200 = EMA(200, scale=24, lag_window=5)
 
     dtwma = DTWMA(window=30)
-    angle = Angle(window=200)
+    angle = Angle(window=1000)
     angle_values = []
     ema12_values = []
     ema26_values = []
@@ -71,7 +71,7 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_values.append(ema200_value)
 
         #dtwma.update(close, ts)
-        angle.update(ema50_value, ts)
+        angle.update(ema50_value, ts/1000.0)
 
         if angle.result != 0:
             angle_values.append(angle.result)
