@@ -26,7 +26,7 @@ class TraderDB(object):
     def get_all_trades(self):
         trades = []
         if self.db:
-            if self.get_trade_count() == 0:
+            if self.get_trade_count_total() == 0:
                 return trades
             cur = self.db.cursor()
             cur.execute("""SELECT ts, symbol, price, qty, bought, sigid from trades""")
@@ -45,7 +45,7 @@ class TraderDB(object):
     def get_trades(self, symbol):
         trades = []
         if self.db:
-            if self.get_trade_count() == 0:
+            if self.get_trade_count_total() == 0:
                 return trades
             cur = self.db.cursor()
             cur.execute("""SELECT ts, symbol, price, qty, bought, sigid from trades WHERE symbol='{}'""".format(symbol))
@@ -61,21 +61,47 @@ class TraderDB(object):
         return trades
 
 
-    def get_trade_count(self):
+    def get_trade_count_total(self):
         count = 0
-        if self.db:
-            cur = self.db.cursor()
+        if not self.db:
+            return count
+
+        cur = self.db.cursor()
+        try:
             count = int(cur.execute("""SELECT COUNT(*) FROM trades""").fetchone()[0])
+        except sqlite3.OperationalError:
+            pass
 
         return count
 
+    def get_trade_count(self, symbol, sig_id=0):
+        count = 0
+        if not self.db:
+            return count
+
+        cur = self.db.cursor()
+        if sig_id == 0:
+            sql = """SELECT COUNT(*) FROM trades WHERE symbol='{}'""".format(symbol)
+        else:
+            sql = """SELECT COUNT(*) FROM trades WHERE symbol='{}' and sigid={}""".format(symbol, sig_id)
+
+        try:
+            count = int(cur.execute(sql).fetchone()[0])
+        except sqlite3.OperationalError:
+            pass
+
+        return count
 
     def insert_trade(self, ts, symbol, price, qty, bought=True, sig_id=0):
         if not self.db:
             return
 
-        if sig_id == 0:
-            sig_id = 1
+        #if sig_id == 0:
+        #    sig_id = 1
+
+        count = self.get_trade_count(symbol, sig_id)
+        if count > 0:
+            self.remove_trade(symbol, sig_id)
 
         values = [ts, symbol, price, qty, bought, sig_id]
         cur = self.db.cursor()
@@ -91,8 +117,12 @@ class TraderDB(object):
     def remove_trade(self, symbol, sig_id=0):
         if not self.db:
             return
-        if self.get_trade_count() == 0:
+        if self.get_trade_count_total() == 0:
             return
+
+        #if sig_id == 0:
+        #    sig_id = 1
+
         cur = self.db.cursor()
         if sig_id != 0:
             sql = """DELETE FROM trades WHERE symbol='{}' AND sigid={}""".format(symbol, sig_id)
