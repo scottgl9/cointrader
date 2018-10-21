@@ -21,43 +21,75 @@ class TraderDB(object):
 
         if not exists:
             self.create_table()
+        else:
+            self.remove_duplicate_trades()
+
+
+    def remove_duplicate_trades(self):
+        trades = self.get_all_trades()
+
+        if len(trades) == 0:
+            return
+
+        timestamps = []
+
+        for i in range(0, len(trades) - 1):
+            t1 = trades[i]
+            for j in range(i+1, len(trades) - 1):
+                t2 = trades[j]
+                if (t1['symbol'] == t2['symbol'] and
+                    t1['sigid'] == t2['sigid']):
+                        timestamps.append(t2['ts'])
+                        break
+        for ts in timestamps:
+            self.remove_trade_by_ts(ts)
+
+        count = len(timestamps)
+        if count != 0:
+            self.logger.info("{} duplicate trades removed".format(count))
 
 
     def get_all_trades(self):
         trades = []
-        if self.db:
-            if self.get_trade_count_total() == 0:
-                return trades
-            cur = self.db.cursor()
-            cur.execute("""SELECT ts, symbol, price, qty, bought, sigid from trades""")
-            for row in cur:
-                trade = {}
-                trade['ts'] = row[0]
-                trade['symbol'] = row[1]
-                trade['price'] = row[2]
-                trade['qty'] = row[3]
-                trade['bought'] = row[4]
-                trade['sigid'] = row[5]
-                trades.append(trade)
+        if not self.db:
+            return trades
+        if self.get_trade_count_total() == 0:
+            return trades
+
+        cur = self.db.cursor()
+        sql = """SELECT ts,symbol,price,qty,bought,sigid from trades ORDER by ts DESC"""
+        cur.execute(sql)
+        for row in cur:
+            trade = {}
+            trade['ts'] = row[0]
+            trade['symbol'] = row[1]
+            trade['price'] = row[2]
+            trade['qty'] = row[3]
+            trade['bought'] = row[4]
+            trade['sigid'] = row[5]
+            trades.append(trade)
         return trades
 
 
     def get_trades(self, symbol):
         trades = []
-        if self.db:
-            if self.get_trade_count_total() == 0:
-                return trades
-            cur = self.db.cursor()
-            cur.execute("""SELECT ts, symbol, price, qty, bought, sigid from trades WHERE symbol='{}'""".format(symbol))
-            for row in cur:
-                trade = {}
-                trade['ts'] = row[0]
-                trade['symbol'] = row[1]
-                trade['price'] = row[2]
-                trade['qty'] = row[3]
-                trade['bought'] = row[4]
-                trade['sigid'] = row[5]
-                trades.append(trade)
+        if not self.db:
+            return trades
+        if self.get_trade_count_total() == 0:
+            return trades
+
+        sql = """SELECT ts,symbol,price,qty,bought,sigid from trades WHERE symbol='{}' ORDER BY ts DESC""".format(symbol)
+        cur = self.db.cursor()
+        cur.execute(sql)
+        for row in cur:
+            trade = {}
+            trade['ts'] = row[0]
+            trade['symbol'] = row[1]
+            trade['price'] = row[2]
+            trade['qty'] = row[3]
+            trade['bought'] = row[4]
+            trade['sigid'] = row[5]
+            trades.append(trade)
         return trades
 
 
@@ -112,6 +144,22 @@ class TraderDB(object):
         except sqlite3.OperationalError:
             if self.logger:
                 self.logger.info("FAILED to insert {} into {}".format(symbol, self.filename))
+
+
+    def remove_trade_by_ts(self, ts):
+        if not self.db:
+            return
+        if self.get_trade_count_total() == 0:
+            return
+
+        cur = self.db.cursor()
+        sql = """DELETE FROM trades WHERE ts={}""".format(ts)
+        try:
+            cur.execute(sql)
+            self.db.commit()
+        except sqlite3.OperationalError:
+            if self.logger:
+                self.logger.warning("FAILED to remove ts={} from {}".format(ts, self.filename))
 
 
     def remove_trade(self, symbol, sig_id=0):
