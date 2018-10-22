@@ -27,3 +27,6 @@ abs(max_delta_price) = delta_time * tan(80)
 
 So the maximum delta_price for a given timeframe is:
 abs(max_delta_price) = delta_time * tan(80)
+
+The problem with the above is it's not unit-less. Could possibly designate time as number of timeframes, and
+price as ratio of price_frames / max_price_frames
