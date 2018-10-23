@@ -7,6 +7,8 @@ except ImportError:
     sys.path.append('.')
 
 import sqlite3
+import json
+import os
 from datetime import datetime
 import sys
 import matplotlib.pyplot as plt
@@ -189,9 +191,11 @@ class mainWindow(QtGui.QTabWidget):
         rsi_values = []
         ema100 = EMA(100, scale=24)
         ema100_prices = []
+        prices = []
         #detector = PeakValleyDetect()
         i=0
         for (price, ts) in data:
+            prices.append(price)
             price = dtwma.update(price, ts)
             value = ema100.update(float(price))
             rsi.update(float(price))
@@ -204,7 +208,7 @@ class mainWindow(QtGui.QTabWidget):
             #    ax.axvline(x=i, color='blue')
             ema100_prices.append(value)
             i+=1
-        ax.plot(ema100_prices)
+        ax.plot(prices)
         ax2 = self.tabs[name].figure.add_subplot(212)
         ax2.plot(rsi_values)
         self.tabs[name].canvas.draw()
@@ -243,12 +247,22 @@ if __name__ == '__main__':
 
     logger.info("Running simulate with {}".format(results.filename))
 
-    try:
-        trades = simulate(conn, client, results.strategy, logger)
-    except (KeyboardInterrupt, SystemExit):
-        logger.info("CTRL+C: Exiting....")
-        conn.close()
-        sys.exit(0)
+    trade_cache_filename = str(results.filename).replace('.db', '.txt')
+    if not os.path.exists(trade_cache_filename):
+        try:
+            trades = simulate(conn, client, results.strategy, logger)
+        except (KeyboardInterrupt, SystemExit):
+            logger.info("CTRL+C: Exiting....")
+            conn.close()
+            sys.exit(0)
+
+        logger.info("Writing trade cache to {}".format(trade_cache_filename))
+        with open(trade_cache_filename, "w") as f:
+            f.write(json.dumps(trades))
+    else:
+        logger.info("Loading {}".format(trade_cache_filename))
+        with open(trade_cache_filename, "r") as f:
+            trades = json.loads(str(f.read()))
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)

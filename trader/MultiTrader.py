@@ -105,7 +105,7 @@ class MultiTrader(object):
             self.order_handler.trade_db_load_symbol(symbol, trade_pair)
 
     def get_stored_trades(self):
-        return self.order_handler.trades
+        return self.order_handler.get_stored_trades()
 
     def get_trader(self, symbol):
         if symbol not in self.trade_pairs.keys():

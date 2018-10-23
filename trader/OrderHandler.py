@@ -6,6 +6,7 @@ from trader.lib.TraderDB import TraderDB
 import time
 import os
 
+
 class OrderHandler(object):
     def __init__(self, accnt, msg_handler, logger, store_trades=False):
         self.accnt = accnt
@@ -52,6 +53,10 @@ class OrderHandler(object):
         for trade in trades:
             if trade_pair:
                 trade_pair.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'], sig_id=trade['sigid'])
+
+
+    def get_stored_trades(self):
+        return self.trades
 
 
     def update_tickers(self, tickers):
