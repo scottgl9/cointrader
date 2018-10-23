@@ -14,6 +14,7 @@ class SignalBase(object):
         self.buy_price = 0.0
         self.buy_size = 0.0
         self.buy_timestamp = 0
+        self.sell_timestamp = 0
         self.buy_order_id = None
         self.last_buy_price = 0.0
         self.last_sell_price = 0.0

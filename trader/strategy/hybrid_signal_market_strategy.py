@@ -67,7 +67,10 @@ class hybrid_signal_market_strategy(StrategyBase):
         if float(signal.buy_price) != 0.0: return False
 
         # if more than 500 seconds between price updates, ignore signal
-        if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 500:
+        if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 1000 * 0.5:
+            return False
+
+        if signal.sell_timestamp != 0 and (self.timestamp - signal.sell_timestamp) < 1000 * 60 * 60:
             return False
 
         # if we have insufficient funds to buy
@@ -258,6 +261,7 @@ class hybrid_signal_market_strategy(StrategyBase):
             signal.buy_price = price
             signal.buy_size = min_trade_size
             signal.buy_timestamp = self.timestamp
+            signal.sell_timestamp = 0
 
             # for more accurate simulation, delay buy message for one cycle in order to have the buy price
             # be the value immediately following the price that the buy signal was triggered
@@ -298,3 +302,4 @@ class hybrid_signal_market_strategy(StrategyBase):
                 signal.buy_size = 0.0
                 signal.last_sell_price = sell_price
                 signal.buy_timestamp = 0
+                signal.sell_timestamp = self.timestamp

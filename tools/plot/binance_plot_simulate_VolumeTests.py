@@ -77,14 +77,10 @@ def simulate(conn, client, base, currency, type="channel"):
 
         dtwma.update(close, ts)
 
-        volume = ema_volume.update(volume)
+        #volume = ema_volume.update(volume)
 
         logvol = float(np.log(volume))
         if not np.isnan(logvol) and logvol != -np.inf:
-            vol_ema12.update(float(logvol))
-            vol_ema26.update(float(logvol))
-            vol_ema12_values.append(vol_ema12.result)
-            vol_ema26_values.append(vol_ema26.result)
             volumes.append(logvol)
 
         close_prices.append(close)
@@ -103,11 +99,11 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     fig21, = plt.plot(volumes, label='VOLUME')
-    fig22, = plt.plot(vol_ema12_values, label="EMAVOL12")
-    fig23, = plt.plot(vol_ema26_values, label="EMAVOL26")
+    #fig22, = plt.plot(vol_ema12_values, label="EMAVOL12")
+    #fig23, = plt.plot(vol_ema26_values, label="EMAVOL26")
 
     #plt.plot(bb_low_values)
-    plt.legend(handles=[fig21,fig22,fig23])
+    plt.legend(handles=[fig21])
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()

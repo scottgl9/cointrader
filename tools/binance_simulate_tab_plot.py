@@ -160,9 +160,9 @@ class mainWindow(QtGui.QTabWidget):
         c = conn.cursor()
         for s in symbols:
             data = []
-            c.execute("SELECT c,E FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
+            c.execute("SELECT c FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
             for row in c:
-                data.append((float(row[0]), int(row[1])))
+                data.append(float(row[0]))
             self.create_tab(s)
             self.plot_tab(s, data, trades[s])
 
@@ -186,31 +186,20 @@ class mainWindow(QtGui.QTabWidget):
                 ax.axvline(x=trade['index'], color='red')
         ax.plot(data)
         dtwma = DTWMA(window=30)
-        ema26 = EMA(26, scale=24)
-        rsi = RSI(window=30, smoother=ema26)
-        rsi_values = []
-        ema100 = EMA(100, scale=24)
-        ema100_prices = []
+        #ema26 = EMA(26, scale=24)
+        #rsi = RSI(window=30, smoother=ema26)
+        #rsi_values = []
+        #ema100 = EMA(100, scale=24)
+        #ema100_prices = []
         prices = []
         #detector = PeakValleyDetect()
         i=0
-        for (price, ts) in data:
-            prices.append(price)
-            price = dtwma.update(price, ts)
-            value = ema100.update(float(price))
-            rsi.update(float(price))
-            if rsi.result != 0:
-                rsi_values.append(rsi.result)
-            #detector.update(value)
-            #if detector.peak_detect():
-            #    ax.axvline(x=i, color='orange')
-            #if detector.valley_detect():
-            #    ax.axvline(x=i, color='blue')
-            ema100_prices.append(value)
-            i+=1
-        ax.plot(prices)
-        ax2 = self.tabs[name].figure.add_subplot(212)
-        ax2.plot(rsi_values)
+        #for (price, ts) in data:
+        #    prices.append(float(price))
+        #    i+=1
+        #ax.plot(prices)
+        #ax2 = self.tabs[name].figure.add_subplot(212)
+        #ax2.plot(rsi_values)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':
@@ -263,6 +252,10 @@ if __name__ == '__main__':
         logger.info("Loading {}".format(trade_cache_filename))
         with open(trade_cache_filename, "r") as f:
             trades = json.loads(str(f.read()))
+
+    for key, value in trades.items():
+        if str(key).endswith("BNB"):
+            del trades[key]
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)
