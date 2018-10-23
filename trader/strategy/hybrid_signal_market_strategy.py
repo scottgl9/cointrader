@@ -54,6 +54,8 @@ class hybrid_signal_market_strategy(StrategyBase):
         # for more accurate simulation
         self.delayed_buy_msg = None
         self.delayed_sell_msg = None
+        self.update_buy_price = False
+        self.update_sell_price = False
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -120,10 +122,10 @@ class hybrid_signal_market_strategy(StrategyBase):
             return False
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 0.7):
                 return False
         else:
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 0.7):
                 return False
 
         if signal.sell_signal():
@@ -217,13 +219,13 @@ class hybrid_signal_market_strategy(StrategyBase):
 
     def run_update_signal(self, signal, price):
         # handle delayed buy/sell message
-        if self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
+        if self.accnt.simulate and self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
             signal.buy_price = price
             self.delayed_buy_msg.price = signal.buy_price
             self.msg_handler.add(self.delayed_buy_msg)
             self.delayed_buy_msg = None
 
-        if self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
+        if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
             self.delayed_sell_msg.price = price
             self.msg_handler.add(self.delayed_sell_msg)
             self.delayed_sell_msg = None
@@ -235,6 +237,13 @@ class hybrid_signal_market_strategy(StrategyBase):
             signal.buy_size = 0.0
             signal.last_sell_price = price
             signal.buy_timestamp = 0
+
+        if not self.accnt.simulate and self.update_buy_price and price > signal.buy_price:
+            signal.buy_price = price
+            self.update_buy_price = False
+        elif not self.accnt.simulate and self.update_sell_price:
+            signal.last_sell_price = price
+            self.update_sell_price = False
 
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
@@ -274,6 +283,8 @@ class hybrid_signal_market_strategy(StrategyBase):
                                                signal.buy_size)
             else:
                 self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size, sig_id=signal.id)
+                # for trader running live. Delay setting buy_price until next price
+                self.update_buy_price = True
 
         if self.sell_signal(signal, price):
             #if self.mm_enabled:
@@ -303,3 +314,5 @@ class hybrid_signal_market_strategy(StrategyBase):
                 signal.last_sell_price = sell_price
                 signal.buy_timestamp = 0
                 signal.sell_timestamp = self.timestamp
+                # for trader running live. Delay setting sell_price until next price
+                self.update_sell_price = True

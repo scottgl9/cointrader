@@ -2,7 +2,7 @@
 from trader.lib.CircularArray import CircularArray
 
 class DTWMA(object):
-    def __init__(self, window):
+    def __init__(self, window=10):
         self.window = window
         self.timestamps = CircularArray(window=window)
         self.ts_deltas = CircularArray(window=window)
@@ -25,10 +25,10 @@ class DTWMA(object):
         deltas = self.ts_deltas.values_ordered()
         prices = self.prices.values_ordered()
 
-        total = 0
-        avg_price = 0
+        total = 1
+        avg_price = prices[0]
 
-        for i in range(0, self.window - 1):
+        for i in range(1, self.window - 1):
             avg_price += deltas[i] * prices[i]
             total += deltas[i]
 

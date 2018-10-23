@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.indicator.EMA import EMA
+from trader.indicator.MACD import MACD
 from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
 from trader.lib.Kline import Kline
@@ -185,21 +186,31 @@ class mainWindow(QtGui.QTabWidget):
             elif trade['type'] == 'sell':
                 ax.axvline(x=trade['index'], color='red')
         ax.plot(data)
-        dtwma = DTWMA(window=30)
-        #ema26 = EMA(26, scale=24)
-        #rsi = RSI(window=30, smoother=ema26)
-        #rsi_values = []
-        #ema100 = EMA(100, scale=24)
-        #ema100_prices = []
-        prices = []
-        #detector = PeakValleyDetect()
+        ema12 = EMA(12, scale=24)
+        ema26 = EMA(26, scale=24)
+        ema12_values = []
+        ema26_values = []
+        macd = MACD(short_weight=10, long_weight=30, scale=24, plot_mode=True)
+        macd_diff_values = []
+        macd_signal_values = []
+
         i=0
-        #for (price, ts) in data:
-        #    prices.append(float(price))
+        for price in data:
+            ema12.update(price)
+            ema12_values.append(ema12.result)
+            ema26.update(price)
+            ema26_values.append(ema26.result)
+            macd.update(price)
+            if macd.diff != 0:
+                macd_diff_values.append(macd.diff)
+            if macd.signal.result != 0:
+                macd_signal_values.append(macd.signal.result)
         #    i+=1
-        #ax.plot(prices)
-        #ax2 = self.tabs[name].figure.add_subplot(212)
-        #ax2.plot(rsi_values)
+        ax.plot(ema12_values)
+        ax.plot(ema26_values)
+        ax2 = self.tabs[name].figure.add_subplot(212)
+        ax2.plot(macd_diff_values)
+        ax2.plot(macd_signal_values)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':

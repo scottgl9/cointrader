@@ -49,7 +49,7 @@ def simulate(conn, client, base, currency, type="channel"):
     high_prices = []
     volumes = []
 
-    dtwma = DTWMA(window=30)
+    dtwma = DTWMA(window=10)
     dtwma_values = []
 
     i=0
