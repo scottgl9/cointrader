@@ -40,6 +40,16 @@ class TimeSegmentValues(object):
 
         return self.time_values[-1].value
 
+    def percent_change(self):
+        if self.empty():
+            return 0
+        value1 = self.first_value()
+        value2 = self.last_value()
+        if value1 == value2 or value1 == 0:
+            return 0
+
+        return 100.0 * (value2 - value1) / value1
+
 class TimeValue(object):
     def __init__(self, value=0, ts=0):
         self.value = value
