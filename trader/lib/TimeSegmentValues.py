@@ -19,19 +19,22 @@ class TimeSegmentValues(object):
             if not self.full:
                 self.full = True
 
-    def get_values(self):
+    def values(self):
         values = []
         for tv in self.time_values:
             values.append(tv.value)
         return values
 
-    def get_first_value(self):
+    def value_count(self):
+        return len(self.time_values)
+
+    def first_value(self):
         if self.empty():
             return 0
 
         return self.time_values[0].value
 
-    def get_last_value(self):
+    def last_value(self):
         if self.empty():
             return 0
 
