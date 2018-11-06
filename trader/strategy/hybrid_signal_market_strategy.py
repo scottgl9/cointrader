@@ -66,7 +66,10 @@ class hybrid_signal_market_strategy(StrategyBase):
 
 
     def buy_signal(self, signal, price):
-        if float(signal.buy_price) != 0.0: return False
+        if float(signal.buy_price) != 0.0:
+            #if signal.buy_signal():
+            #    signal.sell_marked = False
+            return False
 
         # if more than 500 seconds between price updates, ignore signal
         if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 1000 * 0.5:
@@ -121,12 +124,18 @@ class hybrid_signal_market_strategy(StrategyBase):
         if price < float(signal.buy_price):
             return False
 
+        #if not signal.sell_marked and signal.sell_signal():
+        #    signal.sell_marked = True
+
         if self.base == 'ETH' or self.base == 'BNB':
             if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 0.7):
                 return False
         else:
             if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 0.7):
                 return False
+
+        #if signal.sell_marked:
+        #    return True
 
         if signal.sell_signal():
             return True

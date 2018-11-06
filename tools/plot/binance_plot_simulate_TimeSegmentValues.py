@@ -41,6 +41,10 @@ def simulate(conn, client, base, currency, type="channel"):
     tsv = TimeSegmentValues(seconds=300)
     tsv_x_values = []
     tsv_values = []
+    tsv_ema12 = ZLEMA(50, scale=24)
+    tsv_ema26 = ZLEMA(100, scale=24)
+    tsv_ema12_values = []
+    tsv_ema26_values = []
 
     ema12_values = []
     ema26_values = []
@@ -76,6 +80,8 @@ def simulate(conn, client, base, currency, type="channel"):
         if tsv.full:
             tsv_x_values.append(i)
             tsv_values.append(tsv.percent_change())
+            tsv_ema12_values.append(tsv_ema12.update(tsv.percent_change()))
+            tsv_ema26_values.append(tsv_ema26.update(tsv.percent_change()))
 
         close_prices.append(close)
         open_prices.append(open)
@@ -92,11 +98,12 @@ def simulate(conn, client, base, currency, type="channel"):
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    fig21, = plt.plot(tsv_x_values, tsv_values, label='TSV_PERCENT')
-    #fig22, = plt.plot(slope2_values, label='SLOPE26')
+    #fig21, = plt.plot(tsv_x_values, tsv_values, label='TSV_PERCENT')
+    fig22, = plt.plot(tsv_x_values, tsv_ema12_values, label='TSV_EMA12_PERCENT')
+    fig23, = plt.plot(tsv_x_values, tsv_ema26_values, label='TSV_EMA26_PERCENT')
 
     #plt.plot(bb_low_values)
-    plt.legend(handles=[fig21])
+    plt.legend(handles=[fig22, fig23])
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()

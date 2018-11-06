@@ -24,6 +24,7 @@ class SignalBase(object):
         self.buy_pending_price = 0.0
         self.sell_pending = False
         self.sell_pending_price = 0.0
+        self.sell_marked = False
 
     def get_id(self):
         return self.id
