@@ -64,6 +64,7 @@ class OrderHandler(object):
 
 
     def process_order_messages(self):
+        received = False
         # handle incoming messages
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
@@ -72,28 +73,38 @@ class OrderHandler(object):
                 if msg.cmd == Message.MSG_MARKET_BUY:
                     self.place_buy_market_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_MARKET_SELL:
                     self.place_sell_market_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_LIMIT_BUY:
                     self.place_buy_limit_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_LIMIT_SELL:
                     self.place_sell_limit_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_STOP_LOSS_BUY:
                     self.place_buy_stop_loss_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_STOP_LOSS_SELL:
                     self.place_sell_stop_loss_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_BUY_REPLACE:
                     self.replace_buy_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_SELL_REPLACE:
                     self.replace_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
+                    received = True
             self.msg_handler.clear_read()
+
+        return received
 
 
     def process_limit_order(self, kline):

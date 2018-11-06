@@ -45,7 +45,8 @@ class MultiTrader(object):
         self.notify = None
         self.current_ts = 0
         self.last_ts = 0
-        self.check_ts = 3600 * 1000 # 1 hour
+        self.check_ts_min = 60 * 1000   # 1 minute
+        self.check_ts = 3600 * 1000     # 1 hour
         self.check_count = 0
         self.stopped = False
         self.running = True
@@ -155,6 +156,19 @@ class MultiTrader(object):
 
         # handle incoming messages
         self.order_handler.process_order_messages()
+
+    # process message from user event socket
+    # cmd: NEW, PARTIALLY_FILLED, FILLED, CANCELED
+    # types: MARKET, LIMIT
+    # side: BUY, SELL
+    # other fields: price, size
+    def process_user_message(self, msg):
+        if self.last_ts == 0 or self.current_ts == 0:
+            return
+
+        if (self.current_ts - self.last_ts) > self.check_ts_min:
+            self.accnt.get_account_balances()
+            self.last_ts = self.current_ts
 
     def update_tickers(self, tickers):
         self.tickers = tickers

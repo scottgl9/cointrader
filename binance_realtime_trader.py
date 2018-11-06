@@ -76,6 +76,8 @@ class BinanceTrader:
         price = msg['p']
         size = msg['q']
 
+        self.multitrader.process_user_message(msg)
+
         self.logger.info("{}: cmd={} type={} side={} price={} size={}".format(
             symbol,
             cmd,
