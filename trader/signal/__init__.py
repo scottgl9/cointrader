@@ -17,6 +17,7 @@ from trader.signal.SigType import SigType
 from trader.signal.Slope_Crossover import Slope_Crossover
 from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TSI_Signal import TSI_Signal
+from trader.signal.TSV_Signal import TSV_Signal
 
 def select_signal_name(name):
     if name =="Bollinger_Bands_Signal": return Bollinger_Bands_Signal()
@@ -36,4 +37,6 @@ def select_signal_name(name):
     elif name == "Slope_Crossover": return Slope_Crossover()
     elif name == "TD_Sequential_Signal": return TD_Sequential_Signal()
     elif name == "TSI_Signal": return TSI_Signal()
+    elif name == "TSV_Signal": return TSV_Signal()
+
     return None
