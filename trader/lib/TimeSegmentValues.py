@@ -51,15 +51,16 @@ class TimeSegmentValues(object):
 
     def percent_change(self):
         if self.empty():
-            return 0
+            return None
         value1 = self.first_value()
         value2 = self.last_value()
         if value1 == value2 or value1 == 0:
-            return 0
+            return None
 
-        result = 100.0 * (value2 - value1) / value1
         if self.percent_smoother:
-            result = self.percent_smoother.update(result)
+            result = self.percent_smoother.update(100.0 * (value2 - value1) / value1)
+        else:
+            result = 100.0 * (value2 - value1) / value1
 
         return result
 

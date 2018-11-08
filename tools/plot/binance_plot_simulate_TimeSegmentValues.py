@@ -38,16 +38,14 @@ def simulate(conn, client, base, currency, type="channel"):
     ema200 = EMA(200, scale=24, lag_window=5)
 
     dtwma = DTWMA(window=30)
-    tsv = TimeSegmentValues(seconds=300)
-    tsv2 = TimeSegmentValues(seconds=1000)
+    tsv = TimeSegmentValues(seconds=300, percent_smoother=ZLEMA(100, scale=24))
+    tsv2 = TimeSegmentValues(seconds=1000, percent_smoother=ZLEMA(100, scale=24))
     tsv_x_values = []
     tsv_values = []
     tsv2_x_values = []
     tsv2_values = []
-    tsv_ema26 = ZLEMA(100, scale=24)
-    tsv_ema26_values = []
-    tsv2_ema26 = ZLEMA(100, scale=24)
-    tsv2_ema26_values = []
+    tsv_counts = []
+    tsv2_counts = []
 
     ema12_values = []
     ema26_values = []
@@ -56,8 +54,6 @@ def simulate(conn, client, base, currency, type="channel"):
     close_prices = []
     open_prices = []
     low_prices = []
-    diff_values = []
-    signal_values = []
     high_prices = []
     volumes = []
 
@@ -80,16 +76,16 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_values.append(ema200_value)
 
         tsv.update(close, ts)
-        if tsv.full:
+        if tsv.ready() and tsv.percent_change() != None:
             tsv_x_values.append(i)
             tsv_values.append(tsv.percent_change())
-            tsv_ema26_values.append(tsv_ema26.update(tsv.percent_change()))
+            tsv_counts.append(tsv.value_count())
 
         tsv2.update(close, ts)
-        if tsv2.full:
+        if tsv2.ready() and tsv2.percent_change() != None:
             tsv2_x_values.append(i)
             tsv2_values.append(tsv2.percent_change())
-            tsv2_ema26_values.append(tsv2_ema26.update(tsv2.percent_change()))
+            tsv2_counts.append(tsv2.value_count())
 
         close_prices.append(close)
         open_prices.append(open)
@@ -98,23 +94,22 @@ def simulate(conn, client, base, currency, type="channel"):
         #lstsqs_x_values.append(i)
         i += 1
 
-    plt.subplot(211)
+    plt.subplot(311)
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    plt.subplot(212)
-    fig21, = plt.plot(tsv_x_values, tsv_ema26_values, label='TSV_PERCENT')
-    fig22, = plt.plot(tsv2_x_values, tsv2_ema26_values, label='TSV2_PERCENT')
-    #fig22, = plt.plot(tsv_x_values, tsv_ema12_values, label='TSV_EMA12_PERCENT')
-    #fig23, = plt.plot(tsv_x_values, tsv_ema26_values, label='TSV_EMA26_PERCENT')
-
-    #plt.plot(bb_low_values)
+    plt.subplot(312)
+    fig21, = plt.plot(tsv_x_values, tsv_values, label='TSV_PERCENT')
+    fig22, = plt.plot(tsv2_x_values, tsv2_values, label='TSV2_PERCENT')
     plt.legend(handles=[fig21, fig22])
-    #plt.plot(signal_values)
-    #plt.plot(tsi_values)
+    plt.subplot(313)
+    fig31, = plt.plot(tsv_x_values, tsv_counts, label='TSV_COUNTS')
+    fig32, = plt.plot(tsv2_x_values, tsv2_counts, label='TSV2_COUNTS')
+    plt.legend(handles=[fig31, fig32])
+
     plt.show()
 
 if __name__ == '__main__':

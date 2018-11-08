@@ -36,7 +36,7 @@ class TSV_Signal(SignalBase):
         value1 = self.ema50.update(close)
 
         self.tsv.update(close, ts)
-        if self.tsv.full:
+        if self.tsv.ready():
             self.tsv_ema.update(self.tsv.percent_change())
             self.tsv_cross_zero.update(self.tsv_ema.result, 0)
             self.detector.update(self.tsv_ema.result)
