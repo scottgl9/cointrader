@@ -210,7 +210,7 @@ class mainWindow(QtGui.QTabWidget):
         obv_ema26_values = []
         obv_ema50_values = []
 
-        macd = MACD(short_weight=12, long_weight=26, scale=24, plot_mode=True)
+        macd = MACD(short_weight=12, long_weight=26, signal_weight=20.0, scale=24, plot_mode=True)
         macd_diff_values = []
         macd_signal_values = []
 

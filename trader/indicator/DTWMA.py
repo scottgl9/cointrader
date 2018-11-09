@@ -10,6 +10,9 @@ class DTWMA(object):
         self.lag = (self.window - 1) / 2
         self.result = 0
 
+    def ready(self):
+        return self.ts_deltas.full()
+
     def update(self, price, ts):
         self.prices.add(price)
 

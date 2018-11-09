@@ -39,8 +39,10 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    ema12 = DZLEMA(10, scale=24)
-    ema12_values = []
+    ema10 = DZLEMA(10, scale=24)
+    ema10_values = []
+    ema30 = DZLEMA(30, scale=24)
+    ema30_values = []
     ema50 = DZLEMA(50, scale=24)
     ema50_values = []
 
@@ -78,8 +80,10 @@ def simulate(conn, client, base, currency, type="channel"):
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
 
-        ema12.update(close)
-        ema12_values.append(ema12.result)
+        ema10.update(close)
+        ema10_values.append(ema10.result)
+        ema30.update(close)
+        ema30_values.append(ema30.result)
         ema50.update(close)
         ema50_values.append(ema50.result)
 
@@ -96,9 +100,10 @@ def simulate(conn, client, base, currency, type="channel"):
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     #fig1, = plt.plot(dtwma_values, label='DTWMA')
-    fig1, = plt.plot(ema12_values, label="EMA12")
-    fig2, = plt.plot(ema50_values, label='EMA26')
-    plt.legend(handles=[symprice, fig1, fig2])
+    fig1, = plt.plot(ema10_values, label="EMA10")
+    fig2, = plt.plot(ema50_values, label='EMA50')
+    fig3, = plt.plot(ema30_values, label='EMA30')
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     #fig22, = plt.plot(obv_ema26_values, label='OBV26')
