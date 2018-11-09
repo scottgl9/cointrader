@@ -7,22 +7,14 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import os.path
-import time
 import sqlite3
 import sys
-from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
-from trader.MultiTrader import MultiTrader
-from trader.account.AccountBinance import AccountBinance
 from trader.config import *
-import numpy as np
 import matplotlib.pyplot as plt
-from trader.indicator.ehler.FREMA import FREMA
-from trader.indicator.ehler.DSMA import DSMA
-from trader.indicator.ehler.InstantTrendline import InstantTrendline
-from trader.indicator.test.ZigZag import ZigZag
-from trader.lib.TickFilter import TickFilter
+from trader.indicator.OBV import OBV
+from trader.indicator.ZLEMA import ZLEMA
+from trader.indicator.DTWMA import DTWMA
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -32,53 +24,41 @@ def get_rows_as_msgs(c):
         msgs.append(msg)
     return msgs
 
-def get_info_all_assets(client):
-    assets = {}
-    for key, value in client.get_exchange_info().items():
-        if key != 'symbols':
-            continue
-        for asset in value:
-            minQty = ''
-            tickSize = ''
-            for filter in asset['filters']:
-                if 'minQty' in filter:
-                    minQty = filter['minQty']
-                if 'tickSize' in filter:
-                    tickSize = filter['tickSize']
-            assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
-    return assets
 
-def simulate(conn, client, base, currency, indicator_name):
+def simulate(conn, client, base, currency, type="channel"):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
-    #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
+
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    open_prices = []
+    ema12 = ZLEMA(12, scale=24)
+    ema26 = ZLEMA(26, scale=24)
+    ema50 = ZLEMA(100, scale=24, lag_window=5)
+    ema200 = ZLEMA(200, scale=24, lag_window=5)
+
+    obv_ema12 = ZLEMA(12, scale=24) #EMA(12, scale=24)
+    obv_ema26 = ZLEMA(26, scale=24) #EMA(26, scale=24)
+    obv_ema50 = ZLEMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
+    obv_ema200 =  ZLEMA(200,scale=24)
+
+    obv_ema12_values = []
+    obv_ema26_values = []
+    obv_ema50_values = []
+    obv_ema200_values = []
+
+    dtwma = DTWMA(10)
+    dtwma2 = DTWMA(10)
+
+    obv = OBV()
+    ema12_values = []
+    ema26_values = []
+    ema50_values = []
+    ema200_values = []
     close_prices = []
+    open_prices = []
     low_prices = []
     high_prices = []
-    indicator = None
-    plot_num = 1
-    if indicator_name == 'FREMA':
-        indicator = FREMA()
-        plot_num = 2
-    elif indicator_name == 'DSMA':
-        indicator = DSMA()
-        plot_num = 2
-    elif indicator_name == 'InstantTrendline':
-        indicator = InstantTrendline()
-        plot_num = 2
-    elif indicator_name == 'TickFilter':
-        assets = get_info_all_assets(client)
-        indicator = TickFilter(tick_size=assets[ticker_id]['tickSize'])
-        plot_num = 2
-    elif indicator_name == 'ZigZag':
-        print("Using {}".format(indicator_name))
-        indicator = ZigZag(cutoff=0.2)
-        plot_num = 2
-
-    indicator_values = []
+    volumes = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -87,43 +67,54 @@ def simulate(conn, client, base, currency, indicator_name):
         high = float(msg['h'])
         open = float(msg['o'])
         volume = float(msg['v'])
+        ts = int(msg['E'])
 
-        result = indicator.update(close)
-        if result != 0:
-            indicator_values.append(result)
+        close_filtered = dtwma.update(close, ts)
+        volume_filtered = dtwma2.update(volume, ts)
+
+        volumes.append(volume)
+
+        obv_value = obv.update(close=close_filtered, volume=volume_filtered)
+        obv_ema12_values.append(obv_ema12.update(obv_value))
+        obv_ema26_values.append(obv_ema26.update(obv_value))
+        obv_ema50_values.append(obv_ema50.update(obv_value))
+        obv_ema200_values.append(obv_ema200.update(obv_value))
+
+        ema12_value = ema12.update(close)
+        ema12_values.append(ema12_value)
+        ema26_values.append(ema26.update(close))
+        ema50_value = ema50.update(close)
+        ema50_values.append(ema50_value)
+        ema200_value = ema200.update(close)
+        ema200_values.append(ema200_value)
 
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
-        #lstsqs_x_values.append(i)
         i += 1
 
-    fig = plt.figure()
-    ax = fig.add_subplot(2,1,1)
-
+    plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
-    if plot_num == 1:
-        plt.plot(indicator_values)
-    plt.legend(handles=[symprice])
+    fig1, = plt.plot(ema12_values, label='EMA12')
+    fig2, = plt.plot(ema26_values, label='EMA26')
+    fig3, = plt.plot(ema50_values, label='EMA50')
+    fig4, = plt.plot(ema200_values, label='EMA200')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    if plot_num == 2:
-        plt.plot(indicator_values)
+    fig21, = plt.plot(obv_ema12_values, label='OBV12')
+    fig22, = plt.plot(obv_ema26_values, label='OBV26')
+    fig23, = plt.plot(obv_ema50_values, label='OBV50')
+    fig24, = plt.plot(obv_ema50_values, label='OBV200')
+    plt.legend(handles=[fig21, fig22, fig23, fig24])
     plt.show()
 
 if __name__ == '__main__':
+    client = Client(MY_API_KEY, MY_API_SECRET)
+
     base = 'BTC'
     currency='USDT'
     filename = 'cryptocurrency_database.miniticker_collection_04092018.db'
-    indicator = "EMA"
-    if len(sys.argv) > 1 and sys.argv[1] == '--help':
-        print("{} <base> <currency> <db filename> <indicator name>".format(sys.argv[0]))
-        sys.exit(0)
-    if len(sys.argv) == 5:
-        base=sys.argv[1]
-        currency = sys.argv[2]
-        filename = sys.argv[3]
-        indicator = sys.argv[4]
     if len(sys.argv) == 4:
         base=sys.argv[1]
         currency = sys.argv[2]
@@ -135,7 +126,5 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    client = Client(MY_API_KEY, MY_API_SECRET)
-
-    simulate(conn, client, base, currency, indicator)
+    simulate(conn, client, base, currency, type="MACD")
     conn.close()

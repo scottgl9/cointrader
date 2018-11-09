@@ -5,6 +5,7 @@ from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 from trader.signal.Hybrid_Crossover import Hybrid_Crossover
 from trader.signal.Hybrid2_Crossover import Hybrid2_Crossover
 from trader.signal.Hybrid_Crossover_MM import Hybrid_Crossover_MM
+from trader.signal.Hybrid_Crossover_Test import Hybrid_Crossover_Test
 from trader.signal.KST_Crossover import KST_Crossover
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.OBV_Crossover import OBV_Crossover
@@ -27,6 +28,7 @@ def select_signal_name(name):
     elif name == "Hybrid_Crossover": return Hybrid_Crossover()
     elif name == "Hybrid2_Crossover": return Hybrid2_Crossover()
     elif name == "Hybrid_Crossover_MM": return Hybrid_Crossover_MM()
+    elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test()
     elif name == "KST_Crossover": return KST_Crossover()
     elif name == "MACD_Crossover": return MACD_Crossover()
     elif name == "OBV_Crossover": return OBV_Crossover()
