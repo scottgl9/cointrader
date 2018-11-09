@@ -39,18 +39,22 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    ema12 = DZLEMA(12, scale=24)
+    ema12 = DZLEMA(10, scale=24)
     ema12_values = []
+    ema50 = DZLEMA(50, scale=24)
+    ema50_values = []
 
     obv = OBV()
+    obv_values = []
     close_prices = []
     open_prices = []
     low_prices = []
     high_prices = []
     volumes = []
 
-    dtwma = DTWMA(window=10)
+    dtwma = DTWMA(window=30)
     dtwma_values = []
+    dtwma2 = DTWMA(window=30)
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -60,23 +64,24 @@ def simulate(conn, client, base, currency, type="channel"):
         open = float(msg['o'])
         volume = float(msg['v'])
         ts = int(msg['E'])
-        #sar_value = sar.update(close=close, low=low, high=high)
-        #if sar.bull:
-        #    sar_x_values.append(i)
-        #    sar_values.append(sar_value)
 
         volumes.append(volume)
 
-        obv_value = obv.update(close=close, volume=volume)
+        dtwma.update(close, ts)
+        dtwma_values.append(dtwma.result)
+
+        dtwma2.update(volume, ts)
+
+        obv_value = obv.update(close=dtwma.result, volume=dtwma2.result)
+        obv_values.append(obv_value)
         obv_ema12_values.append(obv_ema12.update(obv_value))
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
 
         ema12.update(close)
         ema12_values.append(ema12.result)
-
-        dtwma.update(close, ts)
-        dtwma_values.append(dtwma.result)
+        ema50.update(close)
+        ema50_values.append(ema50.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -90,15 +95,16 @@ def simulate(conn, client, base, currency, type="channel"):
     ax = fig.add_subplot(2,1,1)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
-    fig1, = plt.plot(dtwma_values, label='DTWMA')
-    fig2, = plt.plot(ema12_values, label="EMA12")
-    #fig2, = plt.plot(ema26_values, label='EMA26')
+    #fig1, = plt.plot(dtwma_values, label='DTWMA')
+    fig1, = plt.plot(ema12_values, label="EMA12")
+    fig2, = plt.plot(ema50_values, label='EMA26')
     plt.legend(handles=[symprice, fig1, fig2])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
-    fig22, = plt.plot(obv_ema26_values, label='OBV26')
+    #fig22, = plt.plot(obv_ema26_values, label='OBV26')
     fig23, = plt.plot(obv_ema50_values, label='OBV50')
-    plt.legend(handles=[fig21, fig22, fig23])
+    plt.legend(handles=[fig21, fig23])
+    #plt.plot(obv_values)
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()
