@@ -1,6 +1,7 @@
 # Combination of MACD, OBV
 from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
+from trader.indicator.ZLEMA import ZLEMA
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
@@ -17,6 +18,8 @@ class Hybrid_Crossover(SignalBase):
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
+        self.dtwma = DTWMA(10)
+        self.dtwma2 = DTWMA(10)
         self.obv = OBV()
         self.ema12 = EMA(self.win_short, scale=24)
         self.ema26 = EMA(self.win_med, scale=24, lag_window=5)
@@ -24,6 +27,9 @@ class Hybrid_Crossover(SignalBase):
         self.ema100 = EMA(100, scale=24, lag_window=5)
         self.detector = PeakValleyDetect()
         self.ema200 = EMA(200, scale=24, lag_window=5)
+        #self.obv_ema12 = ZLEMA(self.win_short, scale=24)
+        #self.obv_ema26 = ZLEMA(self.win_med, scale=24, lag_window=5)
+        #self.obv_ema50 = ZLEMA(self.win_long, scale=24, lag_window=5)
         self.obv_ema12 = EMA(self.win_short, scale=24)
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
@@ -32,9 +38,6 @@ class Hybrid_Crossover(SignalBase):
         self.macd_zero_cross = Crossover2(window=10, cutoff=0.0)
         self.cross_long = Crossover2(window=10, cutoff=0.0)
         self.obv_cross = Crossover2(window=10, cutoff=0.0)
-
-        # delta timestamp WMA
-        self.dtwma = DTWMA(window=30)
 
         self.rsi = RSI(window=30)
         self.rsi_cross70 = Crossover2(window=10, cutoff=0.0)
@@ -77,6 +80,10 @@ class Hybrid_Crossover(SignalBase):
         self.rsi_cross70.update(self.rsi.result, 70)
         self.rsi_cross30.update(self.rsi.result, 30)
 
+        #close_filtered = self.dtwma.update(close, ts)
+        #volume_filtered = self.dtwma2.update(volume, ts)
+
+        #obv_value = self.obv.update(close=close_filtered, volume=volume_filtered)
         obv_value = self.obv.update(close=close, volume=volume)
         self.prev_low = self.low
         self.prev_high = self.high
