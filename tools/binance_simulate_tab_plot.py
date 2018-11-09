@@ -11,6 +11,8 @@ import json
 import os
 from datetime import datetime
 import sys
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -310,6 +312,8 @@ if __name__ == '__main__':
     for key, value in trades.items():
         if str(key).endswith("BNB"):
             del trades[key]
+
+    plt.rcParams.update({'figure.max_open_warning': 0})
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)
