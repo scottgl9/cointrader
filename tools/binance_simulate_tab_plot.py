@@ -15,9 +15,11 @@ import matplotlib.pyplot as plt
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.indicator.EMA import EMA
+from trader.indicator.ZLEMA import ZLEMA
 from trader.indicator.MACD import MACD
 from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
+from trader.indicator.OBV import OBV
 from trader.lib.Kline import Kline
 
 from trader.account.binance.client import Client
@@ -162,9 +164,10 @@ class mainWindow(QtGui.QTabWidget):
         c = conn.cursor()
         for s in symbols:
             data = []
-            c.execute("SELECT c FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
+            c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
             for row in c:
-                data.append(float(row[0]))
+                msg = {'E': row[0], 'c': row[1], 'q': row[5], 'v': row[7]}
+                data.append(msg)
             self.create_tab(s)
             self.plot_tab(s, data, trades[s])
 
@@ -180,38 +183,74 @@ class mainWindow(QtGui.QTabWidget):
         self.tabs[name] = tabtype
 
     def plot_tab(self, name, data=None, trades=None):
-        ax = self.tabs[name].figure.add_subplot(211)
+        ax = self.tabs[name].figure.add_subplot(311)
         for trade in trades:
             if trade['type'] == 'buy':
                 ax.axvline(x=trade['index'], color='green')
             elif trade['type'] == 'sell':
                 ax.axvline(x=trade['index'], color='red')
-        ax.plot(data)
+        prices = []
         ema12 = EMA(12, scale=24)
         ema26 = EMA(26, scale=24)
+        ema50 = EMA(50, scale=24)
         ema12_values = []
         ema26_values = []
-        macd = MACD(short_weight=10, long_weight=30, scale=24, plot_mode=True)
+        ema50_values = []
+
+
+        dtwma = DTWMA()
+        obv = OBV()
+        obv_values = []
+        obv_ema12 = ZLEMA(12, scale=24)
+        obv_ema26 = ZLEMA(26, scale=24)
+        obv_ema50 = ZLEMA(50, scale=24)
+        obv_ema12_values = []
+        obv_ema26_values = []
+        obv_ema50_values = []
+
+        macd = MACD(short_weight=12, long_weight=26, scale=24, plot_mode=True)
         macd_diff_values = []
         macd_signal_values = []
 
         i=0
-        for price in data:
+        for msg in data:
+            price = float(msg['c'])
+            ts = msg['E']
+            volume = msg['v']
+            #print(msg['q'])
+            prices.append(price)
+            obv.update(price, volume)
+            obv_ema12.update(obv.result)
+            obv_ema12_values.append(obv_ema12.result)
+            obv_ema26.update(obv.result)
+            obv_ema26_values.append(obv_ema26.result)
+            obv_ema50.update(obv.result)
+            obv_ema50_values.append(obv_ema50.result)
+
             ema12.update(price)
             ema12_values.append(ema12.result)
             ema26.update(price)
             ema26_values.append(ema26.result)
+            ema50.update(price)
+            ema50_values.append(ema50.result)
             macd.update(price)
             if macd.diff != 0:
                 macd_diff_values.append(macd.diff)
             if macd.signal.result != 0:
                 macd_signal_values.append(macd.signal.result)
         #    i+=1
+        ax.plot(prices)
         ax.plot(ema12_values)
         ax.plot(ema26_values)
-        ax2 = self.tabs[name].figure.add_subplot(212)
+        ax.plot(ema50_values)
+        ax2 = self.tabs[name].figure.add_subplot(312)
         ax2.plot(macd_diff_values)
         ax2.plot(macd_signal_values)
+        ax3 = self.tabs[name].figure.add_subplot(313)
+        #ax3.plot(obv_values)
+        ax3.plot(obv_ema12_values)
+        #ax3.plot(obv_ema26_values)
+        ax3.plot(obv_ema50_values)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':
