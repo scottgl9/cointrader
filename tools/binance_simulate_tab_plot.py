@@ -282,19 +282,30 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.DEBUG)
 
-    client = Client(MY_API_KEY, MY_API_SECRET)
+    run_simulation = True
+
     conn = sqlite3.connect(results.filename)
+    trade_cache = {}
 
-    # start the Web API
-    #thread = threading.Thread(target=WebThread, args=(strategy,))
-    #thread.daemon = True
-    #thread.start()
+    trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
 
-    logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
+    # if we already ran simulation, load the results
+    trade_cache_filename = str(results.filename).replace('.db', '.json')
+    if os.path.exists(trade_cache_filename):
+        logger.info("Loading {}".format(trade_cache_filename))
+        with open(trade_cache_filename, "r") as f:
+            trade_cache = json.loads(str(f.read()))
 
-    trade_cache_filename = str(results.filename).replace('.db', '.txt')
-    if not os.path.exists(trade_cache_filename):
+        if trade_cache_name in trade_cache.keys():
+            run_simulation = False
+
+    if run_simulation:
+        logger.info("Running simulate with {}, strategy {}, signal {}".format(results.filename,
+                                                                              results.strategy,
+                                                                              results.signal_name))
+
         try:
+            client = Client(MY_API_KEY, MY_API_SECRET)
             trades = simulate(conn, client, results.strategy, results.signal_name, logger)
         except (KeyboardInterrupt, SystemExit):
             logger.info("CTRL+C: Exiting....")
@@ -303,17 +314,20 @@ if __name__ == '__main__':
 
         logger.info("Writing trade cache to {}".format(trade_cache_filename))
         with open(trade_cache_filename, "w") as f:
-            f.write(json.dumps(trades))
-    else:
-        logger.info("Loading {}".format(trade_cache_filename))
-        with open(trade_cache_filename, "r") as f:
-            trades = json.loads(str(f.read()))
+            trade_cache[trade_cache_name] = trades
+            f.write(json.dumps(trade_cache))
+
+    plt.rcParams.update({'figure.max_open_warning': 0})
+
+    if not trade_cache or trade_cache_name not in trade_cache.keys():
+        logger.error("Failed to load simulation results")
+        sys.exit(-1)
+
+    trades = trade_cache[trade_cache_name]
 
     for key, value in trades.items():
         if str(key).endswith("BNB"):
             del trades[key]
-
-    plt.rcParams.update({'figure.max_open_warning': 0})
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)
@@ -321,4 +335,3 @@ if __name__ == '__main__':
     main.process(conn, trades)
     main.show()
     sys.exit(app.exec_())
-
