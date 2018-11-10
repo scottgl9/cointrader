@@ -23,6 +23,7 @@ from trader.account.AccountBinance import AccountBinance
 from trader.config import *
 import argparse
 import logging
+import json
 
 
 def simulate(conn, client, strategy, signal_name, logger):
@@ -178,11 +179,27 @@ if __name__ == '__main__':
     #thread.daemon = True
     #thread.start()
 
+    trade_cache = {}
+
+    trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
+
+    # if we already ran simulation, load the results
+    trade_cache_filename = str(results.filename).replace('.db', '.json')
+    if os.path.exists(trade_cache_filename):
+        logger.info("Loading {}".format(trade_cache_filename))
+        with open(trade_cache_filename, "r") as f:
+            trade_cache = json.loads(str(f.read()))
+
+
     logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
 
     try:
-        simulate(conn, client, results.strategy, results.signal_name, logger)
+        trades = simulate(conn, client, results.strategy, results.signal_name, logger)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
         sys.exit(0)
+
+    with open(trade_cache_filename, "w") as f:
+        trade_cache[trade_cache_name] = trades
+        f.write(json.dumps(trade_cache))
