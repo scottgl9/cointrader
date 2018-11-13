@@ -32,11 +32,13 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.cross_ema10_ema50 = Crossover2(window=10, cutoff=0.0)
         self.cross_ema10_ema50_ts = 0
+        self.last_cross_ema10_ema50_ts = 0
         self.cross_ema10_ema50_up = False
         self.cross_ema10_ema50_down = False
 
         self.cross_ema30_ema50 = Crossover2(window=10, cutoff=0.0)
         self.cross_ema30_ema50_ts = 0
+        self.last_cross_ema30_ema50_ts = 0
         self.cross_ema30_ema50_up = False
         self.cross_ema30_ema50_down = False
 
@@ -64,29 +66,37 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.cross_ema10_ema50.crossup_detected():
             self.cross_ema10_ema50_up = True
             self.cross_ema10_ema50_down = False
+            self.last_cross_ema10_ema50_ts = self.cross_ema10_ema50_ts
             self.cross_ema10_ema50_ts = ts
         elif self.cross_ema10_ema50.crossdown_detected():
             self.cross_ema10_ema50_up = False
             self.cross_ema10_ema50_down = True
+            self.last_cross_ema10_ema50_ts = self.cross_ema10_ema50_ts
             self.cross_ema10_ema50_ts = ts
 
         if self.cross_ema30_ema50.crossup_detected():
             self.cross_ema30_ema50_up = True
             self.cross_ema30_ema50_down = False
+            self.last_cross_ema30_ema50_ts = self.cross_ema30_ema50_ts
             self.cross_ema30_ema50_ts = ts
         elif self.cross_ema30_ema50.crossdown_detected():
             self.cross_ema30_ema50_up = False
             self.cross_ema30_ema50_down = True
+            self.last_cross_ema30_ema50_ts = self.cross_ema30_ema50_ts
             self.cross_ema30_ema50_ts = ts
 
     def buy_signal(self):
-        if self.obv_ema50.result == 0 or self.obv_ema50.last_result == 0:
-            return False
+        #if self.obv_ema50.result == 0 or self.obv_ema50.last_result == 0:
+        #    return False
 
-        if self.obv_ema50.result < self.obv_ema50.last_result:
-            return False
+        #if self.obv_ema50.result < self.obv_ema50.last_result:
+        #    return False
 
         if self.cross_ema10_ema50_up and self.cross_ema30_ema50_up:
+            #if abs(self.cross_ema30_ema50_down - self.last_cross_ema30_ema50_ts) < 1000 * 300:
+            #    return False
+            #if abs(self.cross_ema10_ema50_down - self.last_cross_ema10_ema50_ts) < 1000 * 300:
+            #    return False
             return True
 
         return False
