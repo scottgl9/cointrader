@@ -75,8 +75,8 @@ class hybrid_signal_market_strategy(StrategyBase):
         if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 1000 * 0.5:
             return False
 
-        if signal.sell_timestamp != 0 and (self.timestamp - signal.sell_timestamp) < 1000 * 60 * 60:
-            return False
+        #if signal.sell_timestamp != 0 and (self.timestamp - signal.sell_timestamp) < 1000 * 60 * 60:
+        #    return False
 
         # if we have insufficient funds to buy
         if self.accnt.simulate:
@@ -98,9 +98,9 @@ class hybrid_signal_market_strategy(StrategyBase):
             return False
 
         # do not buy back in the previous buy/sell price range
-        if signal.last_buy_price != 0 and signal.last_sell_price != 0:
-            if signal.last_buy_price <= price <= signal.last_sell_price:
-                return False
+        #if signal.last_buy_price != 0 and signal.last_sell_price != 0:
+        #    if signal.last_buy_price <= price <= signal.last_sell_price:
+        #        return False
 
         if signal.buy_signal():
             return True

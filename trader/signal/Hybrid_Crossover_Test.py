@@ -53,7 +53,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.detector.update(self.ema_cross_30_50.get_ma2_result())
 
     def buy_signal(self):
-        if self.ema_cross_50_100.cross_up:
+        if self.ema_cross_50_100.cross_up and self.ema_cross_30_50.cross_up:
             return True
 
         if self.ema_cross_10_30.cross_up and self.ema_cross_30_50.cross_up:
