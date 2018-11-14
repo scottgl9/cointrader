@@ -6,6 +6,7 @@ from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
 from trader.lib.Crossover2 import Crossover2
+from trader.lib.MACross import MACross
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
@@ -29,6 +30,9 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema12 = ZLEMA(12, scale=24)
         self.obv_ema26 = ZLEMA(26, scale=24, lag_window=5)
         self.obv_ema50 = ZLEMA(50, scale=24, lag_window=5)
+
+        self.ema_cross_1050 = MACross(10, 50, scale=24, indicator=ZLEMA)
+        self.ema_cross_3050 = MACross(30, 50, scale=24, indicator=ZLEMA)
 
         self.cross_ema10_ema50 = Crossover2(window=10, cutoff=0.0)
         self.cross_ema10_ema50_ts = 0
@@ -57,33 +61,36 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema26.update(self.obv.result)
         self.obv_ema50.update(self.obv.result)
 
-        self.ema10.update(dtwma_close)
-        self.ema30.update(dtwma_close)
-        self.ema50.update(dtwma_close)
-        self.cross_ema10_ema50.update(self.ema10.result, self.ema50.result)
-        self.cross_ema30_ema50.update(self.ema30.result, self.ema50.result)
+        #self.ema10.update(dtwma_close)
+        #self.ema30.update(dtwma_close)
+        #self.ema50.update(dtwma_close)
+        #self.cross_ema10_ema50.update(self.ema10.result, self.ema50.result)
+        #self.cross_ema30_ema50.update(self.ema30.result, self.ema50.result)
 
-        if self.cross_ema10_ema50.crossup_detected():
-            self.cross_ema10_ema50_up = True
-            self.cross_ema10_ema50_down = False
-            self.last_cross_ema10_ema50_ts = self.cross_ema10_ema50_ts
-            self.cross_ema10_ema50_ts = ts
-        elif self.cross_ema10_ema50.crossdown_detected():
-            self.cross_ema10_ema50_up = False
-            self.cross_ema10_ema50_down = True
-            self.last_cross_ema10_ema50_ts = self.cross_ema10_ema50_ts
-            self.cross_ema10_ema50_ts = ts
+        self.ema_cross_1050.update(dtwma_close, ts)
+        self.ema_cross_3050.update(dtwma_close, ts)
 
-        if self.cross_ema30_ema50.crossup_detected():
-            self.cross_ema30_ema50_up = True
-            self.cross_ema30_ema50_down = False
-            self.last_cross_ema30_ema50_ts = self.cross_ema30_ema50_ts
-            self.cross_ema30_ema50_ts = ts
-        elif self.cross_ema30_ema50.crossdown_detected():
-            self.cross_ema30_ema50_up = False
-            self.cross_ema30_ema50_down = True
-            self.last_cross_ema30_ema50_ts = self.cross_ema30_ema50_ts
-            self.cross_ema30_ema50_ts = ts
+        # if self.cross_ema10_ema50.crossup_detected():
+        #     self.cross_ema10_ema50_up = True
+        #     self.cross_ema10_ema50_down = False
+        #     self.last_cross_ema10_ema50_ts = self.cross_ema10_ema50_ts
+        #     self.cross_ema10_ema50_ts = ts
+        # elif self.cross_ema10_ema50.crossdown_detected():
+        #     self.cross_ema10_ema50_up = False
+        #     self.cross_ema10_ema50_down = True
+        #     self.last_cross_ema10_ema50_ts = self.cross_ema10_ema50_ts
+        #     self.cross_ema10_ema50_ts = ts
+        #
+        # if self.cross_ema30_ema50.crossup_detected():
+        #     self.cross_ema30_ema50_up = True
+        #     self.cross_ema30_ema50_down = False
+        #     self.last_cross_ema30_ema50_ts = self.cross_ema30_ema50_ts
+        #     self.cross_ema30_ema50_ts = ts
+        # elif self.cross_ema30_ema50.crossdown_detected():
+        #     self.cross_ema30_ema50_up = False
+        #     self.cross_ema30_ema50_down = True
+        #     self.last_cross_ema30_ema50_ts = self.cross_ema30_ema50_ts
+        #     self.cross_ema30_ema50_ts = ts
 
     def buy_signal(self):
         #if self.obv_ema50.result == 0 or self.obv_ema50.last_result == 0:
@@ -92,7 +99,8 @@ class Hybrid_Crossover_Test(SignalBase):
         #if self.obv_ema50.result < self.obv_ema50.last_result:
         #    return False
 
-        if self.cross_ema10_ema50_up and self.cross_ema30_ema50_up:
+        #if self.cross_ema10_ema50_up and self.cross_ema30_ema50_up:
+        if self.ema_cross_1050.cross_up and self.ema_cross_3050.cross_up:
             #if abs(self.cross_ema30_ema50_down - self.last_cross_ema30_ema50_ts) < 1000 * 300:
             #    return False
             #if abs(self.cross_ema10_ema50_down - self.last_cross_ema10_ema50_ts) < 1000 * 300:
@@ -105,7 +113,8 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
-        if self.cross_ema10_ema50_down or self.cross_ema30_ema50_down:
+        #if self.cross_ema10_ema50_down or self.cross_ema30_ema50_down:
+        if self.ema_cross_1050.cross_up or self.ema_cross_3050.cross_up:
             return True
 
         return False
