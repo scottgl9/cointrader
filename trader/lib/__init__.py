@@ -11,4 +11,5 @@ from trader.lib.Order import Order
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.PriceFilter import PriceFilter
 from trader.lib.SimplePeak import SimplePeak
+from trader.lib.TimePeakValley import TimePeakValley
 from trader.lib.TrendTree import TrendTree
