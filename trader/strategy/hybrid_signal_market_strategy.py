@@ -128,10 +128,10 @@ class hybrid_signal_market_strategy(StrategyBase):
         #    signal.sell_marked = True
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 0.7):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
                 return False
         else:
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 0.7):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
                 return False
 
         #if signal.sell_marked:
