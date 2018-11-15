@@ -42,7 +42,7 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    tpv = TimePeakValley(300)
+    tpv = TimePeakValley(reverse_secs=200, span_secs=1000)
 
     obv = OBV()
     quad_x_values = []
@@ -86,7 +86,7 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        tpv.update(ema50.result, ts)
+        tpv.update(ema26.result, ts)
         if tpv.peak_detected():
             peaks.append(i)
             tpv.reset()
@@ -103,9 +103,9 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.subplot(211)
 
     for index in peaks:
-        plt.axvline(x=index, color='green')
-    for index in valleys:
         plt.axvline(x=index, color='red')
+    for index in valleys:
+        plt.axvline(x=index, color='green')
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     #plt.plot(filter_x_values, filter_values)
