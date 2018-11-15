@@ -48,6 +48,14 @@ class TimePeakValley(object):
         self.min_value_ts = 0
         self.last_min_value_ts = 0
 
+    # check if delta ts > set time interval in seconds
+    def delta_ts_gt_secs(self, old_ts, ts):
+        if old_ts == 0 or ts == 0:
+            return False
+        if (ts - old_ts) > self.seconds * 1000:
+            return True
+        return False
+
     def update(self, value, ts):
         if self.max_value == 0:
             self.max_value = value
@@ -67,7 +75,8 @@ class TimePeakValley(object):
             self.last_min_value_ts = self.min_value_ts
             self.min_value_ts = ts
 
-        if not self.peak and self.min_value_ts != 0 and (ts - self.min_value_ts) > self.seconds * 1000:
-            self.valley = True
-        elif not self.valley and self.max_value_ts != 0 and (ts - self.max_value_ts) > self.seconds * 1000:
-            self.peak = True
+        if self.delta_ts_gt_secs(self.min_value_ts, ts) and self.delta_ts_gt_secs(self.max_value_ts, ts):
+            if self.min_value_ts < self.max_value_ts:
+                self.peak = True
+            elif self.min_value_ts > self.max_value_ts:
+                self.valley = True
