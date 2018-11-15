@@ -59,6 +59,9 @@ def simulate(conn, client, base, currency, type="channel"):
     high_prices = []
     volumes = []
 
+    peaks = []
+    valleys = []
+
     i=0
     for msg in get_rows_as_msgs(c):
         close = float(msg['c'])
@@ -84,6 +87,12 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_values.append(ema200_value)
 
         tpv.update(ema50.result, ts)
+        if tpv.peak_detected():
+            peaks.append(i)
+            tpv.reset()
+        elif tpv.valley_detected():
+            valleys.append(i)
+            tpv.reset()
 
         close_prices.append(close)
         open_prices.append(open)
@@ -92,6 +101,12 @@ def simulate(conn, client, base, currency, type="channel"):
         i += 1
 
     plt.subplot(211)
+
+    for index in peaks:
+        plt.axvline(x=index, color='green')
+    for index in valleys:
+        plt.axvline(x=index, color='red')
+
     symprice, = plt.plot(close_prices, label=ticker_id)
     #plt.plot(filter_x_values, filter_values)
     #plt.plot(lstsqs_x_values, support1_values)
