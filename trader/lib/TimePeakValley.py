@@ -14,13 +14,19 @@
 
 class TimePeakValley(object):
     def __init__(self, seconds):
-        self.max_value = 0
-        self.max_value_ts = 0
-        self.min_value = 0
-        self.min_value_ts = 0
         self.seconds = seconds
-        self.peak = False
         self.valley = False
+        self.peak = False
+        self.last_peak_value = 0
+        self.last_valley_value = 0
+        self.max_value = 0
+        self.last_max_value = 0
+        self.max_value_ts = 0
+        self.last_max_value_ts = 0
+        self.min_value = 0
+        self.last_min_value = 0
+        self.min_value_ts = 0
+        self.last_min_value_ts = 0
 
     def peak_detected(self, clear=False):
         result = self.peak
@@ -77,6 +83,16 @@ class TimePeakValley(object):
 
         if self.delta_ts_gt_secs(self.min_value_ts, ts) and self.delta_ts_gt_secs(self.max_value_ts, ts):
             if self.min_value_ts < self.max_value_ts:
-                self.peak = True
+                if self.last_valley_value != 0 and self.max_value < self.last_valley_value:
+                    self.max_value = 0
+                    self.max_value_ts = 0
+                else:
+                    self.peak = True
+                    self.last_peak_value = self.max_value
             elif self.min_value_ts > self.max_value_ts:
-                self.valley = True
+                if self.last_peak_value != 0 and self.min_value > self.last_peak_value:
+                    self.min_value = 0
+                    self.min_value_ts = 0
+                else:
+                    self.valley = True
+                    self.last_valley_value = self.min_value
