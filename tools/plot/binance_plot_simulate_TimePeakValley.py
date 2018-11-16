@@ -42,7 +42,7 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    tpv = TimePeakValley(reverse_secs=200, span_secs=1000)
+    tpv = TimePeakValley(reverse_secs=300, span_secs=1000)
 
     obv = OBV()
     quad_x_values = []
@@ -86,14 +86,13 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        tpv.update(ema26.result, ts)
+        tpv.update(ema50.result, ts)
         if tpv.peak_detected():
             peaks.append(i)
             tpv.reset()
         elif tpv.valley_detected():
             valleys.append(i)
             tpv.reset()
-
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)

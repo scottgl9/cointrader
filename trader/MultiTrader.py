@@ -7,6 +7,8 @@ from trader.MarketManager import MarketManager
 from trader.lib.Kline import Kline
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
+from datetime import datetime
+
 
 def split_symbol(symbol):
     base_name = None
@@ -146,13 +148,10 @@ class MultiTrader(object):
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
                 if (self.current_ts - self.last_ts) > self.check_ts:
-                    balances = self.accnt.get_account_balances()
+                    self.accnt.get_account_balances()
                     self.last_ts = self.current_ts
-                    self.check_count += 1
-                    if self.check_count > 3:
-                        self.logger.info("MultiTrader still running...")
-                        self.logger.info(balances)
-                        self.check_count = 0
+                    timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
+                    self.logger.info("MultiTrader running {}".format(timestr))
 
         # handle incoming messages
         self.order_handler.process_order_messages()
