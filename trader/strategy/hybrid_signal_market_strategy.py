@@ -247,6 +247,10 @@ class hybrid_signal_market_strategy(StrategyBase):
             signal.last_sell_price = price
             signal.buy_timestamp = 0
 
+        # keep track of the highest close price after a buy
+        if signal.buy_price_high != 0 and price > signal.buy_price_high:
+            signal.buy_price_high = price
+
         if not self.accnt.simulate and self.update_buy_price and price > signal.buy_price:
             signal.buy_price = price
             self.update_buy_price = False
@@ -279,7 +283,9 @@ class hybrid_signal_market_strategy(StrategyBase):
             signal.buy_price = price
             signal.buy_size = min_trade_size
             signal.buy_timestamp = self.timestamp
+            signal.last_buy_ts = self.timestamp
             signal.sell_timestamp = 0
+            signal.buy_price_high = signal.buy_price
 
             # for more accurate simulation, delay buy message for one cycle in order to have the buy price
             # be the value immediately following the price that the buy signal was triggered
@@ -304,6 +310,7 @@ class hybrid_signal_market_strategy(StrategyBase):
             # for more accurate simulation, delay sell message for one cycle in order to have the buy price
             # be the value immediately following the price that the buy signal was triggered
             if self.accnt.simulate and not self.delayed_sell_msg:
+                signal.buy_price_high = 0
                 self.delayed_sell_msg = Message(self.ticker_id,
                                                 Message.ID_MULTI,
                                                 Message.MSG_MARKET_SELL,
@@ -321,7 +328,10 @@ class hybrid_signal_market_strategy(StrategyBase):
                 signal.buy_price = 0.0
                 signal.buy_size = 0.0
                 signal.last_sell_price = sell_price
+                signal.last_sell_ts = self.timestamp
                 signal.buy_timestamp = 0
                 signal.sell_timestamp = self.timestamp
+                signal.buy_price_high = 0
+
                 # for trader running live. Delay setting sell_price until next price
                 self.update_sell_price = True

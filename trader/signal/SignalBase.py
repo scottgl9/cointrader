@@ -11,13 +11,19 @@ class SignalBase(object):
         self.sell_type = SigType.SIGNAL_NONE
         self.mm_enabled = False
 
+        self.timestamp = 0
         self.buy_price = 0.0
         self.buy_size = 0.0
         self.buy_timestamp = 0
         self.sell_timestamp = 0
         self.buy_order_id = None
         self.last_buy_price = 0.0
+        self.last_buy_ts = 0
         self.last_sell_price = 0.0
+        self.last_sell_ts = 0
+        # highest close price encountered after bought, to determine if there
+        # is no upward movement
+        self.buy_price_high = 0.0
 
         # for limit / stop loss orders
         self.buy_pending = False
