@@ -33,18 +33,18 @@ class TimePeakValley(object):
         self.min_value_ts = 0
         self.last_min_value_ts = 0
 
-    def peak_detected(self, clear=False):
+    def peak_detected(self, clear=True):
         result = self.peak
         if clear:
             self.peak = False
-            self.reset()
+            #self.reset()
         return result
 
-    def valley_detected(self, clear=False):
+    def valley_detected(self, clear=True):
         result = self.valley
         if clear:
             self.valley = False
-            self.reset()
+            #self.reset()
         return result
 
     def reset(self):
@@ -81,13 +81,10 @@ class TimePeakValley(object):
             self.max_value = value
             self.max_value_ts = ts
         elif value > self.max_value:
-            if self.delta_ts_gt_span_secs(self.max_value_ts, ts):
-                self.new_max_value = value
-            else:
-                self.last_max_value = self.max_value
-                self.max_value = value
-                self.last_max_value_ts = self.max_value_ts
-                self.max_value_ts = ts
+            self.last_max_value = self.max_value
+            self.max_value = value
+            self.last_max_value_ts = self.max_value_ts
+            self.max_value_ts = ts
 
         # initially set min_value to value, and min_value_ts to ts, and if value is less than
         # min_value, set new min_value and min_value_ts to ts
@@ -95,39 +92,45 @@ class TimePeakValley(object):
             self.min_value = value
             self.min_value_ts = ts
         elif value < self.min_value:
-            if self.delta_ts_gt_span_secs(self.min_value_ts, ts):
-                self.new_min_value = value
-            else:
-                self.last_min_value = self.min_value
-                self.min_value = value
-                self.last_min_value_ts = self.min_value_ts
-                self.min_value_ts = ts
+            self.last_min_value = self.min_value
+            self.min_value = value
+            self.last_min_value_ts = self.min_value_ts
+            self.min_value_ts = ts
 
-        if self.delta_ts_gt_reverse_secs(self.min_value_ts, ts) and self.delta_ts_gt_reverse_secs(self.max_value_ts, ts):
-            # if the minimum price occurred before the maximum price
-            if self.min_value_ts < self.max_value_ts:
-                if self.new_max_value != 0:
-                    #self.max_value_ts = 0
-                    self.last_peak_value = self.new_max_value
-                    self.peak = True
-                    self.new_max_value = 0
-                # if the max value for peak is less than the last valley value
-                elif self.last_valley_value != 0 and self.max_value < self.last_valley_value:
-                    self.max_value = 0
-                    self.max_value_ts = 0
-                elif self.delta_ts_gt_span_secs(self.min_value_ts, ts):
-                    self.peak = True
-                    self.last_peak_value = self.max_value
-            elif self.min_value_ts > self.max_value_ts:
-                if self.new_min_value != 0:
-                    #self.min_value_ts = 0
-                    self.last_valley_value = self.new_min_value
-                    self.valley = True
-                    self.new_min_value = 0
-                # if the min value for the valley is greater than the  last peak value
-                elif self.last_peak_value != 0 and self.min_value > self.last_peak_value:
-                    self.min_value = 0
-                    self.min_value_ts = 0
-                elif self.delta_ts_gt_span_secs(self.max_value_ts, ts):
-                    self.valley = True
-                    self.last_valley_value = self.min_value
+        if self.delta_ts_gt_span_secs(self.min_value_ts, ts) and self.delta_ts_gt_reverse_secs(self.max_value_ts, ts):
+            self.peak = True
+            self.min_value = value
+            self.min_value_ts = ts
+        elif self.delta_ts_gt_span_secs(self.max_value_ts, ts) and self.delta_ts_gt_reverse_secs(self.min_value_ts, ts):
+            self.valley = True
+            self.max_value = value
+            self.max_value_ts = ts
+
+        # if self.delta_ts_gt_reverse_secs(self.min_value_ts, ts) and self.delta_ts_gt_reverse_secs(self.max_value_ts, ts):
+        #     # if the minimum price occurred before the maximum price
+        #     if self.min_value_ts < self.max_value_ts:
+        #         if self.new_max_value != 0:
+        #             #self.max_value_ts = 0
+        #             self.last_peak_value = self.new_max_value
+        #             self.peak = True
+        #             self.new_max_value = 0
+        #         # if the max value for peak is less than the last valley value
+        #         elif self.last_valley_value != 0 and self.max_value < self.last_valley_value:
+        #             self.max_value = 0
+        #             self.max_value_ts = 0
+        #         elif self.delta_ts_gt_span_secs(self.min_value_ts, ts):
+        #             self.peak = True
+        #             self.last_peak_value = self.max_value
+        #     elif self.min_value_ts > self.max_value_ts:
+        #         if self.new_min_value != 0:
+        #             #self.min_value_ts = 0
+        #             self.last_valley_value = self.new_min_value
+        #             self.valley = True
+        #             self.new_min_value = 0
+        #         # if the min value for the valley is greater than the  last peak value
+        #         elif self.last_peak_value != 0 and self.min_value > self.last_peak_value:
+        #             self.min_value = 0
+        #             self.min_value_ts = 0
+        #         elif self.delta_ts_gt_span_secs(self.max_value_ts, ts):
+        #             self.valley = True
+        #             self.last_valley_value = self.min_value

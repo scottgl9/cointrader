@@ -89,10 +89,10 @@ def simulate(conn, client, base, currency, type="channel"):
         tpv.update(ema50.result, ts)
         if tpv.peak_detected():
             peaks.append(i)
-            tpv.reset()
+            #tpv.reset()
         elif tpv.valley_detected():
             valleys.append(i)
-            tpv.reset()
+            #tpv.reset()
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
