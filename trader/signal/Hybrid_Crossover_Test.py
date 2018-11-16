@@ -8,6 +8,7 @@ from trader.indicator.DTWMA import DTWMA
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.MACross import MACross
 from trader.lib.PeakValleyDetect import PeakValleyDetect
+from trader.lib.TimePeakValley import TimePeakValley
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -19,6 +20,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.dtwma_close = DTWMA(30)
         self.dtwma_volume = DTWMA(30)
 
+        self.tpv = TimePeakValley(reverse_secs=300, span_secs=3600)
         self.detector = PeakValleyDetect()
         self.obv = OBV()
         self.obv_ema12 = ZLEMA(12, scale=24)
@@ -50,6 +52,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_cross_50_100.update(close, ts)
         self.ema_cross_100_200.update(close, ts)
 
+        self.tpv.update(self.ema_cross_30_50.get_ma2_result(), ts)
         self.detector.update(self.ema_cross_30_50.get_ma2_result())
 
     def buy_signal(self):
@@ -61,6 +64,8 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.detector.valley_detect():
             return True
+        #if self.tpv.valley_detected():
+        #    return True
 
         return False
 
@@ -70,13 +75,13 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
-        #if self.ema_cross_50_100.cross_down:
-        #    return True
-
         if self.ema_cross_10_30.cross_down or self.ema_cross_30_50.cross_down:
             return True
 
         if self.detector.peak_detect():
             return True
+
+        #if self.tpv.peak_detected():
+        #    return True
 
         return False

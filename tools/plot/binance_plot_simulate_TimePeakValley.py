@@ -14,6 +14,7 @@ from trader.config import *
 import matplotlib.pyplot as plt
 from trader.indicator.OBV import OBV
 from trader.indicator.ZLEMA import *
+from trader.indicator.DTWMA import DTWMA
 from trader.lib.TimePeakValley import TimePeakValley
 
 def get_rows_as_msgs(c):
@@ -33,7 +34,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
-    ema50 = EMA(100, scale=24, lag_window=5)
+    ema50 = ZLEMA(100, scale=24, lag_window=5)
     ema200 = EMA(200, scale=24, lag_window=5)
     obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
@@ -42,7 +43,9 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    tpv = TimePeakValley(reverse_secs=300, span_secs=1000)
+    dtwma = DTWMA(30)
+    dtwma_values = []
+    tpv = TimePeakValley(reverse_secs=200, span_secs=1000)
 
     obv = OBV()
     quad_x_values = []
@@ -86,7 +89,7 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        tpv.update(ema50.result, ts)
+        tpv.update(ema26.result, ts)
         if tpv.peak_detected():
             peaks.append(i)
             #tpv.reset()
@@ -107,6 +110,7 @@ def simulate(conn, client, base, currency, type="channel"):
         plt.axvline(x=index, color='green')
 
     symprice, = plt.plot(close_prices, label=ticker_id)
+
     #plt.plot(filter_x_values, filter_values)
     #plt.plot(lstsqs_x_values, support1_values)
     #plt.plot(lstsqs_x_values, support2_values)
