@@ -34,7 +34,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
-    ema50 = ZLEMA(100, scale=24, lag_window=5)
+    ema100 = ZLEMA(100, scale=24, lag_window=5)
     ema200 = EMA(200, scale=24, lag_window=5)
     obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
@@ -45,14 +45,14 @@ def simulate(conn, client, base, currency, type="channel"):
 
     dtwma = DTWMA(30)
     dtwma_values = []
-    tpv = TimePeakValley(reverse_secs=200, span_secs=1000)
+    tpv = TimePeakValley(reverse_secs=600, span_secs=3600)
 
     obv = OBV()
     quad_x_values = []
     quad_y_values = []
     ema12_values = []
     ema26_values = []
-    ema50_values = []
+    ema100_values = []
     ema200_values = []
     close_prices = []
     open_prices = []
@@ -84,12 +84,12 @@ def simulate(conn, client, base, currency, type="channel"):
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
         ema26_values.append(ema26.update(close))
-        ema50_value = ema50.update(close)
-        ema50_values.append(ema50_value)
+        ema100_value = ema100.update(close)
+        ema100_values.append(ema100_value)
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        tpv.update(ema26.result, ts)
+        tpv.update(ema100.result, ts)
         if tpv.peak_detected():
             peaks.append(i)
             #tpv.reset()
@@ -116,7 +116,7 @@ def simulate(conn, client, base, currency, type="channel"):
     #plt.plot(lstsqs_x_values, support2_values)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
+    fig3, = plt.plot(ema100_values, label='EMA100')
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
