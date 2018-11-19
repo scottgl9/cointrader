@@ -10,9 +10,6 @@ import os.path
 import time
 import sqlite3
 from datetime import datetime, timedelta
-from pypika import Query, Table, Field, Order
-from trader.strategy import *
-from datetime import datetime, timedelta
 import threading
 import sys
 from trader.WebHandler import WebThread
