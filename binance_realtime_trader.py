@@ -150,48 +150,48 @@ def get_prices_from_klines(klines):
     return prices
 
 
-def get_products_sorted_by_volume(client, currency='BTC'):
-    products = client.get_products()
-    tickers = client.get_all_tickers()
-    pdict = {}
-    volumes = {}
-    prices = {}
-
-    for product in products.values()[0]:
-        if 'quoteAsset' in product and product['quoteAsset'] == currency and product['active']:
-            pdict[product['symbol']] = product
-
-    for ticker in tickers:
-        if ticker['symbol'].endswith(currency) == False: continue
-        if ticker['symbol'] not in pdict.keys(): continue
-
-        product = pdict[ticker['symbol']]
-        #percent = ((float(ticker['price']) - float(product['open'])) / float(product['open'])) * 100.0
-        # if percent <= 0.0: continue
-        # if float(ticker['price']) < (float(product['high']) + float(product['low'])) / 2.0: continue
-        volumes[ticker['symbol']] = float(product['volume'])
-        prices[ticker['symbol']] = [product['baseAsset'], float(ticker['price']), float(product['low']), float(product['high'])]
-        # ticker['symbol']
-    volumes = sorted(volumes.iteritems(), key=lambda (k, v): (v, k), reverse=True)
-
-    buy_list = collections.OrderedDict()
-    sell_list = collections.OrderedDict()
-
-    #volumes = volumes[0:len(volumes) / 4]
-
-    # get only the top half of the sorted list by volume
-    for symbol, volume in volumes:
-        baseAsset = prices[symbol][0]
-        price = prices[symbol][1]
-        low = prices[symbol][2]
-        high = prices[symbol][3]
-        mid = (low + high) / 2.0
-        if price < (low + mid) / 2.0:
-            buy_list[baseAsset] = [price, low, high]
-        elif price > (high + mid) / 2.0:
-            sell_list[baseAsset] = [price, low, high]
-
-    return buy_list, sell_list, volumes
+# def get_products_sorted_by_volume(client, currency='BTC'):
+#     products = client.get_products()
+#     tickers = client.get_all_tickers()
+#     pdict = {}
+#     volumes = {}
+#     prices = {}
+#
+#     for product in products.values()[0]:
+#         if 'quoteAsset' in product and product['quoteAsset'] == currency and product['active']:
+#             pdict[product['symbol']] = product
+#
+#     for ticker in tickers:
+#         if ticker['symbol'].endswith(currency) == False: continue
+#         if ticker['symbol'] not in pdict.keys(): continue
+#
+#         product = pdict[ticker['symbol']]
+#         #percent = ((float(ticker['price']) - float(product['open'])) / float(product['open'])) * 100.0
+#         # if percent <= 0.0: continue
+#         # if float(ticker['price']) < (float(product['high']) + float(product['low'])) / 2.0: continue
+#         volumes[ticker['symbol']] = float(product['volume'])
+#         prices[ticker['symbol']] = [product['baseAsset'], float(ticker['price']), float(product['low']), float(product['high'])]
+#         # ticker['symbol']
+#     volumes = sorted(volumes.iteritems(), key=lambda (k, v): (v, k), reverse=True)
+#
+#     buy_list = collections.OrderedDict()
+#     sell_list = collections.OrderedDict()
+#
+#     #volumes = volumes[0:len(volumes) / 4]
+#
+#     # get only the top half of the sorted list by volume
+#     for symbol, volume in volumes:
+#         baseAsset = prices[symbol][0]
+#         price = prices[symbol][1]
+#         low = prices[symbol][2]
+#         high = prices[symbol][3]
+#         mid = (low + high) / 2.0
+#         if price < (low + mid) / 2.0:
+#             buy_list[baseAsset] = [price, low, high]
+#         elif price > (high + mid) / 2.0:
+#             sell_list[baseAsset] = [price, low, high]
+#
+#     return buy_list, sell_list, volumes
 
 
 def get_all_tickers(client):
@@ -278,17 +278,17 @@ if __name__ == '__main__':
 
     volumes_list = collections.OrderedDict()
 
-    for currency in currency_list:
-        if 1: #currency in balances.keys():
-            buy, sell, volumes = get_products_sorted_by_volume(client, currency)
-            for k,v in volumes:
-                volumes_list[k] = v
-            for symbol in buy.keys():
-                buy_list.append("{}{}".format(symbol, currency))
-            for symbol in sell.keys():
-                if symbol not in balances.keys():
-                    continue
-                sell_list.append("{}{}".format(symbol, currency))
+    #for currency in currency_list:
+    #    if 1: #currency in balances.keys():
+    #        buy, sell, volumes = get_products_sorted_by_volume(client, currency)
+    #        for k,v in volumes:
+    #            volumes_list[k] = v
+    #        for symbol in buy.keys():
+    #            buy_list.append("{}{}".format(symbol, currency))
+    #        for symbol in sell.keys():
+    #            if symbol not in balances.keys():
+    #                continue
+    #            sell_list.append("{}{}".format(symbol, currency))
 
     bt = BinanceTrader(client, assets_info, volumes=volumes_list, logger=logger)
     bt.run()
