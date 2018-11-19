@@ -40,8 +40,8 @@ extensions = [makeExtension(name) for name in extNames]
 # finally, we can pass all this to distutils
 setup(
   name="trader",
-  packages=["trader", "trader.indicators", "trader.lib", "trader.signal", "trader.strategy",
-            "trader.account", "trader.account.binance", "trader.strategy.trader_size_strategy"],
+  packages=["trader", "trader.indicator", "trader.lib", "trader.signal", "trader.strategy",
+            "trader.account", "trader.account.binance", "trader.strategy.trade_size_strategy"],
   ext_modules=extensions,
   cmdclass = {'build_ext': build_ext},
 )
