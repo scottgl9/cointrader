@@ -92,6 +92,7 @@ class MultiTrader(object):
             return
 
         trade_pair = TradePair(self.client, self.accnt, self.strategy_name, self.signal_names, base_name, currency_name)
+
         self.trade_pairs[symbol] = trade_pair
 
         if not self.simulate and self.order_handler.trader_db:

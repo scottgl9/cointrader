@@ -1,7 +1,9 @@
+import threading
 from trader.strategy import *
 # class to handle individual trade pair (ex. BTC/USD)
-class TradePair(object):
+class TradePair(threading.Thread):
     def __init__(self, client, accnt, strategy_name, signal_names, base='BTC', currency='USD', base_min_size=0, tick_size=0, logger=None):
+        super(TradePair, self).__init__()
         self.client = client
         self.accnt = accnt
         self.strategy_name = strategy_name
