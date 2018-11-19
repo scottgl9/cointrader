@@ -1,14 +1,27 @@
+from trader.strategy import *
 # class to handle individual trade pair (ex. BTC/USD)
 class TradePair(object):
-    def __init__(self, client, accnt, strategy, base='BTC', currency='USD'):
+    def __init__(self, client, accnt, strategy_name, signal_names, base='BTC', currency='USD', base_min_size=0, tick_size=0, logger=None):
         self.client = client
         self.accnt = accnt
-        self.strategy = strategy
+        self.strategy_name = strategy_name
+        self.signal_names = signal_names
+        self.logger = logger
         #self.order_handler = order_handler
         self.base_name = base
         self.currency = currency
         self.ticker_id = self.accnt.make_ticker_id(base, currency)
         #print(self.accnt.get_fills(ticker_id=self.ticker_id))
+
+        self.strategy = select_strategy(self.strategy_name,
+                                   self.client,
+                                   self.base_name,
+                                   self.currency,
+                                   signal_names=self.signal_names,
+                                   account_handler=self.accnt,
+                                   base_min_size=base_min_size,
+                                   tick_size=tick_size,
+                                   logger=self.logger)
 
         self.last_close = 0.0
         self.low_24hr = self.high_24hr = 0.0

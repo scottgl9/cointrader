@@ -1,7 +1,7 @@
 # handle multiple TraiePairs, one for each base / currency we want to trade
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
-from trader.strategy import *
+
 from trader.TradePair import TradePair
 from trader.MarketManager import MarketManager
 from trader.lib.Kline import Kline
@@ -91,20 +91,10 @@ class MultiTrader(object):
         if self.accnt.deposit_asset_disabled(base_name):
             return
 
-        strategy = select_strategy(self.strategy_name,
-                                   self.client,
-                                   base_name,
-                                   currency_name,
-                                   signal_names=self.signal_names,
-                                   account_handler=self.accnt,
-                                   base_min_size=base_min_size,
-                                   tick_size=quote_increment,
-                                   logger=self.logger)
-
-        trade_pair = TradePair(self.client, self.accnt, strategy, base_name, currency_name)
+        trade_pair = TradePair(self.client, self.accnt, self.strategy_name, self.signal_names, base_name, currency_name)
         self.trade_pairs[symbol] = trade_pair
 
-        if self.order_handler.trader_db:
+        if not self.simulate and self.order_handler.trader_db:
             self.order_handler.trade_db_load_symbol(symbol, trade_pair)
 
     def get_stored_trades(self):
