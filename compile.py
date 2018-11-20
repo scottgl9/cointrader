@@ -35,7 +35,7 @@ def makeExtension(extName):
 
 
 # get the list of extensions
-extNames = scandir("trader", ignore=["bitstamp", 'FIX42', 'AccountGDAX.py', 'AccountCobinhood.py', 'OrderBookBase.py', 'RankManager.py'])
+extNames = scandir("trader", ignore=["bitstamp", 'FIX42', '__init__.py', 'AccountGDAX.py', 'AccountCobinhood.py', 'OrderBookBase.py', 'RankManager.py'])
 
 # and build up the set of Extension objects
 extensions = [makeExtension(name) for name in extNames]
