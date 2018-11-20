@@ -51,14 +51,14 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.timestamp == 0:
             self.timestamp = ts
 
-        self.dtwma_close.update(close, ts)
-        self.dtwma_volume.update(volume, ts)
+        #self.dtwma_close.update(close, ts)
+        #self.dtwma_volume.update(volume, ts)
 
-        if not self.dtwma_close.ready() or not self.dtwma_volume.ready():
-            return
+        #if not self.dtwma_close.ready() or not self.dtwma_volume.ready():
+        #   return
 
-        dtwma_close = self.dtwma_close.result
-        dtwma_volume = self.dtwma_volume.result
+        #dtwma_close = self.dtwma_close.result
+        #dtwma_volume = self.dtwma_volume.result
 
         self.obv.update(close=close, volume=volume)
         self.obv_ema12.update(self.obv.result)
@@ -97,7 +97,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.last_obv_cross_ts = ts
         elif self.obv_cross.crossdown_detected():
             self.obv_trending_up = False
-            self.obv_trending_down = False
+            self.obv_trending_down = True
             self.last_obv_cross_ts = ts
 
     def buy_signal(self):

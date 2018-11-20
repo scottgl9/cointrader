@@ -21,6 +21,10 @@ class MACross(object):
         self.last_cross_up_ts = 0
         self.cross_down_ts = 0
         self.last_cross_down_ts = 0
+        self.cross_up_value = 0
+        self.last_cross_up_value = 0
+        self.cross_down_value = 0
+        self.last_cross_down_value = 0
         self.cross_up = False
         self.cross_down = False
         self.ma1 = self.indicator(self.ema_win1, scale=self.scale)
@@ -40,6 +44,8 @@ class MACross(object):
             self.cross_ts = ts
             self.last_cross_up_ts = self.cross_up_ts
             self.cross_up_ts = ts
+            self.last_cross_up_value = self.cross_up_value
+            self.cross_up_value = value
         elif self.cross.crossdown_detected():
             self.cross_up = False
             self.cross_down = True
@@ -47,6 +53,8 @@ class MACross(object):
             self.cross_ts = ts
             self.last_cross_down_ts = self.cross_down_ts
             self.cross_down_ts = ts
+            self.last_cross_down_value = self.cross_down_value
+            self.cross_down_value = value
 
         self.last_ts = ts
 
