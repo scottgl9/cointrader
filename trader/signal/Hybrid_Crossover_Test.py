@@ -31,10 +31,12 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema100 = ZLEMA(100, scale=24)
         self.ema50 = EMA(50, scale=24, lag_window=5)
         self.ema200 = EMA(200, scale=24, lag_window=5)
-        self.ema_cross_10_30 = MACross(ema_win1=10, ema_win2=30, scale=24) #, indicator=ZLEMA)
-        self.ema_cross_30_50 = MACross(ema_win1=30, ema_win2=50, scale=24) #, indicator=ZLEMA)
-        self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24) #, indicator=ZLEMA)
-        self.ema_cross_100_200 = MACross(ema_win1=100, ema_win2=200, scale=24)
+
+        cross_timeout = 1000 * 300
+        self.ema_cross_10_30 = MACross(ema_win1=10, ema_win2=30, scale=24, cross_timeout=cross_timeout)
+        self.ema_cross_30_50 = MACross(ema_win1=30, ema_win2=50, scale=24, cross_timeout=cross_timeout)
+        self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=cross_timeout)
+        self.ema_cross_100_200 = MACross(ema_win1=100, ema_win2=200, scale=24, cross_timeout=cross_timeout)
 
         self.cross_long = Crossover2(window=10, cutoff=0.0)
         self.obv_cross = Crossover2(window=10, cutoff=0.0)
@@ -137,10 +139,22 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
-        if self.ema_cross_50_100.cross_down or self.ema_cross_30_50.cross_down:
+        if self.ema_cross_50_100.cross_down:
             return True
 
-        if self.ema_cross_10_30.cross_down or self.ema_cross_30_50.cross_down:
+        if self.ema_cross_30_50.cross_down:
+            return True
+
+        if self.ema_cross_10_30.cross_down:
+            return True
+
+        if (self.trending_down and self.last_cross_ts != 0 and (self.timestamp - self.last_cross_ts) > (3600 * 1000)):
+            return True
+
+        if (self.obv_trending_down and self.last_obv_cross_ts != 0 and (self.timestamp - self.last_obv_cross_ts) > (3600 * 1000)):
+            return True
+
+        if self.obv_ema26.result < self.obv_ema26.last_result and self.ema26.result < self.ema26.last_result:
             return True
 
         #if self.detector.peak_detect():
