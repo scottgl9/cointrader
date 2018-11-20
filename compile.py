@@ -9,13 +9,15 @@ import os
 
 # scan the 'dvedit' directory for extension files, converting
 # them to extension names in dotted notation
-def scandir(dir, files=[]):
+def scandir(dir, files=[], ignore=[]):
     for file in os.listdir(dir):
         path = os.path.join(dir, file)
         if os.path.isfile(path) and path.endswith(".py"):
-            files.append(path.replace(os.path.sep, ".")[:-4])
+            if os.path.basename(path) not in ignore:
+                files.append(path.replace(os.path.sep, ".")[:-3])
         elif os.path.isdir(path):
-            scandir(path, files)
+            if os.path.basename(path) not in ignore:
+                scandir(path, files, ignore)
     return files
 
 
@@ -31,8 +33,9 @@ def makeExtension(extName):
         #libraries = ["dv",],
         )
 
+
 # get the list of extensions
-extNames = scandir("trader")
+extNames = scandir("trader", ignore=["bitstamp", 'FIX42', 'AccountGDAX.py', 'AccountCobinhood.py', 'OrderBookBase.py', 'RankManager.py'])
 
 # and build up the set of Extension objects
 extensions = [makeExtension(name) for name in extNames]
