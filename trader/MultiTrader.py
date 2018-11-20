@@ -91,7 +91,15 @@ class MultiTrader(object):
         if self.accnt.deposit_asset_disabled(base_name):
             return
 
-        trade_pair = TradePair(self.client, self.accnt, self.strategy_name, self.signal_names, base_name, currency_name)
+        trade_pair = TradePair(self.client,
+                               self.accnt,
+                               strategy_name=self.strategy_name,
+                               signal_names=self.signal_names,
+                               base=base_name,
+                               currency=currency_name,
+                               base_min_size=base_min_size,
+                               tick_size=quote_increment,
+                               logger=self.logger)
 
         self.trade_pairs[symbol] = trade_pair
 
