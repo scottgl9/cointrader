@@ -32,13 +32,14 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema50 = EMA(50, scale=24, lag_window=5)
         self.ema200 = EMA(200, scale=24, lag_window=5)
 
-        cross_timeout = 1000 * 300
+        cross_timeout = 1000 * 1000
         self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_100_200 = MACross(ema_win1=100, ema_win2=200, scale=24, cross_timeout=cross_timeout)
 
-        self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24) #, cross_timeout=cross_timeout)
+        self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
+        self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
 
     def pre_update(self, close, volume, ts):
         if self.timestamp == 0:
@@ -55,6 +56,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.obv.update(close=close, volume=volume)
         self.obv_ema_cross_12_26.update(self.obv.result, ts)
+        self.obv_ema_cross_26_50.update(self.obv.result, ts)
 
         self.ema_cross_12_26.update(close, ts)
         self.ema_cross_26_50.update(close, ts)
@@ -63,13 +65,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.ema100.update(close)
         self.tpv.update(self.ema100.result, ts)
-        self.detector.update(self.ema_cross_26_50.get_ma2_result())
-
-        self.ema12.update(close)
-        self.ema26.update(close)
-        self.ema50.update(close)
-        self.ema200.update(close)
-        #self.cross_long.update(self.ema50.result, self.ema200.result)
+        #self.detector.update(self.ema_cross_26_50.get_ma2_result())
 
     def buy_signal(self):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 800:
@@ -97,6 +93,12 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up:
             return True
 
+        if self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up:
+            return True
+
+        if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up:
+            return True
+
         #if self.detector.valley_detect():
         #    return True
         if self.tpv.valley_detected():
@@ -116,10 +118,10 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_cross_50_100.cross_down:
             return True
 
-        if self.ema_cross_26_50.cross_down:
+        if self.ema_cross_26_50.cross_down and self.obv_ema_cross_26_50.cross_down:
             return True
 
-        if self.ema_cross_12_26.cross_down:
+        if self.ema_cross_12_26.cross_down and self.obv_ema_cross_12_26.cross_down:
             return True
 
         #if self.detector.peak_detect():
