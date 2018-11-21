@@ -27,15 +27,29 @@ class MACross(object):
         self.last_cross_down_value = 0
         self.cross_up = False
         self.cross_down = False
+
         self.ma1 = self.indicator(self.ema_win1, scale=self.scale)
         self.ma2 = self.indicator(self.ema_win2, scale=self.scale)
         self.cross = Crossover2(window=10, cutoff=0.0)
 
-    def update(self, value, ts):
-        self.ma1.update(value)
-        self.ma2.update(value)
-        if self.ma1.result != 0 and self.ma2.result != 0:
-            self.cross.update(self.ma1.result, self.ma2.result)
+    # ma1 and ma2 allow to pass in an indicator from another MACross
+    # that is already being updated, so that we don't have to compute
+    # for example, EMA50(value) twice, instead we can re-use from another MACross instance
+    def update(self, value, ts, ma1=None, ma2=None):
+        if not ma1:
+            self.ma1.update(value)
+            ma1_result = self.ma1.result
+        else:
+            ma1_result = ma1.result
+
+        if not ma2:
+            self.ma2.update(value)
+            ma2_result = self.ma2.result
+        else:
+            ma2_result = ma2.result
+
+        if ma1_result != 0 and ma2_result != 0:
+            self.cross.update(ma1_result, ma2_result)
 
         if self.cross.crossup_detected():
             self.cross_up = True

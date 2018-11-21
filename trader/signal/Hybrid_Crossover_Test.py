@@ -36,7 +36,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=cross_timeout)
-        self.ema_cross_100_200 = MACross(ema_win1=100, ema_win2=200, scale=24, cross_timeout=cross_timeout)
+        self.ema_cross_50_200 = MACross(ema_win1=50, ema_win2=200, scale=24, cross_timeout=cross_timeout)
 
         self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
         self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
@@ -56,12 +56,12 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.obv.update(close=close, volume=volume)
         self.obv_ema_cross_12_26.update(self.obv.result, ts)
-        self.obv_ema_cross_26_50.update(self.obv.result, ts)
+        self.obv_ema_cross_26_50.update(self.obv.result, ts, ma1=self.obv_ema_cross_12_26.ma2)
 
         self.ema_cross_12_26.update(close, ts)
-        self.ema_cross_26_50.update(close, ts)
-        self.ema_cross_50_100.update(close, ts)
-        self.ema_cross_100_200.update(close, ts)
+        self.ema_cross_26_50.update(close, ts, ma1=self.ema_cross_12_26.ma2)
+        self.ema_cross_50_100.update(close, ts, ma1=self.ema_cross_26_50.ma2)
+        self.ema_cross_50_200.update(close, ts, ma1=self.ema_cross_26_50.ma2)
 
         self.ema100.update(close)
         self.tpv.update(self.ema100.result, ts)
@@ -70,22 +70,6 @@ class Hybrid_Crossover_Test(SignalBase):
     def buy_signal(self):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 800:
             return False
-
-        # it has been over an hour since last crossover, and last crossover was a cross down
-        #if (self.trending_down and self.last_cross_ts != 0 and (self.timestamp - self.last_cross_ts) > (3600 * 1000)):
-        #    return False
-
-        #if (self.obv_trending_down and self.last_obv_cross_ts != 0 and (self.timestamp - self.last_obv_cross_ts) > (3600 * 1000)):
-        #    return False
-
-        #if self.obv_ema26.result < self.obv_ema26.last_result and self.ema26.result < self.ema26.last_result:
-        #    return False
-
-        #if self.obv_ema12.result < self.obv_ema12.last_result and self.ema12.result < self.ema12.last_result:
-        #    return False
-
-        #if not self.obv_ema_cross_12_26.cross_up:
-        #    return False
 
         if self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up:
             return True
@@ -109,19 +93,19 @@ class Hybrid_Crossover_Test(SignalBase):
     def sell_long_signal(self):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
-        if (self.timestamp - self.last_buy_ts) > 3600 * 1000:
-            if (self.buy_price_high - self.buy_price) / self.buy_price <= 0.005:
-                return True
+        if self.ema_cross_50_100.cross_down:
+            return True
+
         return False
 
     def sell_signal(self):
         if self.ema_cross_50_100.cross_down:
             return True
 
-        if self.ema_cross_26_50.cross_down and self.obv_ema_cross_26_50.cross_down:
+        if self.ema_cross_26_50.cross_down: # and self.obv_ema_cross_26_50.cross_down:
             return True
 
-        if self.ema_cross_12_26.cross_down and self.obv_ema_cross_12_26.cross_down:
+        if self.ema_cross_12_26.cross_down: # and self.obv_ema_cross_12_26.cross_down:
             return True
 
         #if self.detector.peak_detect():
