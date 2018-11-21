@@ -65,7 +65,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.ema100.update(close)
         self.tpv.update(self.ema100.result, ts)
-        #self.detector.update(self.ema_cross_26_50.get_ma2_result())
+        self.detector.update(self.ema_cross_26_50.get_ma2_result())
 
     def buy_signal(self):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 800:
@@ -74,7 +74,8 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up:
             return True
 
-        if self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up:
+        if (self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up):
+            #if abs(self.ema_cross_12_26.cross_up_ts - self.ema_cross_26_50.cross_up_ts) < 1000 * 600:
             return True
 
         if self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up:
@@ -83,8 +84,9 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up:
             return True
 
-        #if self.detector.valley_detect():
-        #    return True
+        if self.detector.valley_detect():
+            return True
+
         if self.tpv.valley_detected():
             return True
 
@@ -93,23 +95,25 @@ class Hybrid_Crossover_Test(SignalBase):
     def sell_long_signal(self):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
-        if self.ema_cross_50_100.cross_down:
+        if self.ema_cross_50_200.cross_down:
             return True
 
         return False
 
     def sell_signal(self):
-        if self.ema_cross_50_100.cross_down:
-            return True
-
-        if self.ema_cross_26_50.cross_down: # and self.obv_ema_cross_26_50.cross_down:
-            return True
-
-        if self.ema_cross_12_26.cross_down: # and self.obv_ema_cross_12_26.cross_down:
-            return True
-
-        #if self.detector.peak_detect():
+        #if self.ema_cross_50_100.cross_down:
         #    return True
+        if self.ema_cross_50_100.cross_down and self.ema_cross_26_50.cross_down:
+            return True
+
+        if self.ema_cross_26_50.cross_down:
+            return True
+
+        if self.ema_cross_12_26.cross_down:
+            return True
+
+        if self.detector.peak_detect():
+            return True
 
         if self.tpv.peak_detected():
             return True
