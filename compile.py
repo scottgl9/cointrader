@@ -47,4 +47,5 @@ setup(
             "trader.account", "trader.account.binance", "trader.strategy.trade_size_strategy"],
   ext_modules=extensions,
   cmdclass = {'build_ext': build_ext},
+  scripts=['tools/binance_simulate.py']
 )
