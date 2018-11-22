@@ -1,5 +1,5 @@
 class trade_size_strategy_base(object):
-    def __init__(self, base, currency, base_min_size=0.0, tick_size=0.0):
+    def __init__(self, base, currency, base_min_size, tick_size, btc=0, eth=0, bnb=0, usdt=0):
         self.base = base
         self.currency = currency
         self.base_min_size = float(base_min_size)

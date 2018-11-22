@@ -8,7 +8,10 @@ all:
 	rm -rf lib
 	find bin/trader -type d -exec touch {}/__init__.py \;
 	cp -f tools/binance_simulate.py bin/
+	cp *.db bin/
 
 clean:
 	find trader -type f -name '*.c' -exec rm {} \;
+	find trader -type f -name '*.pyc' -exec rm {} \;
 	rm -rf build
+	rm -rf bin

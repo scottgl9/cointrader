@@ -1,7 +1,8 @@
 from trader.strategy.trade_size_strategy import trade_size_strategy_base
 
+
 class static_trade_size(trade_size_strategy_base):
-    def __init__(self, base, currency, base_min_size, tick_size, usdt=0):
+    def __init__(self, base, currency, base_min_size, tick_size, btc=0, eth=0, bnb=0, usdt=0):
         super(static_trade_size, self).__init__(base, currency, base_min_size, tick_size)
         self.usdt_trade_size = usdt
         self.btc_trade_size = 0

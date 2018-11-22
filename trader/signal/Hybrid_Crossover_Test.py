@@ -36,7 +36,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=cross_timeout)
-        self.ema_cross_50_200 = MACross(ema_win1=50, ema_win2=200, scale=24, cross_timeout=cross_timeout)
+        self.ema_cross_50_200 = MACross(ema_win1=50, ema_win2=200, scale=24)
 
         self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
         self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
