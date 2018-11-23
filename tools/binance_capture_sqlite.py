@@ -13,6 +13,11 @@ from trader.strategy.StrategyBase import StrategyBase
 import collections
 from datetime import datetime
 import sqlite3
+import time
+import logging
+import os
+import sys
+import threading
 import matplotlib.pyplot as plt
 from trader.config import *
 
@@ -20,24 +25,25 @@ from trader.config import *
 
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
-#A,B,C,E,F,L,O,P,Q,a,b,c,h,l,n,o,p,q,s,v,w,x
-#J,K,G,E,F,D,I,M,R,a,b,c,h,l,n,o,p,q,s,v,w,x
-
 
 class BinanceTrader:
-    def __init__(self, client, asset_info=None, volumes=None):
+    def __init__(self, client, commit_count=1000, logger=None):
         self.client = client
+        self.logger = logger
+        self.commit_count = commit_count
+        self.bm = None
+        self.counter = 0
         self.tickers = {}
         db_file = "cryptocurrency_database.miniticker_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
+        if os.path.exists(db_file):
+            self.logger.info("{} already exists, exiting....".format(db_file))
+            sys.exit(0)
         self.db_conn = self.create_db_connection(db_file)
-        print("Created {}".format(db_file))
+        self.logger.info("Started capturing to {}".format(db_file))
         cur = self.db_conn.cursor()
         cur.execute("""CREATE TABLE miniticker (E integer, c real, h real, l real, o real, q real, s text, v real)""")
         self.db_conn.commit()
-        #self.symbols = symbols #sget_all_tickers(client)
-        #print("loading symbols {}".format(self.symbols))
         self.accnt = AccountBinance(self.client)
-        self.volumes = volumes
 
     def create_db_connection(self, db_file):
         """ create a database connection to the SQLite database
@@ -58,7 +64,11 @@ class BinanceTrader:
         cur = conn.cursor()
         sql = """INSERT INTO miniticker (E, c, h, l, o, q, s, v) values(?, ?, ?, ?, ?, ?, ?, ?)"""
         cur.execute(sql, values)
-        conn.commit()
+
+        self.counter += 1
+        if self.counter >= self.commit_count:
+            conn.commit()
+            self.counter = 0
 
     def get_websocket_kline(self, msg):
         kline = list()
@@ -82,87 +92,27 @@ class BinanceTrader:
 
         if not isinstance(msg, list):
             if 's' not in msg.keys(): return
-            #if len(msg) == 0: return
-
-            #if msg['s'].endswith('USDT') and msg['s'] != 'BTCUSDT': return
-
-            #if msg['s'] != 'BTCUSDT' and msg['s'] not in self.volumes.keys(): return
-            #self.mongo_collection.insert_one(msg)
             self.insert(self.db_conn, msg)
-            #print(msg)
             return
 
         for part in msg:
             if 's' not in part.keys(): continue
-            #if len(self.trade_pairs) == 0: continue
-
-            #if part['s'].endswith('USDT') and part['s'] != 'BTCUSDT': continue
-
-            #if part['s'] != 'BTCUSDT' and part['s'] not in self.volumes.keys(): continue
             self.insert(self.db_conn, part)
-            #print(part)
 
     def run(self):
-        bm = BinanceSocketManager(self.client)
-        bm.start_miniticker_socket(self.process_message)
-        #bm.start_ticker_socket(self.process_message)
-        bm.start()
-
-
-def get_prices_from_klines(klines):
-    prices = []
-    for k in klines:
-        prices.append(k[3])
-        prices.append(k[4])
-    return prices
-
-
-def get_products_sorted_by_volume(client, currency='BTC'):
-    products = client.get_products()
-    tickers = client.get_all_tickers()
-    pdict = {}
-    volumes = {}
-    prices = {}
-
-    for product in products.values()[0]:
-        if 'quoteAsset' in product and product['quoteAsset'] == currency and product['active']:
-            pdict[product['symbol']] = product
-
-    for ticker in tickers:
-        if ticker['symbol'].endswith(currency) == False: continue
-        if ticker['symbol'] not in pdict.keys(): continue
-
-        # fraction_movement = count_frames_direction_from_klines_name(ticker['symbol'])
-        # print(fraction_movement)
-        # if fraction_movement < 1.0: continue
-
-        product = pdict[ticker['symbol']]
-        #percent = ((float(ticker['price']) - float(product['open'])) / float(product['open'])) * 100.0
-        # if percent <= 0.0: continue
-        # if float(ticker['price']) < (float(product['high']) + float(product['low'])) / 2.0: continue
-        volumes[ticker['symbol']] = float(product['volume'])
-        prices[ticker['symbol']] = [product['baseAsset'], float(ticker['price']), float(product['low']), float(product['high'])]
-        # ticker['symbol']
-    volumes = sorted(volumes.iteritems(), key=lambda (k, v): (v, k), reverse=True)
-
-    buy_list = collections.OrderedDict()
-    sell_list = collections.OrderedDict()
-
-    #volumes = volumes[0:len(volumes) / 5]
-
-    # get only the top half of the sorted list by volume
-    for symbol, volume in volumes:
-        baseAsset = prices[symbol][0]
-        price = prices[symbol][1]
-        low = prices[symbol][2]
-        high = prices[symbol][3]
-        mid = (low + high) / 2.0
-        if price < (low + mid) / 2.0:
-            buy_list[baseAsset] = [price, low, high]
-        elif price > (high + mid) / 3.0:
-            sell_list[baseAsset] = [price, low, high]
-
-    return buy_list, sell_list, volumes
+        self.bm = BinanceSocketManager(self.client)
+        self.bm.daemon = True
+        self.bm.start_miniticker_socket(self.process_message)
+        self.bm.start()
+        while True:
+            try:
+                time.sleep(5)
+            except KeyboardInterrupt:
+                self.db_conn.commit()
+                self.logger.info("Shutting down...")
+                self.bm.close()
+                #self.bm.join()
+                break
 
 
 def get_all_tickers(client):
@@ -170,7 +120,6 @@ def get_all_tickers(client):
     for key, value in client.get_exchange_info().items():
         if key != 'symbols': continue
         for asset in value:
-            #if asset['symbol'].endswith('USDT'): continue
             result.append(asset['symbol'])
     return result
 
@@ -227,33 +176,20 @@ def filter_by_balances(assets, balances):
 
 
 if __name__ == '__main__':
+    logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+    logger = logging.getLogger()
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    logger.addHandler(consoleHandler)
+    logger.setLevel(logging.INFO)
+
     client = Client(MY_API_KEY, MY_API_SECRET)
     assets_info = get_info_all_assets(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     print(assets_info)
     print(balances)
-    buy_list = []
-    sell_list = []
     currency_list = ['BTC', 'ETH', 'BNB', 'USDT']
-    volumes_list = collections.OrderedDict()
 
-    for currency in currency_list:
-        if 1: #currency in balances.keys():
-            buy, sell, volumes = get_products_sorted_by_volume(client, currency)
-            for k,v in volumes:
-                volumes_list[k] = v
-            for symbol in buy.keys():
-                buy_list.append("{}{}".format(symbol, currency))
-            for symbol in sell.keys():
-                if symbol not in balances.keys():
-                    continue
-                sell_list.append("{}{}".format(symbol, currency))
-
-    print(volumes_list)
-
-    bt = BinanceTrader(client, assets_info, volumes=volumes_list)
-    try:
-        bt.run()
-    except (KeyboardInterrupt, SystemExit):
-        sys.exit(0)
-
+    bt = BinanceTrader(client, logger=logger)
+    bt.run()
