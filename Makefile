@@ -7,6 +7,7 @@ all:
 	cp -rf lib/python2.7/site-packages/trader bin/
 	rm -rf lib
 	find bin/trader -type d -exec touch {}/__init__.py \;
+	cp -f trader/strategy/trade_size_strategy/__init__.py bin/trader/strategy/trade_size_strategy/__init__.py
 	cp -f tools/binance_simulate.py bin/
 	cp *.db bin/
 

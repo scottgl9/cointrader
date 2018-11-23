@@ -4,9 +4,7 @@ from trader.strategy.trade_size_strategy.trade_size_strategy_base import trade_s
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
-from trader.signal import select_signal_name
 from trader.indicator.OBV import OBV
-
 
 class hybrid_signal_market_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
@@ -27,12 +25,12 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         if signal_names:
             for name in signal_names:
-                signal = select_signal_name(name)
+                signal = StrategyBase.select_signal_name(name)
                 if signal.mm_enabled:
                     self.mm_enabled = True
                 self.signal_handler.add(signal)
         else:
-            self.signal_handler.add(select_signal_name("Hybrid_Crossover"))
+            self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover"))
 
         self.obv = OBV()
 
