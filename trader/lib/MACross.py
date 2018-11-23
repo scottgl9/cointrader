@@ -1,6 +1,7 @@
 from trader.lib.Crossover2 import Crossover2
 from trader.indicator.EMA import EMA
 
+
 class MACross(object):
     def __init__(self, ema_win1=12, ema_win2=26, scale=24, cross_timeout=0, indicator=None):
         if not indicator:
@@ -15,6 +16,7 @@ class MACross(object):
         # cross_timeout is how long after a cross that we reset the cross to false (0 means no timeout)
         self.cross_timeout = cross_timeout
         self.last_ts = 0
+        self.last_value = 0
         self.cross_ts = 0
         self.last_cross_ts = 0
         self.cross_up_ts = 0
@@ -71,6 +73,7 @@ class MACross(object):
             self.cross_down_value = value
 
         self.last_ts = ts
+        self.last_value = value
 
         # implementation of cross timeout
         if self.cross_timeout != 0 and self.cross_ts != 0:
@@ -112,3 +115,8 @@ class MACross(object):
         if self.last_cross_down_ts == 0 or self.last_cross_up_ts == 0:
             return 0
         return abs(self.last_cross_up_ts - self.last_cross_down_ts)
+
+    def get_crossup_dropped(self):
+        if self.cross_up_value > self.last_value:
+            return True
+        return False

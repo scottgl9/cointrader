@@ -72,16 +72,23 @@ class Hybrid_Crossover_Test(SignalBase):
             return False
 
         if self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up:
+            if self.ema_cross_50_100.get_crossup_dropped() or self.ema_cross_26_50.get_crossup_dropped():
+                return False
             return True
 
-        if (self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up):
-            #if abs(self.ema_cross_12_26.cross_up_ts - self.ema_cross_26_50.cross_up_ts) < 1000 * 600:
+        if self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up:
+            if self.ema_cross_12_26.get_crossup_dropped() or self.ema_cross_26_50.get_crossup_dropped():
+                return False
             return True
 
         if self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up:
+            if self.ema_cross_12_26.get_crossup_dropped() or self.obv_ema_cross_12_26.get_crossup_dropped():
+                return False
             return True
 
         if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up:
+            if self.ema_cross_26_50.get_crossup_dropped() or self.obv_ema_cross_26_50.get_crossup_dropped():
+                return False
             return True
 
         if self.detector.valley_detect():
