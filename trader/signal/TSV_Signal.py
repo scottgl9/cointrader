@@ -21,7 +21,7 @@ class TSV_Signal(SignalBase):
         self.ema50 = EMA(50, scale=24, lag_window=5)
 
         self.tsv = TimeSegmentValues(seconds=1000)
-        self.tsv_cross_zero = Crossover2(window=10, cutoff=0.0)
+        self.tsv_cross_zero = Crossover2(window=10)
         self.tsv_ema = ZLEMA(100, scale=24)
         self.detector = PeakValleyDetect()
 

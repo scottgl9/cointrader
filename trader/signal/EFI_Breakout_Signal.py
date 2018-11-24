@@ -12,8 +12,8 @@ class EFI_Breakout_Signal(SignalBase):
         #self.dtwma = DTWMA(window=30)
         self.efi = EFI(window=30, scale=24)
         self.bb = BollingerBands(dev_count=8.0, smoother=EMA(50, scale=24))
-        self.efi_cross_high = Crossover2(window=10, cutoff=0.0)
-        self.efi_cross_low = Crossover2(window=10, cutoff=0.0)
+        self.efi_cross_high = Crossover2(window=10)
+        self.efi_cross_low = Crossover2(window=10)
 
     def pre_update(self, close, volume, ts):
         #self.dtwma.update(close, ts)

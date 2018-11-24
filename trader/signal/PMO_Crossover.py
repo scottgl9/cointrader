@@ -20,8 +20,8 @@ class PMO_Crossover(SignalBase):
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.pmo = PMO(scale=24)
-        self.pmo_cross = Crossover2(window=10, cutoff=0.0)
-        self.pmo_zero_cross = Crossover2(window=10, cutoff=0.0)
+        self.pmo_cross = Crossover2(window=10)
+        self.pmo_zero_cross = Crossover2(window=10)
 
     def pre_update(self, close, volume, ts):
         self.pmo.update(close)

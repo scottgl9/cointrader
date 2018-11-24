@@ -11,8 +11,8 @@ class OBV_Crossover(SignalBase):
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long
-        self.cross_short = Crossover2(window=10, cutoff=0.0)
-        self.cross_long = Crossover2(window=10, cutoff=0.0)
+        self.cross_short = Crossover2(window=10)
+        self.cross_long = Crossover2(window=10)
         self.cross_double = CrossoverDouble(window=10)
         self.obv = OBV()
         self.obv_ema12 = EMA(self.win_short, scale=24)

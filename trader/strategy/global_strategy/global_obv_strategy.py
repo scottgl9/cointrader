@@ -8,8 +8,8 @@ class global_obv_strategy(object):
         self.obv_ema50_usdt = EMA(50, scale=24)
         self.obv_ema100_usdt = EMA(100, scale=24)
 
-        self.cross_obv_btc = Crossover2(window=10, cutoff=0.0)
-        self.cross_obv_usdt = Crossover2(window=10, cutoff=0.0)
+        self.cross_obv_btc = Crossover2(window=10)
+        self.cross_obv_usdt = Crossover2(window=10)
 
         self.last_price = {}
         self.total_volume_btc = 0.0

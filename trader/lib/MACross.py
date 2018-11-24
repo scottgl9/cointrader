@@ -32,7 +32,7 @@ class MACross(object):
 
         self.ma1 = self.indicator(self.ema_win1, scale=self.scale)
         self.ma2 = self.indicator(self.ema_win2, scale=self.scale)
-        self.cross = Crossover2(window=10, cutoff=0.0)
+        self.cross = Crossover2(window=10)
 
     # ma1 and ma2 allow to pass in an indicator from another MACross
     # that is already being updated, so that we don't have to compute

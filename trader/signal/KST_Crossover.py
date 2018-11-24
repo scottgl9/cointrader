@@ -20,8 +20,8 @@ class KST_Crossover(SignalBase):
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.kst = KST()
-        self.kst_cross = Crossover2(window=10, cutoff=0.0)
-        self.kst_cross_zero = Crossover2(window=10, cutoff=0.0)
+        self.kst_cross = Crossover2(window=10)
+        self.kst_cross_zero = Crossover2(window=10)
 
         #self.box = BOX()
         self.trend_down_count = 0
