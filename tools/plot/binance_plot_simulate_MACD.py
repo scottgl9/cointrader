@@ -50,8 +50,8 @@ def simulate(conn, client, base, currency, type="channel"):
     ema50 = EMA(50, scale=24, lag_window=5)
 
     macd = MACD(12.0, 26.0, 9.0, scale=24.0)
-    macd_cross = Crossover2(window=10, cutoff=0.0)
-    macd_zero_cross = Crossover2(window=10, cutoff=0.0)
+    macd_cross = Crossover2(window=10)
+    macd_zero_cross = Crossover2(window=10)
     macd_signal = EMA(9, scale=24.0)
     macd_diff_values = []
     macd_signal_values = []

@@ -79,17 +79,33 @@ class MultiTrader(object):
     def add_trade_pair(self, symbol):
         base_min_size = 0.0
         quote_increment = 0.0
-        if symbol in self.assets_info.keys():
-            base_min_size = float(self.assets_info[symbol]['minQty'])
-            quote_increment = float(self.assets_info[symbol]['tickSize'])
 
         base_name, currency_name = split_symbol(symbol)
+
         if not base_name or not currency_name: return
 
         # if an asset has deposit disabled, means its probably suspended
         # or de-listed so DO NOT trade this coin
         if self.accnt.deposit_asset_disabled(base_name):
-            return
+            return None
+
+        if symbol in self.assets_info.keys():
+            base_min_size = float(self.assets_info[symbol]['minQty'])
+            quote_increment = float(self.assets_info[symbol]['tickSize'])
+
+        # optimization: if balance of ETH or BNB is less than
+        # minimum trade amount, do not process trade pairs with currency
+        # ETH or BNB respectively
+        #if self.simulate and currency_name == "ETH" and "ETHBTC" in self.assets_info:
+        #    minqty = float(self.assets_info["ETHBTC"]['minQty'])
+        #    balance = self.accnt.get_asset_balance("ETH")["balance"]
+        #    if balance < minqty:
+        #        return
+        #if self.simulate and currency_name == "BNB" and "BNBBTC" in self.assets_info:
+        #    minqty = float(self.assets_info["BNBBTC"]['minQty'])
+        #    balance = self.accnt.get_asset_balance("BNB")["balance"]
+        #    if balance < minqty:
+        #        return
 
         trade_pair = TradePair(self.client,
                                self.accnt,
@@ -106,6 +122,8 @@ class MultiTrader(object):
         if not self.simulate and self.order_handler.trader_db:
             self.order_handler.trade_db_load_symbol(symbol, trade_pair)
 
+        return trade_pair
+
     def get_stored_trades(self):
         return self.order_handler.get_stored_trades()
 
@@ -118,12 +136,12 @@ class MultiTrader(object):
         self.current_ts = kline.ts
 
         if kline.symbol not in self.trade_pairs.keys():
-            self.add_trade_pair(kline.symbol)
+            symbol_trader = self.add_trade_pair(kline.symbol)
+            if not symbol_trader:
+                return
+        else:
+            symbol_trader = self.trade_pairs[kline.symbol]
 
-        if kline.symbol not in self.trade_pairs.keys():
-            return
-
-        symbol_trader = self.trade_pairs[kline.symbol]
         symbol_trader.update_tickers(self.tickers)
 
         # use market manager

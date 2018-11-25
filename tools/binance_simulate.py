@@ -72,6 +72,13 @@ def simulate(conn, client, strategy, signal_name, logger):
                 total_usd = float(msg['o']) * total_btc
                 print("Initial BTC={}".format(total_btc))
 
+        # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
+        if msg['s'].endswith("USDT"):
+            minqty = 20.0
+            balance = accnt.get_asset_balance("USDT")["balance"]
+            if balance < minqty:
+                continue
+
         multitrader.update_tickers(tickers)
 
         kline = Kline(symbol=msg['s'],
