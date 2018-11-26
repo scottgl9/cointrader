@@ -100,6 +100,18 @@ class MACross(object):
             return 0
         return self.ma2.result - self.ma2.last_result
 
+    def ma1_trend_up(self):
+        return self.get_ma1_diff() > 0
+
+    def ma1_trend_down(self):
+        return self.get_ma1_diff() < 0
+
+    def ma2_trend_up(self):
+        return self.get_ma2_diff() > 0
+
+    def ma2_trend_down(self):
+        return self.get_ma2_diff() < 0
+
     # get time difference between most recent cross up and previous cross up
     def get_crossup_ts_delta(self):
         if self.last_cross_up_ts ==0 or self.cross_up_ts == 0:

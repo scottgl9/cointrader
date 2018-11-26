@@ -63,46 +63,58 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_cross_50_100.update(close, ts, ma1=self.ema_cross_26_50.ma2)
         self.ema_cross_50_200.update(close, ts, ma1=self.ema_cross_26_50.ma2)
 
-        self.ema100.update(close)
-        self.tpv.update(self.ema100.result, ts)
-        self.detector.update(self.ema_cross_26_50.get_ma2_result())
+        #self.ema100.update(close)
+        #self.tpv.update(self.ema100.result, ts)
+        #self.detector.update(self.ema_cross_26_50.get_ma2_result())
 
     def buy_signal(self):
-        if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 800:
+        if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        if self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up:
+        if self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up and self.ema_cross_26_50.ma2_trend_up():
             if self.ema_cross_50_100.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
                 return False
-            return True
-
-        if self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up:
-            if self.ema_cross_12_26.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
+            if self.ema_cross_26_50.ma1_trend_down() and self.ema_cross_26_50.ma2_trend_down():
                 return False
             return True
 
-        if self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up:
+        if self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up and self.ema_cross_12_26.ma2_trend_up():
+            if self.ema_cross_12_26.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
+                return False
+            if self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down():
+                return False
+            return True
+
+        if self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and self.ema_cross_12_26.ma2_trend_up():
             if self.ema_cross_12_26.get_crossup_below() or self.obv_ema_cross_12_26.get_crossup_below():
+                return False
+            if self.obv_ema_cross_12_26.ma2_trend_down():
                 return False
             return True
 
         if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up:
             if self.ema_cross_26_50.get_crossup_below() or self.obv_ema_cross_26_50.get_crossup_below():
                 return False
+            if self.ema_cross_26_50.ma1_trend_down() and self.obv_ema_cross_26_50.ma2_trend_down():
+                return False
             return True
 
-        if self.detector.valley_detect():
-            return True
+        #if self.detector.valley_detect():
+        #    return True
 
-        if self.tpv.valley_detected():
-            return True
+        #if self.tpv.valley_detected():
+        #    return True
 
         return False
 
     def sell_long_signal(self):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
-        if self.ema_cross_50_200.cross_down:
+        if self.ema_cross_50_200.cross_down and self.ema_cross_50_200.ma2_trend_down():
+            return True
+
+        if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
+                self.ema_cross_26_50.ma2_trend_down()):
             return True
 
         return False
@@ -110,19 +122,19 @@ class Hybrid_Crossover_Test(SignalBase):
     def sell_signal(self):
         #if self.ema_cross_50_100.cross_down:
         #    return True
-        if self.ema_cross_50_100.cross_down and self.ema_cross_26_50.cross_down:
+        if self.ema_cross_50_100.cross_down and self.ema_cross_50_100.ma2_trend_down():
             return True
 
-        if self.ema_cross_26_50.cross_down:
+        if self.ema_cross_26_50.cross_down and self.ema_cross_26_50.ma2_trend_down():
             return True
 
-        if self.ema_cross_12_26.cross_down:
+        if self.ema_cross_12_26.cross_down and self.ema_cross_12_26.ma2_trend_down():
             return True
 
-        if self.detector.peak_detect():
-            return True
+        #if self.detector.peak_detect():
+        #    return True
 
-        if self.tpv.peak_detected():
-            return True
+        #if self.tpv.peak_detected():
+        #    return True
 
         return False
