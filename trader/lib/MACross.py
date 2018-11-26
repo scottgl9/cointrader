@@ -3,7 +3,7 @@ from trader.indicator.EMA import EMA
 
 
 class MACross(object):
-    def __init__(self, ema_win1=12, ema_win2=26, scale=24, cross_timeout=0, indicator=None):
+    def __init__(self, ema_win1=12, ema_win2=26, scale=24, cross_window=10, cross_timeout=0, indicator=None):
         if not indicator:
             self.indicator = EMA
         else:
@@ -15,6 +15,7 @@ class MACross(object):
 
         # cross_timeout is how long after a cross that we reset the cross to false (0 means no timeout)
         self.cross_timeout = cross_timeout
+        self.cross_window = cross_window
         self.last_ts = 0
         self.last_value = 0
         self.cross_ts = 0
@@ -32,7 +33,7 @@ class MACross(object):
 
         self.ma1 = self.indicator(self.ema_win1, scale=self.scale)
         self.ma2 = self.indicator(self.ema_win2, scale=self.scale)
-        self.cross = Crossover2(window=10)
+        self.cross = Crossover2(window=self.cross_window)
 
     # ma1 and ma2 allow to pass in an indicator from another MACross
     # that is already being updated, so that we don't have to compute

@@ -117,8 +117,7 @@ class hybrid_signal_market_strategy(StrategyBase):
             return False
 
         if signal.sell_long_signal():
-            if (price - signal.buy_price) / signal.buy_price <= -0.1:
-                return True
+            return True
 
         if price < float(signal.buy_price):
             return False

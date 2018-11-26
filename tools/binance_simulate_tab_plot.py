@@ -325,9 +325,9 @@ if __name__ == '__main__':
 
     trades = trade_cache[trade_cache_name]
 
-    for key, value in trades.items():
-        if str(key).endswith("BNB"):
-            del trades[key]
+    #for key, value in trades.items():
+    #    if str(key).endswith("BNB"):
+    #        del trades[key]
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)

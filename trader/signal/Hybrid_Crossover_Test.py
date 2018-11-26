@@ -36,7 +36,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema50 = self.EMA(50, scale=24, lag_window=5)
         self.ema200 = self.EMA(200, scale=24, lag_window=5)
 
-        cross_timeout = 1000 * 1000
+        cross_timeout = 1000 * 3600
         self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
         self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=cross_timeout)
@@ -50,15 +50,6 @@ class Hybrid_Crossover_Test(SignalBase):
             self.timestamp = ts
 
         self.last_close = close
-
-        #self.dtwma_close.update(close, ts)
-        #self.dtwma_volume.update(volume, ts)
-
-        #if not self.dtwma_close.ready() or not self.dtwma_volume.ready():
-        #   return
-
-        #dtwma_close = self.dtwma_close.result
-        #dtwma_volume = self.dtwma_volume.result
 
         self.obv.update(close=close, volume=volume)
         self.obv_ema_cross_12_26.update(self.obv.result, ts)
@@ -105,7 +96,7 @@ class Hybrid_Crossover_Test(SignalBase):
                 return False
             return True
 
-        if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up:
+        if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.ma2_trend_up():
             if self.ema_cross_26_50.get_crossup_below() or self.obv_ema_cross_26_50.get_crossup_below():
                 return False
             if self.ema_cross_26_50.ma1_trend_down() and self.obv_ema_cross_26_50.ma2_trend_down():
@@ -123,6 +114,10 @@ class Hybrid_Crossover_Test(SignalBase):
     def sell_long_signal(self):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
+
+        if (self.last_close - self.buy_price) / self.buy_price >= -0.1:
+            return False
+
         if self.ema_cross_50_200.cross_down and self.ema_cross_50_200.ma2_trend_down():
             # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
             if (self.last_close - self.buy_price) / self.buy_price < -0.05:
@@ -152,6 +147,9 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_cross_12_26.cross_down and self.ema_cross_12_26.ma2_trend_down():
             return True
 
+        if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
+                self.ema_cross_26_50.ma2_trend_down()):
+            return True
         #if self.detector.peak_detect():
         #    return True
 
