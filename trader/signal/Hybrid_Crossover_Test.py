@@ -19,6 +19,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.signal_name = "Hybrid_Crossover_Test"
         self.disabled = False
         self.disabled_end_ts = 0
+        self.start_timestamp = 0
         self.last_close = 0
         #self.dtwma_close = DTWMA(30)
         #self.dtwma_volume = DTWMA(30)
@@ -49,6 +50,12 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.timestamp == 0:
             self.timestamp = ts
 
+            # wait for 1 hour of running before beginning to buy/sell
+            #self.disabled = True
+            #self.disabled_end_ts = self.timestamp + 1000 * 3600
+        else:
+            self.timestamp = ts
+
         self.last_close = close
 
         self.obv.update(close=close, volume=volume)
@@ -66,6 +73,10 @@ class Hybrid_Crossover_Test(SignalBase):
 
     def buy_signal(self):
         if self.disabled:
+            # disable trading until we have been running at least 1 hour
+            #if self.disabled_end_ts == 0:
+            #    self.disabled_end_ts = self.timestamp + 1000 * 3600
+
             if self.timestamp > self.disabled_end_ts:
                 self.disabled = False
                 self.disabled_end_ts = 0
@@ -126,7 +137,7 @@ class Hybrid_Crossover_Test(SignalBase):
             return True
 
         if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
-                self.ema_cross_26_50.ma2_trend_down()):
+                self.ema_cross_26_50.ma2_trend_down()) and self.obv_ema_cross_26_50.ma2_trend_down():
             # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
             if (self.last_close - self.buy_price) / self.buy_price < -0.05:
                 self.disabled = True
