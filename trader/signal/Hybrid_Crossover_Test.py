@@ -17,20 +17,24 @@ class Hybrid_Crossover_Test(SignalBase):
     def __init__(self):
         super(Hybrid_Crossover_Test, self).__init__()
         self.signal_name = "Hybrid_Crossover_Test"
-        self.dtwma_close = DTWMA(30)
-        self.dtwma_volume = DTWMA(30)
+        self.disabled = False
+        self.disabled_end_ts = 0
+        self.last_close = 0
+        #self.dtwma_close = DTWMA(30)
+        #self.dtwma_volume = DTWMA(30)
 
         self.tpv = TimePeakValley(reverse_secs=600, span_secs=3600)
         self.detector = PeakValleyDetect()
         self.obv = OBV()
-        self.obv_ema12 = EMA(12, scale=24)
-        self.obv_ema26 = EMA(26, scale=24, lag_window=5)
-        self.obv_ema50 = EMA(50, scale=24, lag_window=5)
-        self.ema12 = EMA(12, scale=24)
-        self.ema26 = EMA(26, scale=24, lag_window=5)
-        self.ema100 = ZLEMA(100, scale=24)
-        self.ema50 = EMA(50, scale=24, lag_window=5)
-        self.ema200 = EMA(200, scale=24, lag_window=5)
+        self.EMA = EMA
+        self.obv_ema12 = self.EMA(12, scale=24)
+        self.obv_ema26 = self.EMA(26, scale=24, lag_window=5)
+        self.obv_ema50 = self.EMA(50, scale=24, lag_window=5)
+        self.ema12 = self.EMA(12, scale=24)
+        self.ema26 = self.EMA(26, scale=24, lag_window=5)
+        #self.ema100 = ZLEMA(100, scale=24)
+        self.ema50 = self.EMA(50, scale=24, lag_window=5)
+        self.ema200 = self.EMA(200, scale=24, lag_window=5)
 
         cross_timeout = 1000 * 1000
         self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
@@ -44,6 +48,8 @@ class Hybrid_Crossover_Test(SignalBase):
     def pre_update(self, close, volume, ts):
         if self.timestamp == 0:
             self.timestamp = ts
+
+        self.last_close = close
 
         #self.dtwma_close.update(close, ts)
         #self.dtwma_volume.update(volume, ts)
@@ -68,6 +74,13 @@ class Hybrid_Crossover_Test(SignalBase):
         #self.detector.update(self.ema_cross_26_50.get_ma2_result())
 
     def buy_signal(self):
+        if self.disabled:
+            if self.timestamp > self.disabled_end_ts:
+                self.disabled = False
+                self.disabled_end_ts = 0
+            else:
+                return False
+
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
@@ -111,10 +124,18 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
         if self.ema_cross_50_200.cross_down and self.ema_cross_50_200.ma2_trend_down():
+            # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
+            if (self.last_close - self.buy_price) / self.buy_price < -0.05:
+                self.disabled = True
+                self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
             return True
 
         if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
                 self.ema_cross_26_50.ma2_trend_down()):
+            # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
+            if (self.last_close - self.buy_price) / self.buy_price < -0.05:
+                self.disabled = True
+                self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
             return True
 
         return False
