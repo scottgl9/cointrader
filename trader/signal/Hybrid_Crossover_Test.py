@@ -88,12 +88,12 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if (self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and
                 self.ema_cross_12_26.ma2_trend_up() and self.obv_ema_cross_12_26.ma2_trend_up()):
-            if self.ema_cross_12_26.get_pre_crossup_low_percent() >= 0.1:
+            if self.ema_cross_12_26.get_pre_crossup_low_percent() >= 0.5:
                 return True
 
         if (self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and
                 self.ema_cross_26_50.ma2_trend_up() and self.obv_ema_cross_26_50.ma2_trend_up()):
-            if self.ema_cross_26_50.get_pre_crossup_low_percent() >= 0.1:
+            if self.ema_cross_26_50.get_pre_crossup_low_percent() >= 0.5:
                 return True
 
         #if self.detector.valley_detect():
