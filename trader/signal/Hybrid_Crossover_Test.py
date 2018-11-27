@@ -88,11 +88,13 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if (self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and
                 self.ema_cross_12_26.ma2_trend_up() and self.obv_ema_cross_12_26.ma2_trend_up()):
-            return True
+            if self.ema_cross_12_26.get_pre_crossup_low_percent() >= 0.1:
+                return True
 
         if (self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and
                 self.ema_cross_26_50.ma2_trend_up() and self.obv_ema_cross_26_50.ma2_trend_up()):
-            return True
+            if self.ema_cross_26_50.get_pre_crossup_low_percent() >= 0.1:
+                return True
 
         #if self.detector.valley_detect():
         #    return True
@@ -130,13 +132,16 @@ class Hybrid_Crossover_Test(SignalBase):
         #if self.ema_cross_50_100.cross_down:
         #    return True
         if self.ema_cross_50_100.cross_down and self.ema_cross_50_100.ma2_trend_down():
-            return True
+            if self.ema_cross_50_100.get_pre_crossdown_high_percent() >= 0.1:
+                return True
 
         if self.ema_cross_26_50.cross_down and self.ema_cross_26_50.ma2_trend_down():
-            return True
+            if self.ema_cross_26_50.get_pre_crossdown_high_percent() >= 0.1:
+                return True
 
         if self.ema_cross_12_26.cross_down and self.ema_cross_12_26.ma2_trend_down():
-            return True
+            if self.ema_cross_12_26.get_pre_crossdown_high_percent() >= 0.1:
+                return True
 
         if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
                 self.ema_cross_26_50.ma2_trend_down()):

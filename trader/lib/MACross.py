@@ -189,3 +189,25 @@ class MACross(object):
         if self.cross_down_value < self.last_value:
             return True
         return False
+
+    def get_pre_crossup_low(self):
+        return self.pre_cross_up_min_value
+
+    def get_pre_crossup_high(self):
+        return self.pre_cross_up_max_value
+
+    def get_pre_crossdown_low(self):
+        return self.pre_cross_down_min_value
+
+    def get_pre_crossdown_high(self):
+        return self.pre_cross_down_max_value
+
+    def get_pre_crossup_low_percent(self):
+        if self.pre_cross_up_min_value == 0:
+            return 0
+        return 100.0 * (self.cross_up_value - self.pre_cross_up_min_value) / self.pre_cross_up_min_value
+
+    def get_pre_crossdown_high_percent(self):
+        if self.pre_cross_down_max_value == 0:
+            return 0
+        return 100.0 * (self.pre_cross_down_max_value - self.cross_down_value) / self.pre_cross_down_max_value
