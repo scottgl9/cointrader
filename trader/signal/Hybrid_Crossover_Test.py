@@ -78,32 +78,20 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        if self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up and self.ema_cross_26_50.ma2_trend_up():
-            #if self.ema_cross_50_100.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
-            #    return False
-            #if self.ema_cross_26_50.ma1_trend_down() and self.ema_cross_26_50.ma2_trend_down():
-            #    return False
+        if (self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up and
+                self.ema_cross_50_100.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
             return True
 
-        if self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up and self.ema_cross_12_26.ma2_trend_up():
-            #if self.ema_cross_12_26.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
-            #    return False
-            #if self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down():
-            #    return False
+        if (self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up and
+                self.ema_cross_12_26.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
             return True
 
-        if self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and self.ema_cross_12_26.ma2_trend_up():
-            #if self.ema_cross_12_26.get_crossup_below() or self.obv_ema_cross_12_26.get_crossup_below():
-            #    return False
-            #if self.obv_ema_cross_12_26.ma2_trend_down():
-            #    return False
+        if (self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and
+                self.ema_cross_12_26.ma2_trend_up() and self.obv_ema_cross_12_26.ma2_trend_up()):
             return True
 
-        if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.ma2_trend_up():
-            #if self.ema_cross_26_50.get_crossup_below() or self.obv_ema_cross_26_50.get_crossup_below():
-            #    return False
-            #if self.ema_cross_26_50.ma1_trend_down() and self.obv_ema_cross_26_50.ma2_trend_down():
-            #    return False
+        if (self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and
+                self.ema_cross_26_50.ma2_trend_up() and self.obv_ema_cross_26_50.ma2_trend_up()):
             return True
 
         #if self.detector.valley_detect():

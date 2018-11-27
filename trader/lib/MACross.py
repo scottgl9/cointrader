@@ -28,12 +28,35 @@ class MACross(object):
         self.last_cross_up_value = 0
         self.cross_down_value = 0
         self.last_cross_down_value = 0
+
+        self.pre_cross_up_min_value = 0
+        self.pre_cross_up_max_value = 0
+        self.post_cross_up_min_value = 0
+        self.post_cross_up_max_value = 0
+
+        self.pre_cross_down_min_value = 0
+        self.pre_cross_down_max_value = 0
+        self.post_cross_down_min_value = 0
+        self.post_cross_down_max_value = 0
+
         self.cross_up = False
         self.cross_down = False
 
         self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=lag_window)
         self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=lag_window)
         self.cross = Crossover2(window=self.cross_window)
+
+    def update_min_max_values(self, value, ts):
+        if self.cross_up:
+            if value > self.post_cross_up_max_value:
+                self.post_cross_up_max_value = value
+            if self.post_cross_up_min_value == 0 or value < self.post_cross_up_min_value:
+                self.post_cross_up_min_value = value
+        elif self.cross_down:
+            if value > self.post_cross_down_max_value:
+                self.post_cross_down_max_value = value
+            if self.post_cross_down_min_value == 0 or value < self.post_cross_down_min_value:
+                self.post_cross_down_min_value = value
 
     # ma1 and ma2 allow to pass in an indicator from another MACross
     # that is already being updated, so that we don't have to compute
@@ -61,6 +84,8 @@ class MACross(object):
         if ma1_result != 0 and ma2_result != 0:
             self.cross.update(ma1_result, ma2_result)
 
+        self.update_min_max_values(value, ts)
+
         if self.cross.crossup_detected():
             self.cross_up = True
             self.cross_down = False
@@ -70,6 +95,10 @@ class MACross(object):
             self.cross_up_ts = ts
             self.last_cross_up_value = self.cross_up_value
             self.cross_up_value = value
+            self.pre_cross_up_min_value = self.post_cross_up_min_value
+            self.pre_cross_up_max_value = self.post_cross_up_max_value
+            self.post_cross_up_min_value = 0
+            self.post_cross_up_max_value = 0
         elif self.cross.crossdown_detected():
             self.cross_up = False
             self.cross_down = True
@@ -79,6 +108,10 @@ class MACross(object):
             self.cross_down_ts = ts
             self.last_cross_down_value = self.cross_down_value
             self.cross_down_value = value
+            self.pre_cross_down_min_value = self.post_cross_down_min_value
+            self.pre_cross_down_max_value = self.post_cross_down_max_value
+            self.post_cross_down_min_value = 0
+            self.post_cross_down_max_value = 0
 
         self.last_ts = ts
         self.last_value = value
@@ -91,6 +124,7 @@ class MACross(object):
             elif self.cross_down:
                 if (self.last_ts - self.cross_down_ts) > self.cross_timeout:
                     self.cross_down = False
+
 
     def get_ma1_result(self):
         return self.ma1.result
