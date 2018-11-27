@@ -42,14 +42,21 @@ class MACross(object):
         if not ma1:
             self.ma1.update(value)
             ma1_result = self.ma1.result
+            ma1_ready = self.ma1.ready()
         else:
             ma1_result = ma1.result
+            ma1_ready = ma1.ready()
 
         if not ma2:
             self.ma2.update(value)
             ma2_result = self.ma2.result
+            ma2_ready = self.ma2.ready()
         else:
             ma2_result = ma2.result
+            ma2_ready = ma2.ready()
+
+        if not ma1_ready or not ma2_ready:
+            return
 
         if ma1_result != 0 and ma2_result != 0:
             self.cross.update(ma1_result, ma2_result)

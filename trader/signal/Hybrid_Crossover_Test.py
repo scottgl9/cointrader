@@ -28,14 +28,6 @@ class Hybrid_Crossover_Test(SignalBase):
         self.detector = PeakValleyDetect()
         self.obv = OBV()
         self.EMA = EMA
-        self.obv_ema12 = self.EMA(12, scale=24)
-        self.obv_ema26 = self.EMA(26, scale=24, lag_window=5)
-        self.obv_ema50 = self.EMA(50, scale=24, lag_window=5)
-        self.ema12 = self.EMA(12, scale=24)
-        self.ema26 = self.EMA(26, scale=24, lag_window=5)
-        #self.ema100 = ZLEMA(100, scale=24)
-        self.ema50 = self.EMA(50, scale=24, lag_window=5)
-        self.ema200 = self.EMA(200, scale=24, lag_window=5)
 
         cross_timeout = 1000 * 3600
         self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
@@ -87,31 +79,31 @@ class Hybrid_Crossover_Test(SignalBase):
             return False
 
         if self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up and self.ema_cross_26_50.ma2_trend_up():
-            if self.ema_cross_50_100.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
-                return False
-            if self.ema_cross_26_50.ma1_trend_down() and self.ema_cross_26_50.ma2_trend_down():
-                return False
+            #if self.ema_cross_50_100.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
+            #    return False
+            #if self.ema_cross_26_50.ma1_trend_down() and self.ema_cross_26_50.ma2_trend_down():
+            #    return False
             return True
 
         if self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up and self.ema_cross_12_26.ma2_trend_up():
-            if self.ema_cross_12_26.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
-                return False
-            if self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down():
-                return False
+            #if self.ema_cross_12_26.get_crossup_below() or self.ema_cross_26_50.get_crossup_below():
+            #    return False
+            #if self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down():
+            #    return False
             return True
 
         if self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and self.ema_cross_12_26.ma2_trend_up():
-            if self.ema_cross_12_26.get_crossup_below() or self.obv_ema_cross_12_26.get_crossup_below():
-                return False
-            if self.obv_ema_cross_12_26.ma2_trend_down():
-                return False
+            #if self.ema_cross_12_26.get_crossup_below() or self.obv_ema_cross_12_26.get_crossup_below():
+            #    return False
+            #if self.obv_ema_cross_12_26.ma2_trend_down():
+            #    return False
             return True
 
         if self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.ma2_trend_up():
-            if self.ema_cross_26_50.get_crossup_below() or self.obv_ema_cross_26_50.get_crossup_below():
-                return False
-            if self.ema_cross_26_50.ma1_trend_down() and self.obv_ema_cross_26_50.ma2_trend_down():
-                return False
+            #if self.ema_cross_26_50.get_crossup_below() or self.obv_ema_cross_26_50.get_crossup_below():
+            #    return False
+            #if self.ema_cross_26_50.ma1_trend_down() and self.obv_ema_cross_26_50.ma2_trend_down():
+            #    return False
             return True
 
         #if self.detector.valley_detect():

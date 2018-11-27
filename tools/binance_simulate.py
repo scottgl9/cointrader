@@ -158,7 +158,7 @@ if __name__ == '__main__':
                         help='name of strategy to use')
 
     parser.add_argument('-g', action='store', dest='signal_name',
-                        default='Hybrid_Crossover',
+                        default='Hybrid_Crossover_Test',
                         help='name of signal to use')
 
     results = parser.parse_args()

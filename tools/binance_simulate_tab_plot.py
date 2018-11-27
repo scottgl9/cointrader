@@ -195,17 +195,19 @@ class mainWindow(QtGui.QTabWidget):
         ema12 = EMA(12, scale=24)
         ema26 = EMA(26, scale=24)
         ema50 = EMA(50, scale=24)
+        ema200 = EMA(200, scale=24)
         ema12_values = []
         ema26_values = []
         ema50_values = []
+        ema200_values = []
 
 
         dtwma = DTWMA()
         obv = OBV()
         obv_values = []
-        obv_ema12 = ZLEMA(12, scale=24)
-        obv_ema26 = ZLEMA(26, scale=24)
-        obv_ema50 = ZLEMA(50, scale=24)
+        obv_ema12 = EMA(12, scale=24)
+        obv_ema26 = EMA(26, scale=24)
+        obv_ema50 = EMA(50, scale=24)
         obv_ema12_values = []
         obv_ema26_values = []
         obv_ema50_values = []
@@ -235,6 +237,8 @@ class mainWindow(QtGui.QTabWidget):
             ema26_values.append(ema26.result)
             ema50.update(price)
             ema50_values.append(ema50.result)
+            ema200.update(price)
+            ema200_values.append(ema200.result)
             macd.update(price)
             if macd.diff != 0:
                 macd_diff_values.append(macd.diff)
@@ -245,6 +249,7 @@ class mainWindow(QtGui.QTabWidget):
         ax.plot(ema12_values)
         ax.plot(ema26_values)
         ax.plot(ema50_values)
+        ax.plot(ema200_values)
         ax2 = self.tabs[name].figure.add_subplot(312)
         ax2.plot(macd_diff_values)
         ax2.plot(macd_signal_values)
@@ -266,7 +271,7 @@ if __name__ == '__main__':
                         help='name of strategy to use')
 
     parser.add_argument('-g', action='store', dest='signal_name',
-                        default='Hybrid_Crossover',
+                        default='Hybrid_Crossover_Test',
                         help='name of signal to use')
     results = parser.parse_args()
 

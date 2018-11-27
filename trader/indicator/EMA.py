@@ -26,6 +26,9 @@ class EMA:
         if self.slope_window != 0:
             self.slope = SLOPE(window=self.slope_window)
 
+    def ready(self):
+        return self.count == self.weight
+
     def update(self, price):
         if self.count < self.weight:
             self.result = self.sma.update(float(price))
@@ -60,4 +63,3 @@ class EMA:
 
     def length(self):
         return self.count
-
