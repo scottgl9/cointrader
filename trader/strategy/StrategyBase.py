@@ -24,7 +24,7 @@ from trader.signal.Slope_Crossover import Slope_Crossover
 from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.TSV_Signal import TSV_Signal
-
+from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
 
 class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
@@ -51,6 +51,7 @@ class StrategyBase(object):
     @staticmethod
     def select_signal_name(name):
         if name =="Bollinger_Bands_Signal": return Bollinger_Bands_Signal()
+        elif name == "BTC_USDT_Signal": return BTC_USDT_Signal()
         elif name == "Currency_Long_EMA": return Currency_EMA_Long()
         elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal()
         elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover()

@@ -28,6 +28,9 @@ class hybrid_signal_market_strategy(StrategyBase):
                 signal = StrategyBase.select_signal_name(name)
                 if signal.mm_enabled:
                     self.mm_enabled = True
+                # don't add global signal if global_filter doesn't match ticker_id
+                if signal.global_signal and signal.global_filter != self.ticker_id:
+                    continue
                 self.signal_handler.add(signal)
         else:
             self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover"))
@@ -215,8 +218,8 @@ class hybrid_signal_market_strategy(StrategyBase):
             self.msg_handler.clear_read()
 
         for signal in self.signal_handler.get_handlers():
-            if signal.is_global():
-                pass
+            if signal.is_global() and signal.global_filter == kline.symbol:
+                signal.pre_update(kline.close, kline.volume, kline.ts)
             else:
                 self.run_update_signal(signal, close)
 
