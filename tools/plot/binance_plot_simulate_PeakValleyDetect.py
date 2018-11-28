@@ -45,12 +45,10 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    dtwma = DTWMA(30)
-    dtwma_values = []
-
     obv = OBV()
     ema12_values = []
     ema26_values = []
+    ema50_values = []
     ema100_values = []
     ema200_values = []
     close_prices = []
@@ -82,6 +80,7 @@ def simulate(conn, client, base, currency, type="channel"):
         ema12_values.append(ema12_value)
         ema26_values.append(ema26.update(close))
         ema50.update(close)
+        ema50_values.append(ema50.result)
         ema100_value = ema100.update(close)
         ema100_values.append(ema100_value)
         ema200_value = ema200.update(close)
@@ -114,9 +113,10 @@ def simulate(conn, client, base, currency, type="channel"):
     #plt.plot(lstsqs_x_values, support2_values)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema100_values, label='EMA100')
-    fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    fig3, = plt.plot(ema50_values, label='EMA50')
+    fig4, = plt.plot(ema100_values, label='EMA100')
+    fig5, = plt.plot(ema200_values, label='EMA200')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4, fig5])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')

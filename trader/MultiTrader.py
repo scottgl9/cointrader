@@ -185,6 +185,8 @@ class MultiTrader(object):
         if (self.current_ts - self.last_ts) > self.check_ts_min:
             self.accnt.get_account_balances()
             self.last_ts = self.current_ts
+            timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
+            self.logger.info("MultiTrader running {}".format(timestr))
 
     def update_tickers(self, tickers):
         self.tickers = tickers
