@@ -34,9 +34,11 @@ def simulate(conn, client, strategy, signal_name, logger):
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
+    signal_names = [signal_name]
+
     multitrader = MultiTrader(client,
                               strategy,
-                              signal_names=[signal_name],
+                              signal_names=signal_names,
                               assets_info=assets_info,
                               volumes=None,
                               simulate=True,
@@ -72,8 +74,14 @@ def simulate(conn, client, strategy, signal_name, logger):
                 total_usd = float(msg['o']) * total_btc
                 print("Initial BTC={}".format(total_btc))
 
+        # if we are using BTC_USDT_Signal, make sure BTCUSDT get processed as well
+        if "BTC_USDT_Signal" not in signal_names:
+            disable_usdt = True
+        else:
+            disable_usdt = False
+
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
-        if msg['s'].endswith("USDT"):
+        if disable_usdt and msg['s'].endswith("USDT"):
             minqty = 20.0
             balance = accnt.get_asset_balance("USDT")["balance"]
             if balance < minqty:

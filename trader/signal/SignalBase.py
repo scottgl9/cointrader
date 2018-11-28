@@ -11,6 +11,10 @@ class SignalBase(object):
         self.sell_type = SigType.SIGNAL_NONE
         self.mm_enabled = False
 
+        # settings for global signals
+        self.global_signal = False
+        self.global_filter = "*"
+
         self.timestamp = 0
         self.buy_price = 0.0
         self.buy_size = 0.0
@@ -37,6 +41,9 @@ class SignalBase(object):
 
     def set_id(self, id):
         self.id = id
+
+    def is_global(self):
+        return self.global_signal
 
     def get_symbol(self):
         return self.symbol

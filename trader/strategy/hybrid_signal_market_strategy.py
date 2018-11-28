@@ -215,7 +215,10 @@ class hybrid_signal_market_strategy(StrategyBase):
             self.msg_handler.clear_read()
 
         for signal in self.signal_handler.get_handlers():
-            self.run_update_signal(signal, close)
+            if signal.is_global():
+                pass
+            else:
+                self.run_update_signal(signal, close)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
