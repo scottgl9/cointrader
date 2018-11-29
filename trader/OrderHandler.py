@@ -18,6 +18,7 @@ class OrderHandler(object):
         self.store_trades = store_trades
         self.trades = {}
         self.counters = {}
+        self.buy_disabled = False
 
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
@@ -103,10 +104,12 @@ class OrderHandler(object):
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_BUY_DISABLE:
+                    self.buy_disabled = True
                     self.logger.info("BUY_DISABLE")
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_BUY_ENABLE:
+                    self.buy_disabled = False
                     self.logger.info("BUY_ENABLE")
                     msg.mark_read()
                     received = True
@@ -283,6 +286,10 @@ class OrderHandler(object):
     # u'qty': u'0.04000000'}], u'symbol': u'BNBETH', u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1536316266040, u'type': u'MARKET', u'price': u'0.00000000',
     #  u'executedQty': u'0.24000000', u'cummulativeQuoteQty': u'0.01083436'}
     def place_buy_market_order(self, ticker_id, price, size, sig_id):
+        if self.buy_disabled:
+            self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
+            return
+
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
         if not self.accnt.simulate:
             self.logger.info(result)

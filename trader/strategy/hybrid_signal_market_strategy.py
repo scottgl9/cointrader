@@ -195,9 +195,10 @@ class hybrid_signal_market_strategy(StrategyBase):
                 if msg and msg.cmd == Message.MSG_BUY_FAILED:
                     id = msg.sig_id
                     signal = self.signal_handler.get_handler(id=id)
-                    self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
-                                                                                 msg.price,
-                                                                                 msg.size))
+                    if not self.accnt.simulate:
+                        self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
+                                                                                     msg.price,
+                                                                                     msg.size))
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
                     signal.buy_price = 0.0

@@ -11,18 +11,21 @@ class BTC_USDT_Signal(SignalBase):
         self.global_signal = True
         self.global_filter = "BTCUSDT"
         self.ema_cross_250_500 = MACross(250, 500, scale=24, lag_window=5)
+        self.timestamp = 0
         self.disable_buy = False
         self.disable_sell = False
         self.enable_buy = True
         self.enable_sell = False
 
     def pre_update(self, close, volume, ts):
+        self.timestamp = ts
         self.ema_cross_250_500.update(close, ts)
+
         if (not self.disable_buy and self.ema_cross_250_500.cross_down and self.ema_cross_250_500.ma1_trend_down() and
-                self.ema_cross_250_500.ma2_trend_down()):
-            self.disable_buy = True
-            self.enable_buy = False
-        elif (not self.enable_buy and self.ema_cross_250_500.cross_up and self.ema_cross_250_500.ma1_trend_up() and
-                self.ema_cross_250_500.ma2_trend_up()):
+                self.ema_cross_250_500.ma2_trend_down()) and self.ema_cross_250_500.ma2_trend_down():
+            if (self.timestamp - self.ema_cross_250_500.cross_ts) > 1000 * 3600:
+                self.disable_buy = True
+                self.enable_buy = False
+        elif (not self.enable_buy and self.ema_cross_250_500.cross_up):
             self.disable_buy = False
             self.enable_buy = True
