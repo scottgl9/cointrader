@@ -41,14 +41,15 @@ def simulate(conn, client, base, currency, type="channel"):
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
-    ema50 = EMA(100, scale=24, lag_window=5)
-    zlema50 = ZLEMA(50, scale=24)
-    zlema50_values = []
-    ema200 = EMA(200, scale=24, lag_window=5)
+    ema50 = EMA(50, scale=24)
+    ema100 = EMA(100, scale=24)
+    ema200 = EMA(200, scale=24)
+    ema300 = EMA(300, scale=24)
+    ema500 = EMA(500, scale=24)
     hma = HMA(window=26)
-    obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24)
-    obv_ema26 = DZLEMA(26, scale=24) #EMA(26, scale=24)
-    obv_ema50 = DZLEMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
+    obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
+    obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
+    obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
     fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
@@ -68,7 +69,10 @@ def simulate(conn, client, base, currency, type="channel"):
     ema12_values = []
     ema26_values = []
     ema50_values = []
+    ema100_values = []
     ema200_values = []
+    ema300_values = []
+    ema500_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -101,12 +105,14 @@ def simulate(conn, client, base, currency, type="channel"):
         ema26_values.append(ema26.update(close))
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
-        ema200_value = ema200.update(close)
-        ema200_values.append(ema200_value)
-
-        zlema50.update(close)
-        zlema50_values.append(zlema50.result)
-
+        ema100.update(close)
+        ema100_values.append(ema100.result)
+        ema200.update(close)
+        ema200_values.append(ema200.result)
+        ema300.update(close)
+        ema300_values.append(ema300.result)
+        ema500.update(close)
+        ema500_values.append(ema500.result)
 
         value = filter.update(close)
         if value != 0:
@@ -139,12 +145,11 @@ def simulate(conn, client, base, currency, type="channel"):
     #plt.plot(filter_x_values, filter_values)
     #plt.plot(lstsqs_x_values, support1_values)
     #plt.plot(lstsqs_x_values, support2_values)
-    fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
-    fig4, = plt.plot(ema200_values, label='EMA200')
-    fig5, = plt.plot(zlema50_values, label='ZLEMA50')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4, fig5])
+    #fig1, = plt.plot(ema12_values, label='EMA12')
+    fig2, = plt.plot(ema300_values, label='EMA300')
+    fig3, = plt.plot(ema500_values, label='EMA500')
+    #fig4, = plt.plot(ema200_values, label='EMA200')
+    plt.legend(handles=[symprice, fig2, fig3])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')
