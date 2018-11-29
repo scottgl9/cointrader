@@ -18,6 +18,10 @@ class Message(object):
     MSG_SELL_UPDATE = 15
     MSG_BUY_CANCEL = 16
     MSG_SELL_CANCEL = 17
+    MSG_BUY_DISABLE = 18
+    MSG_SELL_DISABLE = 19
+    MSG_BUY_ENABLE = 20
+    MSG_SELL_ENABLE = 21
 
     def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0):
         self.src_id = src_id

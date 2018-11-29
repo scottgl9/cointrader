@@ -58,6 +58,8 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.delayed_sell_msg = None
         self.update_buy_price = False
         self.update_sell_price = False
+        self.enable_buy = False
+        self.disable_buy = False
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -220,6 +222,12 @@ class hybrid_signal_market_strategy(StrategyBase):
         for signal in self.signal_handler.get_handlers():
             if signal.is_global() and signal.global_filter == kline.symbol:
                 signal.pre_update(kline.close, kline.volume, kline.ts)
+                if signal.enable_buy and not self.enable_buy:
+                    self.msg_handler.buy_disable(self.ticker_id)
+                elif signal.disable_buy and not self.disable_buy:
+                    self.msg_handler.buy_enable(self.ticker_id)
+                self.disable_buy = signal.disable_buy
+                self.enable_buy = signal.enable_buy
             else:
                 self.run_update_signal(signal, close)
 

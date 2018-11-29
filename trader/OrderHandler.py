@@ -102,6 +102,14 @@ class OrderHandler(object):
                     self.replace_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
                     msg.mark_read()
                     received = True
+                elif msg.cmd == Message.MSG_BUY_DISABLE:
+                    self.logger.info("BUY_DISABLE")
+                    msg.mark_read()
+                    received = True
+                elif msg.cmd == Message.MSG_BUY_ENABLE:
+                    self.logger.info("BUY_ENABLE")
+                    msg.mark_read()
+                    received = True
             self.msg_handler.clear_read()
 
         return received

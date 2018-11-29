@@ -199,6 +199,24 @@ class MessageHandler(object):
                          size=size,
                          ts=ts)
 
+    def buy_disable(self, ticker_id, sig_id=0, ts=0):
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_BUY_DISABLE,
+                         sig_id=sig_id,
+                         price=0,
+                         size=0,
+                         ts=ts)
+
+    def buy_enable(self, ticker_id, sig_id=0, ts=0):
+        self.add_message(src_id=ticker_id,
+                         dst_id=Message.ID_MULTI,
+                         cmd=Message.MSG_BUY_ENABLE,
+                         sig_id=sig_id,
+                         price=0,
+                         size=0,
+                         ts=ts)
+
     def sell_update(self, ticker_id, price, size, buy_price, sig_id=0, ts=0):
         self.add_message(src_id=ticker_id,
                          dst_id=Message.ID_ROOT,
