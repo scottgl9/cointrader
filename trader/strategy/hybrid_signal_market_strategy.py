@@ -224,9 +224,9 @@ class hybrid_signal_market_strategy(StrategyBase):
             if signal.is_global() and signal.global_filter == kline.symbol:
                 signal.pre_update(kline.close, kline.volume, kline.ts)
                 if signal.enable_buy and not self.enable_buy:
-                    self.msg_handler.buy_disable(self.ticker_id)
-                elif signal.disable_buy and not self.disable_buy:
                     self.msg_handler.buy_enable(self.ticker_id)
+                elif signal.disable_buy and not self.disable_buy:
+                    self.msg_handler.buy_disable(self.ticker_id)
                 self.disable_buy = signal.disable_buy
                 self.enable_buy = signal.enable_buy
             else:
