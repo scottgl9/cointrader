@@ -1,15 +1,19 @@
 # Given a specified time segment, only keep track of newest values no older than the set time segment
 
+
 class TimeSegmentValues(object):
     def __init__(self, seconds, value_smoother=None, percent_smoother=None):
         self.seconds = seconds
-        self.time_values = []
+        self.seconds_ts = 1000 * self.seconds
+        #self.time_values = []
+        self.values = []
+        self.timestamps = []
         self.full = False
         self.value_smoother = value_smoother
         self.percent_smoother = percent_smoother
 
     def empty(self):
-        if len(self.time_values) == 0:
+        if len(self.values) == 0:
             return True
         return False
 
@@ -19,35 +23,37 @@ class TimeSegmentValues(object):
     def update(self, value, ts):
         if self.value_smoother:
             svalue = self.value_smoother.update(value)
-            self.time_values.append(TimeValue(svalue, ts))
+            #self.time_values.append(TimeValue(svalue, ts))
+            self.values.append(svalue)
+            self.timestamps.append(ts)
         else:
-            self.time_values.append(TimeValue(value, ts))
+            self.values.append(value)
+            self.timestamps.append(ts)
+            #self.time_values.append(TimeValue(value, ts))
 
-        while (ts - self.time_values[0].ts) > 1000 * self.seconds:
-            self.time_values = self.time_values[1:]
+        #while (ts - self.time_values[0].ts) > 1000 * self.seconds:
+        while (ts - self.timestamps[0] > self.seconds_ts):
+            #self.time_values = self.time_values[1:]
+            self.timestamps = self.timestamps[1:]
+            self.values = self.values[1:]
             if not self.full:
                 self.full = True
 
     def values(self):
-        values = []
-        for tv in self.time_values:
-            values.append(tv.value)
-        return values
+        return self.values
 
     def value_count(self):
-        return len(self.time_values)
+        return len(self.values)
 
     def first_value(self):
         if self.empty():
             return 0
-
-        return self.time_values[0].value
+        return self.values[0]
 
     def last_value(self):
         if self.empty():
             return 0
-
-        return self.time_values[-1].value
+        return self.values[-1]
 
     def percent_change(self):
         if self.empty():
@@ -64,7 +70,7 @@ class TimeSegmentValues(object):
 
         return result
 
-class TimeValue(object):
-    def __init__(self, value=0, ts=0):
-        self.value = value
-        self.ts = ts
+#class TimeValue(object):
+#    def __init__(self, value=0, ts=0):
+#        self.value = value
+#        self.ts = ts
