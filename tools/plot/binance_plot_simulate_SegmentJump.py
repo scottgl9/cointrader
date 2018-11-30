@@ -44,6 +44,7 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema50_values = []
 
     tsj = SegmentJump(multiplier=10)
+    tsj_values = []
 
     obv = OBV()
     ema12_values = []
@@ -83,11 +84,13 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        tsj.update(ema26.result, ts)
-        if tsj.up_detected():
-            valleys.append(i)
-        elif tsj.down_detected():
-            peaks.append(i)
+        tsj_values.append(tsj.update(ema26.result, ts))
+
+
+        #if tsj.up_detected():
+        #    valleys.append(i)
+        #elif tsj.down_detected():
+        #    peaks.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -110,10 +113,11 @@ def simulate(conn, client, base, currency, type="channel"):
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    fig21, = plt.plot(obv_ema12_values, label='OBV12')
-    fig22, = plt.plot(obv_ema26_values, label='OBV26')
-    fig23, = plt.plot(obv_ema50_values, label='OBV50')
-    plt.legend(handles=[fig21, fig22, fig23])
+    plt.plot(tsj_values)
+    #fig21, = plt.plot(obv_ema12_values, label='OBV12')
+    #fig22, = plt.plot(obv_ema26_values, label='OBV26')
+    #fig23, = plt.plot(obv_ema50_values, label='OBV50')
+    #plt.legend(handles=[fig21, fig22, fig23])
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()
