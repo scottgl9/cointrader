@@ -2,8 +2,10 @@
 
 
 class TimeSegmentValues(object):
-    def __init__(self, seconds, value_smoother=None, percent_smoother=None):
+    def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None):
         self.seconds = seconds
+        if minutes != 0:
+            self.seconds += minutes * 60
         self.seconds_ts = 1000 * self.seconds
         #self.time_values = []
         self.values = []
@@ -39,7 +41,13 @@ class TimeSegmentValues(object):
             if not self.full:
                 self.full = True
 
-    def values(self):
+    def min(self):
+        return min(self.values)
+
+    def max(self):
+        return max(self.values)
+
+    def get_values(self):
         return self.values
 
     def value_count(self):
@@ -54,6 +62,11 @@ class TimeSegmentValues(object):
         if self.empty():
             return 0
         return self.values[-1]
+
+    def diff(self):
+        if self.empty():
+            return 0
+        return self.values[-1] - self.values[0]
 
     def percent_change(self):
         if self.empty():
