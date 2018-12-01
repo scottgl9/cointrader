@@ -27,9 +27,19 @@ def simulate(conn, strategy, signal_name, logger):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
-    client = Client(MY_API_KEY, MY_API_SECRET)
-    assets_info = get_info_all_assets(client)
-    assets_details = get_detail_all_assets(client)
+    if not os.path.exists("asset_info.json") or not os.path.exists("asset_detail.json"):
+        client = Client(MY_API_KEY, MY_API_SECRET)
+        assets_info = get_info_all_assets(client)
+        with open('asset_info.json', 'w') as f:
+            json.dump(assets_info, f)
+
+        assets_details = get_detail_all_assets(client)
+        with open('asset_detail.json', 'w') as f:
+            json.dump(assets_info, f)
+    else:
+        client = None
+        assets_info = json.loads(open('asset_info.json').read())
+        assets_details = json.loads(open('asset_detail.json').read())
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
