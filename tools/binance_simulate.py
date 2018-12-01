@@ -35,7 +35,7 @@ def simulate(conn, strategy, signal_name, logger):
 
         assets_details = get_detail_all_assets(client)
         with open('asset_detail.json', 'w') as f:
-            json.dump(assets_info, f)
+            json.dump(assets_details, f)
     else:
         client = None
         assets_info = json.loads(open('asset_info.json').read())
