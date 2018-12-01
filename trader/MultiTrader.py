@@ -26,8 +26,8 @@ def split_symbol(symbol):
 # handle incoming websocket messages for all symbols, and create new tradepairs
 # for those that do not yet exist
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None, volumes=None,
-                 simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
+    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None, asset_detail=None,
+                 volumes=None, simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
@@ -39,6 +39,7 @@ class MultiTrader(object):
         else:
             self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)
         self.assets_info = assets_info
+        self.asset_detail = asset_detail
         self.volumes = volumes
         self.tickers = None
         self.msg_handler = MessageHandler()
@@ -86,7 +87,7 @@ class MultiTrader(object):
 
         # if an asset has deposit disabled, means its probably suspended
         # or de-listed so DO NOT trade this coin
-        if self.accnt.deposit_asset_disabled(base_name):
+        if self.accnt.deposit_asset_disabled(base_name, self.asset_detail):
             return None
 
         if symbol in self.assets_info.keys():

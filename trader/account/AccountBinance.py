@@ -35,7 +35,7 @@ class AccountBinance(AccountBase):
 
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
-        self.asset_info_list = None
+        self.asset_detail_list = None
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
@@ -81,28 +81,28 @@ class AccountBinance(AccountBase):
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
 
-    def get_asset_status(self, name=None, asset_info_list=None):
-        if asset_info_list:
-            result = asset_info_list
+    def get_asset_status(self, name=None, asset_detail_list=None):
+        if asset_detail_list:
+            result = asset_detail_list
             if 'assetDetail' in result.keys():
-                self.asset_info_list = result['assetDetail']
+                self.asset_detail_list = result['assetDetail']
             else:
-                self.asset_info_list = result
+                self.asset_detail_list = result
 
-        if not self.asset_info_list:
+        if not self.asset_detail_list:
             result = self.client.get_asset_details()
             if 'assetDetail' in result.keys():
-                self.asset_info_list = result['assetDetail']
+                self.asset_detail_list = result['assetDetail']
             else:
-                self.asset_info_list = result
+                self.asset_detail_list = result
 
-        if name and name in self.asset_info_list.keys():
-            return self.asset_info_list[name]
+        if name and name in self.asset_detail_list.keys():
+            return self.asset_detail_list[name]
 
         return None
 
-    def deposit_asset_disabled(self, name, asset_info_list=None):
-        status = self.get_asset_status(name, asset_info_list)
+    def deposit_asset_disabled(self, name, asset_detail_list=None):
+        status = self.get_asset_status(name, asset_detail_list)
         if status and 'depositStatus' in status:
             return not status['depositStatus']
         return False

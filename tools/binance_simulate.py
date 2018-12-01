@@ -29,6 +29,7 @@ def simulate(conn, strategy, signal_name, logger):
 
     client = Client(MY_API_KEY, MY_API_SECRET)
     assets_info = get_info_all_assets(client)
+    assets_details = get_detail_all_assets(client)
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
@@ -42,6 +43,7 @@ def simulate(conn, strategy, signal_name, logger):
                               strategy,
                               signal_names=signal_names,
                               assets_info=assets_info,
+                              asset_detail=assets_details,
                               volumes=None,
                               simulate=True,
                               accnt=accnt,
@@ -119,6 +121,11 @@ def simulate(conn, strategy, signal_name, logger):
 
     return multitrader.get_stored_trades()
 
+
+def get_detail_all_assets(client):
+    return client.get_asset_details()
+
+
 def get_info_all_assets(client):
     assets = {}
     for key, value in client.get_exchange_info().items():
@@ -134,6 +141,7 @@ def get_info_all_assets(client):
                     tickSize = filter['tickSize']
             assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
     return assets
+
 
 #ef get_asset_balances(client):
 #    balances = {}
