@@ -81,7 +81,14 @@ class AccountBinance(AccountBase):
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
 
-    def get_asset_status(self, name=None):
+    def get_asset_status(self, name=None, asset_info_list=None):
+        if asset_info_list:
+            result = asset_info_list
+            if 'assetDetail' in result.keys():
+                self.asset_info_list = result['assetDetail']
+            else:
+                self.asset_info_list = result
+
         if not self.asset_info_list:
             result = self.client.get_asset_details()
             if 'assetDetail' in result.keys():
@@ -94,10 +101,10 @@ class AccountBinance(AccountBase):
 
         return None
 
-    def deposit_asset_disabled(self, name):
-        status = self.get_asset_status(name)
+    def deposit_asset_disabled(self, name, asset_info_list=None):
+        status = self.get_asset_status(name, asset_info_list)
         if status and 'depositStatus' in status:
-            return (status['depositStatus'] == False)
+            return not status['depositStatus']
         return False
 
     def get_deposit_address(self, name=None):

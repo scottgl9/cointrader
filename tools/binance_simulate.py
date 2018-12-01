@@ -23,18 +23,20 @@ import logging
 import json
 
 
-def simulate(conn, client, strategy, signal_name, logger):
+def simulate(conn, strategy, signal_name, logger):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
+    client = Client(MY_API_KEY, MY_API_SECRET)
     assets_info = get_info_all_assets(client)
+
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
     accnt.update_asset_balance('BTC', 0.06, 0.06)
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
-    signal_names = [signal_name, "BTC_USDT_Signal"]
+    signal_names = [signal_name] #, "BTC_USDT_Signal"]
 
     multitrader = MultiTrader(client,
                               strategy,
@@ -133,27 +135,27 @@ def get_info_all_assets(client):
             assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
     return assets
 
-def get_asset_balances(client):
-    balances = {}
-    for accnt in client.get_account()['balances']:
-        if float(accnt['free']) == 0.0 and float(accnt['locked']) == 0.0:
-            continue
+#ef get_asset_balances(client):
+#    balances = {}
+#    for accnt in client.get_account()['balances']:
+#        if float(accnt['free']) == 0.0 and float(accnt['locked']) == 0.0:
+#            continue
+#
+#        balances[accnt['asset']] = float(accnt['free']) + float(accnt['locked'])
+#    return balances
 
-        balances[accnt['asset']] = float(accnt['free']) + float(accnt['locked'])
-    return balances
-
-def filter_assets_by_minqty(assets_info, balances):
-    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
-    result = {}
-    for name, balance in balances.items():
-        for currency in currencies:
-            symbol = "{}{}".format(name, currency)
-            if symbol not in assets_info.keys(): continue
-
-            minQty = float(assets_info[symbol]['minQty'])
-            if float(balance) >= minQty:
-                result[name] = balance
-    return result
+#def filter_assets_by_minqty(assets_info, balances):
+#    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
+#    result = {}
+#    for name, balance in balances.items():
+#        for currency in currencies:
+#            symbol = "{}{}".format(name, currency)
+#            if symbol not in assets_info.keys(): continue
+#
+#            minQty = float(assets_info[symbol]['minQty'])
+#            if float(balance) >= minQty:
+#                result[name] = balance
+#    return result
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -174,16 +176,15 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
-    fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "simulate"))
-    fileHandler.setFormatter(logFormatter)
-    logger.addHandler(fileHandler)
+    #fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "simulate"))
+    #fileHandler.setFormatter(logFormatter)
+    #logger.addHandler(fileHandler)
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.DEBUG)
 
-    client = Client(MY_API_KEY, MY_API_SECRET)
     conn = sqlite3.connect(results.filename)
 
     # start the Web API
@@ -202,11 +203,10 @@ if __name__ == '__main__':
         with open(trade_cache_filename, "r") as f:
             trade_cache = json.loads(str(f.read()))
 
-
     logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
 
     try:
-        trades = simulate(conn, client, results.strategy, results.signal_name, logger)
+        trades = simulate(conn, results.strategy, results.signal_name, logger)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
