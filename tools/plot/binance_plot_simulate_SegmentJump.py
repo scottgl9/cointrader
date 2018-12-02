@@ -43,7 +43,7 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    tsj = SegmentJump(multiplier=10)
+    tsj = SegmentJump(tsv1_minutes=1, tsv2_minutes=20, multiplier=2)
     tsj_values = []
 
     obv = OBV()
@@ -86,11 +86,10 @@ def simulate(conn, client, base, currency, type="channel"):
 
         tsj_values.append(tsj.update(ema26.result, ts))
 
-
-        #if tsj.up_detected():
-        #    valleys.append(i)
-        #elif tsj.down_detected():
-        #    peaks.append(i)
+        if tsj.up_detected():
+            valleys.append(i)
+        elif tsj.down_detected():
+            peaks.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
