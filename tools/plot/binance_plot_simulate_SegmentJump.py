@@ -34,6 +34,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
+    ema50 = EMA(50, scale=24)
     ema100 = EMA(100, scale=24)
     ema200 = EMA(200, scale=24)
     obv_ema12 = EMA(12, scale=24)
@@ -43,7 +44,8 @@ def simulate(conn, client, base, currency, type="channel"):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    tsj = SegmentJump(tsv1_minutes=1, tsv2_minutes=20, multiplier=2)
+    #tsj_filter = EMA(26, scale=24)
+    tsj = SegmentJump(tsv1_minutes=1, tsv2_minutes=15, up_multiplier=4, down_multiplier=3) #, filter=tsj_filter)
     tsj_values = []
 
     obv = OBV()
@@ -79,6 +81,7 @@ def simulate(conn, client, base, currency, type="channel"):
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
         ema26_values.append(ema26.update(close))
+        ema50.update(close)
         ema100_value = ema100.update(close)
         ema100_values.append(ema100_value)
         ema200_value = ema200.update(close)
