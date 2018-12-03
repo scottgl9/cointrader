@@ -7,7 +7,6 @@ class TimeSegmentValues(object):
         if minutes != 0:
             self.seconds += minutes * 60
         self.seconds_ts = 1000 * self.seconds
-        #self.time_values = []
         self.values = []
         self.timestamps = []
         self.full = False
@@ -25,19 +24,19 @@ class TimeSegmentValues(object):
     def update(self, value, ts):
         if self.value_smoother:
             svalue = self.value_smoother.update(value)
-            #self.time_values.append(TimeValue(svalue, ts))
             self.values.append(svalue)
             self.timestamps.append(ts)
         else:
             self.values.append(value)
             self.timestamps.append(ts)
-            #self.time_values.append(TimeValue(value, ts))
 
-        #while (ts - self.time_values[0].ts) > 1000 * self.seconds:
-        while (ts - self.timestamps[0] > self.seconds_ts):
-            #self.time_values = self.time_values[1:]
-            self.timestamps = self.timestamps[1:]
-            self.values = self.values[1:]
+        cnt = 0
+        while (ts - self.timestamps[cnt]) > self.seconds_ts:
+            cnt += 1
+
+        if cnt != 0:
+            self.timestamps = self.timestamps[cnt:]
+            self.values = self.values[cnt:]
             if not self.full:
                 self.full = True
 
@@ -82,8 +81,3 @@ class TimeSegmentValues(object):
             result = 100.0 * (value2 - value1) / value1
 
         return result
-
-#class TimeValue(object):
-#    def __init__(self, value=0, ts=0):
-#        self.value = value
-#        self.ts = ts

@@ -100,7 +100,7 @@ def simulate(conn, client, base, currency, type="channel"):
         high_prices.append(high)
         i += 1
 
-    plt.subplot(211)
+    plt.subplot(311)
 
     for index in peaks:
         plt.axvline(x=index, color='red')
@@ -114,12 +114,14 @@ def simulate(conn, client, base, currency, type="channel"):
     fig3, = plt.plot(ema100_values, label='EMA100')
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    plt.subplot(212)
+    plt.subplot(312)
     plt.plot(tsj_values)
+    plt.subplot(313)
     #fig21, = plt.plot(obv_ema12_values, label='OBV12')
     #fig22, = plt.plot(obv_ema26_values, label='OBV26')
     #fig23, = plt.plot(obv_ema50_values, label='OBV50')
     #plt.legend(handles=[fig21, fig22, fig23])
+    plt.plot(volumes)
     #plt.plot(signal_values)
     #plt.plot(tsi_values)
     plt.show()
