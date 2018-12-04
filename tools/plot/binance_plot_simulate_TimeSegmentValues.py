@@ -38,7 +38,11 @@ def simulate(conn, client, base, currency, type="channel"):
     ema200 = EMA(200, scale=24, lag_window=5)
 
     dtwma = DTWMA(window=30)
-    tsv = TimeSegmentValues(seconds=300, percent_smoother=ZLEMA(100, scale=24))
+    tsv = TimeSegmentValues(seconds=600, percent_smoother=ZLEMA(100, scale=24))
+    tsv_min_values = []
+    tsv_min_x_values = []
+    tsv_max_values = []
+    tsv_max_x_values = []
     tsv2 = TimeSegmentValues(seconds=1000, percent_smoother=ZLEMA(100, scale=24))
     tsv_x_values = []
     tsv_values = []
@@ -80,6 +84,12 @@ def simulate(conn, client, base, currency, type="channel"):
             tsv_x_values.append(i)
             tsv_values.append(tsv.percent_change())
             tsv_counts.append(tsv.value_count())
+            if tsv.min() != 0:
+                tsv_min_values.append(tsv.min())
+                tsv_min_x_values.append(i)
+            if tsv.max() != 0:
+                tsv_max_values.append(tsv.max())
+                tsv_max_x_values.append(i)
 
         tsv2.update(close, ts)
         if tsv2.ready() and tsv2.percent_change() != None:
@@ -100,6 +110,8 @@ def simulate(conn, client, base, currency, type="channel"):
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
+    plt.plot(tsv_min_x_values, tsv_min_values)
+    plt.plot(tsv_max_x_values, tsv_max_values)
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(312)
     fig21, = plt.plot(tsv_x_values, tsv_values, label='TSV_PERCENT')

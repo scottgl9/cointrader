@@ -1,5 +1,5 @@
 # Given a specified time segment, only keep track of newest values no older than the set time segment
-
+from trader.lib.FastMinMax import FastMinMax
 
 class TimeSegmentValues(object):
     def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None):
@@ -9,6 +9,7 @@ class TimeSegmentValues(object):
         self.seconds_ts = 1000 * self.seconds
         self.values = []
         self.timestamps = []
+        self.fmm = FastMinMax()
         self.full = False
         self.value_smoother = value_smoother
         self.percent_smoother = percent_smoother
@@ -39,34 +40,38 @@ class TimeSegmentValues(object):
         while (ts - self.timestamps[cnt]) > self.seconds_ts:
             cnt += 1
 
-        if self.ready():
-            if self.min_value_index == -1 or self.max_value_index == -1:
-                self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
-                self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
+        self.fmm.append(svalue)
 
-                self.min_value = self.values[self.min_value_index]
-                self.max_value = self.values[self.max_value_index]
-            elif value <= self.min_value:
-                self.min_value = value
-                self.min_value_index = len(self.values) - 1
-            elif value >= self.max_value:
-                self.max_value = value
-                self.max_value_index = len(self.values) - 1
+        # if self.ready():
+        #     if self.min_value_index == -1 or self.max_value_index == -1:
+        #         self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
+        #         self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
+        #
+        #         self.min_value = self.values[self.min_value_index]
+        #         self.max_value = self.values[self.max_value_index]
+        #     elif value <= self.min_value:
+        #         self.min_value = value
+        #         self.min_value_index = len(self.values) - 1
+        #     elif value >= self.max_value:
+        #         self.max_value = value
+        #         self.max_value_index = len(self.values) - 1
 
         if cnt != 0:
             self.min_value_index -= cnt
             self.max_value_index -= cnt
-            if self.min_value_index <= 0:
-                self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
-                self.min_value = self.values[self.min_value_index]
-            if self.max_value_index <= 0:
-                self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
-                self.max_value = self.values[self.max_value_index]
+            # if self.min_value_index < 0:
+            #     self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
+            #     self.min_value = self.values[self.min_value_index]
+            # if self.max_value_index < 0:
+            #     self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
+            #     self.max_value = self.values[self.max_value_index]
+            self.fmm.remove(cnt)
+            self.min_value = self.fmm.min()
+            self.max_value = self.fmm.max()
             self.timestamps = self.timestamps[cnt:]
             self.values = self.values[cnt:]
             if not self.full:
                 self.full = True
-
 
     def min(self):
         if not self.ready():

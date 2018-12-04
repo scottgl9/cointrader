@@ -12,6 +12,12 @@ class FastMinMax(object):
         self.max_value_index = -1
         self.end_index = -1
 
+    def min(self):
+        return self.min_value
+
+    def max(self):
+        return self.max_value
+
     def append(self, value):
         if self.min_value_index == -1 or self.max_value_index == -1:
             self.min_value = value
@@ -22,7 +28,7 @@ class FastMinMax(object):
             self.end_index += 1
             return
 
-        if value != 0 and value <= self.min_value:
+        if value != 0 and self.min_value != 0 and value <= self.min_value:
             self.min_value = value
             self.min_value_index = self.end_index
         elif value >= self.max_value:
@@ -33,6 +39,8 @@ class FastMinMax(object):
 
     # remove count items from beginning of self.values
     def remove(self, count):
+        if len(self.values) <= count:
+            return
         self.min_value_index -= count
         self.max_value_index -= count
         self.end_index -= count
