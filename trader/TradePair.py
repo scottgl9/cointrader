@@ -107,6 +107,8 @@ class TradePair(threading.Thread):
         self.strategy.update_tickers(tickers)
 
     def update_total_percent_profit(self, tpprofit):
+        if tpprofit == 0:
+            return
         self.tpprofit = tpprofit
         self.strategy.update_total_percent_profit(tpprofit)
 
