@@ -53,6 +53,7 @@ class TradePair(threading.Thread):
         self.prev_last_50_prices = []
         self.count_prices_added = 0
         self.tickers = None
+        self.tpprofit = 0
 
     def get_24hr_stats(self):
         stats = self.accnt.get_24hr_stats()
@@ -96,14 +97,18 @@ class TradePair(threading.Thread):
         self.strategy.count_prices_added = 0
         self.count_prices_added = 0
 
-    def run_update_price(self, price):
-        #if self.base_name == 'QTUM' and float(price) == 10.0: return
-        #print("run_update_price({}, {}, {}".format(self.base_name, self.currency, price))
-        return self.strategy.run_update_price(price)
+    #def run_update_price(self, price):
+    #    #if self.base_name == 'QTUM' and float(price) == 10.0: return
+    #    #print("run_update_price({}, {}, {}".format(self.base_name, self.currency, price))
+    #    return self.strategy.run_update_price(price)
 
     def update_tickers(self, tickers):
         self.tickers = tickers
         self.strategy.update_tickers(tickers)
+
+    def update_total_percent_profit(self, tpprofit):
+        self.tpprofit = tpprofit
+        self.strategy.update_total_percent_profit(tpprofit)
 
     def mm_enabled(self):
         return self.strategy.mm_enabled

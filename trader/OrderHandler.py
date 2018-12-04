@@ -19,6 +19,8 @@ class OrderHandler(object):
         self.trades = {}
         self.counters = {}
         self.buy_disabled = False
+        # total percent profit
+        self.tpprofit = 0
 
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
@@ -58,6 +60,10 @@ class OrderHandler(object):
 
     def get_stored_trades(self):
         return self.trades
+
+
+    def get_total_percent_profit(self):
+        return self.tpprofit
 
 
     def update_tickers(self, tickers):
@@ -359,14 +365,14 @@ class OrderHandler(object):
             pprofit = 100.0 * (price - buy_price) / buy_price
             if self.tickers and self.initial_btc != 0:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
-                tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
+                self.tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
                 message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sig_id,
                                                                          ticker_id,
                                                                          size,
                                                                          price,
                                                                          buy_price,
                                                                          round(pprofit, 2),
-                                                                         round(tpprofit, 2))
+                                                                         round(self.tpprofit, 2))
             else:
                 message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)".format(sig_id,
                                                                     ticker_id,

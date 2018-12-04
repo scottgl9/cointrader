@@ -144,6 +144,9 @@ class MultiTrader(object):
             symbol_trader = self.trade_pairs[kline.symbol]
 
         symbol_trader.update_tickers(self.tickers)
+        tpprofit = self.order_handler.get_total_percent_profit()
+        if tpprofit != 0:
+            symbol_trader.update_total_percent_profit(tpprofit)
 
         # use market manager
         if symbol_trader.mm_enabled():
