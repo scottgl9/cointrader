@@ -10,7 +10,7 @@ class FastMinMax(object):
         self.min_value_index = -1
         self.max_value = 0
         self.max_value_index = -1
-        self.end_index = -1
+        self.end_index = 0
 
     def min(self):
         return self.min_value
@@ -19,22 +19,22 @@ class FastMinMax(object):
         return self.max_value
 
     def append(self, value):
-        if self.min_value_index == -1 or self.max_value_index == -1:
+        if self.min_value == 0 or self.max_value == 0:
             self.min_value = value
             self.min_value_index = 0
             self.max_value = value
             self.max_value_index = 0
             self.values.append(value)
-            self.end_index += 1
             return
 
-        if value != 0 and self.min_value != 0 and value <= self.min_value:
+        if self.min_value != 0 and value < self.min_value:
             self.min_value = value
             self.min_value_index = self.end_index
-        elif value >= self.max_value:
+        elif value > self.max_value:
             self.max_value = value
             self.max_value_index = self.end_index
 
+        self.values.append(value)
         self.end_index += 1
 
     # remove count items from beginning of self.values
@@ -49,12 +49,10 @@ class FastMinMax(object):
 
         if self.min_value_index < 0:
             self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
-            self.min_value = self.values[self.min_value_index]
-        elif self.min_value_index > self.end_index:
-            self.min_value_index = self.end_index
+
+        self.min_value = self.values[self.min_value_index]
 
         if self.max_value_index < 0:
             self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
-            self.max_value = self.values[self.max_value_index]
-        elif self.max_value_index > self.end_index:
-            self.max_value_index = self.end_index
+
+        self.max_value = self.values[self.max_value_index]

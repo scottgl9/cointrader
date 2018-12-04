@@ -66,24 +66,25 @@ class TimeSegmentValues(object):
             #     self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
             #     self.max_value = self.values[self.max_value_index]
             self.fmm.remove(cnt)
-            self.min_value = self.fmm.min()
-            self.max_value = self.fmm.max()
             self.timestamps = self.timestamps[cnt:]
             self.values = self.values[cnt:]
             if not self.full:
                 self.full = True
 
+        self.min_value = self.fmm.min()
+        self.max_value = self.fmm.max()
+
     def min(self):
         if not self.ready():
             return 0
-        return min(self.values)
-        #return self.min_value
+        #return min(self.values)
+        return self.min_value
 
     def max(self):
         if not self.ready():
             return 0
-        return max(self.values)
-        #return self.max_value
+        #return max(self.values)
+        return self.max_value
 
     def get_values(self):
         return self.values
