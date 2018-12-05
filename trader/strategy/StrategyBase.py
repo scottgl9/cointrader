@@ -48,6 +48,7 @@ class StrategyBase(object):
         self.mm_enabled = False
         self.kline = None
         self.tpprofit = 0
+        self.last_tpprofit = 0
 
     @staticmethod
     def select_signal_name(name):
@@ -132,6 +133,7 @@ class StrategyBase(object):
             self.trade_size_handler.update_tickers(tickers)
 
     def update_total_percent_profit(self, tpprofit):
+        self.last_tpprofit = self.tpprofit
         self.tpprofit = tpprofit
 
     def close(self):
