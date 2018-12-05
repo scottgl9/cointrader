@@ -25,10 +25,10 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
-            self.accnt.get_account_balances()
-            self.initial_btc = self.accnt.get_total_btc_value()
-        else:
-            self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
+
+        self.initial_btc = 0
+        self.update_initial_btc()
+        self.actual_initial_btc = self.initial_btc
 
         self.logger.info("Initial BTC value = {}".format(self.initial_btc))
 
@@ -58,12 +58,28 @@ class OrderHandler(object):
                 trade_pair.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'], sig_id=trade['sigid'])
 
 
+    def update_initial_btc(self):
+        self.logger.info("Resetting initial BTC...")
+        if not self.accnt.simulate:
+            self.accnt.get_account_balances()
+            self.initial_btc = self.accnt.get_total_btc_value(self.tickers)
+        else:
+            if not self.tickers:
+                self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
+            else:
+                self.initial_btc = self.accnt.get_total_btc_value(self.tickers)
+
+
     def get_stored_trades(self):
         return self.trades
 
 
     def get_total_percent_profit(self):
-        return self.tpprofit
+        result = self.tpprofit
+        if self.tpprofit < -0.015:
+            self.tpprofit = 0
+            self.update_initial_btc()
+        return result
 
 
     def update_tickers(self, tickers):
