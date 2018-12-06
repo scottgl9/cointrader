@@ -76,9 +76,9 @@ class OrderHandler(object):
 
     def get_total_percent_profit(self):
         result = self.tpprofit
-        if self.accnt.simulate and self.tpprofit < -0.015:
-            self.tpprofit = 0
-            self.update_initial_btc()
+        #if self.accnt.simulate and self.tpprofit < -0.015:
+        #    self.tpprofit = 0
+        #    self.update_initial_btc()
         return result
 
 

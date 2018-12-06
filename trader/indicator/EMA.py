@@ -5,7 +5,8 @@ from trader.lib.ValueLag import ValueLag
 
 # TODO: Idea to add auto scaling based on number of price updates per time unit
 
-class EMA:
+
+class EMA(object):
     def __init__(self, weight=26, scale=1.0, lag_window=3, slope_window=0, custom=False):
         self.result = 0.0
         self.last_result = 0.0
