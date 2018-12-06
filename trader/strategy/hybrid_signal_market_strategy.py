@@ -222,7 +222,7 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         for signal in self.signal_handler.get_handlers():
             # if total profit drops to less than -1.5%
-            if signal.buy_price != 0 and self.tpprofit != self.last_tpprofit and self.tpprofit < -0.015:
+            if self.accnt.simulate and signal.buy_price != 0 and self.tpprofit != self.last_tpprofit and self.tpprofit < -0.015:
                 #print(self.tpprofit)
                 # TODO: do something here if total profit below -1.5%
                 self.sell(signal, kline.close)
