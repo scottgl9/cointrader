@@ -3,13 +3,15 @@ from trader.signal.SigType import SigType
 class SignalBase(object):
     FLAG_SELL_BOUGHT = 1
     FLAG_SELL_ALL = 2
-    def __init__(self):
+
+    def __init__(self, accnt=None):
         self.id = 0
         self.symbol = None
         self.flag = self.FLAG_SELL_BOUGHT
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
         self.mm_enabled = False
+        self.accnt = accnt
 
         # settings for global signals
         self.global_signal = False

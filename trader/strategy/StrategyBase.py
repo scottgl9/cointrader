@@ -51,27 +51,27 @@ class StrategyBase(object):
         self.last_tpprofit = 0
 
     @staticmethod
-    def select_signal_name(name):
-        if name =="Bollinger_Bands_Signal": return Bollinger_Bands_Signal()
-        elif name == "BTC_USDT_Signal": return BTC_USDT_Signal()
-        elif name == "Currency_Long_EMA": return Currency_EMA_Long()
-        elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal()
-        elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover()
-        elif name == "Hybrid_Crossover": return Hybrid_Crossover()
-        elif name == "Hybrid2_Crossover": return Hybrid2_Crossover()
-        elif name == "Hybrid_Crossover_MM": return Hybrid_Crossover_MM()
-        elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test()
-        elif name == "KST_Crossover": return KST_Crossover()
-        elif name == "MACD_Crossover": return MACD_Crossover()
-        elif name == "OBV_Crossover": return OBV_Crossover()
-        elif name == "PPO_OBV": return PPO_OBV()
-        elif name == "price_channel_signal": return price_channel_signal()
-        elif name == "PMO_Crossover": return PMO_Crossover()
-        elif name == "RSI_OBV": return RSI_OBV()
-        elif name == "Slope_Crossover": return Slope_Crossover()
-        elif name == "TD_Sequential_Signal": return TD_Sequential_Signal()
-        elif name == "TSI_Signal": return TSI_Signal()
-        elif name == "TSV_Signal": return TSV_Signal()
+    def select_signal_name(name, accnt=None):
+        if name =="Bollinger_Bands_Signal": return Bollinger_Bands_Signal(accnt)
+        elif name == "BTC_USDT_Signal": return BTC_USDT_Signal(accnt)
+        elif name == "Currency_Long_EMA": return Currency_EMA_Long(accnt)
+        elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal(accnt)
+        elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover(accnt)
+        elif name == "Hybrid_Crossover": return Hybrid_Crossover(accnt)
+        elif name == "Hybrid2_Crossover": return Hybrid2_Crossover(accnt)
+        elif name == "Hybrid_Crossover_MM": return Hybrid_Crossover_MM(accnt)
+        elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test(accnt)
+        elif name == "KST_Crossover": return KST_Crossover(accnt)
+        elif name == "MACD_Crossover": return MACD_Crossover(accnt)
+        elif name == "OBV_Crossover": return OBV_Crossover(accnt)
+        elif name == "PPO_OBV": return PPO_OBV(accnt)
+        elif name == "price_channel_signal": return price_channel_signal(accnt)
+        elif name == "PMO_Crossover": return PMO_Crossover(accnt)
+        elif name == "RSI_OBV": return RSI_OBV(accnt)
+        elif name == "Slope_Crossover": return Slope_Crossover(accnt)
+        elif name == "TD_Sequential_Signal": return TD_Sequential_Signal(accnt)
+        elif name == "TSI_Signal": return TSI_Signal(accnt)
+        elif name == "TSV_Signal": return TSV_Signal(accnt)
 
     def get_ticker_id(self):
         return self.ticker_id

@@ -6,8 +6,8 @@ from trader.lib.Crossover2 import Crossover2
 
 
 class EFI_Breakout_Signal(SignalBase):
-    def __init__(self):
-        super(EFI_Breakout_Signal, self).__init__()
+    def __init__(self, accnt=None):
+        super(EFI_Breakout_Signal, self).__init__(accnt)
         self.signal_name = "EFI_Breakout_Signal"
         #self.dtwma = DTWMA(window=30)
         self.efi = EFI(window=30, scale=24)

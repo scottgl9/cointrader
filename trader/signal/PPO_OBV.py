@@ -5,8 +5,8 @@ from trader.lib.Crossover2 import Crossover2
 from trader.signal.SignalBase import SignalBase
 
 class PPO_OBV(SignalBase):
-    def __init__(self, win_short=12, win_med=26, win_long=50):
-        super(PPO_OBV, self).__init__()
+    def __init__(self, accnt=None, win_short=12, win_med=26, win_long=50):
+        super(PPO_OBV, self).__init__(accnt)
         self.signal_name = "PPO_OBV"
         self.win_short = win_short
         self.win_med = win_med

@@ -5,9 +5,10 @@ from trader.account.AccountBase import AccountBase
 #logger = logging.getLogger(__name__)
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name='BTC', asset='USD', simulation=False, logger=None):
+    def __init__(self, client, name='BTC', asset='USD', simulation=False, logger=None, simulate_db_filename=None):
         self.account_type = 'Binance'
         self.logger = logger
+        self.simulate_db_filename = simulate_db_filename
         self.balance = 0.0
         self.funds_available = 0.0
         self.quote_currency_balance = 0.0

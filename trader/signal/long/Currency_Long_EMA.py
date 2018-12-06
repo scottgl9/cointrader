@@ -6,8 +6,8 @@ from trader.signal.SignalBase import SignalBase
 
 
 class Currency_EMA_Long(SignalBase):
-    def __init__(self):
-        super(Currency_EMA_Long, self).__init__()
+    def __init__(self, accnt=None):
+        super(Currency_EMA_Long, self).__init__(accnt)
         self.ema1 = EMA(100, scale=24)
         self.ema2 = EMA(200, scale=24)
         self.cross_short = Crossover2(window=10)

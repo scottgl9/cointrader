@@ -5,8 +5,8 @@ from trader.lib.MACross import MACross
 
 
 class BTC_USDT_Signal(SignalBase):
-    def __init__(self):
-        super(BTC_USDT_Signal, self).__init__()
+    def __init__(self, accnt=None):
+        super(BTC_USDT_Signal, self).__init__(accnt)
         self.signal_name = "BTC_USDT_Signal"
         self.global_signal = True
         self.global_filter = "BTCUSDT"

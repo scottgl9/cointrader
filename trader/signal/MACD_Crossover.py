@@ -10,8 +10,8 @@ from trader.signal.SignalBase import SignalBase
 
 
 class MACD_Crossover(SignalBase):
-    def __init__(self, win_short=12, win_med=26, win_long=50):
-        super(MACD_Crossover, self).__init__()
+    def __init__(self,accnt=None, win_short=12, win_med=26, win_long=50):
+        super(MACD_Crossover, self).__init__(accnt)
         self.signal_name = "MACD_Crossover"
         self.win_short = win_short
         self.win_med = win_med

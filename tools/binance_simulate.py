@@ -23,7 +23,7 @@ import logging
 import json
 
 
-def simulate(conn, strategy, signal_name, logger):
+def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
@@ -42,7 +42,7 @@ def simulate(conn, strategy, signal_name, logger):
         assets_details = json.loads(open('asset_detail.json').read())
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
-    accnt = AccountBinance(client, simulation=True)
+    accnt = AccountBinance(client, simulation=True, simulate_db_filename=simulate_db_filename)
     accnt.update_asset_balance('BTC', 0.06, 0.06)
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
@@ -205,6 +205,7 @@ if __name__ == '__main__':
 
     conn = sqlite3.connect(results.filename)
 
+
     # start the Web API
     #thread = threading.Thread(target=WebThread, args=(strategy,))
     #thread.daemon = True
@@ -224,7 +225,8 @@ if __name__ == '__main__':
     logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
 
     try:
-        trades = simulate(conn, results.strategy, results.signal_name, logger)
+        simulate_db_filename = os.path.basename(results.filename)
+        trades = simulate(conn, results.strategy, results.signal_name, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
