@@ -12,6 +12,9 @@ class TimeSegmentPriceChannel(object):
         self.mid = 0
         self.result = 0
 
+    def ready(self):
+        return self.tsv.ready()
+
     def min(self):
         return self.minimum
 

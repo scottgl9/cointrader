@@ -10,6 +10,7 @@ from trader.lib.MACross import MACross
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TimePeakValley import TimePeakValley
 from trader.lib.SegmentJump import SegmentJump
+from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -25,9 +26,10 @@ class Hybrid_Crossover_Test(SignalBase):
         #self.dtwma_close = DTWMA(30)
         #self.dtwma_volume = DTWMA(30)
 
-        self.tsj = SegmentJump(tsv1_minutes=1, tsv2_minutes=15, up_multiplier=4, down_multiplier=3)
-        self.tpv = TimePeakValley(reverse_secs=600, span_secs=3600)
-        self.detector = PeakValleyDetect()
+        #self.tsj = SegmentJump(tsv1_minutes=1, tsv2_minutes=15, up_multiplier=4, down_multiplier=3)
+        #self.tpv = TimePeakValley(reverse_secs=600, span_secs=3600)
+        #self.detector = PeakValleyDetect()
+        self.tspc = TimeSegmentPriceChannel(minutes=60)
         self.obv = OBV()
         self.EMA = EMA
 
@@ -44,6 +46,8 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
         self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
 
+        self.ema_12_cross_tpsc = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
+
     def pre_update(self, close, volume, ts):
         if self.timestamp == 0:
             self.timestamp = ts
@@ -57,6 +61,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.last_close = close
 
         #self.tsj.update(close, ts)
+        self.tspc.update(close, ts)
 
         self.obv.update(close=close, volume=volume)
         self.obv_ema_cross_12_26.update(self.obv.result, ts)
@@ -69,6 +74,8 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.ema_cross_12_100.update(close, ts, ma1=self.ema_cross_12_26.ma1, ma2=self.ema_cross_50_100.ma2)
         self.ema_cross_26_100.update(close, ts, ma1=self.ema_cross_12_26.ma2, ma2=self.ema_cross_50_100.ma2)
+
+        self.ema_12_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma1, ma2=self.tspc)
 
         #self.ema100.update(close)
         #self.tpv.update(self.ema100.result, ts)
@@ -109,6 +116,9 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.ema_cross_26_50.ma2_trend_up() and self.obv_ema_cross_26_50.ma2_trend_up()):
             if self.ema_cross_26_50.get_pre_crossup_low_percent() >= 0.5:
                 return True
+
+        if self.ema_12_cross_tpsc.cross_up and self.ema_12_cross_tpsc.ma2_trend_up():
+            return True
 
         #if self.detector.valley_detect():
         #    return True
@@ -170,6 +180,9 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
                 self.ema_cross_26_50.ma2_trend_down()):
+            return True
+
+        if self.ema_12_cross_tpsc.cross_down and self.ema_12_cross_tpsc.ma2_trend_down():
             return True
         #if self.detector.peak_detect():
         #    return True
