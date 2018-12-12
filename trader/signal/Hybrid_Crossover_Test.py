@@ -96,6 +96,9 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
+        if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
+            return False
+
         #if self.ema_cross_12_100.cross_down and self.ema_cross_26_100.cross_down and self.ema_cross_50_100.cross_down:
         #        return False
 
@@ -117,7 +120,7 @@ class Hybrid_Crossover_Test(SignalBase):
             if self.ema_cross_26_50.get_pre_crossup_low_percent() >= 0.5:
                 return True
 
-        if self.ema_12_cross_tpsc.cross_up and self.ema_12_cross_tpsc.ma2_trend_up():
+        if self.ema_12_cross_tpsc.cross_up and self.tspc.median_trend_up():
             return True
 
         #if self.detector.valley_detect():
@@ -182,7 +185,7 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.ema_cross_26_50.ma2_trend_down()):
             return True
 
-        if self.ema_12_cross_tpsc.cross_down and self.ema_12_cross_tpsc.ma2_trend_down():
+        if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
             return True
         #if self.detector.peak_detect():
         #    return True
