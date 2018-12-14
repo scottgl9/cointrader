@@ -5,6 +5,7 @@ from trader.strategy.trade_size_strategy.static_trade_size import static_trade_s
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
 from trader.indicator.OBV import OBV
+from trader.indicator.EMA import EMA
 
 class hybrid_signal_market_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
@@ -37,6 +38,7 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         self.obv = OBV()
 
+        self.ts_avg = EMA(6, lag_window=5)
         self.timestamp = 0
         self.last_timestamp = 0
         self.last_high_24hr = 0.0
@@ -76,7 +78,7 @@ class hybrid_signal_market_strategy(StrategyBase):
             return False
 
         # if more than 500 seconds between price updates, ignore signal
-        if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 1000 * 0.5:
+        if not self.mm_enabled and self.ts_avg.result < self.ts_avg.last_result:
             return False
 
         #if signal.sell_timestamp != 0 and (self.timestamp - signal.sell_timestamp) < 1000 * 60 * 60:
@@ -185,6 +187,9 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         if self.timestamp == self.last_timestamp:
             return
+
+        if self.last_timestamp != 0:
+            self.ts_avg.update(self.timestamp - self.last_timestamp)
 
         self.obv.update(close, volume)
 
