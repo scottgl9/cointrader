@@ -202,7 +202,8 @@ class mainWindow(QtGui.QTabWidget):
         ema200_values = []
 
 
-        dtwma = DTWMA()
+        dtwma = DTWMA(30, smoother=EMA(12))
+        dtwma_values = []
         obv = OBV()
         obv_values = []
         obv_ema12 = EMA(12, scale=24)
@@ -231,6 +232,10 @@ class mainWindow(QtGui.QTabWidget):
             obv_ema50.update(obv.result)
             obv_ema50_values.append(obv_ema50.result)
 
+            dtwma.update(price, ts)
+            if dtwma.result != 0:
+                dtwma_values.append(dtwma.result)
+
             ema12.update(price)
             ema12_values.append(ema12.result)
             ema26.update(price)
@@ -246,6 +251,7 @@ class mainWindow(QtGui.QTabWidget):
                 macd_signal_values.append(macd.signal.result)
         #    i+=1
         ax.plot(prices)
+        ax.plot(dtwma_values)
         ax.plot(ema12_values)
         ax.plot(ema26_values)
         ax.plot(ema50_values)

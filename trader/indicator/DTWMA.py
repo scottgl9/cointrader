@@ -1,12 +1,14 @@
 # Indicator I designed called Delta Time/Timestamp Weighted Moving Average
 from trader.lib.CircularArray import CircularArray
 
+
 class DTWMA(object):
-    def __init__(self, window=10):
+    def __init__(self, window=10, smoother=None):
         self.window = window
         self.timestamps = CircularArray(window=window)
         self.ts_deltas = CircularArray(window=window)
         self.prices = CircularArray(window=window)
+        self.smoother = smoother
         self.lag = (self.window - 1) / 2
         self.result = 0
 
@@ -35,6 +37,9 @@ class DTWMA(object):
             avg_price += deltas[i] * prices[i]
             total += deltas[i]
 
-        self.result = avg_price / total
+        if self.smoother:
+            self.result = self.smoother.update(avg_price / total)
+        else:
+            self.result = avg_price / total
 
         return self.result
