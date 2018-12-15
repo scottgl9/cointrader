@@ -63,7 +63,10 @@ class AccountBinance(AccountBase):
         return price
 
     def my_float(self, value):
-        return str("{:.9f}".format(float(value)))
+        if float(value) >= 0.1:
+            return "{}".format(float(value))
+        else:
+            return "{:.9f}".format(float(value))
 
     #def get_ticker_id(self):
     #    return '%s%s' % (self.base_currency, self.currency)

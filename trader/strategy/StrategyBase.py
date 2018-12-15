@@ -96,7 +96,10 @@ class StrategyBase(object):
         return price
 
     def my_float(self, value):
-        return str("{:.9f}".format(float(value)))
+        if float(value) >= 0.1:
+            return "{}".format(float(value))
+        else:
+            return "{:.9f}".format(float(value))
 
     def reset(self):
         pass

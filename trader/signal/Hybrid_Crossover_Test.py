@@ -101,8 +101,8 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
             return False
 
-        if self.ema_26_cross_tpsc.cross_down and self.tspc.median_trend_down():
-            return False
+        #if self.ema_26_cross_tpsc.cross_down and self.tspc.median_trend_down():
+        #    return False
 
         #if self.ema_cross_12_100.cross_down and self.ema_cross_26_100.cross_down and self.ema_cross_50_100.cross_down:
         #        return False
