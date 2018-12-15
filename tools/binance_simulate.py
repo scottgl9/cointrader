@@ -43,8 +43,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True, simulate_db_filename=simulate_db_filename)
-    accnt.update_asset_balance('BTC', 0.06, 0.06)
-    #accnt.update_asset_balance('ETH', 0.1, 0.1)
+    #accnt.update_asset_balance('BTC', 0.06, 0.06)
+    accnt.update_asset_balance('ETH', 4.0, 4.0)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
     signal_names = [signal_name] #, "BTC_USDT_Signal"]
@@ -79,13 +79,13 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
             first_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
         else:
             last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
-        if msg['s'] == 'BTCUSDT' and not found:
+
+        if not found:
             if multitrader.accnt.total_btc_available(tickers):
                 found = True
-                #total_btc = multitrader.accnt.balances['BTC']['balance']
                 total_btc = multitrader.accnt.get_total_btc_value(tickers)
                 initial_btc_total = total_btc
-                total_usd = float(msg['o']) * total_btc
+                multitrader.update_initial_btc()
                 print("Initial BTC={}".format(total_btc))
 
         # if we are using BTC_USDT_Signal, make sure BTCUSDT get processed as well

@@ -125,6 +125,9 @@ class MultiTrader(object):
 
         return trade_pair
 
+    def update_initial_btc(self):
+        self.order_handler.update_initial_btc()
+
     def get_stored_trades(self):
         return self.order_handler.get_stored_trades()
 
