@@ -78,7 +78,9 @@ class hybrid_signal_market_strategy(StrategyBase):
             return False
 
         # if more than 500 seconds between price updates, ignore signal
-        if not self.mm_enabled and self.ts_avg.result < self.ts_avg.last_result:
+        #if not self.mm_enabled and self.ts_avg.result < self.ts_avg.last_result:
+        #    return False
+        if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 1000 * 0.5:
             return False
 
         #if signal.sell_timestamp != 0 and (self.timestamp - signal.sell_timestamp) < 1000 * 60 * 60:

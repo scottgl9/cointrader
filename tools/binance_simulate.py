@@ -191,6 +191,10 @@ if __name__ == '__main__':
 
     results = parser.parse_args()
 
+    if not os.path.exists(results.filename):
+        print("file {} doesn't exist, exiting...".format(results.filename))
+        sys.exit(-1)
+
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 

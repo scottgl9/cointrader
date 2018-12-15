@@ -47,6 +47,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
 
         self.ema_12_cross_tpsc = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
+        self.ema_26_cross_tpsc = MACross(ema_win1=26, ema_win2=26, scale=24, cross_timeout=cross_timeout)
 
     def pre_update(self, close, volume, ts):
         if self.timestamp == 0:
@@ -76,6 +77,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_cross_26_100.update(close, ts, ma1=self.ema_cross_12_26.ma2, ma2=self.ema_cross_50_100.ma2)
 
         self.ema_12_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma1, ma2=self.tspc)
+        #self.ema_26_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma2, ma2=self.tspc)
 
         #self.ema100.update(close)
         #self.tpv.update(self.ema100.result, ts)
@@ -97,6 +99,9 @@ class Hybrid_Crossover_Test(SignalBase):
             return False
 
         if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
+            return False
+
+        if self.ema_26_cross_tpsc.cross_down and self.tspc.median_trend_down():
             return False
 
         #if self.ema_cross_12_100.cross_down and self.ema_cross_26_100.cross_down and self.ema_cross_50_100.cross_down:
@@ -122,6 +127,9 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_12_cross_tpsc.cross_up and self.tspc.median_trend_up():
             return True
+
+        #if self.ema_26_cross_tpsc.cross_up and self.tspc.median_trend_up():
+        #    return True
 
         #if self.detector.valley_detect():
         #    return True
@@ -167,6 +175,8 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
+        #if self.ema_12_cross_tpsc.cross_up and self.tspc.median_trend_up():
+        #    return False
         #if self.ema_cross_50_100.cross_down:
         #    return True
         if self.ema_cross_50_100.cross_down and self.ema_cross_50_100.ma2_trend_down():
@@ -187,6 +197,10 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
             return True
+
+        #if self.ema_26_cross_tpsc.cross_down and self.tspc.median_trend_down():
+        #    return True
+
         #if self.detector.peak_detect():
         #    return True
 
