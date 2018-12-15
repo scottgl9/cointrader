@@ -23,7 +23,10 @@ class trade_size_strategy_base(object):
         return price
 
     def my_float(self, value):
-        return str("{:.9f}".format(float(value)))
+        if float(value) >= 0.1:
+            return "{}".format(float(value))
+        else:
+            return "{:.9f}".format(float(value))
 
     def update_tickers(self, tickers):
         self.tickers = tickers
