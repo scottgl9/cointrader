@@ -494,7 +494,8 @@ class AccountBinance(AccountBase):
             self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
             try:
                 result = self.order_market_buy(symbol=ticker_id, quantity=size)
-            except BinanceAPIException:
+            except BinanceAPIException as e:
+                self.logger.info(e)
                 result = None
             return result
 
@@ -514,7 +515,8 @@ class AccountBinance(AccountBase):
             self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
             try:
                 result = self.order_market_sell(symbol=ticker_id, quantity=size)
-            except BinanceAPIException:
+            except BinanceAPIException as e:
+                self.logger.info(e)
                 result = None
             return result
 
