@@ -7,9 +7,9 @@ except ImportError:
     sys.path.append('.')
     import trader
 
+from trader.account.binance.exceptions import BinanceAPIException
 from trader.account.binance.client import Client
 from trader.account.AccountBinance import AccountBinance
-from trader.strategy import select_strategy
 import collections
 import matplotlib.pyplot as plt
 import sys
@@ -100,4 +100,7 @@ if __name__ == '__main__':
         if size == 0.0:
             continue
         print(ticker_id, size)
-        print(client.order_market_sell(symbol=ticker_id, quantity=size))
+        try:
+            print(client.order_market_sell(symbol=ticker_id, quantity=size))
+        except BinanceAPIException as e:
+            print(e)

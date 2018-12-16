@@ -1,6 +1,7 @@
 from trader.account.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
-
+import json
+import os
 
 #logger = logging.getLogger(__name__)
 
@@ -17,6 +18,8 @@ class AccountBinance(AccountBase):
         self.currency = asset
         self.client = client
         self.simulate = simulation
+        self.info_all_assets = {}
+        self.details_all_assets = {}
         self.low_24hr = self.high_24hr = 0.0
         self.open_24hr = self.close_24hr = 0.0
         self.last_24hr = 0.0
@@ -68,9 +71,6 @@ class AccountBinance(AccountBase):
         else:
             return "{:.9f}".format(float(value))
 
-    #def get_ticker_id(self):
-    #    return '%s%s' % (self.base_currency, self.currency)
-
     def make_ticker_id(self, base, currency):
         return '%s%s' % (base, currency)
 
@@ -84,6 +84,68 @@ class AccountBinance(AccountBase):
                 currency_name = currency
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
+
+    def get_detail_all_assets(self):
+        return self.client.get_asset_details()
+
+    def get_info_all_assets(self, info_all_assets=None):
+        assets = {}
+
+        if not info_all_assets:
+            info_all_assets = self.client.get_exchange_info()
+
+        for key, value in info_all_assets.items():
+            if key != 'symbols':
+                continue
+            for asset in value:
+                minNotional = ''
+                minQty = ''
+                tickSize = ''
+                stepSize = ''
+                for filter in asset['filters']:
+                    if 'minQty' in filter:
+                        minQty = filter['minQty']
+                    if 'tickSize' in filter:
+                        tickSize = filter['tickSize']
+                    if 'stepSize' in filter:
+                        stepSize = filter['stepSize']
+                    if 'minNotional' in filter:
+                        minNotional = filter['minNotional']
+
+                assets[asset['symbol']] = {'minQty': minQty,
+                                           'tickSize': tickSize,
+                                           'stepSize': stepSize,
+                                           'minNotional': minNotional
+                                           }
+
+        return assets
+
+    # use get_info_all_assets to load asset info into self.info_all_assets
+    def load_info_all_assets(self):
+        if not self.simulate:
+            self.info_all_assets = self.get_info_all_assets()
+            return
+
+        if not os.path.exists("asset_info.json"):
+            assets_info = self.client.get_exchange_info()
+            with open('asset_info.json', 'w') as f:
+                json.dump(assets_info, f, indent=4)
+        else:
+            assets_info = json.loads(open('asset_info.json').read())
+        self.info_all_assets = self.get_info_all_assets(assets_info)
+
+    # use get_info_all_assets to load asset info into self.info_all_assets
+    def load_detail_all_assets(self):
+        if not self.simulate:
+            self.details_all_assets = self.get_detail_all_assets()
+            return
+
+        if not os.path.exists("asset_detail.json"):
+            self.details_all_assets = self.client.get_exchange_info()
+            with open('asset_detail.json', 'w') as f:
+                json.dump(self.details_all_assets, f, indent=4)
+        else:
+            self.details_all_assets = json.loads(open('asset_detail.json').read())
 
     def get_asset_status(self, name=None, asset_detail_list=None):
         if asset_detail_list:
