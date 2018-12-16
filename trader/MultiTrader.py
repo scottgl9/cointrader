@@ -79,7 +79,8 @@ class MultiTrader(object):
     # create new tradepair handler and select strategy
     def add_trade_pair(self, symbol):
         base_min_size = 0.0
-        quote_increment = 0.0
+        tick_size = 0.0
+        min_notional = 0.0
 
         base_name, currency_name = split_symbol(symbol)
 
@@ -92,7 +93,8 @@ class MultiTrader(object):
 
         if symbol in self.assets_info.keys():
             base_min_size = float(self.assets_info[symbol]['minQty'])
-            quote_increment = float(self.assets_info[symbol]['tickSize'])
+            tick_size = float(self.assets_info[symbol]['tickSize'])
+            min_notional = float(self.assets_info[symbol]['minNotional'])
 
         # optimization: if balance of ETH or BNB is less than
         # minimum trade amount, do not process trade pairs with currency
@@ -115,7 +117,8 @@ class MultiTrader(object):
                                base=base_name,
                                currency=currency_name,
                                base_min_size=base_min_size,
-                               tick_size=quote_increment,
+                               tick_size=tick_size,
+                               min_notional=min_notional,
                                logger=self.logger)
 
         self.trade_pairs[symbol] = trade_pair

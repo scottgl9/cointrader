@@ -17,7 +17,8 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
 
 # class to handle individual trade pair (ex. BTC/USD)
 class TradePair(threading.Thread):
-    def __init__(self, client, accnt, strategy_name, signal_names, base='BTC', currency='USD', base_min_size=0, tick_size=0, logger=None):
+    def __init__(self, client, accnt, strategy_name, signal_names, base='BTC', currency='USD',
+                 base_min_size=0, tick_size=0, min_notional=0, logger=None):
         super(TradePair, self).__init__()
         self.client = client
         self.accnt = accnt
@@ -27,6 +28,9 @@ class TradePair(threading.Thread):
         #self.order_handler = order_handler
         self.base_name = base
         self.currency = currency
+        self.base_min_size = base_min_size
+        self.tick_size = tick_size
+        self.min_notional = min_notional
         self.ticker_id = self.accnt.make_ticker_id(base, currency)
         #print(self.accnt.get_fills(ticker_id=self.ticker_id))
 
@@ -36,8 +40,8 @@ class TradePair(threading.Thread):
                                    self.currency,
                                    signal_names=self.signal_names,
                                    account_handler=self.accnt,
-                                   base_min_size=base_min_size,
-                                   tick_size=tick_size,
+                                   base_min_size=self.base_min_size,
+                                   tick_size=self.tick_size,
                                    logger=self.logger)
 
         self.last_close = 0.0

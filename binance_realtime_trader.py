@@ -211,14 +211,26 @@ def get_info_all_assets(client):
         if key != 'symbols':
             continue
         for asset in value:
+            minNotional = ''
             minQty = ''
             tickSize = ''
+            stepSize = ''
             for filter in asset['filters']:
                 if 'minQty' in filter:
                     minQty = filter['minQty']
                 if 'tickSize' in filter:
                     tickSize = filter['tickSize']
-            assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
+                if 'stepSize' in filter:
+                    stepSize = filter['stepSize']
+                if 'minNotional' in filter:
+                    minNotional = filter['minNotional']
+
+            assets[asset['symbol']] = {'minQty': minQty,
+                                       'tickSize': tickSize,
+                                       'stepSize': stepSize,
+                                       'minNotional': minNotional
+                                       }
+
     return assets
 
 

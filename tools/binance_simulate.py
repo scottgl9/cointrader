@@ -31,11 +31,11 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
         client = Client(MY_API_KEY, MY_API_SECRET)
         assets_info = get_info_all_assets(client)
         with open('asset_info.json', 'w') as f:
-            json.dump(assets_info, f)
+            json.dump(assets_info, f, indent=4)
 
         assets_details = get_detail_all_assets(client)
         with open('asset_detail.json', 'w') as f:
-            json.dump(assets_details, f)
+            json.dump(assets_details, f, indent=4)
     else:
         client = None
         assets_info = json.loads(open('asset_info.json').read())
@@ -43,8 +43,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True, simulate_db_filename=simulate_db_filename)
-    #accnt.update_asset_balance('BTC', 0.06, 0.06)
-    accnt.update_asset_balance('ETH', 4.0, 4.0)
+    accnt.update_asset_balance('BTC', 0.06, 0.06)
+    #accnt.update_asset_balance('ETH', 4.0, 4.0)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
     signal_names = [signal_name] #, "BTC_USDT_Signal"]
@@ -142,38 +142,28 @@ def get_info_all_assets(client):
         if key != 'symbols':
             continue
         for asset in value:
+            minNotional = ''
             minQty = ''
             tickSize = ''
+            stepSize = ''
             for filter in asset['filters']:
                 if 'minQty' in filter:
                     minQty = filter['minQty']
                 if 'tickSize' in filter:
                     tickSize = filter['tickSize']
-            assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
+                if 'stepSize' in filter:
+                    stepSize = filter['stepSize']
+                if 'minNotional' in filter:
+                    minNotional = filter['minNotional']
+
+            assets[asset['symbol']] = {'minQty': minQty,
+                                       'tickSize': tickSize,
+                                       'stepSize': stepSize,
+                                       'minNotional': minNotional
+                                       }
+
     return assets
 
-
-#ef get_asset_balances(client):
-#    balances = {}
-#    for accnt in client.get_account()['balances']:
-#        if float(accnt['free']) == 0.0 and float(accnt['locked']) == 0.0:
-#            continue
-#
-#        balances[accnt['asset']] = float(accnt['free']) + float(accnt['locked'])
-#    return balances
-
-#def filter_assets_by_minqty(assets_info, balances):
-#    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
-#    result = {}
-#    for name, balance in balances.items():
-#        for currency in currencies:
-#            symbol = "{}{}".format(name, currency)
-#            if symbol not in assets_info.keys(): continue
-#
-#            minQty = float(assets_info[symbol]['minQty'])
-#            if float(balance) >= minQty:
-#                result[name] = balance
-#    return result
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
