@@ -29,17 +29,8 @@ class AccountBinance(AccountBase):
         self.market_price = 0.0
         self.balances = {}
 
-        #for funds in client.get_account()['balances']:
-        #    if funds['asset'] == asset:
-        #        self.quote_currency_balance = float(funds['free']) + float(funds['locked'])
-        #        self.quote_currency_available = float(funds['free'])
-        #    elif funds['asset'] == name:
-        #        self.balance = float(funds['free']) + float(funds['locked'])
-        #        self.funds_available = float(funds['free'])
-
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
-        self.asset_detail_list = None
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
@@ -141,34 +132,35 @@ class AccountBinance(AccountBase):
             return
 
         if not os.path.exists("asset_detail.json"):
-            self.details_all_assets = self.client.get_exchange_info()
+            self.details_all_assets = self.get_detail_all_assets()
             with open('asset_detail.json', 'w') as f:
                 json.dump(self.details_all_assets, f, indent=4)
         else:
             self.details_all_assets = json.loads(open('asset_detail.json').read())
 
-    def get_asset_status(self, name=None, asset_detail_list=None):
-        if asset_detail_list:
-            result = asset_detail_list
-            if 'assetDetail' in result.keys():
-                self.asset_detail_list = result['assetDetail']
-            else:
-                self.asset_detail_list = result
+    def get_asset_status(self, name=None):
+        if not self.details_all_assets:
+            self.load_detail_all_assets()
 
-        if not self.asset_detail_list:
-            result = self.client.get_asset_details()
-            if 'assetDetail' in result.keys():
-                self.asset_detail_list = result['assetDetail']
-            else:
-                self.asset_detail_list = result
+        result = self.details_all_assets
+        if 'assetDetail' in result.keys():
+            self.details_all_assets = result['assetDetail']
 
-        if name and name in self.asset_detail_list.keys():
-            return self.asset_detail_list[name]
+        if name and name in self.details_all_assets.keys():
+            return self.details_all_assets[name]
 
         return None
 
-    def deposit_asset_disabled(self, name, asset_detail_list=None):
-        status = self.get_asset_status(name, asset_detail_list)
+    def get_asset_info(self, symbol):
+        if not self.info_all_assets:
+            self.load_info_all_assets()
+
+        if not self.info_all_assets or symbol not in self.info_all_assets.keys():
+            return None
+        return self.info_all_assets[symbol]
+
+    def deposit_asset_disabled(self, name):
+        status = self.get_asset_status(name)
         if status and 'depositStatus' in status:
             return not status['depositStatus']
         return False

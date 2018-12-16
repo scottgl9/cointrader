@@ -26,7 +26,7 @@ def split_symbol(symbol):
 # handle incoming websocket messages for all symbols, and create new tradepairs
 # for those that do not yet exist
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None, asset_detail=None,
+    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None,
                  volumes=None, simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
         self.trade_pairs = {}
         self.accounts = {}
@@ -39,7 +39,6 @@ class MultiTrader(object):
         else:
             self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)
         self.assets_info = assets_info
-        self.asset_detail = asset_detail
         self.volumes = volumes
         self.tickers = None
         self.msg_handler = MessageHandler()
@@ -88,13 +87,19 @@ class MultiTrader(object):
 
         # if an asset has deposit disabled, means its probably suspended
         # or de-listed so DO NOT trade this coin
-        if self.accnt.deposit_asset_disabled(base_name, self.asset_detail):
+        if self.accnt.deposit_asset_disabled(base_name):
             return None
 
-        if symbol in self.assets_info.keys():
-            base_min_size = float(self.assets_info[symbol]['minQty'])
-            tick_size = float(self.assets_info[symbol]['tickSize'])
-            min_notional = float(self.assets_info[symbol]['minNotional'])
+        asset_info = self.accnt.get_asset_info(symbol)
+        if not asset_info:
+            return None
+
+        base_min_size = float(asset_info['minQty'])
+        tick_size = float(asset_info['tickSize'])
+        min_notional = float(asset_info['minNotional'])
+
+        if min_notional > base_min_size:
+            base_min_size = min_notional
 
         # optimization: if balance of ETH or BNB is less than
         # minimum trade amount, do not process trade pairs with currency
@@ -118,7 +123,6 @@ class MultiTrader(object):
                                currency=currency_name,
                                base_min_size=base_min_size,
                                tick_size=tick_size,
-                               min_notional=min_notional,
                                logger=self.logger)
 
         self.trade_pairs[symbol] = trade_pair

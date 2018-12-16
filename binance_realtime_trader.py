@@ -34,7 +34,6 @@ class BinanceTrader:
         self.multitrader = MultiTrader(client,
                                        'hybrid_signal_market_strategy',
                                        signal_names=["Hybrid_Crossover_Test"],
-                                       assets_info=assets_info,
                                        volumes=volumes,
                                        simulate=False,
                                        logger=logger)
