@@ -4,10 +4,19 @@ from trader.lib.ValueLag import ValueLag
 
 
 class TimeSegmentPriceChannel(object):
-    def __init__(self, seconds=0, minutes=0, lag_window=3):
+    def __init__(self, seconds=0, minutes=0, lag_window=3, min_smoother=None, max_smoother=None):
         self.tsv = TimeSegmentValues(seconds, minutes)
-        self.min_smoother = EMA(12, scale=24)
-        self.max_smoother = EMA(12, scale=24)
+
+        if min_smoother:
+            self.min_smoother = min_smoother
+        else:
+            self.min_smoother = EMA(12, scale=24)
+
+        if max_smoother:
+            self.max_smoother = max_smoother
+        else:
+            self.max_smoother = EMA(12, scale=24)
+
         self.minimum = 0
         self.maximum = 0
         self.mid = 0

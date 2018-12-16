@@ -115,7 +115,7 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.show()
 
 if __name__ == '__main__':
-    client = Client(MY_API_KEY, MY_API_SECRET)
+    client = None
 
     base = 'BTC'
     currency='USDT'
