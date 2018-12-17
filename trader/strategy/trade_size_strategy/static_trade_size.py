@@ -53,7 +53,7 @@ class static_trade_size(trade_size_strategy_base):
                     bnb_usdt = float(self.tickers['BNBUSDT'][4])
                 self.bnb_trade_size = self.usdt_trade_size / bnb_usdt
             else:
-                self.bnb_trade_size = 0.8
+                self.bnb_trade_size = 1.0
 
         if self.currency == 'BTC':
             trade_size = self.round_base(self.btc_trade_size / price)

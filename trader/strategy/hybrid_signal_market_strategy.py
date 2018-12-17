@@ -2,6 +2,7 @@ from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 from trader.strategy.trade_size_strategy.trade_size_strategy_base import trade_size_strategy_base
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
+from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
 from trader.indicator.OBV import OBV
@@ -50,11 +51,13 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.trend_downward_count = 0
 
         self.last_price = 0.0
-        self.min_trade_size = 0.0 #self.base_min_size * 20.0
+        self.min_trade_size = 0.0
         self.min_trade_size_qty = 1.0
         self.min_price = 0.0
         self.max_price = 0.0
-        self.trade_size_handler = static_trade_size(base, currency, base_min_size, tick_size, usdt=10)
+        self.trade_size_handler = fixed_trade_size(base, currency, base_min_size, tick_size,
+                                                   btc=0.0015, eth=0.015, bnb=1.5, usdt=10.0)
+
         # for more accurate simulation
         self.delayed_buy_msg = None
         self.delayed_sell_msg = None
