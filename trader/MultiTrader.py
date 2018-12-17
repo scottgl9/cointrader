@@ -149,7 +149,7 @@ class MultiTrader(object):
         if kline.symbol not in self.trade_pairs.keys():
             symbol_trader = self.add_trade_pair(kline.symbol)
             if not symbol_trader:
-                return
+                return None
         else:
             symbol_trader = self.trade_pairs[kline.symbol]
 
@@ -186,6 +186,10 @@ class MultiTrader(object):
 
         # handle incoming messages
         self.order_handler.process_order_messages()
+
+        if self.accnt.simulate:
+            return symbol_trader
+        return None
 
     # process message from user event socket
     # cmd: NEW, PARTIALLY_FILLED, FILLED, CANCELED

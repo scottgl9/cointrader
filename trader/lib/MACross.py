@@ -3,7 +3,8 @@ from trader.indicator.EMA import EMA
 
 
 class MACross(object):
-    def __init__(self, ema_win1=12, ema_win2=26, scale=24, cross_window=10, cross_timeout=0, lag_window=3, indicator=None):
+    def __init__(self, ema_win1=12, ema_win2=26, scale=24, cross_window=10, cross_timeout=0,
+                 lag_window=3, indicator=None):
         if not indicator:
             self.indicator = EMA
         else:

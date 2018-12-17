@@ -60,6 +60,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     first_ts = None
     last_ts = None
 
+    signal_cache = {}
+
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
                'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}

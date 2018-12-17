@@ -33,21 +33,21 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv = OBV()
         self.EMA = EMA
 
-        cross_timeout = 1000 * 3600
-        self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
-        self.ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
-        self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=cross_timeout)
+        ctimeout = 1000 * 3600
+        self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
+        self.ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=ctimeout)
+        self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=ctimeout)
         self.ema_cross_50_200 = MACross(ema_win1=50, ema_win2=200, scale=24)
 
         # reuse MACross from above for extended detection
-        self.ema_cross_12_100 = MACross(ema_win1=12, ema_win2=100, scale=24, cross_timeout=cross_timeout * 2)
-        self.ema_cross_26_100 = MACross(ema_win1=26, ema_win2=100, scale=24, cross_timeout=cross_timeout * 2)
+        self.ema_cross_12_100 = MACross(ema_win1=12, ema_win2=100, scale=24, cross_timeout=ctimeout * 2)
+        self.ema_cross_26_100 = MACross(ema_win1=26, ema_win2=100, scale=24, cross_timeout=ctimeout * 2)
 
-        self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
-        self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=cross_timeout)
+        self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
+        self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=ctimeout)
 
-        self.ema_12_cross_tpsc = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=cross_timeout)
-        self.ema_26_cross_tpsc = MACross(ema_win1=26, ema_win2=26, scale=24, cross_timeout=cross_timeout)
+        self.ema_12_cross_tpsc = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
+        self.ema_26_cross_tpsc = MACross(ema_win1=26, ema_win2=26, scale=24, cross_timeout=ctimeout)
 
     def pre_update(self, close, volume, ts):
         if self.timestamp == 0:

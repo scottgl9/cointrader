@@ -48,6 +48,11 @@ class SignalHandler(object):
     def get_handlers(self):
         return self.handlers
 
+    def get_first_handler(self):
+        if len(self.handlers) == 0:
+            return None
+        return self.handlers[0]
+
     def get_handler(self, id):
         if id == 0 and len(self.handlers) > 0:
             return self.handlers[0]
