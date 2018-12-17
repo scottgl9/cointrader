@@ -11,6 +11,7 @@ from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TimePeakValley import TimePeakValley
 from trader.lib.SegmentJump import SegmentJump
 from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
+from trader.lib.IndicatorCache import IndicatorCache
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -49,6 +50,19 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_12_cross_tpsc = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
         self.ema_26_cross_tpsc = MACross(ema_win1=26, ema_win2=26, scale=24, cross_timeout=ctimeout)
 
+        self.cache = IndicatorCache()
+        if self.accnt.simulate:
+            self.cache.create_cache(12)
+            self.cache.create_cache(26)
+            self.cache.create_cache(50)
+            self.cache.create_cache(100)
+
+    def get_cache_list(self):
+        if not self.accnt.simulate:
+            return None
+
+        return self.cache.get_cache_list()
+
     def pre_update(self, close, volume, ts):
         if self.timestamp == 0:
             self.timestamp = ts
@@ -78,6 +92,12 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.ema_12_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma1, ma2=self.tspc)
         #self.ema_26_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma2, ma2=self.tspc)
+
+        if self.accnt.simulate:
+            self.cache.add_result_to_cache(12, ts, self.ema_cross_12_26.get_ma1_result())
+            self.cache.add_result_to_cache(26, ts, self.ema_cross_12_26.get_ma2_result())
+            self.cache.add_result_to_cache(50, ts, self.ema_cross_26_50.get_ma2_result())
+            self.cache.add_result_to_cache(100, ts, self.ema_cross_50_100.get_ma2_result())
 
         #self.ema100.update(close)
         #self.tpv.update(self.ema100.result, ts)

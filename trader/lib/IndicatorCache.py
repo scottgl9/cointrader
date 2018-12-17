@@ -13,7 +13,10 @@ class IndicatorCache(object):
             return True
         return False
 
-    def add_cache(self, id):
+    def create_cache(self, id):
+        if self.empty():
+            self.cache_list = {}
+
         self.cache_list[id] = {}
 
     def remove_cache(self, id):

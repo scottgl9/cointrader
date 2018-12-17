@@ -11,6 +11,7 @@ class SignalBase(object):
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
         self.mm_enabled = False
+        self.cache = None
         self.accnt = accnt
 
         # settings for global signals
