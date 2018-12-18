@@ -23,6 +23,30 @@ import logging
 import json
 
 
+def create_db_connection(filename):
+    try:
+        conn = sqlite3.connect(filename, check_same_thread=False)
+        return conn
+    except sqlite3.Error as e:
+        print(e)
+
+    return None
+
+
+def create_table(c, name):
+    cur = c.cursor()
+    sql = """CREATE TABLE IF NOT EXISTS {} (ts integer)""".format(name)
+    cur.execute(sql)
+    c.commit()
+
+
+def add_column(c, name, id):
+    cur = c.cursor()
+    sql = """ALTER TABLE {} ADD COLUMN '{}' REAL;""".format(name, id)
+    cur.execute(sql)
+    c.commit()
+
+
 def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
@@ -103,6 +127,36 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                       ts=int(msg['E']))
 
         multitrader.process_message(kline)
+
+    ccon = create_db_connection("cache.db")
+    total_cache = {}
+    for pair in multitrader.trade_pairs.values():
+        signal = pair.strategy.signal_handler.get_first_handler()
+        symbol = pair.strategy.ticker_id
+        cache_list = signal.get_cache_list()
+        if cache_list and len(cache_list) > 0:
+            create_table(ccon, symbol)
+            cursor = ccon.cursor()
+            length = len(cache_list['ts'])
+            ids = cache_list.keys()
+
+            for id in ids:
+                if id == 'ts':
+                    continue
+                add_column(ccon, symbol, id)
+
+            for i in range(0, length):
+                values = []
+                values.append(cache_list['ts'][i])
+                for id in ids:
+                    if id == 'ts':
+                        continue
+                    values.append(cache_list[id][i])
+                cursor.execute("""INSERT INTO {} VALUES (?,?,?,?,?)""".format(symbol), values)
+            ccon.commit()
+            #total_cache[symbol] = cache_list
+
+    ccon.close()
 
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
     print("total time (hours): {}".format(round(total_time_hours, 2)))

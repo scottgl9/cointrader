@@ -17,7 +17,11 @@ class IndicatorCache(object):
         if self.empty():
             self.cache_list = {}
 
-        self.cache_list[id] = {}
+        if 'ts' not in self.cache_list:
+            self.cache_list['ts'] = []
+
+        self.cache_list[id] = []
+
 
     def remove_cache(self, id):
         if self.empty():
@@ -32,4 +36,8 @@ class IndicatorCache(object):
         if not self.id_in_cache(id):
             return False
 
-        self.cache_list[id][ts] = result
+        if ts not in self.cache_list['ts']:
+            self.cache_list['ts'].append(ts)
+
+        self.cache_list[id].append(result)
+        return True
