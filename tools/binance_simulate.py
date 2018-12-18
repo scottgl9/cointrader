@@ -128,35 +128,34 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
         multitrader.process_message(kline)
 
-    ccon = create_db_connection("cache.db")
-    total_cache = {}
-    for pair in multitrader.trade_pairs.values():
-        signal = pair.strategy.signal_handler.get_first_handler()
-        symbol = pair.strategy.ticker_id
-        cache_list = signal.get_cache_list()
-        if cache_list and len(cache_list) > 0:
-            create_table(ccon, symbol)
-            cursor = ccon.cursor()
-            length = len(cache_list['ts'])
-            ids = cache_list.keys()
+        # create indicator cache for signal indicator caching
+        if not os.path.exists("cache.db"):
+            ccon = create_db_connection("cache.db")
+            for pair in multitrader.trade_pairs.values():
+                signal = pair.strategy.signal_handler.get_first_handler()
+                symbol = pair.strategy.ticker_id
+                cache_list = signal.get_cache_list()
+                if cache_list and len(cache_list) > 0:
+                    create_table(ccon, symbol)
+                    cursor = ccon.cursor()
+                    length = len(cache_list['ts'])
+                    ids = cache_list.keys()
 
-            for id in ids:
-                if id == 'ts':
-                    continue
-                add_column(ccon, symbol, id)
+                    for id in ids:
+                        if id == 'ts':
+                            continue
+                        add_column(ccon, symbol, id)
 
-            for i in range(0, length):
-                values = []
-                values.append(cache_list['ts'][i])
-                for id in ids:
-                    if id == 'ts':
-                        continue
-                    values.append(cache_list[id][i])
-                cursor.execute("""INSERT INTO {} VALUES (?,?,?,?,?)""".format(symbol), values)
-            ccon.commit()
-            #total_cache[symbol] = cache_list
-
-    ccon.close()
+                    for i in range(0, length):
+                        values = []
+                        values.append(cache_list['ts'][i])
+                        for id in ids:
+                            if id == 'ts':
+                                continue
+                            values.append(cache_list[id][i])
+                        cursor.execute("""INSERT INTO {} VALUES (?,?,?,?,?)""".format(symbol), values)
+                    ccon.commit()
+            ccon.close()
 
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
     print("total time (hours): {}".format(round(total_time_hours, 2)))

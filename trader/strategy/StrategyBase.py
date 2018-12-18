@@ -121,7 +121,7 @@ class StrategyBase(object):
         pass
 
     ## mmkline is kline from MarketManager which is filtered and resampled
-    def run_update(self, kline, mmkline=None):
+    def run_update(self, kline, mmkline=None, cache=None):
         pass
 
     def run_update_signal(self, signal, price):

@@ -67,5 +67,5 @@ class null_strategy(StrategyBase):
         return results
 
     ## mmkline is kline from MarketManager which is filtered and resampled
-    def run_update(self, kline, mmkline=None):
+    def run_update(self, kline, mmkline=None, cache=None):
         self.update_last_50_prices(float(kline['c']))

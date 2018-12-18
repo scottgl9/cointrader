@@ -139,7 +139,7 @@ class hybrid_signal_stop_loss_strategy(StrategyBase):
 
     # NOTE: low and high do not update for each kline with binance
     ## mmkline is kline from MarketManager which is filtered and resampled
-    def run_update(self, kline, mmkline=None):
+    def run_update(self, kline, mmkline=None, cache=None):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return

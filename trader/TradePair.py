@@ -86,9 +86,9 @@ class TradePair(threading.Thread):
         self.strategy.set_buy_price_size(buy_price, buy_size, sig_id)
 
     ## mmkline is kline from MarketManager which is filtered and resampled
-    def run_update(self, kline, mmkline=None):
+    def run_update(self, kline, mmkline=None, cache=None):
         self.last_close = self.strategy.last_close
-        result = self.strategy.run_update(kline, mmkline)
+        result = self.strategy.run_update(kline, mmkline, cache)
         self.last_50_prices = self.strategy.last_50_prices
         self.prev_last_50_prices = self.strategy.prev_last_50_prices
         self.count_prices_added = self.strategy.count_prices_added

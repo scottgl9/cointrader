@@ -143,7 +143,7 @@ class MultiTrader(object):
             self.add_trade_pair(symbol)
         return self.trade_pairs[symbol]
 
-    def process_message(self, kline):
+    def process_message(self, kline, cache=None):
         self.current_ts = kline.ts
 
         if kline.symbol not in self.trade_pairs.keys():

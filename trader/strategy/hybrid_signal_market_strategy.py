@@ -169,7 +169,7 @@ class hybrid_signal_market_strategy(StrategyBase):
 
     # NOTE: low and high do not update for each kline with binance
     ## mmkline is kline from MarketManager which is filtered and resampled
-    def run_update(self, kline, mmkline=None):
+    def run_update(self, kline, mmkline=None, cache=None):
         # HACK REMOVE THIS
         #if self.currency == 'USDT':
         #    return
@@ -197,6 +197,7 @@ class hybrid_signal_market_strategy(StrategyBase):
             self.ts_avg.update(self.timestamp - self.last_timestamp)
 
         self.obv.update(close, volume)
+
 
         self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp)
 
