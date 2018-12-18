@@ -36,7 +36,7 @@ class KST_Crossover(SignalBase):
         self.max_price = 0
         self.ts = 0
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         if self.min_price == 0 or close < self.min_price:
             self.min_price = close
 

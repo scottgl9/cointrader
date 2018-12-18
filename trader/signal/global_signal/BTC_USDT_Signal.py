@@ -17,7 +17,7 @@ class BTC_USDT_Signal(SignalBase):
         self.enable_buy = False
         self.enable_sell = False
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         self.timestamp = ts
         self.ema_cross_250_500.update(close, ts)
 

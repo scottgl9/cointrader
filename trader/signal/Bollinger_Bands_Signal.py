@@ -19,7 +19,7 @@ class Bollinger_Bands_Signal(SignalBase):
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.close_price = 0
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         self.close_price = close
         self.bb.update(close)
         obv_value = self.obv.update(close=close, volume=volume)

@@ -84,7 +84,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     first_ts = None
     last_ts = None
 
-    signal_cache = {}
+    cache_db = None
 
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
@@ -126,7 +126,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                       volume=float(msg['v']),
                       ts=int(msg['E']))
 
-        multitrader.process_message(kline)
+        multitrader.process_message(kline, cache_db=cache_db)
 
         # create indicator cache for signal indicator caching
         if not os.path.exists("cache.db"):

@@ -60,7 +60,7 @@ class SignalBase(object):
     def set_flag(self, flag):
         self.flag = flag
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         pass
 
     def post_update(self, close, volume):

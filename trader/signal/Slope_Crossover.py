@@ -21,7 +21,7 @@ class Slope_Crossover(SignalBase):
         self.slope2 = SLOPE(26, use_timestamps=True)
         self.slope_cross = Crossover2(window=10)
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         self.ema12.update(close)
         self.ema26.update(close)
         self.slope1.update(self.ema12.result, ts)

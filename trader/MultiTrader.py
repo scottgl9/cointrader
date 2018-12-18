@@ -143,7 +143,7 @@ class MultiTrader(object):
             self.add_trade_pair(symbol)
         return self.trade_pairs[symbol]
 
-    def process_message(self, kline, cache=None):
+    def process_message(self, kline, cache_db=None):
         self.current_ts = kline.ts
 
         if kline.symbol not in self.trade_pairs.keys():
@@ -166,7 +166,7 @@ class MultiTrader(object):
                     self.trade_pairs[k.symbol].run_update(kline, mmkline=k)
                 self.market_manager.reset()
         else:
-            symbol_trader.run_update(kline)
+            symbol_trader.run_update(kline, cache_db=cache_db)
 
         if self.global_strategy:
             self.global_strategy.run_update(kline)

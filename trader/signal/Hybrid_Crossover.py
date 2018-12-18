@@ -59,7 +59,7 @@ class Hybrid_Crossover(SignalBase):
         self.last_cross_ts = 0
         self.last_obv_cross_ts = 0
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         if self.min_price == 0 or close < self.min_price:
             self.min_price = close
 

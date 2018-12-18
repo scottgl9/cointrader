@@ -15,7 +15,7 @@ class EFI_Breakout_Signal(SignalBase):
         self.efi_cross_high = Crossover2(window=10)
         self.efi_cross_low = Crossover2(window=10)
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         #self.dtwma.update(close, ts)
         self.efi.update(close, volume)
         self.bb.update(self.efi.result)

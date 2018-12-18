@@ -23,7 +23,7 @@ class PMO_Crossover(SignalBase):
         self.pmo_cross = Crossover2(window=10)
         self.pmo_zero_cross = Crossover2(window=10)
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         self.pmo.update(close)
         if self.pmo.pmo != 0 and self.pmo.pmo_signal != 0:
             self.pmo_cross.update(self.pmo.pmo, self.pmo.pmo_signal)

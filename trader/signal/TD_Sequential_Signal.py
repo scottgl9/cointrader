@@ -107,7 +107,7 @@ class TD_Sequential_Signal(SignalBase):
                 self.isSellSetup = True
             self.sSetupCounter = 0
 
-    def pre_update(self, close, volume=0, ts=0):
+    def pre_update(self, close, volume=0, ts=0, cache_db=None):
         if close in self.fkline.values.carray:
             return
         close = self.filter.update(close)
@@ -119,9 +119,6 @@ class TD_Sequential_Signal(SignalBase):
         self.high_prices.add(float(high))
         self.get_next_setup()
         self.get_next_countdown()
-
-    def post_update(self):
-        pass
 
     #  the low of bars 8 or 9 should be lower or equal to the low of bar 6 and bar 7 in Buy Setup.
     def buy_signal(self):

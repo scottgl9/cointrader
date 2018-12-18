@@ -30,7 +30,7 @@ class OBV_Crossover(SignalBase):
         self.min_price = 0
         self.max_price = 0
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         obv_value = self.obv.update(close=close, volume=volume)
         self.prev_low = self.low
         self.prev_high = self.high

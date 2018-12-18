@@ -31,12 +31,12 @@ class SignalHandler(object):
         if handler in self.handlers:
             self.handlers.remove(handler)
 
-    def pre_update(self, close, volume, ts=0):
+    def pre_update(self, close, volume, ts=0, cache_db=None):
         if self.empty():
             return
 
         for handler in self.handlers:
-            handler.pre_update(close=close, volume=volume, ts=ts)
+            handler.pre_update(close=close, volume=volume, ts=ts, cache_db=cache_db)
 
     def post_update(self, close, volume):
         if self.empty():

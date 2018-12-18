@@ -23,7 +23,7 @@ class RSI_OBV(SignalBase):
         #self.rsi_ema26 = EMA(self.window, scale=24)
         self.rsi_cross = Crossover2(window=10)
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         obv_value = self.obv.update(close=close, volume=volume)
         self.obv_ema12.update(obv_value)
         self.obv_ema26.update(obv_value)

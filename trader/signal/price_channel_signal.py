@@ -10,7 +10,7 @@ class price_channel_signal(SignalBase):
         #self.obv = OBV()
         self.pc = PriceChannel()
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         self.pc.update(close)
 
     def post_update(self, close, volume):

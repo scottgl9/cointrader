@@ -19,7 +19,7 @@ class TSI_Signal(SignalBase):
         self.tsi_cross_high = Crossover2(window=10)
         self.peak = SimplePeak()
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         #obv_value = self.obv.update(close=float(close), volume=float(volume))
         tsi_result = self.tsi.update(float(close))
 

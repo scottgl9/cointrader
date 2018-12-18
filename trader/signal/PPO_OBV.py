@@ -18,7 +18,7 @@ class PPO_OBV(SignalBase):
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.ppo_cross = Crossover2()
 
-    def pre_update(self, close, volume, ts=0):
+    def pre_update(self, close, volume, ts=0, cache_db=None):
         obv_value = self.obv.update(close=close, volume=volume)
         self.obv_ema12.update(obv_value)
         self.obv_ema26.update(obv_value)

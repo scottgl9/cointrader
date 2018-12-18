@@ -63,7 +63,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         return self.cache.get_cache_list()
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, close, volume, ts, cache_db=None):
         if self.timestamp == 0:
             self.timestamp = ts
 
