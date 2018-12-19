@@ -1,6 +1,7 @@
 class IndicatorCache(object):
-    def __init__(self):
+    def __init__(self, symbol):
         self.cache_list = None
+        self.symbol = symbol
 
     def empty(self):
         return not self.cache_list
@@ -22,7 +23,6 @@ class IndicatorCache(object):
 
         self.cache_list[id] = []
 
-
     def remove_cache(self, id):
         if self.empty():
             return
@@ -40,4 +40,24 @@ class IndicatorCache(object):
             self.cache_list['ts'].append(ts)
 
         self.cache_list[id].append(result)
+        return True
+
+    def load_cache_from_db(self, db=None):
+        if not db:
+            return False
+
+        self.cache_list = {}
+
+        c = db.cursor()
+        c.execute("SELECT * FROM {}".format(self.symbol))
+        ids = None
+        for row in c:
+            if not ids:
+                ids = row.keys()
+                for id in ids:
+                    self.cache_list[id] = []
+
+            for i in range(0, len(row)):
+                self.cache_list[ids[i]].append(row[i])
+
         return True

@@ -50,7 +50,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_12_cross_tpsc = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
         self.ema_26_cross_tpsc = MACross(ema_win1=26, ema_win2=26, scale=24, cross_timeout=ctimeout)
 
-        self.cache = IndicatorCache()
+        self.cache = IndicatorCache(symbol=self.symbol)
         if self.accnt.simulate:
             self.cache.create_cache(12)
             self.cache.create_cache(26)
