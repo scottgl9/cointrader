@@ -13,6 +13,7 @@ class MACross(object):
         self.scale = scale
         self.ema_win1 = ema_win1
         self.ema_win2 = ema_win2
+        self.lag_window = lag_window
 
         # cross_timeout is how long after a cross that we reset the cross to false (0 means no timeout)
         self.cross_timeout = cross_timeout
@@ -43,8 +44,8 @@ class MACross(object):
         self.cross_up = False
         self.cross_down = False
 
-        self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=lag_window)
-        self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=lag_window)
+        self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=self.lag_window)
+        self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
         self.cross = Crossover2(window=self.cross_window)
 
     def update_min_max_values(self, value, ts):
@@ -62,22 +63,35 @@ class MACross(object):
     # ma1 and ma2 allow to pass in an indicator from another MACross
     # that is already being updated, so that we don't have to compute
     # for example, EMA50(value) twice, instead we can re-use from another MACross instance
-    def update(self, value, ts, ma1=None, ma2=None):
-        if not ma1:
+    def update(self, value, ts, ma1=None, ma2=None, ma1_result=0, ma2_result=0):
+        if not self.ma1:
+            self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=self.lag_window)
+        if not self.ma2:
+            self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
+
+        if not ma1 and ma1_result == 0:
             self.ma1.update(value)
             ma1_result = self.ma1.result
             ma1_ready = self.ma1.ready()
-        else:
+        elif ma1_result == 0:
             ma1_result = ma1.result
+            self.ma1.result = ma1.result
             ma1_ready = ma1.ready()
+        else:
+            self.ma1.result = ma1_result
+            ma1_ready = True
 
-        if not ma2:
+        if not ma2 and ma2_result == 0:
             self.ma2.update(value)
             ma2_result = self.ma2.result
             ma2_ready = self.ma2.ready()
-        else:
+        elif ma2_result == 0:
             ma2_result = ma2.result
+            self.ma2.result = ma2.result
             ma2_ready = ma2.ready()
+        else:
+            self.ma2.result = ma2_result
+            ma2_ready = True
 
         if not ma1_ready or not ma2_ready:
             return

@@ -1,6 +1,7 @@
 class IndicatorCache(object):
     def __init__(self, symbol):
         self.cache_list = None
+        self.cache_counters = {}
         self.symbol = symbol
         self.loaded = False
 
@@ -33,6 +34,12 @@ class IndicatorCache(object):
 
         del self.cache_list[id]
 
+    def get_result_from_cache(self, id):
+        counter = self.cache_counters[id]
+        result = self.cache_list[id][counter]
+        self.cache_counters[id] = counter + 1
+        return result
+
     def add_result_to_cache(self, id, ts, result):
         if not self.id_in_cache(id):
             return False
@@ -51,13 +58,15 @@ class IndicatorCache(object):
 
         c = db.cursor()
         c.execute("SELECT * FROM {}".format(self.symbol))
-        ids = None
-        for row in c:
-            if not ids:
-                ids = row.keys()
-                for id in ids:
-                    self.cache_list[id] = []
 
+        # get column names
+        ids = [description[0] for description in c.description]
+
+        for id in ids:
+            self.cache_list[id] = []
+            self.cache_counters[id] = 0
+
+        for row in c:
             for i in range(0, len(row)):
                 self.cache_list[ids[i]].append(row[i])
 

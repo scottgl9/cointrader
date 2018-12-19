@@ -75,7 +75,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.last_close = close
 
-        if self.accnt.simulate and not self.cache.loaded:
+        if self.accnt.simulate and cache_db and not self.cache.loaded:
             self.cache.load_cache_from_db(cache_db)
 
         #self.tsj.update(close, ts)
@@ -86,17 +86,20 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema_cross_26_50.update(self.obv.result, ts, ma1=self.obv_ema_cross_12_26.ma2)
 
         self.ema_cross_12_26.update(close, ts)
-        self.ema_cross_26_50.update(close, ts, ma1=self.ema_cross_12_26.ma2)
-        self.ema_cross_50_100.update(close, ts, ma1=self.ema_cross_26_50.ma2)
-        self.ema_cross_50_200.update(close, ts, ma1=self.ema_cross_26_50.ma2)
+        self.ema_cross_26_50.update(close, ts, ma1_result=self.ema_cross_12_26.ma2.result)
+        self.ema_cross_50_100.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
+        self.ema_cross_50_200.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
 
-        self.ema_cross_12_100.update(close, ts, ma1=self.ema_cross_12_26.ma1, ma2=self.ema_cross_50_100.ma2)
-        self.ema_cross_26_100.update(close, ts, ma1=self.ema_cross_12_26.ma2, ma2=self.ema_cross_50_100.ma2)
+        self.ema_cross_12_100.update(close, ts, ma1_result=self.ema_cross_12_26.ma1.result,
+                                     ma2_result=self.ema_cross_50_100.ma2.result)
 
-        self.ema_12_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma1, ma2=self.tspc)
+        self.ema_cross_26_100.update(close, ts, ma1_result=self.ema_cross_12_26.ma2.result,
+                                     ma2_result=self.ema_cross_50_100.ma2.result)
+
+        self.ema_12_cross_tpsc.update(close, ts, ma1_result=self.ema_cross_12_26.ma1.result, ma2=self.tspc)
         #self.ema_26_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma2, ma2=self.tspc)
 
-        if self.accnt.simulate:
+        if self.accnt.simulate and not self.cache.loaded:
             self.cache.add_result_to_cache(12, ts, self.ema_cross_12_26.get_ma1_result())
             self.cache.add_result_to_cache(26, ts, self.ema_cross_12_26.get_ma2_result())
             self.cache.add_result_to_cache(50, ts, self.ema_cross_26_50.get_ma2_result())

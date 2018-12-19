@@ -84,10 +84,10 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     first_ts = None
     last_ts = None
 
-    #if os.path.exists("cache.db"):
-    #    cache_db = create_db_connection("cache.db")
-    #else:
-    cache_db = None
+    if os.path.exists("cache.db"):
+        cache_db = create_db_connection("cache.db")
+    else:
+        cache_db = None
 
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
