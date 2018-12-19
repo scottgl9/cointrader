@@ -33,16 +33,22 @@ def create_db_connection(filename):
     return None
 
 
-def create_table(c, name):
+def create_table(c, name, id):
     cur = c.cursor()
-    sql = """CREATE TABLE IF NOT EXISTS {} (ts integer)""".format(name)
+    if id == 'ts':
+        sql = """CREATE TABLE IF NOT EXISTS {} (ts INTEGER)""".format(name)
+    else:
+        sql = """CREATE TABLE IF NOT EXISTS {} ('{}' REAL)""".format(name, id)
     cur.execute(sql)
     c.commit()
 
 
 def add_column(c, name, id):
     cur = c.cursor()
-    sql = """ALTER TABLE {} ADD COLUMN '{}' REAL;""".format(name, id)
+    if id == 'ts':
+        sql = """ALTER TABLE {} ADD COLUMN 'ts' INTEGER;""".format(name)
+    else:
+        sql = """ALTER TABLE {} ADD COLUMN '{}' REAL;""".format(name, id)
     cur.execute(sql)
     c.commit()
 
@@ -139,24 +145,28 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
             symbol = pair.strategy.ticker_id
             cache_list = signal.get_cache_list()
             if cache_list and len(cache_list) > 0:
-                create_table(ccon, symbol)
+                table_created = False
                 cursor = ccon.cursor()
                 length = len(cache_list['ts'])
                 ids = cache_list.keys()
 
                 for id in ids:
-                    if id == 'ts':
-                        continue
-                    add_column(ccon, symbol, id)
+                    if not table_created:
+                        create_table(ccon, symbol, id)
+                        table_created = True
+                    else:
+                        add_column(ccon, symbol, id)
 
                 for i in range(0, length):
                     values = []
-                    values.append(cache_list['ts'][i])
                     for id in ids:
-                        if id == 'ts':
-                            continue
                         values.append(cache_list[id][i])
-                    cursor.execute("""INSERT INTO {} VALUES (?,?,?,?,?,?)""".format(symbol), values)
+
+                    temp = []
+                    for value in values: temp.append('?')
+
+                    sql = """INSERT INTO {} VALUES {}""".format(symbol, "("+",".join(temp)+")")
+                    cursor.execute(sql, values)
                 ccon.commit()
         ccon.close()
 
