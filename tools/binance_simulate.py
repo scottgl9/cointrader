@@ -156,7 +156,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                         if id == 'ts':
                             continue
                         values.append(cache_list[id][i])
-                    cursor.execute("""INSERT INTO {} VALUES (?,?,?,?,?)""".format(symbol), values)
+                    cursor.execute("""INSERT INTO {} VALUES (?,?,?,?,?,?)""".format(symbol), values)
                 ccon.commit()
         ccon.close()
 

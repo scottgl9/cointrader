@@ -35,6 +35,7 @@ class IndicatorCache(object):
         del self.cache_list[id]
 
     def get_result_from_cache(self, id):
+        id = str(id)
         counter = self.cache_counters[id]
         result = self.cache_list[id][counter]
         self.cache_counters[id] = counter + 1

@@ -56,6 +56,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.create_cache(26)
             self.cache.create_cache(50)
             self.cache.create_cache(100)
+            self.cache.create_cache(200)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -85,10 +86,22 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema_cross_12_26.update(self.obv.result, ts)
         self.obv_ema_cross_26_50.update(self.obv.result, ts, ma1=self.obv_ema_cross_12_26.ma2)
 
-        self.ema_cross_12_26.update(close, ts)
-        self.ema_cross_26_50.update(close, ts, ma1_result=self.ema_cross_12_26.ma2.result)
-        self.ema_cross_50_100.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
-        self.ema_cross_50_200.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
+        if self.accnt.simulate and self.cache.loaded:
+            ema12_result = self.cache.get_result_from_cache(12)
+            ema26_result = self.cache.get_result_from_cache(26)
+            ema50_result = self.cache.get_result_from_cache(50)
+            ema100_result = self.cache.get_result_from_cache(100)
+            ema200_result = self.cache.get_result_from_cache(200)
+
+            self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
+            self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
+            self.ema_cross_50_100.update(close, ts, ma1_result=ema50_result, ma2_result=ema100_result)
+            self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
+        else:
+            self.ema_cross_12_26.update(close, ts)
+            self.ema_cross_26_50.update(close, ts, ma1_result=self.ema_cross_12_26.ma2.result)
+            self.ema_cross_50_100.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
+            self.ema_cross_50_200.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
 
         self.ema_cross_12_100.update(close, ts, ma1_result=self.ema_cross_12_26.ma1.result,
                                      ma2_result=self.ema_cross_50_100.ma2.result)
@@ -104,6 +117,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.add_result_to_cache(26, ts, self.ema_cross_12_26.get_ma2_result())
             self.cache.add_result_to_cache(50, ts, self.ema_cross_26_50.get_ma2_result())
             self.cache.add_result_to_cache(100, ts, self.ema_cross_50_100.get_ma2_result())
+            self.cache.add_result_to_cache(200, ts, self.ema_cross_50_200.get_ma2_result())
 
         #self.ema100.update(close)
         #self.tpv.update(self.ema100.result, ts)
