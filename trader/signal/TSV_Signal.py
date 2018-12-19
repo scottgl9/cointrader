@@ -7,8 +7,8 @@ from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.signal.SignalBase import SignalBase
 
 class TSV_Signal(SignalBase):
-    def __init__(self, accnt=None, window=26):
-        super(TSV_Signal, self).__init__(accnt)
+    def __init__(self, accnt=None, symbol=None, window=26):
+        super(TSV_Signal, self).__init__(accnt, symbol)
         self.signal_name = "TSV_Signal"
         self.window = window
 

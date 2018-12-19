@@ -2,6 +2,7 @@ class IndicatorCache(object):
     def __init__(self, symbol):
         self.cache_list = None
         self.symbol = symbol
+        self.loaded = False
 
     def empty(self):
         return not self.cache_list
@@ -59,5 +60,7 @@ class IndicatorCache(object):
 
             for i in range(0, len(row)):
                 self.cache_list[ids[i]].append(row[i])
+
+        self.loaded = True
 
         return True

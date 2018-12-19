@@ -5,8 +5,8 @@ from trader.lib.Crossover2 import Crossover2
 from trader.signal.SignalBase import SignalBase
 
 class Bollinger_Bands_Signal(SignalBase):
-    def __init__(self, accnt=None, win_short=12, win_med=26, win_long=50):
-        super(Bollinger_Bands_Signal, self).__init__(accnt)
+    def __init__(self, accnt=None, symbol=None, win_short=12, win_med=26, win_long=50):
+        super(Bollinger_Bands_Signal, self).__init__(accnt, symbol)
         self.signal_name = "Bollinger_Bands_Signal"
         self.win_short = win_short
         self.win_med = win_med

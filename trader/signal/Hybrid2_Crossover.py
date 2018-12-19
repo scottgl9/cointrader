@@ -11,8 +11,8 @@ from trader.signal.SignalBase import SignalBase
 
 
 class Hybrid2_Crossover(SignalBase):
-    def __init__(self, accnt=None, win_short=12, win_med=26, win_long=50):
-        super(Hybrid2_Crossover, self).__init__(accnt)
+    def __init__(self, accnt=None, symbol=None, win_short=12, win_med=26, win_long=50):
+        super(Hybrid2_Crossover, self).__init__(accnt, symbol)
         self.signal_name = "Hybrid2_Crossover"
         #self.id = 0
         self.win_short = win_short

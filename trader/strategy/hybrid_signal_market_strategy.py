@@ -27,7 +27,7 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         if signal_names:
             for name in signal_names:
-                signal = StrategyBase.select_signal_name(name, self.accnt)
+                signal = StrategyBase.select_signal_name(name, self.accnt, self.ticker_id)
                 if signal.mm_enabled:
                     self.mm_enabled = True
                 # don't add global signal if global_filter doesn't match ticker_id
@@ -35,7 +35,7 @@ class hybrid_signal_market_strategy(StrategyBase):
                     continue
                 self.signal_handler.add(signal)
         else:
-            self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover", self.accnt))
+            self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover", self.accnt, self.ticker_id))
 
         self.obv = OBV()
 

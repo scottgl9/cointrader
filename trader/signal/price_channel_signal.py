@@ -2,8 +2,8 @@ from trader.indicator.test.PriceChannel import PriceChannel
 from trader.signal.SignalBase import SignalBase
 
 class price_channel_signal(SignalBase):
-    def __init__(self, accnt=None, window=26):
-        super(price_channel_signal, self).__init__(accnt)
+    def __init__(self, accnt=None, symbol=None, window=26):
+        super(price_channel_signal, self).__init__(accnt, symbol)
         self.signal_name = "price_channel_signal"
         self.id = 0
         self.window = window

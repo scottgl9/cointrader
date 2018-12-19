@@ -17,8 +17,8 @@ from trader.signal.SignalBase import SignalBase
 
 
 class Hybrid_Crossover_Test(SignalBase):
-    def __init__(self, accnt=None):
-        super(Hybrid_Crossover_Test, self).__init__(accnt)
+    def __init__(self, accnt=None, symbol=None):
+        super(Hybrid_Crossover_Test, self).__init__(accnt, symbol)
         self.signal_name = "Hybrid_Crossover_Test"
         self.disabled = False
         self.disabled_end_ts = 0
@@ -74,6 +74,9 @@ class Hybrid_Crossover_Test(SignalBase):
             self.timestamp = ts
 
         self.last_close = close
+
+        if self.accnt.simulate and not self.cache.loaded:
+            self.cache.load_cache_from_db(cache_db)
 
         #self.tsj.update(close, ts)
         self.tspc.update(close, ts)

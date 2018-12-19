@@ -7,8 +7,8 @@ from trader.lib.SimplePeak import SimplePeak
 from trader.signal.SignalBase import SignalBase
 
 class RSI_OBV(SignalBase):
-    def __init__(self, accnt=None, window=26):
-        super(RSI_OBV, self).__init__(accnt)
+    def __init__(self, accnt=None, symbol=None, window=26):
+        super(RSI_OBV, self).__init__(accnt, symbol)
         self.signal_name = "RSI_OBV"
         self.window = window
         self.obv = OBV()

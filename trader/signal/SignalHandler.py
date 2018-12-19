@@ -22,7 +22,7 @@ class SignalHandler(object):
         return len(self.handlers) == 0
 
     def add(self, handler):
-        handler.set_symbol(self.symbol)
+        #handler.set_symbol(self.symbol)
         handler.set_id(self.cur_id)
         self.cur_id += 1
         self.handlers.append(handler)

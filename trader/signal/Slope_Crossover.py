@@ -5,8 +5,8 @@ from trader.indicator.SLOPE import SLOPE
 from trader.lib.Crossover2 import Crossover2
 
 class Slope_Crossover(SignalBase):
-    def __init__(self, accnt=None):
-        super(Slope_Crossover, self).__init__(accnt)
+    def __init__(self, accnt=None, symbol=None):
+        super(Slope_Crossover, self).__init__(accnt, symbol)
         self.signal_name = "Slope_Crossover"
         self.obv = OBV()
         self.obv_ema12 = EMA(12, scale=24)
