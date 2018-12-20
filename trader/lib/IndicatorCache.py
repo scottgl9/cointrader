@@ -1,4 +1,4 @@
-
+import sqlite3
 
 class IndicatorCache(object):
     def __init__(self, symbol):
@@ -8,6 +8,7 @@ class IndicatorCache(object):
         self.cache_counters = {}
         self.symbol = symbol
         self.loaded = False
+        self.init_load = False
         self.table_created = False
 
     def empty(self):
@@ -58,18 +59,25 @@ class IndicatorCache(object):
         return True
 
     def load_cache_from_db(self, db=None):
+        self.init_load = True
+
         if not db:
             self.loaded = False
             return False
 
-        if not self.table_exists(db):
-            self.loaded = False
-            return False
+        #if not self.table_exists(db):
+        #    self.loaded = False
+        #    return False
 
         self.cache_list = {}
 
         c = db.cursor()
-        c.execute("SELECT * FROM {}".format(self.symbol))
+        try:
+            c.execute("SELECT * FROM {}".format(self.symbol))
+        except sqlite3.OperationalError:
+            self.loaded = False
+            c.close()
+            return False
 
         # get column names
         ids = [description[0] for description in c.description]
@@ -88,15 +96,12 @@ class IndicatorCache(object):
 
     def table_exists(self, c):
         cursor = c.cursor()
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM information_schema.tables
-            WHERE table_name = '{0}'
-            """.format(self.symbol))
-        if cursor.fetchone()[0] == 1:
-            cursor.close()
-            return True
+        cursor.execute("""select count(*) from sqlite_master as tables where type='table'""")
+        count = cursor.fetchone()[0]
         cursor.close()
+        print(count)
+        if count:
+            return True
         return False
 
     def create_table(self, c, id):

@@ -94,7 +94,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.last_close = close
 
-        if self.accnt.simulate and cache_db and not self.cache.loaded:
+        if self.accnt.simulate and cache_db and not self.cache.loaded and not self.cache.init_load:
             self.cache.load_cache_from_db(cache_db)
 
         if self.accnt.simulate and self.cache.loaded:
