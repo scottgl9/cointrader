@@ -1,9 +1,14 @@
+
+
 class IndicatorCache(object):
     def __init__(self, symbol):
         self.cache_list = None
+        self.cache_entry = {}
+        self.id_list = []
         self.cache_counters = {}
         self.symbol = symbol
         self.loaded = False
+        self.table_created = False
 
     def empty(self):
         return not self.cache_list
@@ -24,6 +29,7 @@ class IndicatorCache(object):
             self.cache_list['ts'] = []
 
         self.cache_list[id] = []
+        self.id_list.append(id)
 
     def remove_cache(self, id):
         if self.empty():
@@ -42,17 +48,22 @@ class IndicatorCache(object):
         return float(result)
 
     def add_result_to_cache(self, id, ts, result):
-        if not self.id_in_cache(id):
-            return False
-
-        if ts not in self.cache_list['ts']:
-            self.cache_list['ts'].append(ts)
-
-        self.cache_list[id].append(result)
+        #if not self.id_in_cache(id):
+        #    return False
+        #if ts not in self.cache_list['ts']:
+        #    self.cache_list['ts'].append(ts)
+        #self.cache_list[id].append(result)
+        self.cache_entry['ts'] = ts
+        self.cache_entry[id] = result
         return True
 
     def load_cache_from_db(self, db=None):
         if not db:
+            self.loaded = False
+            return False
+
+        if not self.table_exists(db):
+            self.loaded = False
             return False
 
         self.cache_list = {}
@@ -74,3 +85,56 @@ class IndicatorCache(object):
         self.loaded = True
 
         return True
+
+    def table_exists(self, c):
+        cursor = c.cursor()
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM information_schema.tables
+            WHERE table_name = '{0}'
+            """.format(self.symbol))
+        if cursor.fetchone()[0] == 1:
+            cursor.close()
+            return True
+        cursor.close()
+        return False
+
+    def create_table(self, c, id):
+        cur = c.cursor()
+        if id == 'ts':
+            sql = """CREATE TABLE IF NOT EXISTS {} (ts INTEGER)""".format(self.symbol)
+        else:
+            sql = """CREATE TABLE IF NOT EXISTS {} ('{}' REAL)""".format(self.symbol, id)
+        cur.execute(sql)
+        c.commit()
+
+    def add_column(self, c, id):
+        cur = c.cursor()
+        if id == 'ts':
+            sql = """ALTER TABLE {} ADD COLUMN 'ts' INTEGER;""".format(self.symbol)
+        else:
+            sql = """ALTER TABLE {} ADD COLUMN '{}' REAL;""".format(self.symbol, id)
+        cur.execute(sql)
+        c.commit()
+
+    def write_results_to_cache(self, c):
+        cursor = c.cursor()
+
+        if not self.table_created:
+            for id in self.id_list:
+                if not self.table_created:
+                    self.create_table(c, id)
+                    self.table_created = True
+                else:
+                    self.add_column(c, id)
+
+        values = []
+        for id in self.id_list:
+            values.append(self.cache_entry[id])
+
+        temp = ['?'] * len(values)
+
+        sql = """INSERT INTO {} VALUES {}""".format(self.symbol, "(" + ",".join(temp) + ")")
+        cursor.execute(sql, values)
+
+        self.cache_entry = {}

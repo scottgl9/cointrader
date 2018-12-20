@@ -137,14 +137,13 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.add_result_to_cache('O12', ts, obv12_result)
             self.cache.add_result_to_cache('O26', ts, obv26_result)
             self.cache.add_result_to_cache('O50', ts, obv50_result)
-
             self.cache.add_result_to_cache('12', ts, ema12_result)
             self.cache.add_result_to_cache('26', ts, ema26_result)
             self.cache.add_result_to_cache('50', ts, ema50_result)
             self.cache.add_result_to_cache('100', ts, ema100_result)
             self.cache.add_result_to_cache('200', ts, ema200_result)
-
             self.cache.add_result_to_cache('TSPC', ts, tspc_result)
+            self.cache.write_results_to_cache(cache_db)
 
         #self.ema100.update(close)
         #self.tpv.update(self.ema100.result, ts)
