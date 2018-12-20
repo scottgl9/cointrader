@@ -39,7 +39,7 @@ class IndicatorCache(object):
         counter = self.cache_counters[id]
         result = self.cache_list[id][counter]
         self.cache_counters[id] = counter + 1
-        return result
+        return float(result)
 
     def add_result_to_cache(self, id, ts, result):
         if not self.id_in_cache(id):

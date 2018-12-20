@@ -1,14 +1,14 @@
 from trader.lib.Crossover2 import Crossover2
 from trader.indicator.EMA import EMA
-
+from trader.lib.ValueLag import ValueLag
 
 class MACross(object):
-    def __init__(self, ema_win1=12, ema_win2=26, scale=24, cross_window=10, cross_timeout=0,
+    def __init__(self, ema_win1=0, ema_win2=0, scale=0, cross_window=10, cross_timeout=0,
                  lag_window=3, indicator=None):
-        if not indicator:
-            self.indicator = EMA
-        else:
-            self.indicator = indicator
+        #if not indicator:
+        #    self.indicator = EMA
+        #else:
+        self.indicator = indicator
 
         self.scale = scale
         self.ema_win1 = ema_win1
@@ -44,8 +44,25 @@ class MACross(object):
         self.cross_up = False
         self.cross_down = False
 
-        self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=self.lag_window)
-        self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
+        self.ma1 = None
+        self.ma2 = None
+        self.ma1_result = 0
+        self.ma2_result = 0
+        self.ma1_last_result = 0
+        self.ma2_last_result = 0
+
+        if not self.indicator and self.lag_window != 0:
+            self.ma1_lag = ValueLag(lag_window)
+            self.ma2_lag = ValueLag(lag_window)
+        else:
+            self.ma1_lag = None
+            self.ma2_lag = None
+
+        if self.indicator and self.ema_win1:
+            self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=self.lag_window)
+        if self.indicator and self.ema_win2:
+            self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
+
         self.cross = Crossover2(window=self.cross_window)
 
     def update_min_max_values(self, value, ts):
@@ -64,34 +81,49 @@ class MACross(object):
     # that is already being updated, so that we don't have to compute
     # for example, EMA50(value) twice, instead we can re-use from another MACross instance
     def update(self, value, ts, ma1=None, ma2=None, ma1_result=0, ma2_result=0):
-        if not self.ma1:
-            self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=self.lag_window)
-        if not self.ma2:
-            self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
+        #if not self.ma1:
+        #    self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=self.lag_window)
+        #if not self.ma2:
+        #    self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
 
-        if not ma1 and ma1_result == 0:
+        if self.ma1 and not ma1 and ma1_result == 0:
             self.ma1.update(value)
+            self.ma1_result = self.ma1.result
+            self.ma1_last_result = self.ma1.last_result
             ma1_result = self.ma1.result
             ma1_ready = self.ma1.ready()
-        elif ma1_result == 0:
+        elif ma1_result == 0 and ma1:
             ma1_result = ma1.result
             self.ma1.result = ma1.result
             ma1_ready = ma1.ready()
         else:
-            self.ma1.result = ma1_result
-            ma1_ready = True
+            self.ma1_result = ma1_result
+            if ma1_result != 0:
+                ma1_ready = True
+            else:
+                ma1_ready = False
 
-        if not ma2 and ma2_result == 0:
+        if self.ma1 and not ma2 and ma2_result == 0:
             self.ma2.update(value)
+            self.ma2_result = self.ma2.result
+            self.ma2_last_result = self.ma2.last_result
             ma2_result = self.ma2.result
             ma2_ready = self.ma2.ready()
-        elif ma2_result == 0:
+        elif ma2_result == 0 and ma2:
             ma2_result = ma2.result
             self.ma2.result = ma2.result
             ma2_ready = ma2.ready()
         else:
-            self.ma2.result = ma2_result
-            ma2_ready = True
+            self.ma2_result = ma2_result
+            if ma2_result != 0:
+                ma2_ready = True
+            else:
+                ma2_ready = False
+
+        if not self.indicator and self.ma1_lag:
+            self.ma1_last_result = self.ma1_lag.update(self.ma1_result)
+        if not self.indicator and self.ma2_lag:
+            self.ma2_last_result = self.ma2_lag.update(self.ma2_result)
 
         if not ma1_ready or not ma2_ready:
             return
@@ -142,20 +174,24 @@ class MACross(object):
 
 
     def get_ma1_result(self):
-        return self.ma1.result
+        if self.ma1:
+            return self.ma1.result
+        return self.ma1_result
 
     def get_ma2_result(self):
-        return self.ma2.result
+        if self.ma2:
+            return self.ma2.result
+        return self.ma2_result
 
     def get_ma1_diff(self):
-        if self.ma1.result == 0 or self.ma1.last_result == 0:
+        if self.ma1_result == 0 or self.ma1_last_result == 0:
             return 0
-        return self.ma1.result - self.ma1.last_result
+        return self.ma1_result - self.ma1_last_result
 
     def get_ma2_diff(self):
-        if self.ma2.result == 0 or self.ma2.last_result == 0:
+        if self.ma2_result == 0 or self.ma2_last_result == 0:
             return 0
-        return self.ma2.result - self.ma2.last_result
+        return self.ma2_result - self.ma2_last_result
 
     def ma1_trend_up(self):
         return self.get_ma1_diff() > 0

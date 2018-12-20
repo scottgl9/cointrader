@@ -57,7 +57,7 @@ class TimeSegmentPriceChannel(object):
         self.tsv.update(value, ts)
 
         if not self.tsv.ready():
-            return
+            return self.result
 
         if self.value_lag:
             self.last_result = self.value_lag.update(self.result)

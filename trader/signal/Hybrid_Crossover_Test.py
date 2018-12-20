@@ -34,21 +34,33 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv = OBV()
         self.EMA = EMA
 
+        self.ema12 = EMA(12, scale=24)
+        self.ema26 = EMA(26, scale=24, lag_window=5)
+        self.ema50 = EMA(50, scale=24, lag_window=5)
+        self.ema100 = EMA(100, scale=24, lag_window=5)
+        self.ema200 = EMA(200, scale=24, lag_window=5)
+        #self.obv_ema12 = ZLEMA(self.win_short, scale=24)
+        #self.obv_ema26 = ZLEMA(self.win_med, scale=24, lag_window=5)
+        #self.obv_ema50 = ZLEMA(self.win_long, scale=24, lag_window=5)
+        self.obv_ema12 = EMA(12, scale=24)
+        self.obv_ema26 = EMA(26, scale=24, lag_window=5)
+        self.obv_ema50 = EMA(50, scale=24, lag_window=5)
+
         ctimeout = 1000 * 3600
-        self.ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
-        self.ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=ctimeout)
-        self.ema_cross_50_100 = MACross(ema_win1=50, ema_win2=100, scale=24, cross_timeout=ctimeout)
-        self.ema_cross_50_200 = MACross(ema_win1=50, ema_win2=200, scale=24)
+        self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)
+        self.ema_cross_26_50 = MACross(cross_timeout=ctimeout)
+        self.ema_cross_50_100 = MACross(cross_timeout=ctimeout)
+        self.ema_cross_50_200 = MACross()
 
         # reuse MACross from above for extended detection
-        self.ema_cross_12_100 = MACross(ema_win1=12, ema_win2=100, scale=24, cross_timeout=ctimeout * 2)
-        self.ema_cross_26_100 = MACross(ema_win1=26, ema_win2=100, scale=24, cross_timeout=ctimeout * 2)
+        self.ema_cross_12_100 = MACross(cross_timeout=ctimeout * 2)
+        self.ema_cross_26_100 = MACross(cross_timeout=ctimeout * 2)
 
-        self.obv_ema_cross_12_26 = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
-        self.obv_ema_cross_26_50 = MACross(ema_win1=26, ema_win2=50, scale=24, cross_timeout=ctimeout)
+        self.obv_ema_cross_12_26 = MACross(cross_timeout=ctimeout)
+        self.obv_ema_cross_26_50 = MACross(cross_timeout=ctimeout)
 
-        self.ema_12_cross_tpsc = MACross(ema_win1=12, ema_win2=26, scale=24, cross_timeout=ctimeout)
-        self.ema_26_cross_tpsc = MACross(ema_win1=26, ema_win2=26, scale=24, cross_timeout=ctimeout)
+        self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
+        self.ema_26_cross_tpsc = MACross(cross_timeout=ctimeout)
 
         self.cache = IndicatorCache(symbol=self.symbol)
         if self.accnt.simulate:
@@ -61,6 +73,8 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.create_cache('50')
             self.cache.create_cache('100')
             self.cache.create_cache('200')
+
+            self.cache.create_cache('TSPC')
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -83,9 +97,6 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.accnt.simulate and cache_db and not self.cache.loaded:
             self.cache.load_cache_from_db(cache_db)
 
-        #self.tsj.update(close, ts)
-        self.tspc.update(close, ts)
-
         if self.accnt.simulate and self.cache.loaded:
             obv12_result = self.cache.get_result_from_cache('O12')
             obv26_result = self.cache.get_result_from_cache('O26')
@@ -97,42 +108,43 @@ class Hybrid_Crossover_Test(SignalBase):
             ema100_result = self.cache.get_result_from_cache('100')
             ema200_result = self.cache.get_result_from_cache('200')
 
-            self.obv_ema_cross_12_26.update(0, ts, ma1_result=obv12_result, ma2_result=obv26_result)
-            self.obv_ema_cross_26_50.update(0, ts, ma1_result=obv26_result, ma2_result=obv50_result)
-
-            self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
-            self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
-            self.ema_cross_50_100.update(close, ts, ma1_result=ema50_result, ma2_result=ema100_result)
-            self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
+            tspc_result = self.cache.get_result_from_cache('TSPC')
         else:
             self.obv.update(close=close, volume=volume)
-            self.obv_ema_cross_12_26.update(self.obv.result, ts)
-            self.obv_ema_cross_26_50.update(self.obv.result, ts, ma1=self.obv_ema_cross_12_26.ma2)
+            obv12_result = self.obv_ema12.update(self.obv.result)
+            obv26_result = self.obv_ema26.update(self.obv.result)
+            obv50_result = self.obv_ema50.update(self.obv.result)
 
-            self.ema_cross_12_26.update(close, ts)
-            self.ema_cross_26_50.update(close, ts, ma1_result=self.ema_cross_12_26.ma2.result)
-            self.ema_cross_50_100.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
-            self.ema_cross_50_200.update(close, ts, ma1_result=self.ema_cross_26_50.ma2.result)
+            ema12_result = self.ema12.update(close)
+            ema26_result = self.ema26.update(close)
+            ema50_result = self.ema50.update(close)
+            ema100_result = self.ema100.update(close)
+            ema200_result = self.ema200.update(close)
 
-        #self.ema_cross_12_100.update(close, ts, ma1_result=self.ema_cross_12_26.ma1.result,
-        #                             ma2_result=self.ema_cross_50_100.ma2.result)
+            tspc_result = self.tspc.update(close, ts)
 
-        #self.ema_cross_26_100.update(close, ts, ma1_result=self.ema_cross_12_26.ma2.result,
-        #                             ma2_result=self.ema_cross_50_100.ma2.result)
+        self.obv_ema_cross_12_26.update(0, ts, ma1_result=obv12_result, ma2_result=obv26_result)
+        self.obv_ema_cross_26_50.update(0, ts, ma1_result=obv26_result, ma2_result=obv50_result)
 
-        self.ema_12_cross_tpsc.update(close, ts, ma1_result=self.ema_cross_12_26.ma1.result, ma2=self.tspc)
-        #self.ema_26_cross_tpsc.update(close, ts, ma1=self.ema_cross_12_26.ma2, ma2=self.tspc)
+        self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
+        self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
+        self.ema_cross_50_100.update(close, ts, ma1_result=ema50_result, ma2_result=ema100_result)
+        self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
+
+        self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema12_result, ma2_result=tspc_result)
 
         if self.accnt.simulate and not self.cache.loaded:
-            self.cache.add_result_to_cache('O12', ts, self.obv_ema_cross_12_26.get_ma1_result())
-            self.cache.add_result_to_cache('O26', ts, self.obv_ema_cross_12_26.get_ma2_result())
-            self.cache.add_result_to_cache('O50', ts, self.obv_ema_cross_26_50.get_ma2_result())
+            self.cache.add_result_to_cache('O12', ts, obv12_result)
+            self.cache.add_result_to_cache('O26', ts, obv26_result)
+            self.cache.add_result_to_cache('O50', ts, obv50_result)
 
-            self.cache.add_result_to_cache('12', ts, self.ema_cross_12_26.get_ma1_result())
-            self.cache.add_result_to_cache('26', ts, self.ema_cross_12_26.get_ma2_result())
-            self.cache.add_result_to_cache('50', ts, self.ema_cross_26_50.get_ma2_result())
-            self.cache.add_result_to_cache('100', ts, self.ema_cross_50_100.get_ma2_result())
-            self.cache.add_result_to_cache('200', ts, self.ema_cross_50_200.get_ma2_result())
+            self.cache.add_result_to_cache('12', ts, ema12_result)
+            self.cache.add_result_to_cache('26', ts, ema26_result)
+            self.cache.add_result_to_cache('50', ts, ema50_result)
+            self.cache.add_result_to_cache('100', ts, ema100_result)
+            self.cache.add_result_to_cache('200', ts, ema200_result)
+
+            self.cache.add_result_to_cache('TSPC', ts, tspc_result)
 
         #self.ema100.update(close)
         #self.tpv.update(self.ema100.result, ts)

@@ -113,17 +113,17 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                 print("Initial BTC={}".format(total_btc))
 
         # if we are using BTC_USDT_Signal, make sure BTCUSDT get processed as well
-        if "BTC_USDT_Signal" not in signal_names:
-            disable_usdt = True
-        else:
-            disable_usdt = False
+        #if "BTC_USDT_Signal" not in signal_names:
+        #    disable_usdt = True
+        #else:
+        #    disable_usdt = False
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
-        if disable_usdt and msg['s'].endswith("USDT"):
-            minqty = 20.0
-            balance = accnt.get_asset_balance("USDT")["balance"]
-            if balance < minqty:
-                continue
+        #if disable_usdt and msg['s'].endswith("USDT"):
+        #    minqty = 20.0
+        #    balance = accnt.get_asset_balance("USDT")["balance"]
+        #    if balance < minqty:
+        #        continue
 
         multitrader.update_tickers(tickers)
 
