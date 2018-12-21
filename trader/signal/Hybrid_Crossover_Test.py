@@ -98,17 +98,19 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.load_cache_from_db(cache_db)
 
         if self.accnt.simulate and self.cache.loaded:
-            obv12_result = self.cache.get_result_from_cache('O12')
-            obv26_result = self.cache.get_result_from_cache('O26')
-            obv50_result = self.cache.get_result_from_cache('O50')
+            result = self.cache.get_results_from_cache()
 
-            ema12_result = self.cache.get_result_from_cache('12')
-            ema26_result = self.cache.get_result_from_cache('26')
-            ema50_result = self.cache.get_result_from_cache('50')
-            ema100_result = self.cache.get_result_from_cache('100')
-            ema200_result = self.cache.get_result_from_cache('200')
+            obv12_result = result['O12'] #self.cache.get_result_from_cache('O12')
+            obv26_result = result['O26'] #self.cache.get_result_from_cache('O26')
+            obv50_result = result['O50'] #self.cache.get_result_from_cache('O50')
 
-            tspc_result = self.cache.get_result_from_cache('TSPC')
+            ema12_result = result['12'] #self.cache.get_result_from_cache('12')
+            ema26_result = result['26'] #self.cache.get_result_from_cache('26')
+            ema50_result = result['50'] #self.cache.get_result_from_cache('50')
+            ema100_result = result['100'] #self.cache.get_result_from_cache('100')
+            ema200_result = result['200'] #self.cache.get_result_from_cache('200')
+
+            tspc_result = result['TSPC'] #self.cache.get_result_from_cache('TSPC')
         else:
             self.obv.update(close=close, volume=volume)
             obv12_result = self.obv_ema12.update(self.obv.result)

@@ -89,8 +89,11 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     first_ts = None
     last_ts = None
 
-    #if os.path.exists("cache.db"):
-    cache_db = create_db_connection("cache.db")
+    cache_filename = simulate_db_filename
+
+    if os.path.exists(cache_filename):
+        logger.info("Loading indicator cache {}".format(cache_filename))
+    cache_db = create_db_connection(cache_filename)
     #else:
     #    cache_db = None
 
@@ -239,6 +242,10 @@ if __name__ == '__main__':
                         default='Hybrid_Crossover_Test',
                         help='name of signal to use')
 
+    parser.add_argument('-c', action='store', dest='cache_dir',
+                        default='cache',
+                        help='simulation cache directory')
+
     results = parser.parse_args()
 
     if not os.path.exists(results.filename):
@@ -259,7 +266,6 @@ if __name__ == '__main__':
 
     conn = sqlite3.connect(results.filename)
 
-
     # start the Web API
     #thread = threading.Thread(target=WebThread, args=(strategy,))
     #thread.daemon = True
@@ -269,8 +275,11 @@ if __name__ == '__main__':
 
     trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
 
+    if not os.path.exists(results.cache_dir):
+        os.mkdir(results.cache_dir)
+
     # if we already ran simulation, load the results
-    trade_cache_filename = str(results.filename).replace('.db', '.json')
+    trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
     if os.path.exists(trade_cache_filename):
         logger.info("Loading {}".format(trade_cache_filename))
         with open(trade_cache_filename, "r") as f:
@@ -279,7 +288,8 @@ if __name__ == '__main__':
     logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
 
     try:
-        simulate_db_filename = os.path.basename(results.filename)
+        simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
+        print(simulate_db_filename)
         trades = simulate(conn, results.strategy, results.signal_name, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")

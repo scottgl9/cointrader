@@ -2,8 +2,10 @@ import sqlite3
 
 class IndicatorCache(object):
     def __init__(self, symbol):
+        self.cursor = None
         self.cache_list = None
         self.cache_entry = {}
+        self.cache_result = {}
         self.id_list = []
         self.cache_counters = {}
         self.symbol = symbol
@@ -48,6 +50,13 @@ class IndicatorCache(object):
         self.cache_counters[id] = counter + 1
         return float(result)
 
+    def get_results_from_cache(self):
+        result = {}
+        row = self.cursor.fetchone()
+        for i in range(0, len(self.id_list)):
+            result[self.id_list[i]] = row[i]
+        return result
+
     def add_result_to_cache(self, id, ts, result):
         #if not self.id_in_cache(id):
         #    return False
@@ -79,30 +88,32 @@ class IndicatorCache(object):
             c.close()
             return False
 
+        self.cursor = c
+
         # get column names
-        ids = [description[0] for description in c.description]
+        #ids = [description[0] for description in c.description]
 
-        for id in ids:
-            self.cache_list[id] = []
-            self.cache_counters[id] = 0
+        #for id in ids:
+        #    self.cache_list[id] = []
+        #    self.cache_counters[id] = 0
 
-        for row in c:
-            for i in range(0, len(row)):
-                self.cache_list[ids[i]].append(row[i])
+        #for row in c:
+        #    for i in range(0, len(row)):
+        #        self.cache_list[ids[i]].append(row[i])
 
         self.loaded = True
 
         return True
 
-    def table_exists(self, c):
-        cursor = c.cursor()
-        cursor.execute("""select count(*) from sqlite_master as tables where type='table'""")
-        count = cursor.fetchone()[0]
-        cursor.close()
-        print(count)
-        if count:
-            return True
-        return False
+    #def table_exists(self, c):
+    #    cursor = c.cursor()
+    #    cursor.execute("""select count(*) from sqlite_master as tables where type='table'""")
+    #    count = cursor.fetchone()[0]
+    #    cursor.close()
+    #    print(count)
+    #    if count:
+    #        return True
+    #    return False
 
     def create_table(self, c, id):
         cur = c.cursor()
@@ -111,7 +122,6 @@ class IndicatorCache(object):
         else:
             sql = """CREATE TABLE IF NOT EXISTS {} ('{}' REAL)""".format(self.symbol, id)
         cur.execute(sql)
-        c.commit()
 
     def add_column(self, c, id):
         cur = c.cursor()
@@ -120,7 +130,6 @@ class IndicatorCache(object):
         else:
             sql = """ALTER TABLE {} ADD COLUMN '{}' REAL;""".format(self.symbol, id)
         cur.execute(sql)
-        c.commit()
 
     def write_results_to_cache(self, c):
         cursor = c.cursor()
