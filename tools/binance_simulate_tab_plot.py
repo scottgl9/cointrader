@@ -279,6 +279,11 @@ if __name__ == '__main__':
     parser.add_argument('-g', action='store', dest='signal_name',
                         default='Hybrid_Crossover_Test',
                         help='name of signal to use')
+
+    parser.add_argument('-c', action='store', dest='cache_dir',
+                        default='cache',
+                        help='simulation cache directory')
+
     results = parser.parse_args()
 
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
@@ -295,13 +300,17 @@ if __name__ == '__main__':
 
     run_simulation = True
 
+    if not os.path.exists(results.cache_dir):
+        logger.warning("cache directory {} doesn't exist, exiting...".format(results.cache_dir))
+        sys.exit(0)
+
     conn = sqlite3.connect(results.filename)
     trade_cache = {}
 
     trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
 
     # if we already ran simulation, load the results
-    trade_cache_filename = str(results.filename).replace('.db', '.json')
+    trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
     if os.path.exists(trade_cache_filename):
         logger.info("Loading {}".format(trade_cache_filename))
         with open(trade_cache_filename, "r") as f:
@@ -335,10 +344,6 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     trades = trade_cache[trade_cache_name]
-
-    #for key, value in trades.items():
-    #    if str(key).endswith("BNB"):
-    #        del trades[key]
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)
