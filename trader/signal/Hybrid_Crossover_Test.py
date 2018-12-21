@@ -97,20 +97,18 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.accnt.simulate and cache_db and not self.cache.loaded and not self.cache.init_load:
             self.cache.load_cache_from_db(cache_db)
 
-        if self.accnt.simulate and self.cache.loaded:
+        # load cached indicator results
+        if self.accnt.simulate and cache_db and self.cache.loaded:
             result = self.cache.get_results_from_cache()
-
-            obv12_result = result['O12'] #self.cache.get_result_from_cache('O12')
-            obv26_result = result['O26'] #self.cache.get_result_from_cache('O26')
-            obv50_result = result['O50'] #self.cache.get_result_from_cache('O50')
-
-            ema12_result = result['12'] #self.cache.get_result_from_cache('12')
-            ema26_result = result['26'] #self.cache.get_result_from_cache('26')
-            ema50_result = result['50'] #self.cache.get_result_from_cache('50')
-            ema100_result = result['100'] #self.cache.get_result_from_cache('100')
-            ema200_result = result['200'] #self.cache.get_result_from_cache('200')
-
-            tspc_result = result['TSPC'] #self.cache.get_result_from_cache('TSPC')
+            obv12_result = result['O12']
+            obv26_result = result['O26']
+            obv50_result = result['O50']
+            ema12_result = result['12']
+            ema26_result = result['26']
+            ema50_result = result['50']
+            ema100_result = result['100']
+            ema200_result = result['200']
+            tspc_result = result['TSPC']
         else:
             self.obv.update(close=close, volume=volume)
             obv12_result = self.obv_ema12.update(self.obv.result)
@@ -135,7 +133,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema12_result, ma2_result=tspc_result)
 
-        if self.accnt.simulate and not self.cache.loaded:
+        if self.accnt.simulate and cache_db and not self.cache.loaded:
             self.cache.add_result_to_cache('O12', ts, obv12_result)
             self.cache.add_result_to_cache('O26', ts, obv26_result)
             self.cache.add_result_to_cache('O50', ts, obv50_result)

@@ -91,11 +91,15 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
     cache_filename = simulate_db_filename
 
-    if os.path.exists(cache_filename):
-        logger.info("Loading indicator cache {}".format(cache_filename))
-    cache_db = create_db_connection(cache_filename)
+    #if os.path.exists(cache_filename):
+    #    logger.info("Loading indicator cache {}".format(cache_filename))
+    #    cache_db = create_db_connection(cache_filename)
+    #    #cache_db = create_db_connection(':memory:')
+    #    #cache_db.backup(cache_db_file)
+    #    #cache_db_file.close()
     #else:
-    #    cache_db = None
+    #    cache_db = create_db_connection(cache_filename)
+    cache_db = None
 
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
@@ -142,39 +146,6 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     if cache_db:
         cache_db.commit()
         cache_db.close()
-
-    # create indicator cache for signal indicator caching
-    # if not os.path.exists("cache.db"):
-    #     ccon = create_db_connection("cache.db")
-    #     for pair in multitrader.trade_pairs.values():
-    #         signal = pair.strategy.signal_handler.get_first_handler()
-    #         symbol = pair.strategy.ticker_id
-    #         cache_list = signal.get_cache_list()
-    #         if cache_list and len(cache_list) > 0:
-    #             table_created = False
-    #             cursor = ccon.cursor()
-    #             length = len(cache_list['ts'])
-    #             ids = cache_list.keys()
-    #
-    #             for id in ids:
-    #                 if not table_created:
-    #                     create_table(ccon, symbol, id)
-    #                     table_created = True
-    #                 else:
-    #                     add_column(ccon, symbol, id)
-    #
-    #             for i in range(0, length):
-    #                 values = []
-    #                 for id in ids:
-    #                     values.append(cache_list[id][i])
-    #
-    #                 temp = []
-    #                 for value in values: temp.append('?')
-    #
-    #                 sql = """INSERT INTO {} VALUES {}""".format(symbol, "("+",".join(temp)+")")
-    #                 cursor.execute(sql, values)
-    #             ccon.commit()
-    #     ccon.close()
 
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
     print("total time (hours): {}".format(round(total_time_hours, 2)))
