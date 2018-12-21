@@ -128,6 +128,8 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
         self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
+        self.ema_cross_12_100.update(close, ts, ma1_result=ema12_result, ma2_result=ema100_result)
+        self.ema_cross_26_100.update(close, ts, ma1_result=ema26_result, ma2_result=ema100_result)
         self.ema_cross_50_100.update(close, ts, ma1_result=ema50_result, ma2_result=ema100_result)
         self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
 
@@ -160,6 +162,12 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.disabled_end_ts = 0
             else:
                 return False
+
+        #if (self.ema_cross_12_100.cross_up and
+        #    self.ema_cross_26_100.cross_up and
+        #    self.ema_cross_50_100.cross_up and
+        #    self.ema_cross_50_200.ma2_trend_up()):
+        #    return True
 
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
@@ -241,6 +249,11 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
+        #if (self.ema_cross_12_100.cross_down and
+        #    self.ema_cross_26_100.cross_down and
+        #    self.ema_cross_50_100.cross_down):
+        #    return True
+
         #if self.ema_12_cross_tpsc.cross_up and self.tspc.median_trend_up():
         #    return False
         #if self.ema_cross_50_100.cross_down:

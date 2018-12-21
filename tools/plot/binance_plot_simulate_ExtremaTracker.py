@@ -13,7 +13,8 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 from trader.indicator.OBV import OBV
-from trader.indicator.ZLEMA import *
+from trader.indicator.EMA import EMA
+from trader.lib.ExtremaTracker import ExtremaTracker
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -30,20 +31,23 @@ def simulate(conn, client, base, currency, type="channel"):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
+    extrema_tracker = ExtremaTracker()
     obv = OBV()
+    ema9_1 = EMA(9, scale=24)
+    ema9_2 = EMA(9, scale=24)
+    ema9_3 = EMA(9, scale=24)
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema50 = EMA(50, scale=24)
-    ema100 = EMA(100, scale=24)
-    ema200 = EMA(200, scale=24)
-    ema300 = EMA(300, scale=24)
-    ema500 = EMA(500, scale=24)
     obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
     obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
+
+
+    ema9_values = []
     ema12_values = []
     ema26_values = []
     ema50_values = []
@@ -78,19 +82,12 @@ def simulate(conn, client, base, currency, type="channel"):
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
 
-        ema12_value = ema12.update(close)
-        ema12_values.append(ema12_value)
+        ema9_value = ema9_1.update(close)
+        ema9_values.append(ema9_value)
+        ema12_values.append(ema12.update(close))
         ema26_values.append(ema26.update(close))
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
-        ema100.update(close)
-        ema100_values.append(ema100.result)
-        ema200.update(close)
-        ema200_values.append(ema200.result)
-        ema300.update(close)
-        ema300_values.append(ema300.result)
-        ema500.update(close)
-        ema500_values.append(ema500.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -104,15 +101,11 @@ def simulate(conn, client, base, currency, type="channel"):
     ax = fig.add_subplot(2,1,1)
 
     symprice, = plt.plot(close_prices, label=ticker_id)
-
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
+    #fig3, = plt.plot(ema50_values, label='EMA50')
 
-    #fig2, = plt.plot(ema300_values, label='EMA300')
-    #fig3, = plt.plot(ema500_values, label='EMA500')
-    #fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3])
+    plt.legend(handles=[symprice, fig1, fig2])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')
