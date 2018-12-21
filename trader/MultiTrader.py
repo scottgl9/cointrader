@@ -27,7 +27,7 @@ def split_symbol(symbol):
 # for those that do not yet exist
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', signal_names=None, assets_info=None,
-                 volumes=None, simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
+                 simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
@@ -39,7 +39,6 @@ class MultiTrader(object):
         else:
             self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)
         self.assets_info = assets_info
-        self.volumes = volumes
         self.tickers = None
         self.msg_handler = MessageHandler()
         self.market_manager = MarketManager()

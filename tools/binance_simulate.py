@@ -72,7 +72,6 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     multitrader = MultiTrader(client,
                               strategy,
                               signal_names=signal_names,
-                              volumes=None,
                               simulate=True,
                               accnt=accnt,
                               logger=logger,
