@@ -2,15 +2,18 @@
 from trader.lib.Crossover2 import Crossover2
 
 class CrossRate(object):
-    def __init__(self, seconds=3600, ma1=None, ma2=None):
+    def __init__(self, seconds=300, ma1=None, ma2=None):
         self.seconds = seconds
         self.ma1 = ma1
         self.ma2 = ma2
         self.ma1_result = 0
         self.ma2_result = 0
-        self.cross = Crossover2(window=10)
+        self.cross = Crossover2(window=3)
         self.cross_list = []
         self.ts = 0
+        self.last_cross_value = 0
+        self.cross_value = 0
+        self.cross_result = 0
         self.result = 0
 
     def update(self, value, ts, ma1_result=0, ma2_result=0):
@@ -28,21 +31,29 @@ class CrossRate(object):
         self.cross.update(self.ma1_result, self.ma2_result)
 
         if self.cross.crossup_detected():
-            self.cross_list.append((ts, 1))
+            self.last_cross_value = self.cross_value
+            self.cross_value = value
+            self.cross_list.append(ts) #(ts, 1))
         elif self.cross.crossdown_detected():
-            self.cross_list.append((ts, -1))
-        else:
-            return self.result
+            self.last_cross_value = self.cross_value
+            self.cross_value = value
+            self.cross_list.append(ts) #(ts, -1))
 
         count = 0
         # remove outdated crossovers
         for i in range(0, len(self.cross_list)):
-            (cross_ts, dir) = self.cross_list[i]
-            if (self.ts - cross_ts) > 1000 * self.seconds:
+            cross_ts = self.cross_list[i]
+            if (self.ts - cross_ts) < 1000 * self.seconds:
                 break
             count += 1
 
-        self.cross_list = self.cross_list[count:]
-        self.result = len(self.cross_list)
+        if count > 0:
+            self.cross_list = self.cross_list[count:]
+
+        if self.cross_value > self.last_cross_value:
+            self.cross_result += len(self.cross_list)
+        elif self.cross_value < self.last_cross_value:
+            self.cross_result -= len(self.cross_list)
+        self.result = self.cross_result
 
         return self.result
