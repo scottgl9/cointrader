@@ -126,7 +126,8 @@ def simulate_trade_cache(conn, strategy, signal_name, trade_cache, logger):
                     if trade['type'] == 'buy':
                         multitrader.order_handler.place_buy_market_order(kline.symbol, price, size, 0)
                     elif trade['type'] == 'sell':
-                        multitrader.order_handler.place_sell_market_order(kline.symbol, kline.close, size, price, 0)
+                        buy_price = float(trade['buy_price'])
+                        multitrader.order_handler.place_sell_market_order(kline.symbol, price, size, buy_price, 0)
                     break
 
             counters[kline.symbol] += 1

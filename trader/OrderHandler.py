@@ -403,12 +403,14 @@ class OrderHandler(object):
                     self.trades[ticker_id] = [{'symbol': ticker_id,
                                         'size': size,
                                         'price': price,
+                                        'buy_price': buy_price,
                                         'type': 'sell',
                                         'index': self.counters[ticker_id]}]
                 else:
                     self.trades[ticker_id].append({'symbol': ticker_id,
                                         'size': size,
                                         'price': price,
+                                        'buy_price': buy_price,
                                         'type': 'sell',
                                         'index': self.counters[ticker_id]})
 
