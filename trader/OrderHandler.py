@@ -325,18 +325,7 @@ class OrderHandler(object):
             message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
             self.logger.info(message)
             if self.store_trades:
-                if ticker_id not in self.trades:
-                    self.trades[ticker_id] = [{'symbol': ticker_id,
-                                        'size': size,
-                                        'price': price,
-                                        'type': 'buy',
-                                        'index': self.counters[ticker_id]}]
-                else:
-                    self.trades[ticker_id].append({'symbol': ticker_id,
-                                        'size': size,
-                                        'price': price,
-                                        'type': 'buy',
-                                        'index': self.counters[ticker_id]})
+                self.store_trade_json(ticker_id, price, size, 'buy')
         elif ('status' in result and result['status'] == 'FILLED'):
             if 'orderId' not in result:
                 self.logger.warn("orderId not found for {}".format(ticker_id))
@@ -399,20 +388,7 @@ class OrderHandler(object):
 
             self.logger.info(message)
             if self.store_trades:
-                if ticker_id not in self.trades:
-                    self.trades[ticker_id] = [{'symbol': ticker_id,
-                                        'size': size,
-                                        'price': price,
-                                        'buy_price': buy_price,
-                                        'type': 'sell',
-                                        'index': self.counters[ticker_id]}]
-                else:
-                    self.trades[ticker_id].append({'symbol': ticker_id,
-                                        'size': size,
-                                        'price': price,
-                                        'buy_price': buy_price,
-                                        'type': 'sell',
-                                        'index': self.counters[ticker_id]})
+                self.store_trade_json(ticker_id, price, size, 'sell', buy_price)
 
             if not self.accnt.simulate:
                 self.accnt.get_account_balances()
@@ -423,3 +399,19 @@ class OrderHandler(object):
 
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
+
+    # store trade into json trade cache
+    def store_trade_json(self, ticker_id, price, size, type, buy_price=0):
+        result = {'symbol': ticker_id,
+                  'size': size,
+                  'price': price,
+                  'type': type,
+                  'index': self.counters[ticker_id]}
+
+        if type == 'sell':
+            result['buy_price'] = buy_price
+
+        if ticker_id not in self.trades:
+            self.trades[ticker_id] = [result]
+        else:
+            self.trades[ticker_id].append(result)
