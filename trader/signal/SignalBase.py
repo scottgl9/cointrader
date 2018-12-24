@@ -18,6 +18,7 @@ class SignalBase(object):
         self.global_signal = False
         self.global_filter = "*"
 
+        self.max_tpprofit = 0
         self.tpprofit = 0
         self.last_tpprofit = 0
         self.timestamp = 0
@@ -81,5 +82,7 @@ class SignalBase(object):
     def set_total_percent_profit(self, tpprofit):
         if tpprofit != 0 and tpprofit == self.last_tpprofit:
             return
+        if tpprofit > self.max_tpprofit:
+            self.max_tpprofit = tpprofit
         self.last_tpprofit = self.tpprofit
         self.tpprofit = tpprofit

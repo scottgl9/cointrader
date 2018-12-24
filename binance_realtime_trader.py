@@ -30,6 +30,7 @@ class BinanceTrader:
         self.client = client
         self.found = False
         self.logger = logger
+        self.kline = None
         self.tickers = {}
         self.multitrader = MultiTrader(client,
                                        'hybrid_signal_market_strategy',
@@ -101,28 +102,47 @@ class BinanceTrader:
 
         if not isinstance(msg, list):
             if 's' not in msg.keys(): return
-            kline = Kline(symbol=msg['s'],
-                          open=float(msg['o']),
-                          close=float(msg['c']),
-                          low=float(msg['l']),
-                          high=float(msg['h']),
-                          volume=float(msg['v']),
-                          ts=int(msg['E']))
 
-            self.multitrader.process_message(kline)
+            if not self.kline:
+                self.kline = Kline(symbol=msg['s'],
+                                   open=float(msg['o']),
+                                   close=float(msg['c']),
+                                   low=float(msg['l']),
+                                   high=float(msg['h']),
+                                   volume=float(msg['v']),
+                                   ts=int(msg['E']))
+            else:
+                self.kline.symbol = msg['s']
+                self.kline.open = float(msg['o'])
+                self.kline.close = float(msg['c'])
+                self.kline.low = float(msg['l'])
+                self.kline.high = float(msg['h'])
+                self.kline.volume = float(msg['v'])
+                self.kline.ts = int(msg['E'])
+
+            self.multitrader.process_message(self.kline)
         else:
             for part in msg:
                 if 's' not in part.keys(): continue
 
-                kline = Kline(symbol=part['s'],
-                              open=float(part['o']),
-                              close=float(part['c']),
-                              low=float(part['l']),
-                              high=float(part['h']),
-                              volume=float(part['v']),
-                              ts=int(part['E']))
+                if not self.kline:
+                    self.kline = Kline(symbol=part['s'],
+                                       open=float(part['o']),
+                                       close=float(part['c']),
+                                       low=float(part['l']),
+                                       high=float(part['h']),
+                                       volume=float(part['v']),
+                                       ts=int(part['E']))
+                else:
+                    self.kline.symbol = part['s']
+                    self.kline.open = float(part['o'])
+                    self.kline.close = float(part['c'])
+                    self.kline.low = float(part['l'])
+                    self.kline.high = float(part['h'])
+                    self.kline.volume = float(part['v'])
+                    self.kline.ts = int(part['E'])
 
-                self.multitrader.process_message(kline)
+                self.multitrader.process_message(self.kline)
 
     def run(self):
         self.bm = BinanceSocketManager(self.client)

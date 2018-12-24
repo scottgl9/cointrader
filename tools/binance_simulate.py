@@ -88,6 +88,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     first_ts = None
     last_ts = None
 
+    kline = None
     cache_filename = simulate_db_filename
 
     #if os.path.exists(cache_filename):
@@ -132,13 +133,22 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
         multitrader.update_tickers(tickers)
 
-        kline = Kline(symbol=msg['s'],
-                      open=float(msg['o']),
-                      close=float(msg['c']),
-                      low=float(msg['l']),
-                      high=float(msg['h']),
-                      volume=float(msg['v']),
-                      ts=int(msg['E']))
+        if not kline:
+            kline = Kline(symbol=msg['s'],
+                          open=float(msg['o']),
+                          close=float(msg['c']),
+                          low=float(msg['l']),
+                          high=float(msg['h']),
+                          volume=float(msg['v']),
+                          ts=int(msg['E']))
+        else:
+            kline.symbol = msg['s']
+            kline.open = float(msg['o'])
+            kline.close = float(msg['c'])
+            kline.low = float(msg['l'])
+            kline.high= float(msg['h'])
+            kline.volume = float(msg['v'])
+            kline.ts = int(msg['E'])
 
         multitrader.process_message(kline, cache_db=cache_db)
 

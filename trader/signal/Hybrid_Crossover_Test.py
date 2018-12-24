@@ -192,6 +192,9 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
 
+        #if self.last_tpprofit != 0 and self.tpprofit > self.last_tpprofit:
+        #    print(self.tpprofit)
+
         # for prices which haven't fallen more than 10%, do extensive checking that the price is actually
         # trending down in the long term *TODO*
 
