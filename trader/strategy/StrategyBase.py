@@ -20,6 +20,7 @@ from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.TSV_Signal import TSV_Signal
 from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
 
+
 class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
         self.strategy_name = None
@@ -126,6 +127,7 @@ class StrategyBase(object):
     def update_total_percent_profit(self, tpprofit):
         self.last_tpprofit = self.tpprofit
         self.tpprofit = tpprofit
+        self.signal_handler.update_total_percent_profit(tpprofit)
 
     def close(self):
         pass

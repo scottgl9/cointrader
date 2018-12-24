@@ -14,6 +14,7 @@ class SignalHandler(object):
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
         self.last_handler_signaled = None
+        self.tpprofit = 0
         self.cur_id = 1
         #self.buy_signal_id = 0
         #self.sell_signal_id = 0
@@ -139,3 +140,7 @@ class SignalHandler(object):
             return True
 
         return False
+
+    def update_total_percent_profit(self, tpprofit):
+        for handler in self.handlers:
+            handler.set_total_percent_profit(tpprofit)

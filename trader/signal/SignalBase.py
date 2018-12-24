@@ -18,6 +18,8 @@ class SignalBase(object):
         self.global_signal = False
         self.global_filter = "*"
 
+        self.tpprofit = 0
+        self.last_tpprofit = 0
         self.timestamp = 0
         self.last_timestamp = 0
         self.buy_price = 0.0
@@ -75,3 +77,9 @@ class SignalBase(object):
 
     def sell_signal(self):
         return False
+
+    def set_total_percent_profit(self, tpprofit):
+        if tpprofit != 0 and tpprofit == self.last_tpprofit:
+            return
+        self.last_tpprofit = self.tpprofit
+        self.tpprofit = tpprofit

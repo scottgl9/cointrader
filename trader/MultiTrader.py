@@ -152,6 +152,7 @@ class MultiTrader(object):
         else:
             symbol_trader = self.trade_pairs[kline.symbol]
 
+        # compute current total percent profit, and update info in strategy
         symbol_trader.update_tickers(self.tickers)
         tpprofit = self.order_handler.get_total_percent_profit()
         if tpprofit != 0:

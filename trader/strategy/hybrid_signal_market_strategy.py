@@ -148,7 +148,6 @@ class hybrid_signal_market_strategy(StrategyBase):
         signal.buy_size = buy_size
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
-
     # NOTE: low and high do not update for each kline with binance
     ## mmkline is kline from MarketManager which is filtered and resampled
     def run_update(self, kline, mmkline=None, cache_db=None):
