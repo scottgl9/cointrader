@@ -91,7 +91,6 @@ class BinanceTrader:
 
         if not self.found and 'BTCUSDT' in self.tickers.keys():
             if self.multitrader.accnt.total_btc_available(self.tickers.keys()):
-                print(self.tickers.keys())
                 self.found = True
                 #total_btc = multitrader.accnt.balances['BTC']['balance']
                 total_btc = self.multitrader.accnt.get_total_btc_value(self.tickers.keys())

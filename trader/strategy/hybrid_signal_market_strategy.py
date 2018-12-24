@@ -37,9 +37,6 @@ class hybrid_signal_market_strategy(StrategyBase):
         else:
             self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover", self.accnt, self.ticker_id))
 
-        self.obv = OBV()
-
-        self.ts_avg = EMA(6, lag_window=5)
         self.timestamp = 0
         self.last_timestamp = 0
         self.last_high_24hr = 0.0
@@ -80,15 +77,6 @@ class hybrid_signal_market_strategy(StrategyBase):
             #    signal.sell_marked = False
             return False
 
-        # if more than 500 seconds between price updates, ignore signal
-        #if not self.mm_enabled and self.ts_avg.result < self.ts_avg.last_result:
-        #    return False
-        if not self.mm_enabled and (self.timestamp - self.last_timestamp) > 1000 * 0.5:
-            return False
-
-        #if signal.sell_timestamp != 0 and (self.timestamp - signal.sell_timestamp) < 1000 * 60 * 60:
-        #    return False
-
         # if we have insufficient funds to buy
         if self.accnt.simulate:
             balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
@@ -96,7 +84,6 @@ class hybrid_signal_market_strategy(StrategyBase):
         else:
             size=self.accnt.get_asset_balance(self.currency)['available']
 
-        #self.min_trade_size = self.compute_min_trade_size(price)
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
 
         if not self.trade_size_handler.check_buy_trade_size(size):
@@ -107,11 +94,6 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         if self.last_close == 0:
             return False
-
-        # do not buy back in the previous buy/sell price range
-        #if signal.last_buy_price != 0 and signal.last_sell_price != 0:
-        #    if signal.last_buy_price <= price <= signal.last_sell_price:
-        #        return False
 
         if signal.buy_signal():
             return True
@@ -170,9 +152,6 @@ class hybrid_signal_market_strategy(StrategyBase):
     # NOTE: low and high do not update for each kline with binance
     ## mmkline is kline from MarketManager which is filtered and resampled
     def run_update(self, kline, mmkline=None, cache_db=None):
-        # HACK REMOVE THIS
-        #if self.currency == 'USDT':
-        #    return
         if mmkline:
             close = mmkline.close
             self.low = mmkline.low
@@ -192,11 +171,6 @@ class hybrid_signal_market_strategy(StrategyBase):
 
         if self.timestamp == self.last_timestamp:
             return
-
-        if self.last_timestamp != 0:
-            self.ts_avg.update(self.timestamp - self.last_timestamp)
-
-        self.obv.update(close, volume)
 
         self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp, cache_db=cache_db)
 
@@ -231,11 +205,6 @@ class hybrid_signal_market_strategy(StrategyBase):
             self.msg_handler.clear_read()
 
         for signal in self.signal_handler.get_handlers():
-            # if total profit drops to less than -1.5%
-            #if self.accnt.simulate and signal.buy_price != 0 and self.tpprofit != self.last_tpprofit and self.tpprofit < -0.015:
-            #    #print(self.tpprofit)
-            #    # TODO: do something here if total profit below -1.5%
-            #    self.sell(signal, kline.close)
             if signal.is_global() and signal.global_filter == kline.symbol:
                 signal.pre_update(kline.close, kline.volume, kline.ts)
                 if signal.enable_buy and not self.enable_buy:

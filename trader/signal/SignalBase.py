@@ -19,6 +19,7 @@ class SignalBase(object):
         self.global_filter = "*"
 
         self.timestamp = 0
+        self.last_timestamp = 0
         self.buy_price = 0.0
         self.buy_size = 0.0
         self.buy_timestamp = 0

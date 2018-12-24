@@ -39,9 +39,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema50 = EMA(50, scale=24, lag_window=5)
         self.ema100 = EMA(100, scale=24, lag_window=5)
         self.ema200 = EMA(200, scale=24, lag_window=5)
-        #self.obv_ema12 = ZLEMA(self.win_short, scale=24)
-        #self.obv_ema26 = ZLEMA(self.win_med, scale=24, lag_window=5)
-        #self.obv_ema50 = ZLEMA(self.win_long, scale=24, lag_window=5)
+
         self.obv_ema12 = EMA(12, scale=24)
         self.obv_ema26 = EMA(26, scale=24, lag_window=5)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
@@ -85,11 +83,8 @@ class Hybrid_Crossover_Test(SignalBase):
     def pre_update(self, close, volume, ts, cache_db=None):
         if self.timestamp == 0:
             self.timestamp = ts
-
-            # wait for 1 hour of running before beginning to buy/sell
-            #self.disabled = True
-            #self.disabled_end_ts = self.timestamp + 1000 * 3600
         else:
+            self.last_timestamp = self.timestamp
             self.timestamp = ts
 
         self.last_close = close
@@ -147,9 +142,6 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.add_result_to_cache('TSPC', ts, tspc_result)
             self.cache.write_results_to_cache(cache_db)
 
-        #self.ema100.update(close)
-        #self.tpv.update(self.ema100.result, ts)
-        #self.detector.update(self.ema_cross_26_50.get_ma2_result())
 
     def buy_signal(self):
         if self.disabled:
@@ -163,23 +155,15 @@ class Hybrid_Crossover_Test(SignalBase):
             else:
                 return False
 
-        #if (self.ema_cross_12_100.cross_up and
-        #    self.ema_cross_26_100.cross_up and
-        #    self.ema_cross_50_100.cross_up and
-        #    self.ema_cross_50_200.ma2_trend_up()):
-        #    return True
-
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
-            return False
-
-        #if self.ema_26_cross_tpsc.cross_down and self.tspc.median_trend_down():
+        # if more than 500 seconds between price updates, ignore signal
+        #if (self.timestamp - self.last_timestamp) > 1000 * 0.5:
         #    return False
 
-        #if self.ema_cross_12_100.cross_down and self.ema_cross_26_100.cross_down and self.ema_cross_50_100.cross_down:
-        #        return False
+        if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
+            return False
 
         if (self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up and
                 self.ema_cross_50_100.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
@@ -202,18 +186,6 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_12_cross_tpsc.cross_up and self.tspc.median_trend_up():
             return True
 
-        #if self.ema_26_cross_tpsc.cross_up and self.tspc.median_trend_up():
-        #    return True
-
-        #if self.detector.valley_detect():
-        #    return True
-
-        #if self.tpv.valley_detected():
-        #    return True
-
-        #if self.tsj.up_detected():
-        #    return True
-
         return False
 
     def sell_long_signal(self):
@@ -221,11 +193,7 @@ class Hybrid_Crossover_Test(SignalBase):
             return False
 
         # for prices which haven't fallen more than 10%, do extensive checking that the price is actually
-        # trending down in the long term
-        #if (self.ema_cross_12_100.cross_down and self.ema_cross_12_100.ma2_trend_down() and
-        #    self.ema_cross_26_100.cross_down and self.ema_cross_26_100.ma1_trend_down() and
-        #    self.ema_cross_50_100.cross_down and self.ema_cross_50_100.ma1_trend_down()):
-        #        return True
+        # trending down in the long term *TODO*
 
         # don't do sell long unless price has fallen at least 10%
         if (self.last_close - self.buy_price) / self.buy_price >= -0.1:
@@ -249,15 +217,6 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
-        #if (self.ema_cross_12_100.cross_down and
-        #    self.ema_cross_26_100.cross_down and
-        #    self.ema_cross_50_100.cross_down):
-        #    return True
-
-        #if self.ema_12_cross_tpsc.cross_up and self.tspc.median_trend_up():
-        #    return False
-        #if self.ema_cross_50_100.cross_down:
-        #    return True
         if self.ema_cross_50_100.cross_down and self.ema_cross_50_100.ma2_trend_down():
             if self.ema_cross_50_100.get_pre_crossdown_high_percent() >= 0.1:
                 return True
@@ -276,17 +235,5 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
             return True
-
-        #if self.ema_26_cross_tpsc.cross_down and self.tspc.median_trend_down():
-        #    return True
-
-        #if self.detector.peak_detect():
-        #    return True
-
-        #if self.tpv.peak_detected():
-        #    return True
-
-        #if self.tsj.down_detected():
-        #    return True
 
         return False

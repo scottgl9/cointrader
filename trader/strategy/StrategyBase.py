@@ -13,7 +13,6 @@ from trader.signal.Hybrid_Crossover_MM import Hybrid_Crossover_MM
 from trader.signal.Hybrid_Crossover_Test import Hybrid_Crossover_Test
 from trader.signal.KST_Crossover import KST_Crossover
 from trader.signal.MACD_Crossover import MACD_Crossover
-from trader.signal.OBV_Crossover import OBV_Crossover
 from trader.signal.PPO_OBV import PPO_OBV
 from trader.signal.price_channel_signal import price_channel_signal
 from trader.signal.PMO_Crossover import PMO_Crossover
@@ -63,7 +62,6 @@ class StrategyBase(object):
         elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test(accnt, symbol)
         elif name == "KST_Crossover": return KST_Crossover(accnt, symbol)
         elif name == "MACD_Crossover": return MACD_Crossover(accnt, symbol)
-        elif name == "OBV_Crossover": return OBV_Crossover(accnt, symbol)
         elif name == "PPO_OBV": return PPO_OBV(accnt, symbol)
         elif name == "price_channel_signal": return price_channel_signal(accnt, symbol)
         elif name == "PMO_Crossover": return PMO_Crossover(accnt, symbol)
