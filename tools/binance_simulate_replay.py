@@ -115,9 +115,10 @@ def simulate_trade_cache(conn, strategy, signal_name, trade_cache, logger):
             kline.ts = int(msg['E'])
 
         if kline.symbol not in counters.keys():
-            counters[kline.symbol] = 0
+            counters[kline.symbol] = 1
         else:
             counter = counters[kline.symbol]
+            counters[kline.symbol] += 1
 
             for trade in trade_cache[kline.symbol]:
                 if counter == trade['index']:
@@ -129,8 +130,6 @@ def simulate_trade_cache(conn, strategy, signal_name, trade_cache, logger):
                         buy_price = float(trade['buy_price'])
                         multitrader.order_handler.place_sell_market_order(kline.symbol, price, size, buy_price, 0)
                     break
-
-            counters[kline.symbol] += 1
 
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
     print("total time (hours): {}".format(round(total_time_hours, 2)))

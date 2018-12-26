@@ -23,6 +23,7 @@ from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.OBV import OBV
 from trader.lib.Kline import Kline
+from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
 
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
@@ -185,12 +186,6 @@ class mainWindow(QtGui.QTabWidget):
         self.tabs[name] = tabtype
 
     def plot_tab(self, name, data=None, trades=None):
-        ax = self.tabs[name].figure.add_subplot(311)
-        for trade in trades:
-            if trade['type'] == 'buy':
-                ax.axvline(x=trade['index'], color='green')
-            elif trade['type'] == 'sell':
-                ax.axvline(x=trade['index'], color='red')
         prices = []
         ema12 = EMA(12, scale=24)
         ema26 = EMA(26, scale=24)
@@ -202,8 +197,8 @@ class mainWindow(QtGui.QTabWidget):
         ema200_values = []
 
 
-        dtwma = DTWMA(30, smoother=EMA(12))
-        dtwma_values = []
+        #dtwma = DTWMA(30, smoother=EMA(12))
+        #dtwma_values = []
         obv = OBV()
         obv_values = []
         obv_ema12 = EMA(12, scale=24)
@@ -212,6 +207,9 @@ class mainWindow(QtGui.QTabWidget):
         obv_ema12_values = []
         obv_ema26_values = []
         obv_ema50_values = []
+        tspc = TimeSegmentPriceChannel(minutes=60)
+        tspc_values = []
+        tspc_x_values = []
 
         macd = MACD(short_weight=12, long_weight=26, signal_weight=20.0, scale=24, plot_mode=True)
         macd_diff_values = []
@@ -232,9 +230,14 @@ class mainWindow(QtGui.QTabWidget):
             obv_ema50.update(obv.result)
             obv_ema50_values.append(obv_ema50.result)
 
-            dtwma.update(price, ts)
-            if dtwma.result != 0:
-                dtwma_values.append(dtwma.result)
+            tspc.update(price, ts)
+            if tspc.ready():
+                tspc_values.append(tspc.result)
+                tspc_x_values.append(i)
+
+            #dtwma.update(price, ts)
+            #if dtwma.result != 0:
+            #    dtwma_values.append(dtwma.result)
 
             ema12.update(price)
             ema12_values.append(ema12.result)
@@ -249,17 +252,25 @@ class mainWindow(QtGui.QTabWidget):
                 macd_diff_values.append(macd.diff)
             if macd.signal.result != 0:
                 macd_signal_values.append(macd.signal.result)
-        #    i+=1
-        ax.plot(prices)
-        ax.plot(dtwma_values)
-        ax.plot(ema12_values)
-        ax.plot(ema26_values)
-        ax.plot(ema50_values)
-        ax.plot(ema200_values)
-        ax2 = self.tabs[name].figure.add_subplot(312)
-        ax2.plot(macd_diff_values)
-        ax2.plot(macd_signal_values)
-        ax3 = self.tabs[name].figure.add_subplot(313)
+            i += 1
+
+        ax = self.tabs[name].figure.add_subplot(211)
+        for trade in trades:
+            if trade['type'] == 'buy':
+                ax.axvline(x=trade['index'], color='green')
+            elif trade['type'] == 'sell':
+                ax.axvline(x=trade['index'], color='red')
+        fig1, = ax.plot(prices, label=name)
+        fig2, = ax.plot(tspc_x_values, tspc_values, label="TPSC")
+        fig3, = ax.plot(ema12_values, label="EMA12")
+        fig4, = ax.plot(ema26_values, label="EMA26")
+        fig5, = ax.plot(ema50_values, label="EMA50")
+        fig6, = ax.plot(ema200_values, label="EMA200")
+        ax.legend(handles=[fig1, fig2, fig3, fig4, fig5, fig6])
+        #ax2 = self.tabs[name].figure.add_subplot(312)
+        #ax2.plot(macd_diff_values)
+        #ax2.plot(macd_signal_values)
+        ax3 = self.tabs[name].figure.add_subplot(212)
         #ax3.plot(obv_values)
         ax3.plot(obv_ema12_values)
         #ax3.plot(obv_ema26_values)
