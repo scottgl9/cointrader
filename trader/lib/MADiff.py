@@ -1,3 +1,6 @@
+# indicator which tracks the current distance between two MAs
+
+
 class MADiff(object):
     def __init__(self, ma1=None, ma2=None):
         self.ma1 = ma1
