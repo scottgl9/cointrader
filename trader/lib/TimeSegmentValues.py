@@ -89,6 +89,9 @@ class TimeSegmentValues(object):
     def get_values(self):
         return self.values
 
+    def get_timestamps(self):
+        return self.timestamps
+
     def value_count(self):
         return len(self.values)
 
