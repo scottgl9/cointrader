@@ -1,4 +1,5 @@
 # indicator which tracks the current distance between two MAs
+from trader.lib.Crossover2 import Crossover2
 
 
 class MADiff(object):
@@ -11,6 +12,11 @@ class MADiff(object):
         self._ready = False
         self.max_diff = 0
         self.max_diff_ts = 0
+        self.cross_diff_zero = Crossover2(window=10)
+        self.cross_up = False
+        self.cross_up_ts = 0
+        self.cross_down = False
+        self.cross_down_ts = 0
 
     def ready(self):
         return self._ready
@@ -28,30 +34,48 @@ class MADiff(object):
         else:
             self.ma2_result = ma2_result
 
+        # update maximum diff after latest crossover (up or down)
         if self.ma1_result and self.ma2_result:
             self.result = self.ma1_result - self.ma2_result
             self._ready = True
-            if self.result > self.max_diff:
+            if self.cross_up and self.result > self.max_diff:
                 self.max_diff = self.result
                 self.max_diff_ts = ts
+            elif self.cross_down and abs(self.result) > abs(self.max_diff):
+                self.max_diff = self.result
+                self.max_diff_ts = ts
+
+        if self._ready:
+            self.cross_diff_zero.update(self.result, 0)
+            if self.cross_diff_zero.crossup_detected():
+                self.max_diff = 0
+                self.max_diff_ts = 0
+                self.cross_up = True
+                self.cross_down = False
+                self.cross_up_ts = ts
+            elif self.cross_diff_zero.crossdown_detected():
+                # reset max diff
+                self.max_diff = 0
+                self.max_diff_ts = 0
+                self.cross_up = False
+                self.cross_down = True
+                self.cross_down_ts = ts
 
         return self.result
 
     def get_diff(self):
-        if not self.ready():
-            return 0
-
         return self.result
 
-    def get_max_diff(self):
+    def get_diff_max(self):
         return self.max_diff
 
-    # get diff between max diff and current diff
-    def get_max_current_diff(self):
-        if not self.ready():
-            return 0
+    def is_near_current_max(self, percent=0.5):
+        if not self._ready or self.max_diff == 0:
+            return False
 
-        if self.max_diff != 0 and self.result != 0:
-            return self.max_diff - self.result
+        if not self.cross_up and not self.cross_down:
+            return False
 
-        return 0
+        if abs(100.0 * (self.result - self.max_diff) / self.max_diff) <= percent:
+            return True
+        return False
