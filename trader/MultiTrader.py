@@ -15,7 +15,7 @@ def split_symbol(symbol):
     currency_name = None
 
     #if 'USDT' in symbol: return base_name, currency_name
-    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
+    currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
     for currency in currencies:
         if symbol.endswith(currency):
             currency_name = currency

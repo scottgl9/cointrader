@@ -69,7 +69,7 @@ class AccountBinance(AccountBase):
         base_name = None
         currency_name = None
 
-        currencies = ['BTC', 'ETH', 'BNB', 'USDT']
+        currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
         for currency in currencies:
             if symbol.endswith(currency):
                 currency_name = currency
