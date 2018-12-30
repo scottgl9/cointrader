@@ -206,6 +206,8 @@ class Hybrid_Crossover_Test(SignalBase):
 
         # for prices which haven't fallen more than 10%, do extensive checking that the price is actually
         # trending down in the long term *TODO*
+        #if self.diff_ema_12_200.cross_down and self.diff_ema_12_200.is_near_current_max():
+        #    return True
 
         # don't do sell long unless price has fallen at least 10%
         if (self.last_close - self.buy_price) / self.buy_price >= -0.1:

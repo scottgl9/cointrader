@@ -64,11 +64,30 @@ class TimeSegmentPercentChange(object):
         if pchange <= -percent:
             return True
         return False
+
     def less_than_percent_time_down(self, percent, seconds):
         values = self.get_values_seconds(seconds)
         if not values:
             return False
         pchange = 100.0 * (values[-1] - values[0]) / values[0]
         if 0 >= pchange > -percent:
+            return True
+        return False
+
+    def greater_than_percent_time(self, percent, seconds):
+        values = self.get_values_seconds(seconds)
+        if not values:
+            return False
+        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+        if abs(pchange) >= percent:
+            return True
+        return False
+
+    def less_than_percent_time(self, percent, seconds):
+        values = self.get_values_seconds(seconds)
+        if not values:
+            return False
+        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+        if 0 <= abs(pchange) < percent:
             return True
         return False
