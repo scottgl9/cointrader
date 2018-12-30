@@ -49,7 +49,11 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)
         self.ema_cross_26_50 = MACross(cross_timeout=ctimeout)
         self.ema_cross_50_100 = MACross(cross_timeout=ctimeout)
-        self.ema_cross_50_200 = MACross()
+
+        self.ema_cross_12_200 = MACross(cross_timeout=ctimeout * 2)
+        self.ema_cross_26_200 = MACross(cross_timeout=ctimeout * 2)
+        self.ema_cross_50_200 = MACross(cross_timeout=ctimeout * 2)
+        self.ema_cross_100_200 = MACross(cross_timeout=ctimeout * 2)
 
         # reuse MACross from above for extended detection
         self.ema_cross_12_100 = MACross(cross_timeout=ctimeout * 2)
@@ -59,7 +63,6 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema_cross_26_50 = MACross(cross_timeout=ctimeout)
 
         self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
-        self.ema_26_cross_tpsc = MACross(cross_timeout=ctimeout)
 
         self.diff_ema_12_200 = MADiff()
 
@@ -126,10 +129,15 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
         self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
+
         self.ema_cross_12_100.update(close, ts, ma1_result=ema12_result, ma2_result=ema100_result)
         self.ema_cross_26_100.update(close, ts, ma1_result=ema26_result, ma2_result=ema100_result)
         self.ema_cross_50_100.update(close, ts, ma1_result=ema50_result, ma2_result=ema100_result)
+
+        self.ema_cross_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
+        self.ema_cross_26_200.update(close, ts, ma1_result=ema26_result, ma2_result=ema200_result)
         self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
+        self.ema_cross_100_200.update(close, ts, ma1_result=ema100_result, ma2_result=ema200_result)
 
         self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema12_result, ma2_result=tspc_result)
 
