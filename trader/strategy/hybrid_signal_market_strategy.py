@@ -62,6 +62,7 @@ class hybrid_signal_market_strategy(StrategyBase):
         self.update_sell_price = False
         self.enable_buy = False
         self.disable_buy = False
+        self.simulate = self.accnt.simulate
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -257,6 +258,21 @@ class hybrid_signal_market_strategy(StrategyBase):
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
             return
+
+        # check if coin was already sold (probably manually), and if so mark as SOLD
+        balance = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[0]))
+        if not self.simulate and signal.buy_size != 0 and balance != 0 and signal.buy_size < balance:
+            self.logger.info("ALREADY_SOLD for {} buy_price={} size={}".format(self.ticker_id,
+                                                                               signal.buy_price,
+                                                                               signal.size))
+
+            if self.min_trade_size_qty != 1.0:
+                self.min_trade_size_qty = 1.0
+            signal.last_buy_price = signal.buy_price
+            signal.buy_price = 0.0
+            signal.buy_size = 0.0
+            signal.buy_timestamp = 0
+            signal.buy_price_high = 0
 
         if signal.get_flag() == SignalBase.FLAG_SELL_ALL:
             balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
