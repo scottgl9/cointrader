@@ -2,12 +2,21 @@
 # 1) detect if values1 crosses from below to above values2 (crossup)
 # 2) detect if values1 crosses from above to below values2 (crossdown)
 
+# pre_window allows an additional window to check before or after crossover
+# in addition to window, to verify all values in pre_window were under/over crosspoint
+# before crossup/crossdown occurred
+
 
 class Crossover2(object):
-    def __init__(self, window=12):
+    def __init__(self, pre_window=0, window=12):
         self.window = window
+        self.pre_window = pre_window
+
         self.values1 = []
         self.values2 = []
+        self.pre_values1 = []
+        self.pre_values2 = []
+        self.pre_age = 0
         self.age = 0
         self.last_age = 0
         self.values_under = False
@@ -28,10 +37,19 @@ class Crossover2(object):
         self.values2_max_age = 0
 
     def update(self, value1, value2):
-        if len(self.values1) < self.window or len(self.values2) < self.window:
+        if len(self.values1) < self.window:
             self.values1.append(float(value1))
             self.values2.append(float(value2))
         else:
+            if self.pre_window:
+                if len(self.pre_values1) < self.pre_window:
+                    self.pre_values1.append(self.values1[int(self.age)])
+                    self.pre_values2.append(self.values2[int(self.age)])
+                else:
+                    self.pre_values1[int(self.pre_age)] = self.values1[int(self.age)]
+                    self.pre_values2[int(self.pre_age)] = self.values2[int(self.age)]
+                    self.pre_age = (self.pre_age + 1) % self.pre_window
+
             self.values1[int(self.age)] = float(value1)
             self.values2[int(self.age)] = float(value2)
             self.update_values1_min_max(float(value1))
@@ -47,21 +65,27 @@ class Crossover2(object):
                 self.crossdown = True
             elif not self.values_under and not self.values_over:
                 if self.values1_max_value < self.values2_min_value:
-                    # all of values1 under values2
-                    self.values_under = True
+                    if self.pre_window:
+                        # make sure values1 in pre_window were also under values2
+                        if max(self.pre_values1) < min(self.pre_values2):
+                            self.values_under = True
+                    else:
+                        # all of values1 under values2
+                        self.values_under = True
                 elif self.values1_min_value > self.values2_max_value:
-                    # all of values1 over values2
-                    self.values_over = True
+                    if self.pre_window:
+                        # make sure values1 in pre_window were also over values2
+                        if min(self.pre_values1) > max(self.pre_values2):
+                            self.values_over = True
+                    else:
+                        # all of values1 over values2
+                        self.values_over = True
 
             self.last_age = self.age
             self.age = (self.age + 1) % self.window
 
 
     def update_values1_min_max(self, value):
-        #self.values2_min_value = min(self.values2)
-        #self.values2_max_value = max(self.values2)
-        #return
-
         if self.values1_min_value == 0 or self.values1_max_value == 0:
             self.values1_min_value = min(self.values1)
             self.values1_max_value = max(self.values1)
@@ -91,10 +115,6 @@ class Crossover2(object):
 
 
     def update_values2_min_max(self, value):
-        #self.values2_min_value = min(self.values2)
-        #self.values2_max_value = max(self.values2)
-        #return
-
         if self.values2_min_value == 0 or self.values2_max_value == 0:
             self.values2_min_value = min(self.values2)
             self.values2_max_value = max(self.values2)

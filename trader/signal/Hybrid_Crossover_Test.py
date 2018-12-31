@@ -189,7 +189,7 @@ class Hybrid_Crossover_Test(SignalBase):
         #if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
         #    return False
 
-        if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max():
+        if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max(percent=1.0):
             return False
 
         if self.maavg_cross_ema200.cross_up:

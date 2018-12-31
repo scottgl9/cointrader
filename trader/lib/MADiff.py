@@ -69,14 +69,14 @@ class MADiff(object):
     def get_diff_max(self):
         return self.max_diff
 
-    def is_near_current_max(self, percent=0.5):
+    def is_near_current_max(self, cutoff=0.01, percent=0.5):
         if not self._ready or self.max_diff == 0 or self.result == 0:
             return False
 
         if not self.cross_up and not self.cross_down:
             return False
 
-        if abs((self.ma1_result - self.ma2_result) / self.ma2_result) < 0.01:
+        if abs((self.ma1_result - self.ma2_result) / self.ma2_result) < cutoff:
             return False
 
         if abs(100.0 * (self.result - self.max_diff) / self.max_diff) <= percent:
