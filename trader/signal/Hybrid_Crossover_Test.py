@@ -6,6 +6,7 @@ from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
 from trader.lib.Crossover2 import Crossover2
+from trader.lib.MAAvg import MAAvg
 from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff
 from trader.lib.PeakValleyDetect import PeakValleyDetect
@@ -41,6 +42,11 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema100 = EMA(100, scale=24, lag_window=5)
         self.ema200 = EMA(200, scale=24, lag_window=5)
 
+        self.maavg = MAAvg()
+        self.maavg.add(self.ema12)
+        self.maavg.add(self.ema26)
+        self.maavg.add(self.ema50)
+
         self.obv_ema12 = EMA(12, scale=24)
         self.obv_ema26 = EMA(26, scale=24, lag_window=5)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
@@ -63,6 +69,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema_cross_26_50 = MACross(cross_timeout=ctimeout)
 
         self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
+        self.maavg_cross_ema200 = MACross(cross_timeout=ctimeout * 2)
 
         self.diff_ema_12_200 = MADiff()
 
@@ -143,6 +150,9 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.diff_ema_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
 
+        self.maavg.update()
+        self.maavg_cross_ema200.update(close, ts, ma1_result=self.maavg.result, ma2_result=ema200_result)
+
         if self.accnt.simulate and cache_db and not self.cache.loaded:
             self.cache.add_result_to_cache('O12', ts, obv12_result)
             self.cache.add_result_to_cache('O26', ts, obv26_result)
@@ -182,6 +192,9 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max():
             return False
 
+        if self.maavg_cross_ema200.cross_up:
+            return True
+
         if (self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up and
                 self.ema_cross_50_100.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
             return True
@@ -219,14 +232,14 @@ class Hybrid_Crossover_Test(SignalBase):
         # trending down in the long term *TODO*
         #if self.diff_ema_12_200.cross_down and self.diff_ema_12_200.is_near_current_max():
         #    return True
-        if (self.ema_cross_12_200.cross_down and
-            self.ema_cross_26_200.cross_down and
-            self.ema_cross_50_200.cross_down and
-            self.ema_cross_100_200.cross_down and
-            self.ema_12_cross_tpsc.cross_down):
-            self.disabled = True
-            self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
-            return True
+        # if (self.ema_cross_12_200.cross_down and
+        #     self.ema_cross_26_200.cross_down and
+        #     self.ema_cross_50_200.cross_down and
+        #     self.ema_cross_100_200.cross_down and
+        #     self.ema_12_cross_tpsc.cross_down):
+        #     self.disabled = True
+        #     self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
+        #     return True
 
         # don't do sell long unless price has fallen at least 10%
         if (self.last_close - self.buy_price) / self.buy_price >= -0.1:
@@ -250,6 +263,9 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
+        if self.maavg_cross_ema200.cross_down:
+            return True
+
         if self.ema_cross_12_200.cross_down and self.ema_cross_26_200.cross_down and self.ema_cross_50_200.cross_down:
             return True
 

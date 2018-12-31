@@ -28,7 +28,7 @@ class fixed_trade_size(trade_size_strategy_base):
         if self.currency == 'BTC':
             trade_size = self.round_base(self.btc_trade_size / price)
             if self.base == 'ETH' or self.base == 'BNB':
-                trade_size = self.my_float(trade_size * 3)
+                trade_size = self.my_float(trade_size * 4)
             else:
                 trade_size = self.my_float(trade_size * 3)
         elif self.currency == 'ETH':
@@ -39,7 +39,7 @@ class fixed_trade_size(trade_size_strategy_base):
                 trade_size = self.my_float(trade_size * 3)
         elif self.currency == 'BNB':
             trade_size = self.round_base(self.bnb_trade_size / price)
-            trade_size = self.my_float(trade_size)
+            trade_size = self.my_float(trade_size * 2)
         elif self.currency == 'PAX':
             trade_size = self.round_base(self.pax_trade_size / price)
             trade_size = self.my_float(trade_size)
