@@ -10,17 +10,6 @@ from trader.strategy.global_strategy.global_obv_strategy import global_obv_strat
 from datetime import datetime
 
 
-def split_symbol(symbol):
-    base_name = None
-    currency_name = None
-
-    #if 'USDT' in symbol: return base_name, currency_name
-    currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
-    for currency in currencies:
-        if symbol.endswith(currency):
-            currency_name = currency
-            base_name = symbol.replace(currency, '')
-    return base_name, currency_name
 
 
 # handle incoming websocket messages for all symbols, and create new tradepairs
@@ -80,7 +69,7 @@ class MultiTrader(object):
         tick_size = 0.0
         min_notional = 0.0
 
-        base_name, currency_name = split_symbol(symbol)
+        base_name, currency_name = self.accnt.split_symbol(symbol)
 
         if not base_name or not currency_name: return
 

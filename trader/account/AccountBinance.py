@@ -69,12 +69,15 @@ class AccountBinance(AccountBase):
         base_name = None
         currency_name = None
 
-        currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
+        currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'XRP', 'USDT', 'USDC', 'TUSD']
         for currency in currencies:
             if symbol.endswith(currency):
                 currency_name = currency
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
+
+    def split_symbol(self, symbol):
+        return self.split_ticker_id(symbol)
 
     def get_detail_all_assets(self):
         return self.client.get_asset_details()
