@@ -23,6 +23,7 @@ from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.OBV import OBV
 from trader.lib.Kline import Kline
+from trader.lib.MAAvg import MAAvg
 from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
 
 from trader.account.binance.client import Client
@@ -196,6 +197,12 @@ class mainWindow(QtGui.QTabWidget):
         ema50_values = []
         ema200_values = []
 
+        maavg = MAAvg()
+        maavg.add(ema12)
+        maavg.add(ema26)
+        maavg.add(ema50)
+        maavg_x_values = []
+        maavg_values = []
 
         #dtwma = DTWMA(30, smoother=EMA(12))
         #dtwma_values = []
@@ -247,11 +254,17 @@ class mainWindow(QtGui.QTabWidget):
             ema50_values.append(ema50.result)
             ema200.update(price)
             ema200_values.append(ema200.result)
-            macd.update(price)
-            if macd.diff != 0:
-                macd_diff_values.append(macd.diff)
-            if macd.signal.result != 0:
-                macd_signal_values.append(macd.signal.result)
+
+            maavg.update()
+            if maavg.result:
+                maavg_values.append(maavg.result)
+                maavg_x_values.append(i)
+
+            #macd.update(price)
+            #if macd.diff != 0:
+            #    macd_diff_values.append(macd.diff)
+            #if macd.signal.result != 0:
+            #    macd_signal_values.append(macd.signal.result)
             i += 1
 
         ax = self.tabs[name].figure.add_subplot(211)
@@ -265,8 +278,9 @@ class mainWindow(QtGui.QTabWidget):
         fig3, = ax.plot(ema12_values, label="EMA12")
         fig4, = ax.plot(ema26_values, label="EMA26")
         fig5, = ax.plot(ema50_values, label="EMA50")
-        fig6, = ax.plot(ema200_values, label="EMA200")
-        ax.legend(handles=[fig1, fig2, fig3, fig4, fig5, fig6])
+        fig6, = ax.plot(maavg_x_values, maavg_values, label="MAAVG")
+        fig7, = ax.plot(ema200_values, label="EMA200")
+        ax.legend(handles=[fig1, fig2, fig3, fig4, fig5, fig6, fig7])
         #ax2 = self.tabs[name].figure.add_subplot(312)
         #ax2.plot(macd_diff_values)
         #ax2.plot(macd_signal_values)

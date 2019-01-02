@@ -31,7 +31,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         #self.tsj = SegmentJump(tsv1_minutes=1, tsv2_minutes=15, up_multiplier=4, down_multiplier=3)
         #self.tpv = TimePeakValley(reverse_secs=600, span_secs=3600)
-        #self.detector = PeakValleyDetect()
+        self.detector = PeakValleyDetect()
         self.tspc = TimeSegmentPriceChannel(minutes=60)
         self.obv = OBV()
         self.EMA = EMA
@@ -150,8 +150,11 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.diff_ema_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
 
-        self.maavg.update()
-        self.maavg_cross_ema200.update(close, ts, ma1_result=self.maavg.result, ma2_result=ema200_result)
+        #self.maavg.update()
+        #self.maavg_cross_ema200.update(close, ts, ma1_result=self.maavg.result, ma2_result=ema200_result)
+
+        #if self.maavg.result:
+        #    self.detector.update(self.maavg.result)
 
         if self.accnt.simulate and cache_db and not self.cache.loaded:
             self.cache.add_result_to_cache('O12', ts, obv12_result)
@@ -186,14 +189,17 @@ class Hybrid_Crossover_Test(SignalBase):
         #if (self.timestamp - self.last_timestamp) > 1000 * 0.5:
         #    return False
 
-        #if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
-        #    return False
-
-        if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max(percent=1.0):
+        if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
             return False
 
-        if self.maavg_cross_ema200.cross_up:
-            return True
+        if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max(percent=0.5):
+            return False
+
+        #if self.detector.peak_detect(clear=False):
+        #    return False
+
+        #if self.maavg_cross_ema200.cross_up:
+        #    return True
 
         if (self.ema_cross_50_100.cross_up and self.ema_cross_26_50.cross_up and
                 self.ema_cross_50_100.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
@@ -219,6 +225,9 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
             return True
 
+        #if self.detector.valley_detect():
+        #    return True
+
         return False
 
     def sell_long_signal(self):
@@ -241,6 +250,12 @@ class Hybrid_Crossover_Test(SignalBase):
         #     self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
         #     return True
 
+        #if (self.maavg_cross_ema200.cross_down and self.maavg_cross_ema200.ma1_trend_down() and
+        #   self.ema_cross_100_200.cross_down and self.ema_12_cross_tpsc.cross_down):
+        #    self.disabled = True
+        #    self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
+        #    return True
+
         # don't do sell long unless price has fallen at least 10%
         if (self.last_close - self.buy_price) / self.buy_price >= -0.1:
             return False
@@ -249,7 +264,7 @@ class Hybrid_Crossover_Test(SignalBase):
             # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
             if (self.last_close - self.buy_price) / self.buy_price < -0.05:
                 self.disabled = True
-                self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
+                self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
             return True
 
         if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
@@ -257,14 +272,14 @@ class Hybrid_Crossover_Test(SignalBase):
             # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
             if (self.last_close - self.buy_price) / self.buy_price < -0.05:
                 self.disabled = True
-                self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
+                self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
             return True
 
         return False
 
     def sell_signal(self):
-        if self.maavg_cross_ema200.cross_down:
-            return True
+        #if self.maavg_cross_ema200.cross_down:
+        #    return True
 
         if self.ema_cross_12_200.cross_down and self.ema_cross_26_200.cross_down and self.ema_cross_50_200.cross_down:
             return True
@@ -287,5 +302,8 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_12_cross_tpsc.cross_down: # and self.tspc.median_trend_down():
             return True
+
+        #if self.detector.peak_detect():
+        #    return True
 
         return False

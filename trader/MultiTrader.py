@@ -118,11 +118,12 @@ class MultiTrader(object):
         if not self.simulate and self.order_handler.trader_db:
             # if balance of coin is less than base_min_size, remove from trade db
             balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base_name)['balance']))
-            if balance < base_min_size:
-                self.order_handler.trader_db.remove_trade(symbol)
-                self.logger.info("ALREADY_SOLD for {}, removed from trade db".format(symbol))
-            else:
+            if balance >= base_min_size:
                 self.order_handler.trade_db_load_symbol(symbol, trade_pair)
+                #self.order_handler.trader_db.remove_trade(symbol)
+                #self.logger.info("ALREADY_SOLD for {}, removed from trade db".format(symbol))
+            #else:
+            #    self.order_handler.trade_db_load_symbol(symbol, trade_pair)
         return trade_pair
 
     def update_initial_btc(self):
