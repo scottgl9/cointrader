@@ -15,7 +15,8 @@ import matplotlib.pyplot as plt
 from trader.lib.Angle import Angle
 from trader.lib.MAAvg import MAAvg
 from trader.indicator.DTWMA import DTWMA
-from trader.indicator.ZLEMA import *
+from trader.indicator.EMA import EMA
+from trader.account.AccountBinance import AccountBinance
 
 
 def get_rows_as_msgs(c):
@@ -27,11 +28,19 @@ def get_rows_as_msgs(c):
     return msgs
 
 
-def simulate(conn, client, base, currency, type="channel"):
+def simulate(conn, client, base, currency, filename, type="channel"):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
+
+    accnt = AccountBinance(client, simulation=True, simulate_db_filename=filename)
+
+    info =  accnt.get_asset_info(ticker_id)
+    print(info)
+    tick_size = info['tickSize']
+    step_size = info['stepSize']
+    min_notional = info['minNotional']
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
@@ -44,7 +53,7 @@ def simulate(conn, client, base, currency, type="channel"):
     maavg.add(ema50)
 
     dtwma = DTWMA(window=30)
-    angle = Angle(seconds=3600)
+    angle = Angle(seconds=3600, tick_size=tick_size, step_size=step_size)
     angle_values = []
     ema12_values = []
     ema26_values = []
@@ -83,9 +92,8 @@ def simulate(conn, client, base, currency, type="channel"):
 
         if maavg.result != 0 and ema200.result != 0:
             angle.update(value1=maavg.result, value2=ema200.result, ts=ts)
-
-        if angle.result != 0:
-            angle_values.append(angle.result)
+            if angle.result != 0:
+                angle_values.append(angle.result)
 
         result = angle.detrend_result()
         if result != 0:
@@ -131,5 +139,5 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    simulate(conn, client, base, currency, type="MACD")
+    simulate(conn, client, base, currency, filename, type="MACD")
     conn.close()
