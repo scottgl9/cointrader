@@ -13,6 +13,7 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 from trader.lib.Angle import Angle
+from trader.lib.MAAvg import MAAvg
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.ZLEMA import *
 
@@ -37,13 +38,21 @@ def simulate(conn, client, base, currency, type="channel"):
     ema50 = EMA(100, scale=24, lag_window=5)
     ema200 = EMA(200, scale=24, lag_window=5)
 
+    maavg = MAAvg()
+    maavg.add(ema12)
+    maavg.add(ema26)
+    maavg.add(ema50)
+
     dtwma = DTWMA(window=30)
-    angle = Angle(window=300)
+    angle = Angle(seconds=3600)
     angle_values = []
     ema12_values = []
     ema26_values = []
     ema50_values = []
     ema200_values = []
+    maavg_values = []
+    detrend_values = []
+    detrend_x_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -59,22 +68,29 @@ def simulate(conn, client, base, currency, type="channel"):
         high = float(msg['h'])
         open = float(msg['o'])
         volume = float(msg['v'])
-        ts=int(msg['E'])
+        ts = int(msg['E'])
         volumes.append(volume)
 
-        ema12_value = ema12.update(close)
-        ema12_values.append(ema12_value)
-        ema26_values.append(ema26.update(close))
-        ema50_value = ema50.update(close)
-        ema50_values.append(ema50_value)
-        ema200_value = ema200.update(close)
-        ema200_values.append(ema200_value)
+        ema12.update(close)
+        ema26.update(close)
+        ema50.update(close)
+        ema200.update(close)
+        maavg.update()
+        maavg_values.append(maavg.result)
+        ema12_values.append(ema12.result)
+        ema26_values.append(ema26.result)
+        ema200_values.append(ema200.result)
 
-        #dtwma.update(close, ts)
-        angle.update(ema50_value, ts/1000.0)
+        if maavg.result != 0 and ema200.result != 0:
+            angle.update(value1=maavg.result, value2=ema200.result, ts=ts)
 
         if angle.result != 0:
             angle_values.append(angle.result)
+
+        result = angle.detrend_result()
+        if result != 0:
+            detrend_values.append(result)
+            detrend_x_values.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -84,12 +100,10 @@ def simulate(conn, client, base, currency, type="channel"):
         i += 1
 
     plt.subplot(211)
-    symprice, = plt.plot(close_prices, label=ticker_id)
-    fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
+    #symprice, = plt.plot(close_prices, label=ticker_id)
+    fig1, = plt.plot(maavg_values, label='MAAVG')
     fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    plt.legend(handles=[fig1])
     plt.subplot(212)
     fig21, = plt.plot(angle_values, label='ANGLE')
     #fig22, = plt.plot(slope2_values, label='SLOPE26')

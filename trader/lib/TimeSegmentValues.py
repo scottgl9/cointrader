@@ -110,6 +110,11 @@ class TimeSegmentValues(object):
             return 0
         return self.values[-1] - self.values[0]
 
+    def diff_ts(self):
+        if not self.ready():
+            return 0
+        return self.timestamps[-1] - self.timestamps[0]
+
     def percent_change(self):
         if not self.ready():
             return None

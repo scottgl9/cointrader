@@ -11,6 +11,9 @@ class ValueLag:
     def full(self):
         return len(self.values) == self.window
 
+    def ready(self):
+        return len(self.values) == self.window
+
     def update(self, price):
         if len(self.values) < self.window:
             self.values.append(float(price))
