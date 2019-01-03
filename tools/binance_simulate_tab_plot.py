@@ -39,7 +39,6 @@ def simulate(conn, client, strategy, signal_name, logger):
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
     assets_info = get_info_all_assets(client)
-    #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client, simulation=True)
     accnt.update_asset_balance('BTC', 0.06, 0.06)
     #accnt.update_asset_balance('ETH', 0.1, 0.1)
@@ -49,7 +48,6 @@ def simulate(conn, client, strategy, signal_name, logger):
                               strategy,
                               signal_names=[signal_name],
                               assets_info=assets_info,
-                              volumes=None,
                               simulate=True,
                               accnt=accnt,
                               logger=logger,
@@ -94,22 +92,6 @@ def simulate(conn, client, strategy, signal_name, logger):
                       ts=int(msg['E']))
 
         multitrader.process_message(kline)
-
-    # total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
-    # print("total time (hours): {}".format(round(total_time_hours, 2)))
-    #
-    # print(multitrader.accnt.balances)
-    # final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
-    # pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
-    # print("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
-    # for pair in multitrader.trade_pairs.values():
-    #     for signal in pair.strategy.get_signals():
-    #         if signal.buy_price != 0.0:
-    #             buy_price = float(signal.buy_price)
-    #             last_price = float(pair.strategy.last_price)
-    #             symbol = pair.strategy.ticker_id
-    #             pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
-    #             print("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
     return multitrader.get_stored_trades()
 
@@ -359,7 +341,8 @@ if __name__ == '__main__':
 
         logger.info("Writing trade cache to {}".format(trade_cache_filename))
         with open(trade_cache_filename, "w") as f:
-            trade_cache[trade_cache_name] = trades
+            trade_cache[trade_cache_name] = {}
+            trade_cache[trade_cache_name]['trades'] = trades
             f.write(json.dumps(trade_cache))
 
     plt.rcParams.update({'figure.max_open_warning': 0})
@@ -368,7 +351,7 @@ if __name__ == '__main__':
         logger.error("Failed to load simulation results")
         sys.exit(-1)
 
-    trades = trade_cache[trade_cache_name]
+    trades = trade_cache[trade_cache_name]['trades']
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)

@@ -116,7 +116,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                 total_btc = multitrader.accnt.get_total_btc_value(tickers)
                 initial_btc_total = total_btc
                 multitrader.update_initial_btc()
-                print("Initial BTC={}".format(total_btc))
+                logger.info("Initial BTC={}".format(total_btc))
 
         # if we are using BTC_USDT_Signal, make sure BTCUSDT get processed as well
         #if "BTC_USDT_Signal" not in signal_names:
@@ -157,12 +157,12 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
         cache_db.close()
 
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
-    print("total time (hours): {}".format(round(total_time_hours, 2)))
+    logger.info("total time (hours): {}".format(round(total_time_hours, 2)))
 
-    print(multitrader.accnt.balances)
+    logger.info(multitrader.accnt.balances)
     final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
     pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
-    print("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
+    logger.info("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
     for pair in multitrader.trade_pairs.values():
         for signal in pair.strategy.get_signals():
             if signal.buy_price != 0.0:
@@ -170,7 +170,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                 last_price = float(pair.strategy.last_price)
                 symbol = pair.strategy.ticker_id
                 pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
-                print("{} ({}): {}%".format(symbol, signal.id, pprofit))
+                logger.info("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
     return multitrader.get_stored_trades()
 
@@ -235,9 +235,14 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
-    #fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "simulate"))
-    #fileHandler.setFormatter(logFormatter)
-    #logger.addHandler(fileHandler)
+    trade_log_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.log'))
+    # remove old trade log before re-running
+    if os.path.exists(trade_log_filename):
+        os.remove(trade_log_filename)
+
+    fileHandler = logging.FileHandler(trade_log_filename)
+    fileHandler.setFormatter(logFormatter)
+    logger.addHandler(fileHandler)
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
@@ -277,5 +282,6 @@ if __name__ == '__main__':
         sys.exit(0)
 
     with open(trade_cache_filename, "w") as f:
-        trade_cache[trade_cache_name] = trades
+        trade_cache[trade_cache_name] = {}
+        trade_cache[trade_cache_name]['trades'] = trades
         f.write(json.dumps(trade_cache))

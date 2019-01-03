@@ -104,7 +104,7 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.accnt.simulate and cache_db and not self.cache.loaded and not self.cache.init_load:
             self.cache.load_cache_from_db(cache_db)
 
-        # load cached indicator results
+        # LOAD CACHED INDICATOR RESULTS
         if self.accnt.simulate and cache_db and self.cache.loaded:
             result = self.cache.get_results_from_cache()
             obv12_result = result['O12']
@@ -155,6 +155,7 @@ class Hybrid_Crossover_Test(SignalBase):
         #if self.maavg.result:
         #    self.detector.update(self.maavg.result)
 
+        # SAVE CACHED INDICATOR RESULTS
         if self.accnt.simulate and cache_db and not self.cache.loaded:
             self.cache.add_result_to_cache('O12', ts, obv12_result)
             self.cache.add_result_to_cache('O26', ts, obv26_result)
