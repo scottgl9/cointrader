@@ -11,7 +11,6 @@ from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TimePeakValley import TimePeakValley
-from trader.lib.SegmentJump import SegmentJump
 from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
 from trader.lib.IndicatorCache import IndicatorCache
 from trader.signal.SigType import SigType
@@ -185,13 +184,6 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        # if more than 500 seconds between price updates, ignore signal
-        #if (self.timestamp - self.last_timestamp) > 1000 * 0.5:
-        #    return False
-
-        #if self.ema_12_cross_tpsc.cross_down and self.tspc.median_trend_down():
-        #    return False
-
         if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max(percent=0.5):
             return False
 
@@ -225,36 +217,11 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
             return True
 
-        #if self.detector.valley_detect():
-        #    return True
-
         return False
 
     def sell_long_signal(self):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
-
-        #if self.last_tpprofit != 0 and self.tpprofit > self.last_tpprofit:
-        #    print(self.tpprofit)
-
-        # for prices which haven't fallen more than 10%, do extensive checking that the price is actually
-        # trending down in the long term *TODO*
-        #if self.diff_ema_12_200.cross_down and self.diff_ema_12_200.is_near_current_max():
-        #    return True
-        # if (self.ema_cross_12_200.cross_down and
-        #     self.ema_cross_26_200.cross_down and
-        #     self.ema_cross_50_200.cross_down and
-        #     self.ema_cross_100_200.cross_down and
-        #     self.ema_12_cross_tpsc.cross_down):
-        #     self.disabled = True
-        #     self.disabled_end_ts = self.timestamp + 1000 * 6 * 3600
-        #     return True
-
-        #if (self.maavg_cross_ema200.cross_down and self.maavg_cross_ema200.ma1_trend_down() and
-        #   self.ema_cross_100_200.cross_down and self.ema_12_cross_tpsc.cross_down):
-        #    self.disabled = True
-        #    self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
-        #    return True
 
         # don't do sell long unless price has fallen at least 10%
         if (self.last_close - self.buy_price) / self.buy_price >= -0.1:
@@ -278,9 +245,6 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
-        #if self.maavg_cross_ema200.cross_down:
-        #    return True
-
         if self.ema_cross_12_200.cross_down and self.ema_cross_26_200.cross_down and self.ema_cross_50_200.cross_down:
             return True
 
@@ -302,8 +266,5 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_12_cross_tpsc.cross_down: # and self.tspc.median_trend_down():
             return True
-
-        #if self.detector.peak_detect():
-        #    return True
 
         return False

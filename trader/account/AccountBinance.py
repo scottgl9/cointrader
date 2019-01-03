@@ -10,50 +10,48 @@ class AccountBinance(AccountBase):
         self.account_type = 'Binance'
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
-        self.balance = 0.0
-        self.funds_available = 0.0
-        self.quote_currency_balance = 0.0
-        self.quote_currency_available = 0.0
-        self.base_currency = name
-        self.currency = asset
+        #self.balance = 0.0
+        #self.funds_available = 0.0
+        #self.quote_currency_balance = 0.0
+        #self.quote_currency_available = 0.0
+        #self.base_currency = name
+        #self.currency = asset
         self.client = client
         self.simulate = simulation
         self.info_all_assets = {}
         self.details_all_assets = {}
-        self.low_24hr = self.high_24hr = 0.0
-        self.open_24hr = self.close_24hr = 0.0
-        self.last_24hr = 0.0
-        self.volume_24hr = 0.0
-        self.quote_increment = 0.01
-        self.base_min_size = 0.0
-        self.market_price = 0.0
+        #self.low_24hr = self.high_24hr = 0.0
+        #self.open_24hr = self.close_24hr = 0.0
+        #self.last_24hr = 0.0
+        #self.volume_24hr = 0.0
+        #self.market_price = 0.0
         self.balances = {}
+        self.currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'XRP', 'USDT', 'USDC', 'TUSD']
 
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
-    def html_run_stats(self):
-        results = str('')
-        results += "quote_currency_balance: {}<br>".format(self.quote_currency_balance)
-        results += "quote_currency_available: {}<br>".format(self.quote_currency_available)
-        results += "balance: {}<br>".format(self.balance)
-        results += "funds_available: {}<br>".format(self.funds_available)
-        results += ("last: %f high: %f low: %f open: %f<br>" % (self.last_24hr,self.high_24hr, self.low_24hr, self.open_24hr))
-        return results
-
     def set_market_price(self, price):
         pass
 
-    def round_base(self, price):
-        if self.base_min_size != 0.0:
-            return round(price, '{:.9f}'.format(self.base_min_size).index('1') - 1)
+    def get_currencies(self):
+        return self.currencies
+
+    def is_currency(self, name):
+        if name in self.currencies:
+            return True
+        return False
+
+    def round_base(self, price, base_min_size=0):
+        if base_min_size != 0.0:
+            return round(price, '{:.9f}'.format(base_min_size).index('1') - 1)
         return price
 
-    def round_quote(self, price):
-        if self.quote_increment != 0.0:
-            return round(price, '{:.9f}'.format(self.quote_increment).index('1') - 1)
+    def round_quote(self, price, quote_increment=0):
+        if quote_increment != 0.0:
+            return round(price, '{:.9f}'.format(quote_increment).index('1') - 1)
         return price
 
     def my_float(self, value):
@@ -69,8 +67,7 @@ class AccountBinance(AccountBase):
         base_name = None
         currency_name = None
 
-        currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'XRP', 'USDT', 'USDC', 'TUSD']
-        for currency in currencies:
+        for currency in self.currencies:
             if symbol.endswith(currency):
                 currency_name = currency
                 base_name = symbol.replace(currency, '')
@@ -162,6 +159,7 @@ class AccountBinance(AccountBase):
             return None
         return self.info_all_assets[symbol]
 
+    # determine if asset has disabled deposits, if so don't trade
     def deposit_asset_disabled(self, name):
         status = self.get_asset_status(name)
         if status and 'depositStatus' in status:
@@ -169,25 +167,10 @@ class AccountBinance(AccountBase):
         return False
 
     def get_deposit_address(self, name=None):
-        if not name:
-            name = self.base_currency
         result = self.client.get_deposit_address(asset=name)
         if 'success' in result and 'address' in result and result['success']:
             return result['address']
         return ''
-
-    def handle_buy_completed(self, order_price, order_size):
-        if not self.simulate: return
-        self.quote_currency_balance -= self.round_quote(order_price * order_size)
-        self.balance += order_size
-        self.funds_available += order_size
-
-    def handle_sell_completed(self, order_price, order_size):
-        if not self.simulate: return
-        usd_value = self.round_quote(order_price * order_size)
-        self.quote_currency_available += usd_value
-        self.quote_currency_balance += usd_value
-        self.balance -= order_size
 
     def get_open_buy_orders(self):
         return []
@@ -197,22 +180,6 @@ class AccountBinance(AccountBase):
 
     def preload_buy_price_list(self):
         return [], []
-
-    def update_24hr_stats(self, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
-        stats = self.client.get_ticker(symbol=ticker_id)
-
-        self.high_24hr = self.low_24hr = self.open_24hr = 0.0
-
-        if 'highPrice' in stats:
-            self.high_24hr = float(stats['highPrice'])
-        if 'lowPrice' in stats:
-            self.low_24hr = float(stats['lowPrice'])
-        if 'openPrice' in stats:
-            self.open_24hr = float(stats['openPrice'])
-        if 'lastPrice' in stats:
-            self.last_24hr = self.close_24hr = float(stats['lastPrice'])
 
     def get_24hr_stats(self, ticker_id=None):
         if not ticker_id:
@@ -299,7 +266,6 @@ class AccountBinance(AccountBase):
             for entry in self.client.get_orderbook_tickers():
                 tickers[entry["symbol"]] = float(entry["bidPrice"])
 
-
         for symbol, size in self.balances.items():
             size_btc = 0.0
             if symbol == 'BTC':
@@ -309,8 +275,6 @@ class AccountBinance(AccountBase):
                 if ticker_id not in tickers.keys():
                     continue
                 amount = float(self.balances[symbol]['balance'])
-                #if not self.simulate and self.logger:
-                #    self.logger.info("ticker {} = {}".format(ticker_id, tickers[ticker_id]))
 
                 if isinstance(tickers[ticker_id], float):
                     size_btc = float(tickers[ticker_id]) * amount
@@ -333,24 +297,6 @@ class AccountBinance(AccountBase):
                 self.balances[name] = {}
             self.balances[name]['balance'] = balance
             self.balances[name]['available'] = available
-
-
-    def get_account_balance(self, base=None, currency=None):
-        if not base:
-            base = self.base_currency
-        if not currency:
-            currency = self.currency
-        self.balance = 0.0
-        balance = 0.0
-        quote_currency_balance = 0.0
-        for funds in self.client.get_account()['balances']:
-            if funds['asset'] == currency:
-                quote_currency_balance = float(funds['free']) + float(funds['locked'])
-                self.quote_currency_balance = quote_currency_balance
-            elif funds['asset'] == base:
-                balance = float(funds['free']) + float(funds['locked'])
-                self.balance = balance
-        return {"base_balance": balance, "quote_balance": quote_currency_balance}
 
     def get_account_balances(self):
         self.balances = {}
@@ -392,7 +338,7 @@ class AccountBinance(AccountBase):
         for name, amount in balances.items():
             actual_fills = {}
             current_amount = 0.0
-            for currency in ['BTC', 'ETH', 'BNB']:
+            for currency in self.currencies:
                 if name == currency or name == 'BTC':
                     continue
                 ticker_id = "{}{}".format(name, currency)
@@ -431,7 +377,7 @@ class AccountBinance(AccountBase):
         for name, amount in balances.items():
             actual_fills = {}
             current_amount = 0.0
-            for currency in ['BTC', 'ETH', 'BNB']:
+            for currency in self.currencies:
                 if name == currency or name == 'BTC':
                     continue
                 ticker_id = "{}{}".format(name, currency)
@@ -530,6 +476,15 @@ class AccountBinance(AccountBase):
             if current_amount >= float(amount):
                 break
         return result
+
+    def handle_buy_completed(self, price, size):
+        pass
+
+    def handle_sell_completed(self, price, size):
+        pass
+
+    def get_account_balance(self):
+        pass
 
     def order_market_buy(self, symbol, quantity):
         return self.client.order_market_buy(symbol=symbol, quantity=quantity)
