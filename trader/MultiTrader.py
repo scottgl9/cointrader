@@ -82,7 +82,7 @@ class MultiTrader(object):
         if not asset_info:
             return None
 
-        base_min_size = float(asset_info['minQty'])
+        base_min_size = float(asset_info['stepSize'])
         tick_size = float(asset_info['tickSize'])
         min_notional = float(asset_info['minNotional'])
 

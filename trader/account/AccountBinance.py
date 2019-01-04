@@ -10,23 +10,17 @@ class AccountBinance(AccountBase):
         self.account_type = 'Binance'
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
-        #self.balance = 0.0
-        #self.funds_available = 0.0
-        #self.quote_currency_balance = 0.0
-        #self.quote_currency_available = 0.0
-        #self.base_currency = name
-        #self.currency = asset
         self.client = client
         self.simulate = simulation
         self.info_all_assets = {}
         self.details_all_assets = {}
-        #self.low_24hr = self.high_24hr = 0.0
-        #self.open_24hr = self.close_24hr = 0.0
-        #self.last_24hr = 0.0
-        #self.volume_24hr = 0.0
-        #self.market_price = 0.0
         self.balances = {}
         self.currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'XRP', 'USDT', 'USDC', 'TUSD']
+
+        # keep track of initial currency buy size, and subsequent trades against currency
+        self._currency_buy_size = {}
+        for currency in self.currencies:
+            self._currency_buy_size[currency] = 0
 
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
@@ -43,6 +37,38 @@ class AccountBinance(AccountBase):
         if name in self.currencies:
             return True
         return False
+
+    def is_currency_pair(self, symbol=None, base=None, currency=None):
+        if not base or not currency:
+            base, currency = self.split_ticker_id(symbol)
+        if not base or not currency:
+            return False
+        if base not in self.currencies:
+            return False
+        if currency not in self.currencies:
+            return False
+        return True
+
+    def get_currency_buy_size(self, name):
+        if not self.is_currency(name):
+            return 0
+        return self._currency_buy_size[name]
+
+    def set_currency_buy_size(self, name, size=0):
+        if not self.is_currency(name):
+            return 0
+        self._currency_buy_size[name] = size
+
+    # buy_size is amount of currency used to buy an asset
+    # sell_size is amount of currency retrieved by selling asset
+    def update_currency_buy_size(self, name, asset_buy_size=0, asset_sell_size=0):
+        if not self.is_currency(name):
+            return 0
+        if asset_buy_size:
+            self._currency_buy_size[name] -= asset_buy_size
+        if asset_sell_size:
+            self._currency_buy_size[name] += asset_sell_size
+        return self._currency_buy_size[name]
 
     def round_base(self, price, base_min_size=0):
         if base_min_size != 0.0:
@@ -151,12 +177,16 @@ class AccountBinance(AccountBase):
 
         return None
 
-    def get_asset_info(self, symbol):
+    def get_asset_info(self, symbol, field=None):
         if not self.info_all_assets:
             self.load_info_all_assets()
 
         if not self.info_all_assets or symbol not in self.info_all_assets.keys():
             return None
+        if field:
+            if field not in self.info_all_assets[symbol]:
+                return None
+            return self.info_all_assets[symbol][field]
         return self.info_all_assets[symbol]
 
     # determine if asset has disabled deposits, if so don't trade

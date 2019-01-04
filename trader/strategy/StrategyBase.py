@@ -34,6 +34,9 @@ class StrategyBase(object):
         self.client = client
         self.accnt = account_handler
         self.make_ticker_id()
+        # true if base, and currency are both tradable currencies (ex ETH/BTC)
+        self._currency_pair = self.accnt.is_currency_pair(base=self.base, currency=self.currency)
+
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
         self.trade_size_handler = None
@@ -68,6 +71,10 @@ class StrategyBase(object):
     def make_ticker_id(self):
         if self.accnt:
             self.ticker_id = self.accnt.make_ticker_id(self.base, self.currency)
+
+    # true if base, and currency are both tradable currencies (ex ETH/BTC)
+    def is_currency_pair(self):
+        return self._currency_pair
 
     def get_signals(self):
         if self.signal_handler:
