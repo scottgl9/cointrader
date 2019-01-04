@@ -232,7 +232,7 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+    logFormatter = logging.Formatter("[%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
     trade_log_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.log'))
