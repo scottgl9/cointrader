@@ -41,7 +41,7 @@ class CurrencyBalanceHandler(object):
         if currency not in self.currencies.keys():
             return False
         if not amount:
-            amount = price * order_size
+            amount = self.accnt.round_quote_pair(base, currency, float(price * order_size))
         self.currencies[currency]['balance'] -= amount
         return True
 
@@ -49,6 +49,6 @@ class CurrencyBalanceHandler(object):
         if currency not in self.currencies.keys():
             return False
         if not amount:
-            amount = price * order_size
+            amount = self.accnt.round_quote_pair(base, currency, float(price * order_size))
         self.currencies[currency]['balance'] += amount
         return True

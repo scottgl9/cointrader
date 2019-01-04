@@ -80,6 +80,14 @@ class AccountBinance(AccountBase):
             return round(price, '{:.9f}'.format(quote_increment).index('1') - 1)
         return price
 
+    def round_quote_symbol(self, symbol, price):
+        quote_increment = self.get_asset_info(symbol=symbol, field='tickSize')
+        return self.round_quote(price, quote_increment)
+
+    def round_quote_pair(self, base, currency, price):
+        quote_increment = self.get_asset_info(base=base, currency=currency, field='tickSize')
+        return self.round_quote(price, quote_increment)
+
     def my_float(self, value):
         if float(value) >= 0.1:
             return "{}".format(float(value))
@@ -177,9 +185,12 @@ class AccountBinance(AccountBase):
 
         return None
 
-    def get_asset_info(self, symbol, field=None):
+    def get_asset_info(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:
             self.load_info_all_assets()
+
+        if not symbol:
+            symbol = self.make_ticker_id(base, currency)
 
         if not self.info_all_assets or symbol not in self.info_all_assets.keys():
             return None
