@@ -33,7 +33,7 @@ class BinanceTrader:
         self.kline = None
         self.tickers = {}
         self.multitrader = MultiTrader(client,
-                                       'hybrid_signal_market_strategy',
+                                       'basic_signal_market_strategy',
                                        signal_names=["Hybrid_Crossover_Test"],
                                        simulate=False,
                                        logger=logger)

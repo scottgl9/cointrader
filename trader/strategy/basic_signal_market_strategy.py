@@ -8,9 +8,9 @@ from trader.signal.SignalBase import SignalBase
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
 
-class hybrid_signal_market_strategy(StrategyBase):
+class basic_signal_market_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
-        super(hybrid_signal_market_strategy, self).__init__(client,
+        super(basic_signal_market_strategy, self).__init__(client,
                                                             base,
                                                             currency,
                                                             account_handler,

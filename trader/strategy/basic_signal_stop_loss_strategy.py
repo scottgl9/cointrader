@@ -8,16 +8,16 @@ from trader.lib.SupportResistLevels import SupportResistLevels
 from datetime import datetime
 
 
-class hybrid_signal_stop_loss_strategy(StrategyBase):
+class basic_signal_stop_loss_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
-        super(hybrid_signal_stop_loss_strategy, self).__init__(client,
+        super(basic_signal_stop_loss_strategy, self).__init__(client,
                                                                base,
                                                                currency,
                                                                account_handler,
                                                                base_min_size,
                                                                tick_size,
                                                                logger)
-        self.strategy_name = 'hybrid_signal_stop_loss_strategy'
+        self.strategy_name = 'basic_signal_stop_loss_strategy'
         self.last_price = self.price = 0.0
         self.last_close = 0.0
 
