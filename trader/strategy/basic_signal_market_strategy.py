@@ -176,9 +176,19 @@ class basic_signal_market_strategy(StrategyBase):
 
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages(src_id=Message.ID_MULTI, dst_id=self.ticker_id):
-                if msg and msg.cmd == Message.MSG_BUY_FAILED:
-                    id = msg.sig_id
-                    signal = self.signal_handler.get_handler(id=id)
+                if not msg:
+                    continue
+                if msg.cmd == Message.MSG_BUY_COMPLETE:
+                    signal = self.signal_handler.get_handler(id=msg.sig_id)
+                    signal.buy_price = msg.price
+                    signal.buy_price_high = signal.buy_price
+                    msg.mark_read()
+                elif msg.cmd == Message.MSG_SELL_COMPLETE:
+                    signal = self.signal_handler.get_handler(id=msg.sig_id)
+                    signal.last_sell_price = msg.price
+                    msg.mark_read()
+                elif msg.cmd == Message.MSG_BUY_FAILED:
+                    signal = self.signal_handler.get_handler(id=msg.sig_id)
                     if not self.accnt.simulate:
                         self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
                                                                                      msg.price,
@@ -189,7 +199,7 @@ class basic_signal_market_strategy(StrategyBase):
                     signal.buy_size = 0.0
                     signal.buy_timestamp = 0
                     msg.mark_read()
-                elif msg and msg.cmd == Message.MSG_SELL_FAILED:
+                elif msg.cmd == Message.MSG_SELL_FAILED:
                     id = msg.sig_id
                     signal = self.signal_handler.get_handler(id=id)
                     self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
@@ -248,12 +258,12 @@ class basic_signal_market_strategy(StrategyBase):
         if signal.buy_price_high != 0 and price > signal.buy_price_high:
             signal.buy_price_high = price
 
-        if not self.accnt.simulate and self.update_buy_price and price > signal.buy_price:
-            signal.buy_price = price
-            self.update_buy_price = False
-        elif not self.accnt.simulate and self.update_sell_price:
-            signal.last_sell_price = price
-            self.update_sell_price = False
+        #if not self.accnt.simulate and self.update_buy_price and price > signal.buy_price:
+        #    signal.buy_price = price
+        #    self.update_buy_price = False
+        #elif not self.accnt.simulate and self.update_sell_price:
+        #    signal.last_sell_price = price
+        #    self.update_sell_price = False
 
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
