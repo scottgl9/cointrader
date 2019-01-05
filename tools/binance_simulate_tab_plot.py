@@ -343,7 +343,7 @@ if __name__ == '__main__':
         with open(trade_cache_filename, "w") as f:
             trade_cache[trade_cache_name] = {}
             trade_cache[trade_cache_name]['trades'] = trades
-            f.write(json.dumps(trade_cache))
+            f.write(json.dumps(trade_cache, f, indent=4))
 
     plt.rcParams.update({'figure.max_open_warning': 0})
 

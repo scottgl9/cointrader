@@ -232,6 +232,9 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
+    if not os.path.exists(results.cache_dir):
+        os.mkdir(results.cache_dir)
+
     logFormatter = logging.Formatter("[%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
@@ -260,9 +263,6 @@ if __name__ == '__main__':
 
     trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
 
-    if not os.path.exists(results.cache_dir):
-        os.mkdir(results.cache_dir)
-
     # if we already ran simulation, load the results
     trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
     if os.path.exists(trade_cache_filename):
@@ -284,4 +284,4 @@ if __name__ == '__main__':
     with open(trade_cache_filename, "w") as f:
         trade_cache[trade_cache_name] = {}
         trade_cache[trade_cache_name]['trades'] = trades
-        f.write(json.dumps(trade_cache))
+        f.write(json.dumps(trade_cache, f, indent=4))

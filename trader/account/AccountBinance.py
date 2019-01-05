@@ -1,5 +1,7 @@
 from trader.account.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
+from trader.lib.Message import Message
+from trader.lib.Order import Order
 import json
 import os
 
@@ -199,6 +201,56 @@ class AccountBinance(AccountBase):
                 return None
             return self.info_all_assets[symbol][field]
         return self.info_all_assets[symbol]
+
+    def parse_order_result(self, result):
+        fills = None
+        orderid = None
+        order_type = None
+        type = None
+        origqty = 0
+        quoteqty = 0
+        side = None
+        commission = 0
+        status = None
+        price = 0
+        type = None
+        symbol = None
+        if 'orderId' in result: orderid = result['orderId']
+        if 'origQty' in result: origqty = result['origQty']
+        if 'fills' in result: fills = result['fills']
+        if 'cummulativeQuoteQty' in result: quoteqty = result['cummulativeQuoteQty']
+        if fills:
+            for fill in fills:
+                if 'side' in fill: side = fill['side']
+                if 'type' in fill: type = fill['type']
+                if 'status' in fill: status = fill['status']
+                if 'price' in fill and float(price) != 0:
+                    price = float(fill['price'])
+                if 'type' in fill: type = fill['type']
+                if 'symbol' in fill: symbol = fill['symbol']
+
+        if not side or not order_type:
+            return None
+
+        if order_type == 'MARKET' and side == 'BUY':
+            type = Message.MSG_MARKET_BUY
+        elif order_type == 'MARKET' and side == 'SELL':
+            type = Message.MSG_MARKET_SELL
+        elif order_type == 'LIMIT' and side == 'BUY':
+            type = Message.MSG_LIMIT_BUY
+        elif order_type == 'LIMIT' and side == 'SELL':
+            type = Message.MSG_LIMIT_SELL
+        else:
+            return None
+
+        order = Order(symbol=symbol,
+                      price=price,
+                      size=origqty,
+                      type=type,
+                      orderid=orderid,
+                      quote_size=quoteqty,
+                      commission=commission)
+        return order
 
     # determine if asset has disabled deposits, if so don't trade
     def deposit_asset_disabled(self, name):

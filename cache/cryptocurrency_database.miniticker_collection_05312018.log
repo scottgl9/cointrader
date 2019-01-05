@@ -1,8 +1,7 @@
-[INFO ]  Loading cache\cryptocurrency_database.miniticker_collection_05312018.json
-[INFO ]  Running simulate with cryptocurrency_database.miniticker_collection_05312018.db signal Hybrid_Crossover_Test
+[INFO ]  Running simulate with ./cryptocurrency_database.miniticker_collection_05312018.db signal Hybrid_Crossover_Test
 [INFO ]  Resetting initial BTC...
 [INFO ]  Initial BTC value = 0.06
-[INFO ]  Running MultiTrade simulation strategy hybrid_signal_market_strategy signal(s) Hybrid_Crossover_Test
+[INFO ]  Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
 [INFO ]  Resetting initial BTC...
 [INFO ]  Initial BTC=0.06
 [INFO ]  buy(1, THETABTC, 120.0) @ 3.677e-05
@@ -169,7 +168,6 @@
 [INFO ]  XVGBTC (1): 1.37%
 [INFO ]  EDOBTC (1): 1.27%
 [INFO ]  ONTBTC (1): -0.87%
-[INFO ]  GRSBTC (1): -0.29%
 [INFO ]  SUBBTC (1): 1.42%
 [INFO ]  ETCBTC (1): -1.22%
 [INFO ]  SNTBTC (1): 3.0%
@@ -192,3 +190,4 @@
 [INFO ]  YOYOBTC (1): 1.21%
 [INFO ]  POABTC (1): 1.33%
 [INFO ]  APPCBTC (1): 3.6%
+[INFO ]  GRSBTC (1): -0.29%
