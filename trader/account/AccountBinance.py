@@ -202,7 +202,8 @@ class AccountBinance(AccountBase):
             return self.info_all_assets[symbol][field]
         return self.info_all_assets[symbol]
 
-    def parse_order_result(self, result):
+    # parse json response to binance API order, then use to create Order object
+    def parse_order_result(self, result, symbol=None):
         fills = None
         orderid = None
         order_type = None
@@ -213,8 +214,13 @@ class AccountBinance(AccountBase):
         commission = 0
         status = None
         price = 0
+        min_price = 0
+        max_price = 0
         type = None
-        symbol = None
+
+        if self.simulate:
+            return None
+
         if 'orderId' in result: orderid = result['orderId']
         if 'origQty' in result: origqty = result['origQty']
         if 'fills' in result: fills = result['fills']
@@ -226,11 +232,23 @@ class AccountBinance(AccountBase):
                 if 'status' in fill: status = fill['status']
                 if 'price' in fill and float(price) != 0:
                     price = float(fill['price'])
+                    if price > max_price:
+                        max_price = price
+                    if min_price == 0 or price < min_price:
+                        min_price = price
                 if 'type' in fill: type = fill['type']
                 if 'symbol' in fill: symbol = fill['symbol']
 
+        if not symbol or status != 'FILLED':
+            return None
+
         if not side or not order_type:
             return None
+
+        if side == 'BUY':
+            price = max_price
+        elif side == 'SELL':
+            price = min_price
 
         if order_type == 'MARKET' and side == 'BUY':
             type = Message.MSG_MARKET_BUY

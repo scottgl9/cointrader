@@ -303,10 +303,6 @@ class OrderHandler(object):
         self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
-    # {u'orderId': 38614135, u'clientOrderId': u'S0FDkNNluyHgdfZt44Ktty', u'origQty': u'0.24000000', u'fills': [{u'commission': u'0.00015000', u'price': u'0.04514300',
-    # u'commissionAsset': u'BNB', u'tradeId': 8948934, u'qty': u'0.20000000'}, {u'commission': u'0.00003000', u'price': u'0.04514400', u'commissionAsset': u'BNB', u'tradeId': 8948935,
-    # u'qty': u'0.04000000'}], u'symbol': u'BNBETH', u'side': u'BUY', u'timeInForce': u'GTC', u'status': u'FILLED', u'transactTime': 1536316266040, u'type': u'MARKET', u'price': u'0.00000000',
-    #  u'executedQty': u'0.24000000', u'cummulativeQuoteQty': u'0.01083436'}
     def place_buy_market_order(self, ticker_id, price, size, sig_id):
         if self.buy_disabled:
             self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
@@ -326,22 +322,19 @@ class OrderHandler(object):
             self.logger.info(message)
             if self.store_trades:
                 self.store_trade_json(ticker_id, price, size, 'buy')
-        elif ('status' in result and result['status'] == 'FILLED'):
-            if 'orderId' not in result:
-                self.logger.warn("orderId not found for {}".format(ticker_id))
-                return
-            orderid = result['orderId']
-            self.buy_order_id = orderid
-            message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
-            self.logger.info(message)
-            self.accnt.get_account_balances()
-            # add to trader db for tracking
-            self.trader_db.insert_trade(int(time.time()), ticker_id, price, size, sig_id)
-            if self.notify:
-                self.notify.send(subject="MultiTrader", text=message)
         else:
-            self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
-
+            order = self.accnt.parse_order_result(result)
+            if order:
+                self.buy_order_id = order.orderid
+                message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
+                self.logger.info(message)
+                self.accnt.get_account_balances()
+                # add to trader db for tracking
+                self.trader_db.insert_trade(int(time.time()), ticker_id, price, size, sig_id)
+                if self.notify:
+                    self.notify.send(subject="MultiTrader", text=message)
+            else:
+                self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
 
     def place_sell_market_order(self, ticker_id, price, size, buy_price, sig_id):
         # if available balance on coin changed after buy, update available size
@@ -365,8 +358,8 @@ class OrderHandler(object):
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             return
 
-        message=''
-        if self.accnt.simulate or ('status' in result and result['status'] == 'FILLED'):
+        order = self.accnt.parse_order_result(result)
+        if self.accnt.simulate or order:
             pprofit = 100.0 * (price - buy_price) / buy_price
             if self.tickers and self.initial_btc != 0:
                 current_btc = self.accnt.get_total_btc_value(self.tickers)
@@ -396,7 +389,6 @@ class OrderHandler(object):
                 self.trader_db.remove_trade(ticker_id, sig_id)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
-
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
 
