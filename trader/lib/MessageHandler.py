@@ -27,8 +27,8 @@ class MessageHandler(object):
     def add(self, msg):
         global_message_queue.append(msg)
 
-    def add_message(self, src_id, dst_id, cmd, sig_id, price=0.0, size=0.0, buy_price=0.0, ts=0):
-        msg = Message(src_id, dst_id, cmd, sig_id, price, size, buy_price, ts)
+    def add_message(self, src_id, dst_id, cmd, sig_id, price=0.0, size=0.0, buy_price=0.0, ts=0, asset_info=None):
+        msg = Message(src_id, dst_id, cmd, sig_id, price, size, buy_price, ts, asset_info)
         global_message_queue.append(msg)
 
     def get_first_message(self, src_id, dst_id, sig_id=0):
@@ -105,22 +105,24 @@ class MessageHandler(object):
             if message.dst_id == id:
                 del global_message_queue[i]
 
-    def buy_market(self, ticker_id, price, size, sig_id):
+    def buy_market(self, ticker_id, price, size, sig_id, asset_info=None):
         self.add_message(src_id=ticker_id,
                          dst_id=Message.ID_MULTI,
                          cmd=Message.MSG_MARKET_BUY,
                          sig_id=sig_id,
                          price=price,
-                         size=size)
+                         size=size,
+                         asset_info=asset_info)
 
-    def sell_market(self, ticker_id, price, size, buy_price, sig_id):
+    def sell_market(self, ticker_id, price, size, buy_price, sig_id, asset_info=None):
         self.add_message(src_id=ticker_id,
                          dst_id=Message.ID_MULTI,
                          cmd=Message.MSG_MARKET_SELL,
                          sig_id=sig_id,
                          price=price,
                          size=size,
-                         buy_price=buy_price)
+                         buy_price=buy_price,
+                         asset_info=asset_info)
 
     def buy_stop_loss(self, ticker_id, price, size, sig_id):
         self.add_message(src_id=ticker_id,

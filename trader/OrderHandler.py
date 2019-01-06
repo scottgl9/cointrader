@@ -3,6 +3,7 @@ from trader.lib.Message import Message
 from trader.lib.Order import Order
 from trader.notify.Email import Email
 from trader.lib.TraderDB import TraderDB
+from trader.CurrencyBalanceHandler import CurrencyBalanceHandler
 import time
 import os
 
@@ -19,6 +20,7 @@ class OrderHandler(object):
         self.trades = {}
         self.counters = {}
         self.buy_disabled = False
+        self.currency_balance_handler = CurrencyBalanceHandler(self.accnt)
         # total percent profit
         self.tpprofit = 0
 
@@ -94,11 +96,11 @@ class OrderHandler(object):
                 if msg.is_read():
                     continue
                 if msg.cmd == Message.MSG_MARKET_BUY:
-                    self.place_buy_market_order(msg.src_id, msg.price, msg.size, msg.sig_id)
+                    self.place_buy_market_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_MARKET_SELL:
-                    self.place_sell_market_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
+                    self.place_sell_market_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_LIMIT_BUY:
@@ -303,7 +305,12 @@ class OrderHandler(object):
         self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
-    def place_buy_market_order(self, ticker_id, price, size, sig_id):
+    def place_buy_market_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        size = msg.size
+        sig_id = msg.sig_id
+
         if self.buy_disabled:
             self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
             return
@@ -326,9 +333,12 @@ class OrderHandler(object):
             order = self.accnt.parse_order_result(result)
             if order:
                 # update price from actual sell price for live trading
-                if not self.accnt.simulate and order.price != 0:
-                    self.logger.info("update_buy_price({}, {} -> {})".format(ticker_id, price, order.price))
-                    price = float(order.price)
+                if not self.accnt.simulate:
+                    if order.price != 0:
+                        self.logger.info("update_buy_price({}, {} -> {})".format(ticker_id, price, order.price))
+                        price = float(order.price)
+
+
                 self.buy_order_id = order.orderid
                 message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
                 self.logger.info(message)
@@ -341,7 +351,16 @@ class OrderHandler(object):
             else:
                 self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
 
-    def place_sell_market_order(self, ticker_id, price, size, buy_price, sig_id):
+            #if self.accnt.is_currency_pair(symbol=ticker_id):
+            #    self.currency_balance_handler.
+
+    def place_sell_market_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        buy_price = msg.buy_price
+        size = msg.size
+        sig_id = msg.sig_id
+
         # if available balance on coin changed after buy, update available size
         if not self.accnt.simulate:
             self.accnt.get_account_balances()

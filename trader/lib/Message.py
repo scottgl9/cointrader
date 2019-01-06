@@ -23,7 +23,7 @@ class Message(object):
     MSG_BUY_ENABLE = 20
     MSG_SELL_ENABLE = 21
 
-    def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0):
+    def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0, asset_info=None):
         self.src_id = src_id
         self.dst_id = dst_id
         self.cmd = cmd
@@ -32,6 +32,8 @@ class Message(object):
         self.size = size
         self.buy_price = buy_price
         self.ts = ts
+        # AssetInfo class object stored in self.asset_info
+        self.asset_info = asset_info
         self.read = False
 
     def mark_read(self):

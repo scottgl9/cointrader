@@ -129,6 +129,7 @@ class AccountBinance(AccountBase):
                 minQty = ''
                 tickSize = ''
                 stepSize = ''
+                commissionAsset = ''
                 for filter in asset['filters']:
                     if 'minQty' in filter:
                         minQty = filter['minQty']
@@ -138,11 +139,14 @@ class AccountBinance(AccountBase):
                         stepSize = filter['stepSize']
                     if 'minNotional' in filter:
                         minNotional = filter['minNotional']
+                    if 'commissionAsset' in filter:
+                        commissionAsset = filter['commissionAsset']
 
                 assets[asset['symbol']] = {'minQty': minQty,
                                            'tickSize': tickSize,
                                            'stepSize': stepSize,
-                                           'minNotional': minNotional
+                                           'minNotional': minNotional,
+                                           'commissionAsset': commissionAsset
                                            }
 
         return assets
