@@ -29,6 +29,7 @@ class StrategyBase(object):
         self.base = base
         self.currency = currency
         self.ticker_id = None
+        self.asset_info = None
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
         self.client = client

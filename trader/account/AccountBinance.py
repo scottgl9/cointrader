@@ -2,6 +2,7 @@ from trader.account.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
 from trader.lib.Message import Message
 from trader.lib.Order import Order
+from trader.lib.AssetInfo import AssetInfo
 import json
 import os
 
@@ -83,11 +84,11 @@ class AccountBinance(AccountBase):
         return price
 
     def round_quote_symbol(self, symbol, price):
-        quote_increment = self.get_asset_info(symbol=symbol, field='tickSize')
+        quote_increment = self.get_asset_info_dict(symbol=symbol, field='tickSize')
         return self.round_quote(price, quote_increment)
 
     def round_quote_pair(self, base, currency, price):
-        quote_increment = self.get_asset_info(base=base, currency=currency, field='tickSize')
+        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='tickSize')
         return self.round_quote(price, quote_increment)
 
     def my_float(self, value):
@@ -127,12 +128,15 @@ class AccountBinance(AccountBase):
             for asset in value:
                 minNotional = ''
                 minQty = ''
+                minPrice = ''
                 tickSize = ''
                 stepSize = ''
                 commissionAsset = ''
                 for filter in asset['filters']:
                     if 'minQty' in filter:
                         minQty = filter['minQty']
+                    if 'minPrice' in filter:
+                        minPrice = filter['minPrice']
                     if 'tickSize' in filter:
                         tickSize = filter['tickSize']
                     if 'stepSize' in filter:
@@ -143,6 +147,7 @@ class AccountBinance(AccountBase):
                         commissionAsset = filter['commissionAsset']
 
                 assets[asset['symbol']] = {'minQty': minQty,
+                                           'minPrice': minPrice,
                                            'tickSize': tickSize,
                                            'stepSize': stepSize,
                                            'minNotional': minNotional,
@@ -191,7 +196,7 @@ class AccountBinance(AccountBase):
 
         return None
 
-    def get_asset_info(self, symbol=None, base=None, currency=None, field=None):
+    def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:
             self.load_info_all_assets()
 
@@ -205,6 +210,28 @@ class AccountBinance(AccountBase):
                 return None
             return self.info_all_assets[symbol][field]
         return self.info_all_assets[symbol]
+
+    # return asset info in AssetInfo class object
+    def get_asset_info(self, symbol=None, base=None, currency=None):
+        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
+        if not info:
+            return None
+
+        min_qty=info['minQty']
+        min_price=info['minPrice']
+        base_step_size=info['stepSize']
+        currency_step_size=info['tickSize']
+        is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
+
+        result = AssetInfo(base=base,
+                           currency=currency,
+                           min_qty=min_qty,
+                           min_price=min_price,
+                           base_step_size=base_step_size,
+                           currency_step_size=currency_step_size,
+                           is_currency_pair=is_currency_pair
+                           )
+        return result
 
     # parse json response to binance API order, then use to create Order object
     def parse_order_result(self, result, symbol=None):

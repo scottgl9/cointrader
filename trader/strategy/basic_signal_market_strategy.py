@@ -9,7 +9,8 @@ from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
 
 class basic_signal_market_strategy(StrategyBase):
-    def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
+    def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None,
+                 asset_info=None, base_min_size=0.0, tick_size=0.0, logger=None):
         super(basic_signal_market_strategy, self).__init__(client,
                                                             base,
                                                             currency,
@@ -52,6 +53,7 @@ class basic_signal_market_strategy(StrategyBase):
         self.min_trade_size_qty = 1.0
         self.min_price = 0.0
         self.max_price = 0.0
+        self.asset_info = asset_info
         self.trade_size_handler = fixed_trade_size(base, currency, base_min_size, tick_size,
                                                    btc=0.0015, eth=0.015, bnb=1.5, pax=10.0, usdt=10.0)
 
@@ -323,9 +325,11 @@ class basic_signal_market_strategy(StrategyBase):
                                            Message.MSG_MARKET_BUY,
                                            signal.id,
                                            price,
-                                           signal.buy_size)
+                                           signal.buy_size,
+                                           asset_info=self.asset_info)
         else:
-            self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size, sig_id=signal.id)
+            self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size,
+                                        sig_id=signal.id, asset_info=self.asset_info)
             # for trader running live. Delay setting buy_price until next price
             self.update_buy_price = True
 
@@ -346,10 +350,11 @@ class basic_signal_market_strategy(StrategyBase):
                                             signal.id,
                                             sell_price,
                                             signal.buy_size,
-                                            signal.buy_price)
+                                            signal.buy_price,
+                                            asset_info=self.asset_info)
         else:
             self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price,
-                                         sig_id=signal.id)
+                                         sig_id=signal.id, asset_info=self.asset_info)
 
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0

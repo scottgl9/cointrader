@@ -71,17 +71,18 @@ class MultiTrader(object):
 
         base_name, currency_name = self.accnt.split_symbol(symbol)
 
-        if not base_name or not currency_name: return
+        if not base_name or not currency_name: return None
 
         # if an asset has deposit disabled, means its probably suspended
         # or de-listed so DO NOT trade this coin
         if self.accnt.deposit_asset_disabled(base_name):
             return None
 
-        asset_info = self.accnt.get_asset_info(symbol)
+        asset_info = self.accnt.get_asset_info_dict(symbol)
         if not asset_info:
             return None
 
+        # *FIXME* use AssetInfo class instead
         base_min_size = float(asset_info['stepSize'])
         tick_size = float(asset_info['tickSize'])
         min_notional = float(asset_info['minNotional'])
@@ -109,6 +110,7 @@ class MultiTrader(object):
                                signal_names=self.signal_names,
                                base=base_name,
                                currency=currency_name,
+                               asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
                                base_min_size=base_min_size,
                                tick_size=tick_size,
                                logger=self.logger)
@@ -133,19 +135,21 @@ class MultiTrader(object):
         return self.order_handler.get_stored_trades()
 
     def get_trader(self, symbol):
-        if symbol not in self.trade_pairs.keys():
-            self.add_trade_pair(symbol)
-        return self.trade_pairs[symbol]
+        #if symbol not in self.trade_pairs.keys():
+        #    self.add_trade_pair(symbol)
+        try:
+            result = self.trade_pairs[symbol]
+        except KeyError:
+            result = self.add_trade_pair(symbol)
+            #result = self.trade_pairs[symbol]
+        return result
 
     def process_message(self, kline, cache_db=None):
         self.current_ts = kline.ts
 
-        if kline.symbol not in self.trade_pairs.keys():
-            symbol_trader = self.add_trade_pair(kline.symbol)
-            if not symbol_trader:
-                return None
-        else:
-            symbol_trader = self.trade_pairs[kline.symbol]
+        symbol_trader = self.get_trader(kline.symbol)
+        if not symbol_trader:
+            return None
 
         # compute current total percent profit, and update info in strategy
         symbol_trader.update_tickers(self.tickers)

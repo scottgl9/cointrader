@@ -6,18 +6,42 @@ from trader.strategy.basic_signal_stop_loss_strategy import basic_signal_stop_lo
 from trader.strategy.null_strategy import null_strategy
 
 
-def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
+def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, account_handler=None,
+                    base_min_size=0.0, tick_size=0.0, asset_info=None, logger=None):
     if sname == 'basic_signal_market_strategy':
-        return basic_signal_market_strategy(client, base, currency, signal_names, account_handler,  base_min_size=base_min_size, tick_size=tick_size, logger=logger)
+        return basic_signal_market_strategy(client,
+                                            base,
+                                            currency,
+                                            signal_names,
+                                            account_handler,
+                                            asset_info=asset_info,
+                                            base_min_size=base_min_size,
+                                            tick_size=tick_size,
+                                            logger=logger)
     elif sname == 'basic_signal_stop_loss_strategy':
-        return basic_signal_stop_loss_strategy(client, base, currency, signal_names, account_handler, base_min_size=base_min_size, tick_size=tick_size, logger=logger)
+        return basic_signal_stop_loss_strategy(client,
+                                               base,
+                                               currency,
+                                               signal_names,
+                                               account_handler,
+                                               base_min_size=base_min_size,
+                                               tick_size=tick_size,
+                                               logger=logger)
     elif sname == 'null_strategy':
-        return null_strategy(client, base, currency, account_handler, signal_names, base_min_size=base_min_size, tick_size=tick_size, logger=logger)
+        return null_strategy(client,
+                             base,
+                             currency,
+                             account_handler,
+                             signal_names,
+                             base_min_size=base_min_size,
+                             tick_size=tick_size,
+                             logger=logger)
 
 
 # class to handle individual trade pair (ex. BTC/USD)
 class TradePair(threading.Thread):
-    def __init__(self, client, accnt, strategy_name, signal_names, base='BTC', currency='USD', base_min_size=0, tick_size=0, logger=None):
+    def __init__(self, client, accnt, strategy_name, signal_names, base='BTC', currency='USD',
+                 base_min_size=0, tick_size=0, logger=None, asset_info=None):
         super(TradePair, self).__init__()
         self.client = client
         self.accnt = accnt
@@ -27,6 +51,7 @@ class TradePair(threading.Thread):
         #self.order_handler = order_handler
         self.base_name = base
         self.currency = currency
+        self.asset_info = asset_info
         self.base_min_size = base_min_size
         self.tick_size = tick_size
         self.ticker_id = self.accnt.make_ticker_id(base, currency)
@@ -38,6 +63,7 @@ class TradePair(threading.Thread):
                                         self.currency,
                                         signal_names=self.signal_names,
                                         account_handler=self.accnt,
+                                        asset_info=asset_info,
                                         base_min_size=self.base_min_size,
                                         tick_size=self.tick_size,
                                         logger=self.logger)
