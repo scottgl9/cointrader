@@ -353,17 +353,16 @@ class OrderHandler(object):
                 return
 
         # handle currency balance
-        if not msg.asset_info:
-            return
-        if msg.asset_info.is_currency_pair:
-            info = msg.asset_info
+        #if not msg.asset_info:
+        #    return
+        info = msg.asset_info
+        if info.is_currency_pair:
             self.currency_balance_handler.set_balance(info.base, float(size))
-        else:
-            info = msg.asset_info
-            if not self.currency_balance_handler.is_zero_balance(info.currency):
-                self.currency_balance_handler.update_for_asset_buy(price=price,
-                                                                   order_size=size,
-                                                                   asset_info=info)
+
+        if not self.currency_balance_handler.is_zero_balance(info.currency):
+            self.currency_balance_handler.update_for_asset_buy(price=price,
+                                                               order_size=size,
+                                                               asset_info=info)
 
     def place_sell_market_order(self, msg):
         ticker_id = msg.src_id
@@ -432,17 +431,14 @@ class OrderHandler(object):
             return
 
         # handle currency balance
-        if not msg.asset_info:
-            return
-        if msg.asset_info.is_currency_pair:
-            info = msg.asset_info
+        info = msg.asset_info
+        if info.is_currency_pair:
             self.currency_balance_handler.set_balance(info.base, 0.0)
-        else:
-            info = msg.asset_info
-            if not self.currency_balance_handler.is_zero_balance(info.currency):
-                self.currency_balance_handler.update_for_asset_sell(price=price,
-                                                                    order_size=size,
-                                                                    asset_info=info)
+
+        if not self.currency_balance_handler.is_zero_balance(info.currency):
+            self.currency_balance_handler.update_for_asset_sell(price=price,
+                                                                order_size=size,
+                                                                asset_info=info)
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0):

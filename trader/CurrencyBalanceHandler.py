@@ -34,7 +34,7 @@ class CurrencyBalanceHandler(object):
     def set_balance(self, name, balance=0.0):
         if name not in self.currencies.keys():
             return False
-        self.logger.info("\tset_balance({}, {})".format(name, balance))
+        #self.logger.info("\tset_balance({}, {})".format(name, balance))
         self.currencies[name]['balance'] = balance
         return True
 
@@ -43,6 +43,8 @@ class CurrencyBalanceHandler(object):
         base = asset_info.base
         currency = asset_info.currency
 
+        balance = self.accnt.round_quote_pair(base, currency, self.accnt.get_asset_balance(currency)['balance'])
+
         if currency not in self.currencies.keys():
             return False
         if not amount:
@@ -50,7 +52,7 @@ class CurrencyBalanceHandler(object):
         if self.logger:
             pre_amount = self.currencies[currency]['balance']
             post_amount = pre_amount - amount
-            self.logger.info("\tbuy({}{}): {} {} -> {}".format(base, currency, currency, pre_amount, post_amount))
+            self.logger.info("\tbuy({}{}): {} {} {}".format(base, currency, currency, post_amount, balance))
         self.currencies[currency]['balance'] -= amount
         return True
 
@@ -58,15 +60,17 @@ class CurrencyBalanceHandler(object):
         base = asset_info.base
         currency = asset_info.currency
 
+        balance = self.accnt.round_quote_pair(base, currency, self.accnt.get_asset_balance(currency)['balance'])
+
         if currency not in self.currencies.keys():
             return False
         if not amount:
             amount = self.accnt.round_quote_pair(base, currency, float(price) * float(order_size))
-        if amount < asset_info.min_price:
-            return False
+        #if amount < asset_info.min_price:
+        #    return False
         if self.logger:
             pre_amount = self.currencies[currency]['balance']
             post_amount = pre_amount + amount
-            self.logger.info("\tsell({}{}): {} {} -> {}".format(base, currency, currency, pre_amount, post_amount))
+            self.logger.info("\tsell({}{}): {} {} {}".format(base, currency, currency, post_amount, balance))
         self.currencies[currency]['balance'] += amount
         return True
