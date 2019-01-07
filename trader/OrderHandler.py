@@ -20,7 +20,7 @@ class OrderHandler(object):
         self.trades = {}
         self.counters = {}
         self.buy_disabled = False
-        self.currency_balance_handler = CurrencyBalanceHandler(self.accnt)
+        self.currency_balance_handler = CurrencyBalanceHandler(self.accnt, logger=logger)
         # total percent profit
         self.tpprofit = 0
 
@@ -350,9 +350,20 @@ class OrderHandler(object):
                     self.notify.send(subject="MultiTrader", text=message)
             else:
                 self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
+                return
 
-            #if self.accnt.is_currency_pair(symbol=ticker_id):
-            #    self.currency_balance_handler.
+        # handle currency balance
+        if not msg.asset_info:
+            return
+        if msg.asset_info.is_currency_pair:
+            info = msg.asset_info
+            self.currency_balance_handler.set_balance(info.base, float(size))
+        else:
+            info = msg.asset_info
+            if not self.currency_balance_handler.is_zero_balance(info.currency):
+                self.currency_balance_handler.update_for_asset_buy(price=price,
+                                                                   order_size=size,
+                                                                   asset_info=info)
 
     def place_sell_market_order(self, msg):
         ticker_id = msg.src_id
@@ -418,6 +429,20 @@ class OrderHandler(object):
                     self.notify.send(subject="MultiTrader", text=message)
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
+            return
+
+        # handle currency balance
+        if not msg.asset_info:
+            return
+        if msg.asset_info.is_currency_pair:
+            info = msg.asset_info
+            self.currency_balance_handler.set_balance(info.base, 0.0)
+        else:
+            info = msg.asset_info
+            if not self.currency_balance_handler.is_zero_balance(info.currency):
+                self.currency_balance_handler.update_for_asset_sell(price=price,
+                                                                    order_size=size,
+                                                                    asset_info=info)
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0):

@@ -75,12 +75,12 @@ class AccountBinance(AccountBase):
 
     def round_base(self, price, base_min_size=0):
         if base_min_size != 0.0:
-            return round(price, '{:.9f}'.format(base_min_size).index('1') - 1)
+            return round(price, '{:.9f}'.format(float(base_min_size)).index('1') - 1)
         return price
 
     def round_quote(self, price, quote_increment=0):
         if quote_increment != 0.0:
-            return round(price, '{:.9f}'.format(quote_increment).index('1') - 1)
+            return round(price, '{:.9f}'.format(float(quote_increment)).index('1') - 1)
         return price
 
     def round_quote_symbol(self, symbol, price):

@@ -10,8 +10,9 @@
 # - if on sell execution of BNBETH, this class adds X amount of ETH balance for the amount of ETH BNB sold for
 
 class CurrencyBalanceHandler(object):
-    def __init__(self, accnt=None):
+    def __init__(self, accnt=None, logger=None):
         self.accnt = accnt
+        self.logger = logger
         self.currencies = {}
         for name in self.accnt.get_currencies():
             self.currencies[name] = { 'balance': 0.0 }
@@ -33,22 +34,39 @@ class CurrencyBalanceHandler(object):
     def set_balance(self, name, balance=0.0):
         if name not in self.currencies.keys():
             return False
+        self.logger.info("\tset_balance({}, {})".format(name, balance))
         self.currencies[name]['balance'] = balance
         return True
 
     # note that amount = price * order_size, so amount can be specified instead of the former
-    def update_for_asset_buy(self, base, currency, price=0, order_size=0, amount=0):
+    def update_for_asset_buy(self, price=0, order_size=0, amount=0, asset_info=None):
+        base = asset_info.base
+        currency = asset_info.currency
+
         if currency not in self.currencies.keys():
             return False
         if not amount:
-            amount = self.accnt.round_quote_pair(base, currency, float(price * order_size))
+            amount = self.accnt.round_quote_pair(base, currency, float(price) * float(order_size))
+        if self.logger:
+            pre_amount = self.currencies[currency]['balance']
+            post_amount = pre_amount - amount
+            self.logger.info("\tbuy({}{}): {} {} -> {}".format(base, currency, currency, pre_amount, post_amount))
         self.currencies[currency]['balance'] -= amount
         return True
 
-    def update_for_asset_sell(self, base, currency, price=0, order_size=0, amount=0):
+    def update_for_asset_sell(self, price=0, order_size=0, amount=0, asset_info=None):
+        base = asset_info.base
+        currency = asset_info.currency
+
         if currency not in self.currencies.keys():
             return False
         if not amount:
-            amount = self.accnt.round_quote_pair(base, currency, float(price * order_size))
+            amount = self.accnt.round_quote_pair(base, currency, float(price) * float(order_size))
+        if amount < asset_info.min_price:
+            return False
+        if self.logger:
+            pre_amount = self.currencies[currency]['balance']
+            post_amount = pre_amount + amount
+            self.logger.info("\tsell({}{}): {} {} -> {}".format(base, currency, currency, pre_amount, post_amount))
         self.currencies[currency]['balance'] += amount
         return True

@@ -1,9 +1,10 @@
 class trade_size_strategy_base(object):
-    def __init__(self, base, currency, base_min_size, tick_size, btc=0, eth=0, bnb=0, usdt=0):
-        self.base = base
-        self.currency = currency
-        self.base_min_size = float(base_min_size)
-        self.quote_increment = float(tick_size)
+    def __init__(self, asset_info):
+        self.asset_info = asset_info
+        self.base = asset_info.base
+        self.currency = asset_info.currency
+        self.base_step_size = float(asset_info.base_step_size)
+        self.currency_step_size = float(asset_info.currency_step_size)
         self.tickers = None
 
     def compute_trade_size(self, price):
@@ -13,13 +14,13 @@ class trade_size_strategy_base(object):
         pass
 
     def round_base(self, price):
-        if self.base_min_size != 0.0:
-            return round(price, '{:.9f}'.format(self.base_min_size).index('1') - 1)
+        if self.base_step_size != 0.0:
+            return round(price, '{:.9f}'.format(self.base_step_size).index('1') - 1)
         return price
 
     def round_quote(self, price):
-        if self.quote_increment != 0.0:
-            return round(price, '{:.9f}'.format(self.quote_increment).index('1') - 1)
+        if self.currency_step_size != 0.0:
+            return round(price, '{:.9f}'.format(self.currency_step_size).index('1') - 1)
         return price
 
     def my_float(self, value):
