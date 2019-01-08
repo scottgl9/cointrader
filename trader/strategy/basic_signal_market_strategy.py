@@ -56,11 +56,12 @@ class basic_signal_market_strategy(StrategyBase):
         self.asset_info = asset_info
         self.trade_size_handler = fixed_trade_size(self.accnt,
                                                    asset_info,
-                                                   btc=0.002,
-                                                   eth=0.02,
-                                                   bnb=2,
+                                                   btc=0.003,
+                                                   eth=0.03,
+                                                   bnb=3,
                                                    pax=10.0,
-                                                   usdt=10.0)
+                                                   usdt=10.0,
+                                                   multiplier=2.0)
 
         # for more accurate simulation
         self.delayed_buy_msg = None
