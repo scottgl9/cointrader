@@ -19,6 +19,8 @@ class AccountBinance(AccountBase):
         self.details_all_assets = {}
         self.balances = {}
         self.currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'XRP', 'USDT', 'USDC', 'TUSD']
+        self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'BTCPAX', 'ETHPAX', 'BNBPAX',
+                                     'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
@@ -35,6 +37,9 @@ class AccountBinance(AccountBase):
 
     def get_currencies(self):
         return self.currencies
+
+    def get_currency_trade_pairs(self):
+        return self.currency_trade_pairs
 
     def is_currency(self, name):
         if name in self.currencies:

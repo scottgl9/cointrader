@@ -16,6 +16,10 @@ class CurrencyBalanceHandler(object):
         self.currencies = {}
         for name in self.accnt.get_currencies():
             self.currencies[name] = { 'balance': 0.0 }
+        self.currency_pair_symbols = self.accnt.get_currency_trade_pairs()
+        self.currency_pairs = {}
+        for symbol in self.currency_pair_symbols:
+            self.currency_pairs[symbol] = {'size': 0.0 }
 
     def get_currencies(self):
         return self.currencies.keys()
@@ -25,6 +29,16 @@ class CurrencyBalanceHandler(object):
         if balance:
             return False
         return True
+
+    def get_size(self, symbol):
+        try:
+            result = self.currency_pairs[symbol]['size']
+        except KeyError:
+            return 0
+        return result
+
+    def set_size(self, symbol, size=0):
+        self.currency_pairs[symbol]['size'] = size
 
     def get_balance(self, name):
         if name not in self.currencies.keys():
@@ -38,8 +52,26 @@ class CurrencyBalanceHandler(object):
         self.currencies[name]['balance'] = balance
         return True
 
+    def update_for_buy(self, symbol, price, size, asset_info=None):
+        base = asset_info.base
+        currency = asset_info.currency
+
+        if symbol not in self.currency_pair_symbols:
+            return False
+        self.currency_pairs[symbol]['balance'] -= size
+        return True
+
+    def update_for_sell(self, symbol, price, size, asset_info=None):
+        base = asset_info.base
+        currency = asset_info.currency
+
+        if symbol not in self.currency_pair_symbols:
+            return False
+        self.currency_pairs[symbol]['balance'] += size
+        return True
+
     # note that amount = price * order_size, so amount can be specified instead of the former
-    def update_for_asset_buy(self, price=0, order_size=0, amount=0, asset_info=None):
+    def update_for_asset_buy(self, price=0, order_size=0, amount=0, symbol=None, asset_info=None):
         base = asset_info.base
         currency = asset_info.currency
 
@@ -56,7 +88,7 @@ class CurrencyBalanceHandler(object):
         self.currencies[currency]['balance'] -= amount
         return True
 
-    def update_for_asset_sell(self, price=0, order_size=0, amount=0, asset_info=None):
+    def update_for_asset_sell(self, price=0, order_size=0, amount=0, symbol=None, asset_info=None):
         base = asset_info.base
         currency = asset_info.currency
 
