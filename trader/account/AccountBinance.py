@@ -644,11 +644,12 @@ class AccountBinance(AccountBase):
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size) #self.round_quote(price * size)
-            if usd_value > cavailable: return
+            usd_value = self.round_quote_symbol(ticker_id, float(price) * float(size)) #self.round_quote(price * size)
+            if usd_value > cavailable: return False
             #print("buy_market({}, {}, {}".format(size, price, ticker_id))
             self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
             self.update_asset_balance(currency, cbalance - usd_value, cavailable - usd_value)
+            return True
         else:
             self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
             try:
@@ -665,11 +666,12 @@ class AccountBinance(AccountBase):
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
 
-            if float(size) > bavailable: return
+            if float(size) > bavailable: return False
             #print("sell_market({}, {}, {}".format(size, price, ticker_id))
-            usd_value = float(price) * float(size)
+            usd_value = self.round_quote_symbol(ticker_id, float(price) * float(size))
             self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable) - float(size))
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
+            return True
         else:
             self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
             try:

@@ -172,6 +172,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                 pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
                 logger.info("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
+    logger.info(multitrader.order_handler.trade_balance_handler.get_balances())
+
     return multitrader.get_stored_trades()
 
 

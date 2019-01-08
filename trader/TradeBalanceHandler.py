@@ -44,6 +44,9 @@ class TradeBalanceHandler(object):
         if not self.is_zero_balance(currency):
             amount = self.accnt.round_quote_pair(base, currency, float(price) * float(size))
             self.balances[currency]['balance'] -= amount
+            #balance = self.balances[currency]['balance']
+            #balance2 = self.accnt.get_asset_balance(currency)['balance']
+            #self.logger.info("BUY:{}{} {} {}".format(asset_info.base, asset_info.currency, balance, balance2))
 
         if not self.is_zero_balance(base):
             self.balances[base]['balance'] += float(size)
@@ -59,6 +62,9 @@ class TradeBalanceHandler(object):
         if not self.is_zero_balance(currency):
             amount = self.accnt.round_quote_pair(base, currency, float(price) * float(size))
             self.balances[currency]['balance'] += amount
+            #balance = self.balances[currency]['balance']
+            #balance2 = self.accnt.get_asset_balance(currency)['balance']
+            #self.logger.info("SELL:{}{} {} {}".format(asset_info.base, asset_info.currency, balance, balance2))
 
         self.balances[base]['balance'] -= float(size)
 

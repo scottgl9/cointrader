@@ -319,7 +319,7 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.logger.info(result)
 
-        if not self.accnt.simulate and not result:
+        if not result:
             self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
             return
 
@@ -337,7 +337,6 @@ class OrderHandler(object):
                     if order.price != 0:
                         self.logger.info("update_buy_price({}, {} -> {})".format(ticker_id, price, order.price))
                         price = float(order.price)
-
 
                 self.buy_order_id = order.orderid
                 message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
@@ -376,7 +375,7 @@ class OrderHandler(object):
 
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
 
-        if not self.accnt.simulate and not result:
+        if not result:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             return
 
