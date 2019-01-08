@@ -352,17 +352,8 @@ class OrderHandler(object):
                 self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
                 return
 
-        # handle currency balance
-        #if not msg.asset_info:
-        #    return
-        info = msg.asset_info
-        if info.is_currency_pair:
-            self.trade_balance_handler.set_balance(info.base, float(size))
+        self.trade_balance_handler.update_for_buy(price, size, asset_info=msg.asset_info)
 
-        if not self.trade_balance_handler.is_zero_balance(info.currency):
-            self.trade_balance_handler.update_for_asset_buy(price=price,
-                                                               order_size=size,
-                                                               asset_info=info)
 
     def place_sell_market_order(self, msg):
         ticker_id = msg.src_id
@@ -430,15 +421,7 @@ class OrderHandler(object):
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             return
 
-        # handle currency balance
-        info = msg.asset_info
-        if info.is_currency_pair:
-            self.trade_balance_handler.set_balance(info.base, 0.0)
-
-        if not self.trade_balance_handler.is_zero_balance(info.currency):
-            self.trade_balance_handler.update_for_asset_sell(price=price,
-                                                                order_size=size,
-                                                                asset_info=info)
+        self.trade_balance_handler.update_for_sell(price, size, asset_info=msg.asset_info)
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0):
