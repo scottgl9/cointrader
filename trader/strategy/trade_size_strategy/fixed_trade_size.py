@@ -1,8 +1,10 @@
 from trader.strategy.trade_size_strategy import trade_size_strategy_base
 
 class fixed_trade_size(trade_size_strategy_base):
-    def __init__(self, asset_info, btc=0, eth=0, bnb=0, pax=0, usdt=0):
-        super(fixed_trade_size, self).__init__(asset_info)
+    def __init__(self, accnt, asset_info, btc=0, eth=0, bnb=0, pax=0, usdt=0, multiplier=2):
+        super(fixed_trade_size, self).__init__(accnt, asset_info)
+        # currency pair symbol multiplier
+        self.multiplier = multiplier
         self.usdt_trade_size = usdt
         self.btc_trade_size = btc
         self.eth_trade_size = eth
@@ -27,24 +29,21 @@ class fixed_trade_size(trade_size_strategy_base):
         trade_size = 0
         if self.currency == 'BTC':
             trade_size = self.round_base(self.btc_trade_size / price)
-            if self.base == 'ETH' or self.base == 'BNB':
-                trade_size = self.my_float(trade_size * 4)
-            else:
-                trade_size = self.my_float(trade_size * 3)
+            trade_size = self.my_float(trade_size)
         elif self.currency == 'ETH':
             trade_size = self.round_base(self.eth_trade_size / price)
-            if self.base == 'BNB':
-                trade_size = self.my_float(trade_size * 3)
-            else:
-                trade_size = self.my_float(trade_size * 3)
+            trade_size = self.my_float(trade_size)
         elif self.currency == 'BNB':
             trade_size = self.round_base(self.bnb_trade_size / price)
-            trade_size = self.my_float(trade_size * 2)
+            trade_size = self.my_float(trade_size)
         elif self.currency == 'PAX':
             trade_size = self.round_base(self.pax_trade_size / price)
             trade_size = self.my_float(trade_size)
         elif self.currency == 'USDT':
             trade_size = self.round_base(self.usdt_trade_size / price)
             trade_size = self.my_float(trade_size)
+
+        #if self.accnt.is_currency_pair(base=self.base, currency=self.currency):
+        #    trade_size = trade_size * float(self.multiplier)
 
         return trade_size
