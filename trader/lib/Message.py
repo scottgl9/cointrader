@@ -22,6 +22,7 @@ class Message(object):
     MSG_SELL_DISABLE = 19
     MSG_BUY_ENABLE = 20
     MSG_SELL_ENABLE = 21
+    MSG_ORDER_SIZE_UPDATE = 22
 
     def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0, asset_info=None):
         self.src_id = src_id

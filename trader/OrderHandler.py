@@ -310,6 +310,8 @@ class OrderHandler(object):
         price = msg.price
         size = msg.size
         sig_id = msg.sig_id
+        base = msg.asset_info.base
+        currency = msg.asset_info.currency
 
         if self.buy_disabled:
             self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
@@ -353,6 +355,17 @@ class OrderHandler(object):
 
         self.trade_balance_handler.update_for_buy(price, size, asset_info=msg.asset_info)
 
+        if msg.asset_info.is_currency_pair:
+            if not self.trade_balance_handler.is_zero_balance(base):
+                # send update message to strategy that buy size has changed
+                order_size = self.trade_balance_handler.get_balance(base)
+                self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
+
+        if not self.trade_balance_handler.is_zero_balance(currency):
+            # send update message to strategy that buy size has changed
+            order_size = self.trade_balance_handler.get_balance(currency)
+            self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
+
 
     def place_sell_market_order(self, msg):
         ticker_id = msg.src_id
@@ -360,11 +373,13 @@ class OrderHandler(object):
         buy_price = msg.buy_price
         size = msg.size
         sig_id = msg.sig_id
+        base = msg.asset_info.base
+        currency = msg.asset_info.currency
 
         # if available balance on coin changed after buy, update available size
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            base, currency = self.accnt.split_ticker_id(ticker_id)
+            #base, currency = self.accnt.split_ticker_id(ticker_id)
             available_size = self.accnt.round_base(self.accnt.get_asset_balance(base)['available'])
             if available_size == 0:
                 self.trader_db.remove_trade(ticker_id, sig_id)
@@ -421,6 +436,18 @@ class OrderHandler(object):
             return
 
         self.trade_balance_handler.update_for_sell(price, size, asset_info=msg.asset_info)
+
+        if msg.asset_info.is_currency_pair:
+            if not self.trade_balance_handler.is_zero_balance(base):
+                # send update message to strategy that buy size has changed
+                order_size = self.trade_balance_handler.get_balance(base)
+                self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
+
+        if not self.trade_balance_handler.is_zero_balance(currency):
+            # send update message to strategy that buy size has changed
+            order_size = self.trade_balance_handler.get_balance(currency)
+            self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
+
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0):

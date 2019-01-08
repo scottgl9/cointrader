@@ -228,3 +228,11 @@ class MessageHandler(object):
                          size=size,
                          buy_price=buy_price,
                          ts=ts)
+
+    def order_size_update(self, ticker_id, price, size, sig_id):
+        self.add_message(src_id=Message.ID_MULTI,
+                         dst_id=ticker_id,
+                         cmd=Message.MSG_ORDER_SIZE_UPDATE,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size)
