@@ -9,7 +9,7 @@
 # - on buy execution of BNBETH, this class removes X amount from ETH balance for the trade size of BNB
 # - if on sell execution of BNBETH, this class adds X amount of ETH balance for the amount of ETH BNB sold for
 
-class CurrencyBalanceHandler(object):
+class TradeBalanceHandler(object):
     def __init__(self, accnt=None, logger=None):
         self.accnt = accnt
         self.logger = logger

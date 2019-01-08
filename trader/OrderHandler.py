@@ -3,7 +3,7 @@ from trader.lib.Message import Message
 from trader.lib.Order import Order
 from trader.notify.Email import Email
 from trader.lib.TraderDB import TraderDB
-from trader.CurrencyBalanceHandler import CurrencyBalanceHandler
+from trader.TradeBalanceHandler import TradeBalanceHandler
 import time
 import os
 
@@ -20,7 +20,7 @@ class OrderHandler(object):
         self.trades = {}
         self.counters = {}
         self.buy_disabled = False
-        self.currency_balance_handler = CurrencyBalanceHandler(self.accnt, logger=logger)
+        self.trade_balance_handler = TradeBalanceHandler(self.accnt, logger=logger)
         # total percent profit
         self.tpprofit = 0
 
@@ -357,10 +357,10 @@ class OrderHandler(object):
         #    return
         info = msg.asset_info
         if info.is_currency_pair:
-            self.currency_balance_handler.set_balance(info.base, float(size))
+            self.trade_balance_handler.set_balance(info.base, float(size))
 
-        if not self.currency_balance_handler.is_zero_balance(info.currency):
-            self.currency_balance_handler.update_for_asset_buy(price=price,
+        if not self.trade_balance_handler.is_zero_balance(info.currency):
+            self.trade_balance_handler.update_for_asset_buy(price=price,
                                                                order_size=size,
                                                                asset_info=info)
 
@@ -433,10 +433,10 @@ class OrderHandler(object):
         # handle currency balance
         info = msg.asset_info
         if info.is_currency_pair:
-            self.currency_balance_handler.set_balance(info.base, 0.0)
+            self.trade_balance_handler.set_balance(info.base, 0.0)
 
-        if not self.currency_balance_handler.is_zero_balance(info.currency):
-            self.currency_balance_handler.update_for_asset_sell(price=price,
+        if not self.trade_balance_handler.is_zero_balance(info.currency):
+            self.trade_balance_handler.update_for_asset_sell(price=price,
                                                                 order_size=size,
                                                                 asset_info=info)
 
