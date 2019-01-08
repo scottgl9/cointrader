@@ -212,10 +212,10 @@ class basic_signal_market_strategy(StrategyBase):
                 elif msg.cmd == Message.MSG_ORDER_SIZE_UPDATE:
                     id = msg.sig_id
                     signal = self.signal_handler.get_handler(id=id)
-                    self.logger.info("ORDER_SIZE_UPDATE for {} price={} buy_price={} size={}".format(msg.dst_id,
-                                                                                               msg.price,
-                                                                                               msg.buy_price,
-                                                                                               msg.size))
+                    self.logger.info("ORDER_SIZE_UPDATE for {} orig_size={} new_size={}".format(msg.dst_id,
+                                                                                        signal.buy_size,
+                                                                                        msg.size))
+                    signal.buy_size = msg.size
                     msg.mark_read()
 
             for msg in self.msg_handler.get_messages(src_id=Message.ID_ROOT, dst_id=self.ticker_id):

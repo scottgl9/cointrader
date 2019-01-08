@@ -14,6 +14,7 @@ class TradeBalanceHandler(object):
         self.accnt = accnt
         self.logger = logger
         self.balances = {}
+        self.active_currency_pairs = {}
 
     def is_zero_balance(self, name):
         balance = self.get_balance(name)
@@ -37,7 +38,14 @@ class TradeBalanceHandler(object):
         except KeyError:
             self.balances[name] = {'balance': float(balance)}
 
-    def update_for_buy(self, price, size, asset_info=None):
+    def get_currency_pair_symbol(self, name):
+        try:
+            symbol = self.active_currency_pairs[name]
+        except KeyError:
+            return None
+        return symbol
+
+    def update_for_buy(self, price, size, asset_info=None, symbol=None):
         base = asset_info.base
         currency = asset_info.currency
 
@@ -53,9 +61,14 @@ class TradeBalanceHandler(object):
         else:
             self.set_balance(base, size)
 
+        if asset_info.is_currency_pair:
+            if not symbol:
+                symbol = self.accnt.make_ticker_id(base, currency)
+            self.active_currency_pairs[base] = symbol
+
         return True
 
-    def update_for_sell(self, price, size, asset_info=None):
+    def update_for_sell(self, price, size, asset_info=None, symbol=None):
         base = asset_info.base
         currency = asset_info.currency
 
