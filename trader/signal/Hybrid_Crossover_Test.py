@@ -35,6 +35,10 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv = OBV()
         self.EMA = EMA
 
+        if self.is_currency_pair:
+            self.disabled = True
+            self.disabled_end_ts = self.timestamp + 1000 * 3600
+
         self.ema12 = EMA(12, scale=24)
         self.ema26 = EMA(26, scale=24, lag_window=5)
         self.ema50 = EMA(50, scale=24, lag_window=5)
@@ -198,22 +202,23 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.ema_cross_50_100.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
             return True
 
-        if (self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up and
-                self.ema_cross_12_26.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
-            return True
-
         if (self.ema_cross_12_200.cross_up and self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up):
             return True
 
-        if (self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and
-                self.ema_cross_12_26.ma2_trend_up() and self.obv_ema_cross_12_26.ma2_trend_up()):
-            if self.ema_cross_12_26.get_pre_crossup_low_percent() >= 0.5:
+        if not self.is_currency_pair:
+            if (self.ema_cross_12_26.cross_up and self.ema_cross_26_50.cross_up and
+                    self.ema_cross_12_26.ma2_trend_up() and self.ema_cross_26_50.ma2_trend_up()):
                 return True
 
-        if (self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and
-                self.ema_cross_26_50.ma2_trend_up() and self.obv_ema_cross_26_50.ma2_trend_up()):
-            if self.ema_cross_26_50.get_pre_crossup_low_percent() >= 0.5:
-                return True
+            if (self.ema_cross_12_26.cross_up and self.obv_ema_cross_12_26.cross_up and
+                    self.ema_cross_12_26.ma2_trend_up() and self.obv_ema_cross_12_26.ma2_trend_up()):
+                if self.ema_cross_12_26.get_pre_crossup_low_percent() >= 0.5:
+                    return True
+
+            if (self.ema_cross_26_50.cross_up and self.obv_ema_cross_26_50.cross_up and
+                    self.ema_cross_26_50.ma2_trend_up() and self.obv_ema_cross_26_50.ma2_trend_up()):
+                if self.ema_cross_26_50.get_pre_crossup_low_percent() >= 0.5:
+                    return True
 
         if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
             return True
@@ -222,6 +227,9 @@ class Hybrid_Crossover_Test(SignalBase):
 
     def sell_long_signal(self):
         if self.buy_price == 0 or self.last_buy_ts == 0:
+            return False
+
+        if self.is_currency_pair:
             return False
 
         # don't do sell long unless price has fallen at least 10%

@@ -15,6 +15,10 @@ class SignalBase(object):
         self.cache = None
         self.accnt = accnt
 
+        self.is_currency_pair = False
+        if self.asset_info and self.asset_info.is_currency_pair:
+            self.is_currency_pair = True
+
         # settings for global signals
         self.global_signal = False
         self.global_filter = "*"
