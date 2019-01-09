@@ -5,8 +5,8 @@ from trader.lib.PriceFilter import PriceFilter
 from trader.signal.SignalBase import SignalBase
 
 class TD_Sequential_Signal(SignalBase):
-    def __init__(self, accnt=None, symbol=None, window=13, close_count=9):
-        super(TD_Sequential_Signal, self).__init__(accnt, symbol)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, window=13, close_count=9):
+        super(TD_Sequential_Signal, self).__init__(accnt, symbol, asset_info)
         self.signal_name = "TD_Sequential_Signal"
         self.close_prices = CircularArray(window=window)
         self.low_prices = CircularArray(window=window)

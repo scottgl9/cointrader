@@ -50,14 +50,14 @@ class StrategyBase(object):
         self.last_tpprofit = 0
 
     @staticmethod
-    def select_signal_name(name, accnt=None, symbol=None):
+    def select_signal_name(name, accnt=None, symbol=None, asset_info=None):
         if name == "BTC_USDT_Signal": return BTC_USDT_Signal(accnt)
         elif name == "Currency_Long_EMA": return Currency_EMA_Long(accnt)
         elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal(accnt, symbol)
         elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover(accnt, symbol)
         elif name == "Hybrid_Crossover": return Hybrid_Crossover(accnt, symbol)
         elif name == "Hybrid_Crossover_MM": return Hybrid_Crossover_MM(accnt, symbol)
-        elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test(accnt, symbol)
+        elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test(accnt, symbol, asset_info)
         elif name == "KST_Crossover": return KST_Crossover(accnt, symbol)
         elif name == "MACD_Crossover": return MACD_Crossover(accnt, symbol)
         elif name == "PPO_OBV": return PPO_OBV(accnt, symbol)

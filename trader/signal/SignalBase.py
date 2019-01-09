@@ -4,8 +4,9 @@ class SignalBase(object):
     FLAG_SELL_BOUGHT = 1
     FLAG_SELL_ALL = 2
 
-    def __init__(self, accnt=None, symbol=None):
+    def __init__(self, accnt=None, symbol=None, asset_info=None):
         self.id = 0
+        self.asset_info = asset_info
         self.symbol = symbol
         self.flag = self.FLAG_SELL_BOUGHT
         self.buy_type = SigType.SIGNAL_NONE

@@ -8,8 +8,8 @@ from trader.signal.SignalBase import SignalBase
 
 
 class PMO_Crossover(SignalBase):
-    def __init__(self, accnt=None, symbol=None, win_short=12, win_med=26, win_long=50):
-        super(PMO_Crossover, self).__init__(accnt, symbol)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, win_short=12, win_med=26, win_long=50):
+        super(PMO_Crossover, self).__init__(accnt, symbol, asset_info)
         self.signal_name = "PMO_Crossover"
         self.win_short = win_short
         self.win_med = win_med

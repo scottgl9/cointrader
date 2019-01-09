@@ -18,8 +18,8 @@ from trader.signal.SignalBase import SignalBase
 
 
 class Hybrid_Crossover_Test(SignalBase):
-    def __init__(self, accnt=None, symbol=None):
-        super(Hybrid_Crossover_Test, self).__init__(accnt, symbol)
+    def __init__(self, accnt=None, symbol=None, asset_info=None):
+        super(Hybrid_Crossover_Test, self).__init__(accnt, symbol, asset_info)
         self.signal_name = "Hybrid_Crossover_Test"
         self.disabled = False
         self.disabled_end_ts = 0
