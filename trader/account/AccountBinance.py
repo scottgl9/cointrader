@@ -18,7 +18,10 @@ class AccountBinance(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
-        self.currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'XRP', 'USDT', 'USDC', 'TUSD']
+        if self.simulate:
+            self.currencies = ['BTC', 'ETH', 'BNB']
+        else:
+            self.currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'XRP', 'USDT', 'USDC', 'TUSD']
         self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'BTCPAX', 'ETHPAX', 'BNBPAX',
                                      'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
 

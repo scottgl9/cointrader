@@ -4,76 +4,87 @@
 [INFO ]  Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
 [INFO ]  Resetting initial BTC...
 [INFO ]  Initial BTC=0.06
-[INFO ]  buy(1, XVGBTC, 510.0) @ 9.01e-06
-[INFO ]  buy(1, WPRBTC, 330.0) @ 1.34e-05
-[INFO ]  buy(1, XLMBTC, 150.0) @ 3.095e-05
-[INFO ]  buy(1, IOSTBTC, 1290.0) @ 3.52e-06
-[INFO ]  buy(1, ADABTC, 210.0) @ 2.211e-05
-[INFO ]  sell(1, XVGBTC, 510.0) @ 9.35e-06 (bought @ 9.01e-06, 3.77%)	0.18%
-[INFO ]  buy(1, XVGBTC, 480.0) @ 9.3e-06
-[INFO ]  buy(1, ZILBTC, 750.0) @ 6.07e-06
-[INFO ]  buy(1, XRPBTC, 60.0) @ 7.147e-05
-[INFO ]  buy(1, RCNBTC, 390.0) @ 1.201e-05
-[INFO ]  buy(1, TNTBTC, 450.0) @ 1.018e-05
-[INFO ]  buy(1, TNBBTC, 1140.0) @ 3.93e-06
-[INFO ]  buy(1, XEMBTC, 150.0) @ 3.304e-05
-[INFO ]  buy(1, NCASHBTC, 1200.0) @ 3.72e-06
-[INFO ]  buy(1, POEBTC, 1200.0) @ 3.75e-06
-[INFO ]  sell(1, XVGBTC, 480.0) @ 9.94e-06 (bought @ 9.3e-06, 6.88%)	0.58%
-[INFO ]  buy(1, XVGBTC, 450.0) @ 9.93e-06
-[INFO ]  sell(1, XVGBTC, 450.0) @ 1.005e-05 (bought @ 9.93e-06, 1.21%)	0.67%
-[INFO ]  buy(1, XVGBTC, 450.0) @ 1.005e-05
-[INFO ]  sell(1, ADABTC, 210.0) @ 2.234e-05 (bought @ 2.211e-05, 1.04%)	0.64%
-[INFO ]  buy(1, ADABTC, 210.0) @ 2.23e-05
-[INFO ]  buy(1, QLCBTC, 240.0) @ 1.951e-05
-[INFO ]  sell(1, TNBBTC, 1140.0) @ 3.95e-06 (bought @ 3.93e-06, 0.51%)	0.79%
-[INFO ]  buy(1, TRXBTC, 960.0) @ 4.65e-06
-[INFO ]  sell(1, XRPBTC, 60.0) @ 7.214e-05 (bought @ 7.147e-05, 0.94%)	0.87%
-[INFO ]  buy(1, SNTBTC, 330.0) @ 1.371e-05
-[INFO ]  buy(1, DNTBTC, 600.0) @ 7.69e-06
-[INFO ]  sell(1, TRXBTC, 960.0) @ 4.75e-06 (bought @ 4.65e-06, 2.15%)	0.87%
-[INFO ]  buy(1, TRXBTC, 960.0) @ 4.75e-06
-[INFO ]  sell(1, ZILBTC, 750.0) @ 6.19e-06 (bought @ 6.07e-06, 1.98%)	0.87%
-[INFO ]  buy(1, STORMBTC, 1080.0) @ 4.25e-06
-[INFO ]  sell(1, STORMBTC, 1080.0) @ 4.31e-06 (bought @ 4.25e-06, 1.41%)	1.22%
-[INFO ]  sell(1, POEBTC, 1200.0) @ 3.79e-06 (bought @ 3.75e-06, 1.07%)	1.33%
-[INFO ]  buy(1, LINKBTC, 120.0) @ 3.983e-05
-[INFO ]  sell(1, SNTBTC, 330.0) @ 1.388e-05 (bought @ 1.371e-05, 1.24%)	1.42%
-[INFO ]  buy(1, SNTBTC, 330.0) @ 1.387e-05
-[INFO ]  buy(1, STORMBTC, 1050.0) @ 4.28e-06
-[INFO ]  sell(1, ADABTC, 210.0) @ 2.284e-05 (bought @ 2.23e-05, 2.42%)	1.8%
-[INFO ]  buy(1, XRPBTC, 60.0) @ 7.403e-05
-[INFO ]  sell(1, SNTBTC, 330.0) @ 1.394e-05 (bought @ 1.387e-05, 0.5%)	1.51%
-[INFO ]  buy(1, TNBBTC, 1140.0) @ 3.94e-06
-[INFO ]  sell(1, XEMBTC, 150.0) @ 3.42e-05 (bought @ 3.304e-05, 3.51%)	1.38%
-[INFO ]  buy(1, ADABTC, 180.0) @ 2.344e-05
-[INFO ]  sell(1, XLMBTC, 150.0) @ 3.128e-05 (bought @ 3.095e-05, 1.07%)	1.34%
-[INFO ]  buy(1, XLMBTC, 150.0) @ 3.128e-05
-[INFO ]  sell(1, XVGBTC, 450.0) @ 8.93e-06 (bought @ 1.005e-05, -11.14%)	0.98%
-[INFO ]  buy(1, POWRBTC, 90.0) @ 4.757e-05
-[INFO ]  sell(1, NCASHBTC, 1200.0) @ 3.76e-06 (bought @ 3.72e-06, 1.08%)	0.84%
-[INFO ]  buy(1, BTSBTC, 210.0) @ 2.049e-05
-[INFO ]  sell(1, XLMBTC, 150.0) @ 3.153e-05 (bought @ 3.128e-05, 0.8%)	0.49%
-[INFO ]  sell(1, RCNBTC, 390.0) @ 1.212e-05 (bought @ 1.201e-05, 0.92%)	-0.18%
-[INFO ]  buy(1, XLMBTC, 150.0) @ 3.146e-05
-[INFO ]  sell(1, IOSTBTC, 1290.0) @ 3.87e-06 (bought @ 3.52e-06, 9.94%)	0.34%
-[INFO ]  buy(1, IOSTBTC, 1170.0) @ 3.86e-06
-[INFO ]  buy(1, ZILBTC, 750.0) @ 6.08e-06
+[INFO ]  buy(1, XVGBTC, 330.0) @ 9.01e-06
+[INFO ]  buy(1, WPRBTC, 220.0) @ 1.34e-05
+[INFO ]  buy(1, XLMBTC, 100.0) @ 3.095e-05
+[INFO ]  buy(1, IOSTBTC, 850.0) @ 3.52e-06
+[INFO ]  buy(1, ADABTC, 140.0) @ 2.211e-05
+[INFO ]  sell(1, XVGBTC, 330.0) @ 9.35e-06 (bought @ 9.01e-06, 3.77%)	0.12%
+[INFO ]  buy(1, ZILBTC, 500.0) @ 6.07e-06
+[INFO ]  buy(1, XRPBTC, 40.0) @ 7.147e-05
+[INFO ]  buy(1, RCNBTC, 250.0) @ 1.201e-05
+[INFO ]  buy(1, TNTBTC, 290.0) @ 1.018e-05
+[INFO ]  buy(1, TNBBTC, 760.0) @ 3.93e-06
+[INFO ]  buy(1, XEMBTC, 90.0) @ 3.304e-05
+[INFO ]  buy(1, NCASHBTC, 800.0) @ 3.72e-06
+[INFO ]  buy(1, POEBTC, 800.0) @ 3.75e-06
+[INFO ]  buy(1, ENJBTC, 220.0) @ 1.386e-05
+[INFO ]  buy(1, XVGBTC, 300.0) @ 9.93e-06
+[INFO ]  buy(1, TRXBTC, 640.0) @ 4.7e-06
+[INFO ]  sell(1, XVGBTC, 300.0) @ 1.006e-05 (bought @ 9.93e-06, 1.31%)	0.11%
+[INFO ]  buy(1, LINKBTC, 80.0) @ 3.935e-05
+[INFO ]  buy(1, QLCBTC, 150.0) @ 1.957e-05
+[INFO ]  sell(1, ADABTC, 140.0) @ 2.234e-05 (bought @ 2.211e-05, 1.04%)	0.27%
+[INFO ]  sell(1, TNBBTC, 760.0) @ 3.95e-06 (bought @ 3.93e-06, 0.51%)	0.34%
+[INFO ]  buy(1, STORMBTC, 700.0) @ 4.27e-06
+[INFO ]  buy(1, SNTBTC, 220.0) @ 1.366e-05
+[INFO ]  buy(1, XVGBTC, 310.0) @ 9.72e-06
+[INFO ]  sell(1, XVGBTC, 310.0) @ 9.82e-06 (bought @ 9.72e-06, 1.03%)	0.34%
+[INFO ]  buy(1, ADABTC, 130.0) @ 2.23e-05
+[INFO ]  buy(1, DNTBTC, 390.0) @ 7.67e-06
+[INFO ]  sell(1, XRPBTC, 40.0) @ 7.214e-05 (bought @ 7.147e-05, 0.94%)	0.7%
+[INFO ]  sell(1, TRXBTC, 640.0) @ 4.75e-06 (bought @ 4.7e-06, 1.06%)	0.95%
+[INFO ]  sell(1, ZILBTC, 500.0) @ 6.19e-06 (bought @ 6.07e-06, 1.98%)	0.9%
+[INFO ]  buy(1, XVGBTC, 320.0) @ 9.42e-06
+[INFO ]  sell(1, XVGBTC, 320.0) @ 9.52e-06 (bought @ 9.42e-06, 1.06%)	0.78%
+[INFO ]  sell(1, QLCBTC, 150.0) @ 1.974e-05 (bought @ 1.957e-05, 0.87%)	0.64%
+[INFO ]  sell(1, LINKBTC, 80.0) @ 3.985e-05 (bought @ 3.935e-05, 1.27%)	0.75%
+[INFO ]  sell(1, POEBTC, 800.0) @ 3.79e-06 (bought @ 3.75e-06, 1.07%)	0.96%
+[INFO ]  sell(1, SNTBTC, 220.0) @ 1.379e-05 (bought @ 1.366e-05, 0.95%)	0.92%
+[INFO ]  buy(1, QLCBTC, 150.0) @ 1.979e-05
+[INFO ]  buy(1, XVGBTC, 310.0) @ 9.66e-06
+[INFO ]  buy(1, LINKBTC, 80.0) @ 3.987e-05
+[INFO ]  sell(1, ADABTC, 130.0) @ 2.284e-05 (bought @ 2.23e-05, 2.42%)	1.11%
+[INFO ]  buy(1, XRPBTC, 40.0) @ 7.403e-05
+[INFO ]  buy(1, SNTBTC, 210.0) @ 1.418e-05
+[INFO ]  buy(1, TNBBTC, 760.0) @ 3.93e-06
+[INFO ]  buy(1, POWRBTC, 60.0) @ 4.745e-05
+[INFO ]  sell(1, QLCBTC, 150.0) @ 1.993e-05 (bought @ 1.979e-05, 0.71%)	0.79%
+[INFO ]  sell(1, XEMBTC, 90.0) @ 3.42e-05 (bought @ 3.304e-05, 3.51%)	0.87%
+[INFO ]  sell(1, XLMBTC, 100.0) @ 3.128e-05 (bought @ 3.095e-05, 1.07%)	0.87%
+[INFO ]  sell(1, ENJBTC, 220.0) @ 1.413e-05 (bought @ 1.386e-05, 1.95%)	0.73%
+[INFO ]  sell(1, XVGBTC, 310.0) @ 8.7e-06 (bought @ 9.66e-06, -9.94%)	0.47%
+[INFO ]  sell(1, NCASHBTC, 800.0) @ 3.76e-06 (bought @ 3.72e-06, 1.08%)	0.36%
+[INFO ]  buy(1, BTSBTC, 150.0) @ 2.049e-05
+[INFO ]  buy(1, ADABTC, 130.0) @ 2.373e-05
+[INFO ]  buy(1, TRXBTC, 640.0) @ 4.68e-06
+[INFO ]  sell(1, STORMBTC, 700.0) @ 4.3e-06 (bought @ 4.27e-06, 0.7%)	0.64%
+[INFO ]  buy(1, QLCBTC, 150.0) @ 1.971e-05
+[INFO ]  buy(1, ZILBTC, 490.0) @ 6.13e-06
+[INFO ]  buy(1, XLMBTC, 100.0) @ 3.146e-05
+[INFO ]  buy(1, XEMBTC, 90.0) @ 3.484e-05
+[INFO ]  sell(1, POWRBTC, 60.0) @ 4.792e-05 (bought @ 4.745e-05, 0.99%)	0.25%
+[INFO ]  buy(1, ENJBTC, 210.0) @ 1.418e-05
+[INFO ]  buy(1, POWRBTC, 60.0) @ 4.7e-05
+[INFO ]  sell(1, RCNBTC, 250.0) @ 1.212e-05 (bought @ 1.201e-05, 0.92%)	-1.0%
+[INFO ]  sell(1, IOSTBTC, 850.0) @ 3.87e-06 (bought @ 3.52e-06, 9.94%)	-0.59%
 [INFO ]  total time (hours): 10.38
-[INFO ]  {u'TNT': {'available': 450.0, 'balance': 450.0}, u'XLM': {'available': 150.0, 'balance': 150.0}, u'STORM': {'available': 1050.0, 'balance': 1050.0}, u'BTS': {'available': 210.0, 'balance': 210.0}, u'POWR': {'available': 90.0, 'balance': 90.0}, u'ADA': {'available': 180.0, 'balance': 180.0}, u'WPR': {'available': 330.0, 'balance': 330.0}, u'XRP': {'available': 60.0, 'balance': 60.0}, u'TRX': {'available': 960.0, 'balance': 960.0}, u'LINK': {'available': 120.0, 'balance': 120.0}, 'BTC': {'available': 0.0030681, 'balance': 0.0030681}, u'TNB': {'available': 1140.0, 'balance': 1140.0}, u'ZIL': {'available': 750.0, 'balance': 750.0}, u'IOST': {'available': 1170.0, 'balance': 1170.0}}
-[INFO ]  Final BTC=0.060321 profit=0.54%
-[INFO ]  ADABTC (1): -2.18%
-[INFO ]  TRXBTC (1): -3.58%
-[INFO ]  STORMBTC (1): -2.1%
-[INFO ]  ZILBTC (1): 0.0%
-[INFO ]  DNTBTC (1): -2.47%
-[INFO ]  QLCBTC (1): -2.26%
+[INFO ]  {u'TNT': {'available': 290.0, 'balance': 290.0}, u'XLM': {'available': 100.0, 'balance': 100.0}, u'ENJ': {'available': 210.0, 'balance': 210.0}, u'ADA': {'available': 130.0, 'balance': 130.0}, u'DNT': {'available': 390.0, 'balance': 390.0}, u'LINK': {'available': 80.0, 'balance': 80.0}, u'TNB': {'available': 760.0, 'balance': 760.0}, u'ZIL': {'available': 490.0, 'balance': 490.0}, u'XRP': {'available': 40.0, 'balance': 40.0}, u'BTS': {'available': 150.0, 'balance': 150.0}, u'TRX': {'available': 640.0, 'balance': 640.0}, u'POWR': {'available': 60.0, 'balance': 60.0}, u'XEM': {'available': 90.0, 'balance': 90.0}, u'WPR': {'available': 220.0, 'balance': 220.0}, u'SNT': {'available': 210.0, 'balance': 210.0}, 'BTC': {'available': 0.012702999999999996, 'balance': 0.012702999999999996}, u'QLC': {'available': 150.0, 'balance': 150.0}}
+[INFO ]  Final BTC=0.0597644 profit=-0.39%
+[INFO ]  ADABTC (1): -3.37%
+[INFO ]  TRXBTC (1): -2.14%
+[INFO ]  XEMBTC (1): -3.59%
+[INFO ]  ZILBTC (1): -0.82%
+[INFO ]  DNTBTC (1): -2.22%
+[INFO ]  SNTBTC (1): -5.85%
+[INFO ]  QLCBTC (1): -3.25%
 [INFO ]  BTSBTC (1): -3.61%
 [INFO ]  XLMBTC (1): -0.13%
-[INFO ]  LINKBTC (1): 0.58%
+[INFO ]  LINKBTC (1): 0.48%
 [INFO ]  TNTBTC (1): -2.85%
 [INFO ]  XRPBTC (1): -1.77%
 [INFO ]  WPRBTC (1): -5.3%
-[INFO ]  POWRBTC (1): -1.18%
-[INFO ]  TNBBTC (1): -1.52%
-[INFO ]  IOSTBTC (1): -1.55%
+[INFO ]  POWRBTC (1): 0.02%
+[INFO ]  ENJBTC (1): -2.26%
+[INFO ]  TNBBTC (1): -1.27%
+[INFO ]  {u'XLM': {'balance': 100.0}, u'ADA': {'balance': 130.0}, u'RCN': {'balance': 0.0}, u'LINK': {'balance': 80.0}, u'IOST': {'balance': 0.0}, u'POWR': {'balance': 60.0}, u'WPR': {'balance': 220.0}, u'NCASH': {'balance': 0.0}, u'POE': {'balance': 0.0}, u'TNT': {'balance': 290.0}, u'ENJ': {'balance': 210.0}, u'DNT': {'balance': 390.0}, u'STORM': {'balance': 0.0}, u'TNB': {'balance': 760.0}, u'ZIL': {'balance': 490.0}, u'XRP': {'balance': 40.0}, u'XVG': {'balance': 0.0}, u'BTS': {'balance': 150.0}, u'TRX': {'balance': 640.0}, u'XEM': {'balance': 90.0}, u'SNT': {'balance': 210.0}, u'QLC': {'balance': 150.0}}

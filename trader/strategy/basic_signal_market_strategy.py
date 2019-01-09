@@ -61,7 +61,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                    bnb=3,
                                                    pax=10.0,
                                                    usdt=10.0,
-                                                   multiplier=2.0)
+                                                   multiplier=5.0)
 
         # for more accurate simulation
         self.delayed_buy_msg = None
@@ -256,6 +256,9 @@ class basic_signal_market_strategy(StrategyBase):
             self.delayed_buy_msg.price = signal.buy_price
             self.msg_handler.add(self.delayed_buy_msg)
             self.delayed_buy_msg = None
+            signal.buy_timestamp = self.timestamp
+            signal.last_buy_ts = self.timestamp
+            signal.buy_price_high = signal.buy_price
 
         if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
             self.delayed_sell_msg.price = price
@@ -269,6 +272,7 @@ class basic_signal_market_strategy(StrategyBase):
             signal.buy_size = 0.0
             signal.last_sell_price = price
             signal.buy_timestamp = 0
+            signal.last_sell_ts = self.timestamp
 
         # keep track of the highest close price after a buy
         if signal.buy_price_high != 0 and price > signal.buy_price_high:
