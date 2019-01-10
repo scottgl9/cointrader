@@ -6,7 +6,7 @@ class TimeSegmentPercentChange(object):
     def __init__(self, seconds=0, minutes=0, tsv=None):
         self.seconds = seconds
         if minutes != 0:
-            self.seconds += minutes * 60
+            self.seconds += int(minutes) * 60
         self.seconds_ts = 1000 * self.seconds
 
         if tsv:
@@ -41,11 +41,11 @@ class TimeSegmentPercentChange(object):
 
     def get_percent_change(self, values=None, seconds=0):
         if not values:
-            if not seconds:
+            if seconds == 0:
                 values = self.tsv.get_values()
             else:
                 values = self.get_values_seconds(seconds)
-        if not values or not values[0]:
+        if not values:
             return 0
         return 100.0 * (values[-1] - values[0]) / values[0]
 
