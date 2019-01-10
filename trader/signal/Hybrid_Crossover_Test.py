@@ -35,10 +35,6 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv = OBV()
         self.EMA = EMA
 
-        if self.is_currency_pair:
-            self.disabled = True
-            self.disabled_end_ts = self.timestamp + 1000 * 3600
-
         self.ema12 = EMA(12, scale=24)
         self.ema26 = EMA(26, scale=24, lag_window=5)
         self.ema50 = EMA(50, scale=24, lag_window=5)
@@ -99,6 +95,9 @@ class Hybrid_Crossover_Test(SignalBase):
     def pre_update(self, close, volume, ts, cache_db=None):
         if self.timestamp == 0:
             self.timestamp = ts
+            if self.is_currency_pair:
+                self.disabled = True
+                self.disabled_end_ts = self.timestamp + 1000 * 3600
         else:
             self.last_timestamp = self.timestamp
             self.timestamp = ts
