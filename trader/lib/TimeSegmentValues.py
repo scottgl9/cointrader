@@ -1,6 +1,7 @@
 # Given a specified time segment, only keep track of newest values no older than the set time segment
 from trader.lib.FastMinMax import FastMinMax
 
+
 class TimeSegmentValues(object):
     def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None):
         self.seconds = seconds
@@ -42,29 +43,7 @@ class TimeSegmentValues(object):
 
         self.fmm.append(svalue)
 
-        # if self.ready():
-        #     if self.min_value_index == -1 or self.max_value_index == -1:
-        #         self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
-        #         self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
-        #
-        #         self.min_value = self.values[self.min_value_index]
-        #         self.max_value = self.values[self.max_value_index]
-        #     elif value <= self.min_value:
-        #         self.min_value = value
-        #         self.min_value_index = len(self.values) - 1
-        #     elif value >= self.max_value:
-        #         self.max_value = value
-        #         self.max_value_index = len(self.values) - 1
-
         if cnt != 0:
-            self.min_value_index -= cnt
-            self.max_value_index -= cnt
-            # if self.min_value_index < 0:
-            #     self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
-            #     self.min_value = self.values[self.min_value_index]
-            # if self.max_value_index < 0:
-            #     self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
-            #     self.max_value = self.values[self.max_value_index]
             self.fmm.remove(cnt)
             self.timestamps = self.timestamps[cnt:]
             self.values = self.values[cnt:]

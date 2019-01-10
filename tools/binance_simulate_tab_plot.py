@@ -189,6 +189,7 @@ class mainWindow(QtGui.QTabWidget):
         #dtwma = DTWMA(30, smoother=EMA(12))
         #dtwma_values = []
         obv = OBV()
+        volumes = []
         obv_values = []
         obv_ema12 = EMA(12, scale=24)
         obv_ema26 = EMA(26, scale=24)
@@ -209,9 +210,11 @@ class mainWindow(QtGui.QTabWidget):
             price = float(msg['c'])
             ts = msg['E']
             volume = msg['v']
+            volumes.append(volume)
             #print(msg['q'])
             prices.append(price)
             obv.update(price, volume)
+            obv_values.append(obv.result)
             obv_ema12.update(obv.result)
             obv_ema12_values.append(obv_ema12.result)
             obv_ema26.update(obv.result)
@@ -267,10 +270,10 @@ class mainWindow(QtGui.QTabWidget):
         #ax2.plot(macd_diff_values)
         #ax2.plot(macd_signal_values)
         ax3 = self.tabs[name].figure.add_subplot(212)
-        #ax3.plot(obv_values)
-        ax3.plot(obv_ema12_values)
+        ax3.plot(volumes)
+        #ax3.plot(obv_ema12_values)
         #ax3.plot(obv_ema26_values)
-        ax3.plot(obv_ema50_values)
+        #ax3.plot(obv_ema50_values)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':

@@ -50,6 +50,10 @@ def simulate(conn, client, base, currency, type="channel"):
     tspc50_values = []
     tspc50_x_values = []
 
+    tspc50_12 = TimeSegmentPercentChange(seconds=3600*4)
+    tspc50_12_values = []
+    tspc50_12_x_values = []
+
     tspc200 = TimeSegmentPercentChange(seconds=3600)
     tspc200_values = []
     tspc200_x_values = []
@@ -83,19 +87,23 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_values.append(ema200_value)
 
         tspc12.update(ema12.result, ts)
-        if tspc12.ready():
+        if 1: #tspc12.ready():
             percent = tspc12.get_percent_change()
             tspc12_values.append(percent)
             tspc12_x_values.append(i)
 
         tspc50.update(ema50.result, ts)
-        if tspc50.ready():
-            percent = tspc50.get_percent_change()
-            tspc50_values.append(percent)
-            tspc50_x_values.append(i)
+        percent = tspc50.get_percent_change()
+        tspc50_values.append(percent)
+        tspc50_x_values.append(i)
+
+        tspc50_12.update(ema50.result, ts)
+        percent = tspc50_12.get_percent_change()
+        tspc50_12_values.append(percent)
+        tspc50_12_x_values.append(i)
 
         tspc200.update(ema200.result, ts)
-        if tspc200.ready():
+        if 1: #tspc200.ready():
             percent = tspc200.get_percent_change()
             tspc200_values.append(percent)
             tspc200_x_values.append(i)
@@ -119,7 +127,9 @@ def simulate(conn, client, base, currency, type="channel"):
     fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
     fig22, = plt.plot(tspc50_x_values, tspc50_values, label='TSPC50')
     fig23, = plt.plot(tspc200_x_values, tspc200_values, label='TSPC200')
-    plt.legend(handles=[fig21, fig22, fig23])
+    fig24, = plt.plot(tspc50_12_x_values, tspc50_12_values, label='TSPC50_12')
+
+    plt.legend(handles=[fig21, fig22, fig23, fig24])
 
     plt.show()
 
