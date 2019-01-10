@@ -1,0 +1,14 @@
+[user]
+	email = scottgl@gmail.com
+	name = Scott Glover
+
+[diff]
+	tool = meld
+
+[difftool]
+	prompt = false
+
+[difftool "meld"]
+	cmd = meld "$LOCAL" "$REMOTE"
+[alias]
+	meld = !git difftool -t meld --dir-diff
