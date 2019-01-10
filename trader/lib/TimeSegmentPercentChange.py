@@ -1,8 +1,9 @@
+# TimeSegmentPercentChange: Track percent change of values for a given time interval
 from trader.lib.TimeSegmentValues import TimeSegmentValues
 
 
 class TimeSegmentPercentChange(object):
-    def __init__(self, seconds, minutes, tsv=None):
+    def __init__(self, seconds=0, minutes=0, tsv=None):
         self.seconds = seconds
         if minutes != 0:
             self.seconds += minutes * 60
@@ -38,56 +39,48 @@ class TimeSegmentPercentChange(object):
             return None
         return values
 
-    def greater_than_percent_time_up(self, percent, seconds):
-        values = self.get_values_seconds(seconds)
+    def get_percent_change(self, values=None, seconds=0):
         if not values:
-            return False
-        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+            if not seconds:
+                values = self.tsv.get_values()
+            else:
+                values = self.get_values_seconds(seconds)
+        if not values or not values[0]:
+            return 0
+        return 100.0 * (values[-1] - values[0]) / values[0]
+
+    def greater_than_percent_time_up(self, percent, seconds):
+        pchange = self.get_percent_change(seconds)
         if pchange >= percent:
             return True
         return False
 
     def less_than_percent_time_up(self, percent, seconds):
-        values = self.get_values_seconds(seconds)
-        if not values:
-            return False
-        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+        pchange = self.get_percent_change(seconds)
         if 0 <= pchange < percent:
             return True
         return False
 
     def greater_than_percent_time_down(self, percent, seconds):
-        values = self.get_values_seconds(seconds)
-        if not values:
-            return False
-        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+        pchange = self.get_percent_change(seconds)
         if pchange <= -percent:
             return True
         return False
 
     def less_than_percent_time_down(self, percent, seconds):
-        values = self.get_values_seconds(seconds)
-        if not values:
-            return False
-        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+        pchange = self.get_percent_change(seconds)
         if 0 >= pchange > -percent:
             return True
         return False
 
     def greater_than_percent_time(self, percent, seconds):
-        values = self.get_values_seconds(seconds)
-        if not values:
-            return False
-        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+        pchange = self.get_percent_change(seconds)
         if abs(pchange) >= percent:
             return True
         return False
 
     def less_than_percent_time(self, percent, seconds):
-        values = self.get_values_seconds(seconds)
-        if not values:
-            return False
-        pchange = 100.0 * (values[-1] - values[0]) / values[0]
+        pchange = self.get_percent_change(seconds)
         if 0 <= abs(pchange) < percent:
             return True
         return False
