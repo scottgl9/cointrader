@@ -24,6 +24,7 @@ from trader.account.AccountBinance import AccountBinance
 from trader.config import *
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
 import matplotlib
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
@@ -128,17 +129,28 @@ def simulate(conn, client, base, currency, type="channel"):
 if __name__ == '__main__':
     client = None
 
-    base = 'BTC'
-    currency='USDT'
-    filename = 'cryptocurrency_database.miniticker_collection_04092018.db'
-    if len(sys.argv) == 4:
-        base=sys.argv[1]
-        currency = sys.argv[2]
-        filename = sys.argv[3]
-    if len(sys.argv) == 3:
-        base=sys.argv[1]
-        currency = sys.argv[2]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', action='store', dest='filename',
+                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        help='filename of kline sqlite db')
 
+    parser.add_argument('-b', action='store', dest='base',
+                        default='BTC',
+                        help='base part of symbol')
+
+    parser.add_argument('-c', action='store', dest='currency',
+                        default='USDT',
+                        help='currency part of symbol')
+
+    results = parser.parse_args()
+
+    if not os.path.exists(results.filename):
+        print("file {} doesn't exist, exiting...".format(results.filename))
+        sys.exit(-1)
+
+    filename = results.filename
+    base = results.base
+    currency = results.currency
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
