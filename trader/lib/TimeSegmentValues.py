@@ -3,7 +3,7 @@ from trader.lib.FastMinMax import FastMinMax
 
 
 class TimeSegmentValues(object):
-    def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None):
+    def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None, disable_fmm=False):
         self.seconds = seconds
         if minutes != 0:
             self.seconds += minutes * 60
@@ -12,6 +12,7 @@ class TimeSegmentValues(object):
         self.timestamps = []
         self.fmm = FastMinMax()
         self.full = False
+        self.disable_fmm = disable_fmm
         self.value_smoother = value_smoother
         self.percent_smoother = percent_smoother
         self.min_value = 0
@@ -41,17 +42,20 @@ class TimeSegmentValues(object):
         while (ts - self.timestamps[cnt]) > self.seconds_ts:
             cnt += 1
 
-        self.fmm.append(svalue)
+        if not self.disable_fmm:
+            self.fmm.append(svalue)
 
         if cnt != 0:
-            self.fmm.remove(cnt)
+            if not self.disable_fmm:
+                self.fmm.remove(cnt)
             self.timestamps = self.timestamps[cnt:]
             self.values = self.values[cnt:]
             if not self.full:
                 self.full = True
 
-        self.min_value = self.fmm.min()
-        self.max_value = self.fmm.max()
+        if not self.disable_fmm:
+            self.min_value = self.fmm.min()
+            self.max_value = self.fmm.max()
 
     def min(self):
         if not self.ready():

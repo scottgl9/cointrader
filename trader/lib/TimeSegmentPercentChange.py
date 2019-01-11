@@ -3,7 +3,7 @@ from trader.lib.TimeSegmentValues import TimeSegmentValues
 
 
 class TimeSegmentPercentChange(object):
-    def __init__(self, seconds=0, minutes=0, tsv=None, smoother=None):
+    def __init__(self, seconds=0, minutes=0, tsv=None, smoother=None, disable_fmm=True):
         self.seconds = seconds
         if minutes != 0:
             self.seconds += int(minutes) * 60
@@ -12,15 +12,13 @@ class TimeSegmentPercentChange(object):
         if tsv:
             self.tsv = tsv
         else:
-            self.tsv = TimeSegmentValues(seconds)
+            self.tsv = TimeSegmentValues(seconds, disable_fmm=disable_fmm)
         self.smoother = smoother
 
     def ready(self):
         return self.tsv.ready()
 
     def update(self, value, ts):
-        if self.smoother:
-            value = self.smoother.update(value)
         self.tsv.update(value, ts)
 
     def get_values_seconds(self, seconds):
@@ -50,7 +48,10 @@ class TimeSegmentPercentChange(object):
                 values = self.get_values_seconds(seconds)
         if not values:
             return 0
-        return 100.0 * (values[-1] - values[0]) / values[0]
+        result = 100.0 * (values[-1] - values[0]) / values[0]
+        if self.smoother:
+            result = self.smoother.update(result)
+        return result
 
     def greater_than_percent_time_up(self, percent, seconds):
         pchange = self.get_percent_change(seconds)

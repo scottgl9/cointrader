@@ -37,26 +37,30 @@ def simulate(conn, client, base, currency, type="channel"):
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
-    ema50 = EMA(100, scale=24, lag_window=5)
-    ema200 = EMA(200, scale=24, lag_window=5)
+    ema50 = EMA(100, scale=24)
+    ema200 = EMA(200, scale=24)
 
     dtwma = DTWMA(window=30)
 
-    tspc12 = TimeSegmentPercentChange(seconds=3600)
+    #tspc12 = TimeSegmentPercentChange(seconds=3600)
+    #tspc12_values = []
+    #tspc12_x_values = []
+
+    tspc1 = TimeSegmentPercentChange(seconds=3600, smoother=EMA(26, scale=24))
+    tspc1_values = []
+    tspc1_x_values = []
+
+    tspc4 = TimeSegmentPercentChange(seconds=3600*4, smoother=EMA(26, scale=24))
+    tspc4_values = []
+    tspc4_x_values = []
+
+    tspc12 = TimeSegmentPercentChange(seconds=3600*12, smoother=EMA(26, scale=24))
     tspc12_values = []
     tspc12_x_values = []
 
-    tspc50 = TimeSegmentPercentChange(seconds=3600)
-    tspc50_values = []
-    tspc50_x_values = []
-
-    tspc50_12 = TimeSegmentPercentChange(seconds=3600*4)
-    tspc50_12_values = []
-    tspc50_12_x_values = []
-
-    tspc200 = TimeSegmentPercentChange(seconds=3600)
-    tspc200_values = []
-    tspc200_x_values = []
+    tspc30 = TimeSegmentPercentChange(seconds=1800, smoother=EMA(26, scale=24))
+    tspc30_values = []
+    tspc30_x_values = []
 
     ema12_values = []
     ema26_values = []
@@ -86,28 +90,25 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        tspc12.update(ema12.result, ts)
-        if 1: #tspc12.ready():
-            percent = tspc12.get_percent_change()
-            tspc12_values.append(percent)
-            tspc12_x_values.append(i)
+        tspc1.update(close, ts)
+        percent = tspc1.get_percent_change()
+        tspc1_values.append(percent)
+        tspc1_x_values.append(i)
 
-        tspc50.update(ema50.result, ts)
-        percent = tspc50.get_percent_change()
-        tspc50_values.append(percent)
-        tspc50_x_values.append(i)
+        tspc12.update(close, ts)
+        percent = tspc12.get_percent_change()
+        tspc12_values.append(percent)
+        tspc12_x_values.append(i)
 
-        tspc50_12.update(ema50.result, ts)
-        percent = tspc50_12.get_percent_change()
-        tspc50_12_values.append(percent)
-        tspc50_12_x_values.append(i)
+        tspc4.update(close, ts)
+        percent = tspc4.get_percent_change()
+        tspc4_values.append(percent)
+        tspc4_x_values.append(i)
 
-        tspc200.update(ema200.result, ts)
-        if 1: #tspc200.ready():
-            percent = tspc200.get_percent_change()
-            tspc200_values.append(percent)
-            tspc200_x_values.append(i)
-
+        tspc30.update(close, ts)
+        percent = tspc30.get_percent_change()
+        tspc30_values.append(percent)
+        tspc30_x_values.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -124,10 +125,12 @@ def simulate(conn, client, base, currency, type="channel"):
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
-    fig22, = plt.plot(tspc50_x_values, tspc50_values, label='TSPC50')
-    fig23, = plt.plot(tspc200_x_values, tspc200_values, label='TSPC200')
-    fig24, = plt.plot(tspc50_12_x_values, tspc50_12_values, label='TSPC50_12')
+    #fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
+    fig21, = plt.plot(tspc1_x_values, tspc1_values, label='TSPC1')
+    fig22, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
+    fig23, = plt.plot(tspc4_x_values, tspc4_values, label='TSPC4')
+    fig24, = plt.plot(tspc30_x_values, tspc30_values, label='TSPC30')
+
 
     plt.legend(handles=[fig21, fig22, fig23, fig24])
 
