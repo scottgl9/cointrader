@@ -187,10 +187,12 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max(percent=0.5):
             return False
 
-        if self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up:
+        if (self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up and
+                self.ema_cross_50_200.ma1_trend_up() and self.ema_cross_50_200.ma2_trend_up()):
             return True
 
-        if self.ema_cross_12_200.cross_up and self.ema_cross_26_200.cross_up:
+        if (self.ema_cross_12_200.cross_up and self.ema_cross_26_200.cross_up and
+                self.ema_cross_26_200.ma1_trend_up() and self.ema_cross_26_200.ma2_trend_up()):
             return True
 
         if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
