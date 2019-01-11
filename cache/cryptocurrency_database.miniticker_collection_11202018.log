@@ -4,149 +4,151 @@
 [INFO ]  Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
 [INFO ]  Resetting initial BTC...
 [INFO ]  Initial BTC=0.06
-[INFO ]  buy(1, XRPBTC, 30.0) @ 9.906e-05
-[INFO ]  buy(1, ICXBTC, 47.77) @ 6.28e-05
-[INFO ]  buy(1, IOTABTC, 40.0) @ 6.686e-05
-[INFO ]  buy(1, BCHSVBTC, 0.236) @ 0.012744
-[INFO ]  buy(1, ZRXBTC, 30.0) @ 9.355e-05
+[INFO ]  buy(1, XRPBTC, 30.0) @ 9.914e-05
+[INFO ]  buy(1, IOTABTC, 40.0) @ 6.71e-05
+[INFO ]  buy(1, BCHSVBTC, 0.233) @ 0.012866
 [INFO ]  buy(1, ETCBTC, 2.36) @ 0.001274
 [INFO ]  buy(1, TUSDBTC, 10.0) @ 0.00023433
-[INFO ]  buy(1, QKCBTC, 330.0) @ 9.22e-06
 [INFO ]  buy(1, HCBTC, 14.15) @ 0.000212
 [INFO ]  buy(1, EOSBTC, 3.54) @ 0.0008474
-[INFO ]  buy(1, PPTBTC, 8.22) @ 0.0003647
+[INFO ]  buy(1, PPTBTC, 8.11) @ 0.0003628
 [INFO ]  buy(1, LTCBTC, 0.4) @ 0.007522
-[INFO ]  sell(1, ZRXBTC, 30.0) @ 9.443e-05 (bought @ 9.355e-05, 0.94%)	0.09%
 [INFO ]  buy(1, GASBTC, 4.82) @ 0.000622
 [INFO ]  buy(1, MCOBTC, 5.38) @ 0.000556
+[INFO ]  buy(1, QKCBTC, 320.0) @ 9.32e-06
 [INFO ]  buy(1, CVCBTC, 180.0) @ 1.651e-05
 [INFO ]  buy(1, ZECBTC, 0.156) @ 0.019164
 [INFO ]  buy(1, PAXBTC, 10.0) @ 0.00023171
 [INFO ]  buy(1, XLMBTC, 70.0) @ 4.408e-05
 [INFO ]  buy(1, TRXBTC, 950.0) @ 3.16e-06
 [INFO ]  buy(1, GTOBTC, 430.0) @ 6.95e-06
-[INFO ]  buy(1, XZCBTC, 2.2) @ 0.001365
-[INFO ]  sell(1, BCHSVBTC, 0.236) @ 0.01286 (bought @ 0.012744, 0.91%)	0.24%
-[INFO ]  buy(1, POLYBTC, 90.0) @ 3.282e-05
-[INFO ]  sell(1, QKCBTC, 330.0) @ 9.27e-06 (bought @ 9.22e-06, 0.54%)	0.21%
+[INFO ]  buy(1, POLYBTC, 90.0) @ 3.331e-05
 [INFO ]  buy(1, XEMBTC, 170.0) @ 1.773e-05
-[INFO ]  sell(1, CVCBTC, 180.0) @ 1.72e-05 (bought @ 1.651e-05, 4.18%)	-0.82%
+[INFO ]  sell(1, CVCBTC, 180.0) @ 1.72e-05 (bought @ 1.651e-05, 4.18%)	-0.94%
 [INFO ]  buy(1, USDCBTC, 10.0) @ 0.00023602
-[INFO ]  sell(1, PPTBTC, 8.22) @ 0.00037 (bought @ 0.0003647, 1.45%)	-0.77%
-[INFO ]  buy(1, ARKBTC, 33.67) @ 8.93e-05
-[INFO ]  sell(1, GTOBTC, 430.0) @ 7e-06 (bought @ 6.95e-06, 0.72%)	-0.79%
-[INFO ]  buy(1, NANOBTC, 11.91) @ 0.0002517
-[INFO ]  sell(1, ARKBTC, 33.67) @ 9.01e-05 (bought @ 8.93e-05, 0.9%)	-0.93%
-[INFO ]  buy(1, NEOBTC, 1.49) @ 0.002009
-[INFO ]  sell(1, NANOBTC, 11.91) @ 0.0002545 (bought @ 0.0002517, 1.11%)	-0.98%
-[INFO ]  buy(1, CMTBTC, 290.0) @ 1.029e-05
-[INFO ]  sell(1, CMTBTC, 290.0) @ 1.037e-05 (bought @ 1.029e-05, 0.78%)	-0.77%
-[INFO ]  buy(1, ADABTC, 300.0) @ 1.005e-05
-[INFO ]  sell(1, MCOBTC, 5.38) @ 0.000565 (bought @ 0.000556, 1.62%)	-0.65%
+[INFO ]  sell(1, BCHSVBTC, 0.233) @ 0.013011 (bought @ 0.012866, 1.13%)	-1.01%
+[INFO ]  buy(1, ARKBTC, 32.97) @ 9.11e-05
+[INFO ]  sell(1, PPTBTC, 8.11) @ 0.0003673 (bought @ 0.0003628, 1.24%)	-1.11%
+[INFO ]  buy(1, NANOBTC, 11.86) @ 0.0002522
+[INFO ]  sell(1, GTOBTC, 430.0) @ 7e-06 (bought @ 6.95e-06, 0.72%)	-1.01%
+[INFO ]  buy(1, BTSBTC, 260.0) @ 1.165e-05
+[INFO ]  sell(1, MCOBTC, 5.38) @ 0.000565 (bought @ 0.000556, 1.62%)	-0.94%
 [INFO ]  buy(1, ONTBTC, 13.57) @ 0.000221
-[INFO ]  sell(1, POLYBTC, 90.0) @ 3.292e-05 (bought @ 3.282e-05, 0.3%)	-0.86%
-[INFO ]  buy(1, ZRXBTC, 30.0) @ 9.388e-05
-[INFO ]  buy(1, BRDBTC, 50.0) @ 5.604e-05
-[INFO ]  sell(1, IOTABTC, 40.0) @ 6.755e-05 (bought @ 6.686e-05, 1.03%)	-0.82%
-[INFO ]  buy(1, IOTABTC, 40.0) @ 6.739e-05
-[INFO ]  sell(1, ZRXBTC, 30.0) @ 9.52e-05 (bought @ 9.388e-05, 1.41%)	-0.97%
-[INFO ]  buy(1, MDABTC, 20.0) @ 0.00013961
-[INFO ]  sell(1, ONTBTC, 13.57) @ 0.0002276 (bought @ 0.000221, 2.99%)	-0.83%
-[INFO ]  buy(1, BCHABCBTC, 0.059000000) @ 0.051066
-[INFO ]  sell(1, XZCBTC, 2.2) @ 0.001385 (bought @ 0.001365, 1.47%)	-0.74%
-[INFO ]  buy(1, BATBTC, 80.0) @ 3.597e-05
-[INFO ]  sell(1, IOTABTC, 40.0) @ 6.881e-05 (bought @ 6.739e-05, 2.11%)	-0.61%
-[INFO ]  buy(1, ZRXBTC, 30.0) @ 9.504e-05
-[INFO ]  sell(1, XLMBTC, 70.0) @ 4.457e-05 (bought @ 4.408e-05, 1.11%)	0.35%
+[INFO ]  sell(1, BTSBTC, 260.0) @ 1.166e-05 (bought @ 1.165e-05, 0.09%)	-1.49%
+[INFO ]  buy(1, BCHSVBTC, 0.222) @ 0.013499
+[INFO ]  sell(1, NANOBTC, 11.86) @ 0.0002533 (bought @ 0.0002522, 0.44%)	-1.92%
+[INFO ]  buy(1, BCHABCBTC, 0.059000000) @ 0.05055
+[INFO ]  sell(1, BCHABCBTC, 0.059000000) @ 0.051104 (bought @ 0.05055, 1.1%)	-1.73%
+[INFO ]  buy(1, LINKBTC, 40.0) @ 7.639e-05
+[INFO ]  sell(1, ONTBTC, 13.57) @ 0.0002276 (bought @ 0.000221, 2.99%)	-1.29%
+[INFO ]  buy(1, ICXBTC, 47.54) @ 6.3e-05
+[INFO ]  sell(1, BCHSVBTC, 0.222) @ 0.012102 (bought @ 0.013499, -10.35%)	-1.05%
+[INFO ]  buy(1, ADABTC, 300.0) @ 1.006e-05
+[INFO ]  sell(1, IOTABTC, 40.0) @ 6.881e-05 (bought @ 6.71e-05, 2.55%)	-0.91%
+[INFO ]  buy(1, BCHABCBTC, 0.059000000) @ 0.051041
+[INFO ]  sell(1, ARKBTC, 32.97) @ 9.92e-05 (bought @ 9.11e-05, 8.89%)	-1.32%
+[INFO ]  buy(1, NEOBTC, 1.51) @ 0.001985
+[INFO ]  sell(1, XLMBTC, 70.0) @ 4.457e-05 (bought @ 4.408e-05, 1.11%)	-0.02%
 [INFO ]  buy(1, BTSBTC, 260.0) @ 1.154e-05
-[INFO ]  sell(1, ICXBTC, 47.77) @ 6.47e-05 (bought @ 6.28e-05, 3.03%)	0.42%
-[INFO ]  buy(1, ONTBTC, 13.33) @ 0.0002251
-[INFO ]  sell(1, ADABTC, 300.0) @ 1.018e-05 (bought @ 1.005e-05, 1.29%)	0.3%
-[INFO ]  buy(1, XMRBTC, 0.199) @ 0.015062
-[INFO ]  sell(1, XEMBTC, 170.0) @ 1.792e-05 (bought @ 1.773e-05, 1.07%)	0.53%
+[INFO ]  sell(1, ICXBTC, 47.54) @ 6.47e-05 (bought @ 6.3e-05, 2.7%)	0.17%
+[INFO ]  buy(1, XMRBTC, 0.2) @ 0.015029
+[INFO ]  sell(1, ADABTC, 300.0) @ 1.018e-05 (bought @ 1.006e-05, 1.19%)	0.09%
+[INFO ]  buy(1, STORMBTC, 3130.0) @ 9.6e-07
+[INFO ]  sell(1, QKCBTC, 320.0) @ 9.8e-06 (bought @ 9.32e-06, 5.15%)	0.14%
+[INFO ]  buy(1, WTCBTC, 9.33) @ 0.0003212
+[INFO ]  sell(1, XEMBTC, 170.0) @ 1.792e-05 (bought @ 1.773e-05, 1.07%)	0.34%
 [INFO ]  buy(1, GOBTC, 320.0) @ 9.49e-06
-[INFO ]  sell(1, BATBTC, 80.0) @ 3.646e-05 (bought @ 3.597e-05, 1.36%)	0.3%
-[INFO ]  buy(1, GVTBTC, 2.53) @ 0.0011874
-[INFO ]  sell(1, BCHABCBTC, 0.059000000) @ 0.051795 (bought @ 0.051066, 1.43%)	0.14%
+[INFO ]  sell(1, LINKBTC, 40.0) @ 7.87e-05 (bought @ 7.639e-05, 3.02%)	0.16%
+[INFO ]  buy(1, XLMBTC, 70.0) @ 4.449e-05
+[INFO ]  buy(1, ARNBTC, 40.0) @ 6.706e-05
+[INFO ]  sell(1, BCHABCBTC, 0.059000000) @ 0.051795 (bought @ 0.051041, 1.48%)	-0.05%
 [INFO ]  buy(1, ARKBTC, 29.35) @ 0.0001024
-[INFO ]  sell(1, MDABTC, 20.0) @ 0.00014545 (bought @ 0.00013961, 4.18%)	0.55%
-[INFO ]  buy(1, NANOBTC, 11.38) @ 0.000263
-[INFO ]  sell(1, GVTBTC, 2.53) @ 0.0012086 (bought @ 0.0011874, 1.79%)	0.53%
-[INFO ]  buy(1, ADABTC, 290.0) @ 1.03e-05
-[INFO ]  sell(1, ARKBTC, 29.35) @ 0.0001036 (bought @ 0.0001024, 1.17%)	0.63%
-[INFO ]  buy(1, RVNBTC, 690.0) @ 4.37e-06
-[INFO ]  sell(1, BTSBTC, 260.0) @ 1.159e-05 (bought @ 1.154e-05, 0.43%)	0.79%
-[INFO ]  buy(1, BQXBTC, 90.0) @ 3.405e-05
-[INFO ]  sell(1, NANOBTC, 11.38) @ 0.0002667 (bought @ 0.000263, 1.41%)	0.88%
-[INFO ]  buy(1, QKCBTC, 310.0) @ 9.73e-06
-[INFO ]  sell(1, QKCBTC, 310.0) @ 1.004e-05 (bought @ 9.73e-06, 3.19%)	1.15%
-[INFO ]  buy(1, XLMBTC, 70.0) @ 4.444e-05
-[INFO ]  sell(1, TRXBTC, 950.0) @ 3.19e-06 (bought @ 3.16e-06, 0.95%)	0.86%
+[INFO ]  sell(1, ARNBTC, 40.0) @ 6.783e-05 (bought @ 6.706e-05, 1.15%)	0.27%
+[INFO ]  sell(1, NEOBTC, 1.51) @ 0.001992 (bought @ 0.001985, 0.35%)	0.24%
+[INFO ]  buy(1, CMTBTC, 290.0) @ 1.041e-05
+[INFO ]  buy(1, IOTABTC, 40.0) @ 6.908e-05
+[INFO ]  sell(1, WTCBTC, 9.33) @ 0.000326 (bought @ 0.0003212, 1.49%)	0.19%
+[INFO ]  buy(1, PHXBTC, 1110.0) @ 2.7e-06
+[INFO ]  sell(1, ARKBTC, 29.35) @ 0.0001036 (bought @ 0.0001024, 1.17%)	0.12%
+[INFO ]  buy(1, ADABTC, 290.0) @ 1.033e-05
+[INFO ]  sell(1, BTSBTC, 260.0) @ 1.159e-05 (bought @ 1.154e-05, 0.43%)	0.21%
+[INFO ]  buy(1, NEOBTC, 1.49) @ 0.002013
+[INFO ]  sell(1, PHXBTC, 1110.0) @ 2.74e-06 (bought @ 2.7e-06, 1.48%)	0.53%
+[INFO ]  buy(1, MDABTC, 20.0) @ 0.00014584
+[INFO ]  sell(1, TRXBTC, 950.0) @ 3.19e-06 (bought @ 3.16e-06, 0.95%)	0.45%
 [INFO ]  buy(1, OMGBTC, 6.88) @ 0.000436
-[INFO ]  sell(1, XMRBTC, 0.199) @ 0.015216 (bought @ 0.015062, 1.02%)	1.05%
-[INFO ]  buy(1, ICXBTC, 46.15) @ 6.5e-05
-[INFO ]  sell(1, BQXBTC, 90.0) @ 3.421e-05 (bought @ 3.405e-05, 0.47%)	1.14%
-[INFO ]  buy(1, IOTABTC, 40.0) @ 6.954e-05
-[INFO ]  sell(1, HCBTC, 14.15) @ 0.0002146 (bought @ 0.000212, 1.23%)	0.98%
+[INFO ]  sell(1, CMTBTC, 290.0) @ 1.053e-05 (bought @ 1.041e-05, 1.15%)	0.38%
+[INFO ]  buy(1, ELFBTC, 90.0) @ 3.148e-05
+[INFO ]  sell(1, XMRBTC, 0.2) @ 0.015175 (bought @ 0.015029, 0.97%)	0.62%
+[INFO ]  buy(1, ZRXBTC, 30.0) @ 9.481e-05
+[INFO ]  sell(1, MDABTC, 20.0) @ 0.00014586 (bought @ 0.00014584, 0.01%)	0.55%
+[INFO ]  buy(1, XEMBTC, 170.0) @ 1.76e-05
+[INFO ]  sell(1, HCBTC, 14.15) @ 0.0002146 (bought @ 0.000212, 1.23%)	0.55%
 [INFO ]  buy(1, XMRBTC, 0.198) @ 0.015163
-[INFO ]  sell(1, XMRBTC, 0.198) @ 0.015306 (bought @ 0.015163, 0.94%)	1.13%
+[INFO ]  sell(1, XMRBTC, 0.198) @ 0.015306 (bought @ 0.015163, 0.94%)	0.65%
 [INFO ]  buy(1, DASHBTC, 0.123) @ 0.02449
-[INFO ]  sell(1, BRDBTC, 50.0) @ 5.875e-05 (bought @ 5.604e-05, 4.84%)	1.09%
-[INFO ]  buy(1, IOSTBTC, 2290.0) @ 1.31e-06
-[INFO ]  sell(1, IOTABTC, 40.0) @ 7.11e-05 (bought @ 6.954e-05, 2.24%)	1.21%
-[INFO ]  buy(1, PHXBTC, 1110.0) @ 2.71e-06
-[INFO ]  sell(1, ZRXBTC, 30.0) @ 9.666e-05 (bought @ 9.504e-05, 1.7%)	1.33%
+[INFO ]  sell(1, ELFBTC, 90.0) @ 3.175e-05 (bought @ 3.148e-05, 0.86%)	0.68%
+[INFO ]  buy(1, IOSTBTC, 2270.0) @ 1.32e-06
+[INFO ]  sell(1, XEMBTC, 170.0) @ 1.774e-05 (bought @ 1.76e-05, 0.8%)	0.84%
+[INFO ]  buy(1, TRXBTC, 950.0) @ 3.17e-06
+[INFO ]  sell(1, IOTABTC, 40.0) @ 7.11e-05 (bought @ 6.908e-05, 2.92%)	0.79%
+[INFO ]  buy(1, ICXBTC, 46.37) @ 6.47e-05
+[INFO ]  sell(1, ZRXBTC, 30.0) @ 9.666e-05 (bought @ 9.481e-05, 1.95%)	1.15%
 [INFO ]  buy(1, BCHABCBTC, 0.059000000) @ 0.050768
-[INFO ]  sell(1, DASHBTC, 0.123) @ 0.024777 (bought @ 0.02449, 1.17%)	1.66%
+[INFO ]  sell(1, DASHBTC, 0.123) @ 0.024777 (bought @ 0.02449, 1.17%)	1.42%
 [INFO ]  buy(1, CDTBTC, 1290.0) @ 2.32e-06
-[INFO ]  sell(1, ADABTC, 290.0) @ 1.041e-05 (bought @ 1.03e-05, 1.07%)	1.48%
-[INFO ]  buy(1, MANABTC, 210.0) @ 1.439e-05
-[INFO ]  sell(1, PHXBTC, 1110.0) @ 2.75e-06 (bought @ 2.71e-06, 1.48%)	1.78%
-[INFO ]  buy(1, FUNBTC, 2210.0) @ 1.36e-06
-[INFO ]  sell(1, MANABTC, 210.0) @ 1.469e-05 (bought @ 1.439e-05, 2.08%)	1.65%
-[INFO ]  buy(1, YOYOBTC, 660.0) @ 4.55e-06
-[INFO ]  sell(1, ICXBTC, 46.15) @ 6.5e-05 (bought @ 6.5e-05, 0.0%)	0.12%
-[INFO ]  buy(1, TRXBTC, 940.0) @ 3.18e-06
-[INFO ]  sell(1, RVNBTC, 690.0) @ 3.94e-06 (bought @ 4.37e-06, -9.84%)	-1.62%
-[INFO ]  buy(1, LINKBTC, 40.0) @ 7.837e-05
-[INFO ]  sell(1, OMGBTC, 6.88) @ 0.000392 (bought @ 0.000436, -10.09%)	-1.83%
+[INFO ]  sell(1, ICXBTC, 46.37) @ 6.53e-05 (bought @ 6.47e-05, 0.93%)	1.18%
+[INFO ]  buy(1, ASTBTC, 350.0) @ 8.67e-06
+[INFO ]  sell(1, TRXBTC, 950.0) @ 3.2e-06 (bought @ 3.17e-06, 0.95%)	1.58%
+[INFO ]  buy(1, WTCBTC, 8.98) @ 0.0003341
+[INFO ]  sell(1, STORMBTC, 3130.0) @ 9.8e-07 (bought @ 9.6e-07, 2.08%)	1.18%
+[INFO ]  buy(1, ZILBTC, 740.0) @ 4.07e-06
+[INFO ]  sell(1, ASTBTC, 350.0) @ 8.92e-06 (bought @ 8.67e-06, 2.88%)	1.1%
+[INFO ]  buy(1, POEBTC, 2030.0) @ 1.47e-06
+[INFO ]  sell(1, WTCBTC, 8.98) @ 0.0003378 (bought @ 0.0003341, 1.11%)	0.69%
+[INFO ]  buy(1, MDABTC, 20.0) @ 0.00016705
+[INFO ]  sell(1, MDABTC, 20.0) @ 0.00016856 (bought @ 0.00016705, 0.9%)	-0.63%
+[INFO ]  buy(1, MANABTC, 220.0) @ 1.38e-05
+[INFO ]  sell(1, OMGBTC, 6.88) @ 0.000392 (bought @ 0.000436, -10.09%)	-2.01%
 [INFO ]  buy(1, POABTC, 340.0) @ 8.8e-06
-[INFO ]  sell(1, YOYOBTC, 660.0) @ 4.09e-06 (bought @ 4.55e-06, -10.11%)	-1.91%
-[INFO ]  sell(1, POABTC, 340.0) @ 8.9e-06 (bought @ 8.8e-06, 1.14%)	-1.73%
+[INFO ]  sell(1, POABTC, 340.0) @ 8.9e-06 (bought @ 8.8e-06, 1.14%)	-1.78%
 [INFO ]  buy(1, EVXBTC, 50.0) @ 6.533e-05
-[INFO ]  sell(1, TUSDBTC, 10.0) @ 0.0002381 (bought @ 0.00023433, 1.61%)	-2.05%
-[INFO ]  buy(1, STEEMBTC, 33.82) @ 8.87e-05
-[INFO ]  sell(1, PAXBTC, 10.0) @ 0.00023856 (bought @ 0.00023171, 2.96%)	-2.05%
+[INFO ]  sell(1, POLYBTC, 90.0) @ 2.96e-05 (bought @ 3.331e-05, -11.14%)	-2.47%
+[INFO ]  buy(1, NULSBTC, 20.0) @ 0.00012529
+[INFO ]  sell(1, TUSDBTC, 10.0) @ 0.0002381 (bought @ 0.00023433, 1.61%)	-2.13%
+[INFO ]  sell(1, PAXBTC, 10.0) @ 0.00023856 (bought @ 0.00023171, 2.96%)	-2.14%
 [INFO ]  buy(1, REPBTC, 1.28) @ 0.002348
-[INFO ]  sell(1, REPBTC, 1.28) @ 0.002375 (bought @ 0.002348, 1.15%)	-1.81%
+[INFO ]  sell(1, REPBTC, 1.28) @ 0.002375 (bought @ 0.002348, 1.15%)	-2.03%
 [INFO ]  buy(1, ZRXBTC, 30.0) @ 9.221e-05
-[INFO ]  sell(1, USDCBTC, 10.0) @ 0.00023854 (bought @ 0.00023602, 1.07%)	-1.62%
+[INFO ]  sell(1, USDCBTC, 10.0) @ 0.00023854 (bought @ 0.00023602, 1.07%)	-1.97%
 [INFO ]  buy(1, CMTBTC, 270.0) @ 1.102e-05
-[INFO ]  sell(1, CMTBTC, 270.0) @ 1.11e-05 (bought @ 1.102e-05, 0.73%)	-1.51%
+[INFO ]  sell(1, CMTBTC, 270.0) @ 1.11e-05 (bought @ 1.102e-05, 0.73%)	-1.84%
 [INFO ]  buy(1, TUSDBTC, 10.0) @ 0.0002397
-[INFO ]  sell(1, ZRXBTC, 30.0) @ 9.349e-05 (bought @ 9.221e-05, 1.39%)	-1.63%
+[INFO ]  sell(1, NULSBTC, 20.0) @ 0.00012647 (bought @ 0.00012529, 0.94%)	-1.9%
+[INFO ]  buy(1, IOTABTC, 40.0) @ 7.012e-05
+[INFO ]  sell(1, ZRXBTC, 30.0) @ 9.349e-05 (bought @ 9.221e-05, 1.39%)	-1.81%
 [INFO ]  buy(1, BCHSVBTC, 0.32) @ 0.009379
 [INFO ]  total time (hours): 56.97
-[INFO ]  {u'NEO': {'available': 1.49, 'balance': 1.49}, u'XLM': {'available': 70.0, 'balance': 70.0}, u'STEEM': {'available': 33.82, 'balance': 33.82}, u'EOS': {'available': 3.54, 'balance': 3.54}, u'ETC': {'available': 2.36, 'balance': 2.36}, u'LINK': {'available': 40.0, 'balance': 40.0}, u'FUN': {'available': 2210.0, 'balance': 2210.0}, u'IOST': {'available': 2290.0, 'balance': 2290.0}, u'GAS': {'available': 4.82, 'balance': 4.82}, u'ONT': {'available': 13.33, 'balance': 13.33}, u'BCHABC': {'available': 0.059, 'balance': 0.059}, u'BCHSV': {'available': 0.32, 'balance': 0.32}, u'LTC': {'available': 0.4, 'balance': 0.4}, u'TRX': {'available': 940.0, 'balance': 940.0}, u'GO': {'available': 320.0, 'balance': 320.0}, u'XRP': {'available': 30.0, 'balance': 30.0}, u'ZEC': {'available': 0.156, 'balance': 0.156}, u'EVX': {'available': 50.0, 'balance': 50.0}, u'CDT': {'available': 1290.0, 'balance': 1290.0}, 'BTC': {'available': 0.0013140000000000044, 'balance': 0.0013140000000000044}, u'TUSD': {'available': 10.0, 'balance': 10.0}}
-[INFO ]  Final BTC=0.059013586 profit=-1.64%
-[INFO ]  NEOBTC (1): -4.03%
+[INFO ]  {u'NEO': {'available': 1.49, 'balance': 1.49}, u'XLM': {'available': 70.0, 'balance': 70.0}, u'EOS': {'available': 3.54, 'balance': 3.54}, u'ETC': {'available': 2.36, 'balance': 2.36}, u'IOST': {'available': 2270.0, 'balance': 2270.0}, u'GAS': {'available': 4.82, 'balance': 4.82}, u'MANA': {'available': 220.0, 'balance': 220.0}, u'POE': {'available': 2030.0, 'balance': 2030.0}, u'IOTA': {'available': 40.0, 'balance': 40.0}, u'BCHABC': {'available': 0.059, 'balance': 0.059}, u'BCHSV': {'available': 0.32, 'balance': 0.32}, u'LTC': {'available': 0.4, 'balance': 0.4}, u'ADA': {'available': 290.0, 'balance': 290.0}, u'GO': {'available': 320.0, 'balance': 320.0}, u'ZIL': {'available': 740.0, 'balance': 740.0}, u'XRP': {'available': 30.0, 'balance': 30.0}, u'ZEC': {'available': 0.156, 'balance': 0.156}, u'EVX': {'available': 50.0, 'balance': 50.0}, u'CDT': {'available': 1290.0, 'balance': 1290.0}, 'BTC': {'available': 0.0017691000000000035, 'balance': 0.0017691000000000035}, u'TUSD': {'available': 10.0, 'balance': 10.0}}
+[INFO ]  Final BTC=0.058969992 profit=-1.72%
+[INFO ]  NEOBTC (1): -4.22%
 [INFO ]  LTCBTC (1): 0.13%
+[INFO ]  IOTABTC (1): 0.5%
 [INFO ]  EOSBTC (1): -2.27%
-[INFO ]  FUNBTC (1): -5.15%
-[INFO ]  IOSTBTC (1): -8.4%
-[INFO ]  LINKBTC (1): -1.12%
-[INFO ]  TRXBTC (1): -1.57%
+[INFO ]  IOSTBTC (1): -9.09%
+[INFO ]  ADABTC (1): -3.58%
 [INFO ]  GASBTC (1): -6.11%
 [INFO ]  BCHSVBTC (1): -0.01%
 [INFO ]  TUSDBTC (1): -0.91%
-[INFO ]  ONTBTC (1): -2.44%
-[INFO ]  STEEMBTC (1): 0.68%
+[INFO ]  ZILBTC (1): -4.91%
 [INFO ]  CDTBTC (1): -6.03%
 [INFO ]  GOBTC (1): -5.16%
 [INFO ]  EVXBTC (1): -3.26%
 [INFO ]  BCHABCBTC (1): -9.0%
-[INFO ]  XRPBTC (1): -3.57%
+[INFO ]  XRPBTC (1): -3.65%
+[INFO ]  POEBTC (1): -4.76%
 [INFO ]  ZECBTC (1): -7.07%
-[INFO ]  XLMBTC (1): -4.64%
+[INFO ]  XLMBTC (1): -4.74%
+[INFO ]  MANABTC (1): -2.75%
 [INFO ]  ETCBTC (1): -3.06%
-[INFO ]  {u'NEO': {'balance': 1.49}, u'XLM': {'balance': 70.0}, u'POA': {'balance': 0.0}, u'STEEM': {'balance': 33.82}, u'PAX': {'balance': 0.0}, u'REP': {'balance': 0.0}, u'BAT': {'balance': 0.0}, u'POLY': {'balance': 0.0}, u'EOS': {'balance': 3.54}, u'ETC': {'balance': 2.36}, u'LINK': {'balance': 40.0}, u'FUN': {'balance': 2210.0}, u'HC': {'balance': 0.0}, u'CMT': {'balance': 0.0}, u'CVC': {'balance': 0.0}, u'NANO': {'balance': 0.0}, u'QKC': {'balance': 0.0}, u'MDA': {'balance': 0.0}, u'GAS': {'balance': 4.82}, u'RVN': {'balance': 0.0}, u'IOST': {'balance': 2290.0}, u'MANA': {'balance': 0.0}, u'GVT': {'balance': 0.0}, u'XZC': {'balance': 0.0}, u'PPT': {'balance': 0.0}, u'IOTA': {'balance': 0.0}, u'ONT': {'balance': 13.33}, u'BCHABC': {'balance': 0.059}, u'BCHSV': {'balance': 0.32}, u'USDC': {'balance': 0.0}, u'ZRX': {'balance': 0.0}, u'LTC': {'balance': 0.4}, u'TRX': {'balance': 940.0}, u'ICX': {'balance': 0.0}, u'ADA': {'balance': 0.0}, u'GO': {'balance': 320.0}, u'GTO': {'balance': 0.0}, u'XRP': {'balance': 30.0}, u'XMR': {'balance': 0.0}, u'MCO': {'balance': 0.0}, u'ZEC': {'balance': 0.156}, u'BRD': {'balance': 0.0}, u'OMG': {'balance': 0.0}, u'BTS': {'balance': 0.0}, u'XEM': {'balance': 0.0}, u'EVX': {'balance': 50.0}, u'CDT': {'balance': 1290.0}, u'PHX': {'balance': 0.0}, u'YOYO': {'balance': 0.0}, u'DASH': {'balance': 0.0}, u'TUSD': {'balance': 10.0}, u'ARK': {'balance': 0.0}, u'BQX': {'balance': 0.0}}
+[INFO ]  {u'NEO': {'balance': 1.49}, u'XLM': {'balance': 70.0}, u'NULS': {'balance': 0.0}, u'POA': {'balance': 0.0}, u'PAX': {'balance': 0.0}, u'REP': {'balance': 0.0}, u'POLY': {'balance': 0.0}, u'EOS': {'balance': 3.54}, u'ETC': {'balance': 2.36}, u'LINK': {'balance': 0.0}, u'HC': {'balance': 0.0}, u'CMT': {'balance': 0.0}, u'CVC': {'balance': 0.0}, u'NANO': {'balance': 0.0}, u'AST': {'balance': 0.0}, u'QKC': {'balance': 0.0}, u'MDA': {'balance': 0.0}, u'GAS': {'balance': 4.82}, u'IOST': {'balance': 2270.0}, u'MANA': {'balance': 220.0}, u'WTC': {'balance': 0.0}, u'PPT': {'balance': 0.0}, u'POE': {'balance': 2030.0}, u'IOTA': {'balance': 40.0}, u'ONT': {'balance': 0.0}, u'BCHABC': {'balance': 0.059}, u'BCHSV': {'balance': 0.32}, u'USDC': {'balance': 0.0}, u'ELF': {'balance': 0.0}, u'GTO': {'balance': 0.0}, u'LTC': {'balance': 0.4}, u'TRX': {'balance': 0.0}, u'ICX': {'balance': 0.0}, u'STORM': {'balance': 0.0}, u'ADA': {'balance': 290.0}, u'GO': {'balance': 320.0}, u'ZIL': {'balance': 740.0}, u'ZRX': {'balance': 0.0}, u'XRP': {'balance': 30.0}, u'XMR': {'balance': 0.0}, u'MCO': {'balance': 0.0}, u'ZEC': {'balance': 0.156}, u'OMG': {'balance': 0.0}, u'BTS': {'balance': 0.0}, u'XEM': {'balance': 0.0}, u'EVX': {'balance': 50.0}, u'CDT': {'balance': 1290.0}, u'PHX': {'balance': 0.0}, u'DASH': {'balance': 0.0}, u'TUSD': {'balance': 10.0}, u'ARK': {'balance': 0.0}, u'ARN': {'balance': 0.0}}

@@ -5,120 +5,197 @@
 [INFO ]  Resetting initial BTC...
 [INFO ]  Initial BTC=0.06
 [INFO ]  buy(1, TRXBTC, 570.0) @ 5.26e-06
-[INFO ]  buy(1, LTCBTC, 0.18) @ 0.016837
-[INFO ]  buy(1, POABTC, 50.0) @ 6.052e-05
 [INFO ]  buy(1, EOSBTC, 3.49) @ 0.00085918
-[INFO ]  buy(1, ETCBTC, 1.5) @ 0.001991
 [INFO ]  buy(1, ELFBTC, 30.0) @ 9.135e-05
-[INFO ]  buy(1, XLMBTC, 100.0) @ 2.906e-05
-[INFO ]  buy(1, ICXBTC, 10.13) @ 0.0002963
-[INFO ]  buy(1, XEMBTC, 90.0) @ 3.348e-05
-[INFO ]  buy(1, NEBLBTC, 2.73) @ 0.0010993
-[INFO ]  buy(1, NANOBTC, 4.19) @ 0.0007153
-[INFO ]  buy(1, STRATBTC, 5.69) @ 0.0005287
-[INFO ]  buy(1, STEEMBTC, 11.45) @ 0.0002619
+[INFO ]  buy(1, POABTC, 50.0) @ 6.058e-05
+[INFO ]  buy(1, ETCBTC, 1.5) @ 0.001998
+[INFO ]  buy(1, XLMBTC, 100.0) @ 2.911e-05
+[INFO ]  buy(1, XEMBTC, 90.0) @ 3.362e-05
+[INFO ]  buy(1, NEBLBTC, 2.73) @ 0.0011016
 [INFO ]  buy(1, DASHBTC, 0.068000000) @ 0.044397
-[INFO ]  buy(1, NULSBTC, 10.0) @ 0.00027066
-[INFO ]  buy(1, GVTBTC, 1.23) @ 0.0024438
-[INFO ]  buy(1, DGDBTC, 0.098000000) @ 0.030646
-[INFO ]  buy(1, OSTBTC, 150.0) @ 2.042e-05
-[INFO ]  buy(1, WAVESBTC, 5.84) @ 0.0005135
-[INFO ]  buy(1, GRSBTC, 30.0) @ 8.777e-05
-[INFO ]  sell(1, TRXBTC, 570.0) @ 5.37e-06 (bought @ 5.26e-06, 2.09%)	-0.06%
-[INFO ]  buy(1, XVGBTC, 250.0) @ 1.22e-05
-[INFO ]  sell(1, XVGBTC, 250.0) @ 1.233e-05 (bought @ 1.22e-05, 1.07%)	0.01%
-[INFO ]  buy(1, SUBBTC, 50.0) @ 5.61e-05
-[INFO ]  sell(1, XLMBTC, 100.0) @ 2.94e-05 (bought @ 2.906e-05, 1.17%)	0.2%
-[INFO ]  buy(1, XVGBTC, 240.0) @ 1.232e-05
-[INFO ]  sell(1, XVGBTC, 240.0) @ 1.245e-05 (bought @ 1.232e-05, 1.06%)	0.34%
-[INFO ]  buy(1, VENBTC, 10.0) @ 0.00039673
-[INFO ]  sell(1, STEEMBTC, 11.45) @ 0.0002647 (bought @ 0.0002619, 1.07%)	0.5%
-[INFO ]  buy(1, IOSTBTC, 700.0) @ 4.31e-06
-[INFO ]  sell(1, GVTBTC, 1.23) @ 0.0024504 (bought @ 0.0024438, 0.27%)	0.58%
-[INFO ]  buy(1, MANABTC, 250.0) @ 1.187e-05
-[INFO ]  sell(1, NEBLBTC, 2.73) @ 0.0011067 (bought @ 0.0010993, 0.67%)	0.67%
-[INFO ]  buy(1, ADABTC, 140.0) @ 2.222e-05
-[INFO ]  sell(1, ELFBTC, 30.0) @ 0.0001134 (bought @ 9.135e-05, 24.14%)	1.47%
+[INFO ]  buy(1, GVTBTC, 1.22) @ 0.0024521
+[INFO ]  buy(1, WAVESBTC, 5.83) @ 0.0005142
+[INFO ]  buy(1, VENBTC, 10.0) @ 0.00038796
+[INFO ]  buy(1, ETHBTC, 0.255) @ 0.05928
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.255 new_size=0.255
+[INFO ]  buy(1, ELFETH, 20.0) @ 0.00154513
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.255 new_size=0.2240974
+[INFO ]  buy(1, OAXBTC, 40.0) @ 7.195e-05
+[INFO ]  buy(1, XVGBTC, 240.0) @ 1.225e-05
+[INFO ]  sell(1, TRXBTC, 570.0) @ 5.37e-06 (bought @ 5.26e-06, 2.09%)	-0.05%
+[INFO ]  buy(1, ADAETH, 80.0) @ 0.00037338
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.2240974 new_size=0.194227
+[INFO ]  buy(1, POWRBTC, 70.0) @ 4.412e-05
+[INFO ]  buy(1, XVGETH, 140.0) @ 0.00020688
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.194227 new_size=0.1652638
+[INFO ]  sell(1, XVGBTC, 240.0) @ 1.239e-05 (bought @ 1.225e-05, 1.14%)	0.01%
+[INFO ]  buy(1, DNTBTC, 330.0) @ 9.07e-06
+[INFO ]  sell(1, XVGETH, 140.0) @ 0.00020934 (bought @ 0.00020688, 1.19%)	0.01%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1652638 new_size=0.1945714
+[INFO ]  buy(1, TRXETH, 330.0) @ 9.105e-05
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1945714 new_size=0.1645249
+[INFO ]  buy(1, EOSETH, 2.07) @ 0.014475
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1645249 new_size=0.1345619
+[INFO ]  buy(1, XMRETH, 0.072000000) @ 0.41374
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1345619 new_size=0.1047719
+[INFO ]  sell(1, DNTBTC, 330.0) @ 9.17e-06 (bought @ 9.07e-06, 1.1%)	-0.23%
+[INFO ]  buy(1, XRPBTC, 40.0) @ 7.18e-05
+[INFO ]  buy(1, ONTETH, 3.18) @ 0.0094211
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1047719 new_size=0.0748129
+[INFO ]  buy(1, XRPETH, 20.0) @ 0.00121525
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0748129 new_size=0.0505079
+[INFO ]  buy(1, CMTETH, 150.0) @ 0.00020141
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0505079 new_size=0.0202964
+[INFO ]  sell(1, TRXETH, 330.0) @ 9.175e-05 (bought @ 9.105e-05, 0.77%)	-0.11%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0202964 new_size=0.0505739
+[INFO ]  buy(1, XLMETH, 60.0) @ 0.000493
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0505739 new_size=0.0209939
+[INFO ]  buy(1, ENGBTC, 10.0) @ 0.00020152
+[INFO ]  sell(1, XLMBTC, 100.0) @ 2.941e-05 (bought @ 2.911e-05, 1.03%)	1.17%
+[INFO ]  buy(1, ONTBTC, 5.18) @ 0.00057914
+[INFO ]  sell(1, VENBTC, 10.0) @ 0.00039248 (bought @ 0.00038796, 1.17%)	2.77%
+[INFO ]  buy(1, NEOBTC, 0.4) @ 0.007459
+[INFO ]  sell(1, ONTBTC, 5.18) @ 0.000585 (bought @ 0.00057914, 1.01%)	2.94%
+[INFO ]  buy(1, ZILBTC, 510.0) @ 5.91e-06
+[INFO ]  SELL_FAILED for ONTETH price=0.00997628 buy_price=0.0094211 size=3.18
+[INFO ]  sell(1, ELFBTC, 30.0) @ 0.0001134 (bought @ 9.135e-05, 24.14%)	2.75%
 [INFO ]  buy(1, QSPBTC, 170.0) @ 1.738e-05
-[INFO ]  sell(1, IOSTBTC, 700.0) @ 4.35e-06 (bought @ 4.31e-06, 0.93%)	1.4%
-[INFO ]  buy(1, TRXBTC, 550.0) @ 5.47e-06
-[INFO ]  sell(1, EOSBTC, 3.49) @ 0.00086637 (bought @ 0.00085918, 0.84%)	1.36%
+[INFO ]  sell(1, EOSETH, 2.07) @ 0.014651 (bought @ 0.014475, 1.22%)	2.49%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0209939 new_size=0.0513219
+[INFO ]  buy(1, WANETH, 3.0) @ 0.00999243
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0513219 new_size=0.0213449
+[INFO ]  sell(1, ELFETH, 20.0) @ 0.001918 (bought @ 0.00154513, 24.13%)	2.41%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0213449 new_size=0.0597049
+[INFO ]  buy(1, ZILETH, 300.0) @ 9.89e-05
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0597049 new_size=0.0300349
+[INFO ]  buy(1, DGDETH, 0.058000000) @ 0.51285
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0300349 new_size=0.0002849
+[INFO ]  sell(1, ADAETH, 80.0) @ 0.00037797 (bought @ 0.00037338, 1.23%)	2.25%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0002849 new_size=0.0305225
+[INFO ]  buy(1, QSPETH, 100.0) @ 0.00028576
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0305225 new_size=0.0019465
+[INFO ]  sell(1, OAXBTC, 40.0) @ 7.27e-05 (bought @ 7.195e-05, 1.04%)	2.41%
+[INFO ]  buy(1, TRXBTC, 550.0) @ 5.49e-06
+[INFO ]  sell(1, EOSBTC, 3.49) @ 0.00086637 (bought @ 0.00085918, 0.84%)	2.24%
 [INFO ]  buy(1, LINKBTC, 60.0) @ 4.804e-05
-[INFO ]  sell(1, POABTC, 50.0) @ 6.115e-05 (bought @ 6.052e-05, 1.04%)	1.76%
-[INFO ]  buy(1, XVGBTC, 250.0) @ 1.19e-05
-[INFO ]  sell(1, XVGBTC, 250.0) @ 1.201e-05 (bought @ 1.19e-05, 0.92%)	1.73%
-[INFO ]  buy(1, ONTBTC, 5.12) @ 0.000586
-[INFO ]  sell(1, TRXBTC, 550.0) @ 5.53e-06 (bought @ 5.47e-06, 1.1%)	1.8%
-[INFO ]  buy(1, XRPBTC, 40.0) @ 7.138e-05
-[INFO ]  sell(1, ICXBTC, 10.13) @ 0.0003014 (bought @ 0.0002963, 1.72%)	2.06%
-[INFO ]  buy(1, NCASHBTC, 730.0) @ 4.11e-06
-[INFO ]  sell(1, SUBBTC, 50.0) @ 5.678e-05 (bought @ 5.61e-05, 1.21%)	1.87%
-[INFO ]  buy(1, XVGBTC, 250.0) @ 1.202e-05
-[INFO ]  sell(1, NCASHBTC, 730.0) @ 4.23e-06 (bought @ 4.11e-06, 2.92%)	2.53%
-[INFO ]  buy(1, NEOBTC, 0.4) @ 0.007442
-[INFO ]  sell(1, LINKBTC, 60.0) @ 4.876e-05 (bought @ 4.804e-05, 1.5%)	2.55%
-[INFO ]  buy(1, INSBTC, 19.17) @ 0.0001565
-[INFO ]  sell(1, ONTBTC, 5.12) @ 0.000616 (bought @ 0.000586, 5.12%)	2.57%
-[INFO ]  buy(1, TRXBTC, 560.0) @ 5.41e-06
-[INFO ]  sell(1, QSPBTC, 170.0) @ 1.754e-05 (bought @ 1.738e-05, 0.92%)	2.88%
-[INFO ]  buy(1, IOTABTC, 20.0) @ 0.00014639
-[INFO ]  sell(1, WAVESBTC, 5.84) @ 0.0005254 (bought @ 0.0005135, 2.32%)	2.73%
-[INFO ]  buy(1, ICXBTC, 9.76) @ 0.0003073
-[INFO ]  sell(1, XEMBTC, 90.0) @ 3.373e-05 (bought @ 3.348e-05, 0.75%)	2.71%
-[INFO ]  buy(1, EOSBTC, 3.39) @ 0.00088491
-[INFO ]  sell(1, GRSBTC, 30.0) @ 8.862e-05 (bought @ 8.777e-05, 0.97%)	2.92%
-[INFO ]  buy(1, NCASHBTC, 710.0) @ 4.22e-06
-[INFO ]  sell(1, NEOBTC, 0.4) @ 0.007554 (bought @ 0.007442, 1.5%)	2.94%
+[INFO ]  sell(1, DGDETH, 0.058000000) @ 0.51777 (bought @ 0.51285, 0.96%)	2.33%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0019465 new_size=0.0319765
+[INFO ]  buy(1, IOTAETH, 10.0) @ 0.0025
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0319765 new_size=0.0069765
+[INFO ]  sell(1, POABTC, 50.0) @ 6.116e-05 (bought @ 6.058e-05, 0.96%)	2.42%
+[INFO ]  buy(1, ONTBTC, 5.11) @ 0.000587
+[INFO ]  sell(1, CMTETH, 150.0) @ 0.0002034 (bought @ 0.00020141, 0.99%)	2.82%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0069765 new_size=0.0374865
+[INFO ]  buy(1, NCASHETH, 420.0) @ 7.2e-05
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0374865 new_size=0.0072465
+[INFO ]  sell(1, POWRBTC, 70.0) @ 4.475e-05 (bought @ 4.412e-05, 1.43%)	2.83%
+[INFO ]  buy(1, AEBTC, 15.27) @ 0.0001964
+[INFO ]  sell(1, XLMETH, 60.0) @ 0.0005 (bought @ 0.000493, 1.42%)	2.84%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0072465 new_size=0.0372465
+[INFO ]  buy(1, DNTETH, 200.0) @ 0.0001501
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0372465 new_size=0.0072265
+[INFO ]  sell(1, DNTETH, 200.0) @ 0.00015214 (bought @ 0.0001501, 1.36%)	2.85%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0072265 new_size=0.0376545
+[INFO ]  buy(1, INSETH, 11.07) @ 0.002687
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0376545 new_size=0.0079095
+[INFO ]  sell(1, WANETH, 3.0) @ 0.01009983 (bought @ 0.00999243, 1.07%)	2.89%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0079095 new_size=0.0382085
+[INFO ]  buy(1, BLZETH, 40.0) @ 0.000779
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0382085 new_size=0.0070485
+[INFO ]  sell(1, QSPETH, 100.0) @ 0.00028774 (bought @ 0.00028576, 0.69%)	2.95%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0070485 new_size=0.0358225
+[INFO ]  buy(1, WPRETH, 150.0) @ 0.00020191
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0358225 new_size=0.005536
+[INFO ]  sell(1, LINKBTC, 60.0) @ 4.876e-05 (bought @ 4.804e-05, 1.5%)	3.56%
+[INFO ]  buy(1, VENBTC, 10.0) @ 0.00039315
+[INFO ]  sell(1, ONTBTC, 5.11) @ 0.000616 (bought @ 0.000587, 4.94%)	3.37%
+[INFO ]  buy(1, ICXBTC, 9.94) @ 0.0003017
+[INFO ]  sell(1, NEBLBTC, 2.73) @ 0.0011129 (bought @ 0.0011016, 1.03%)	3.6%
+[INFO ]  buy(1, WANBTC, 4.88) @ 0.0006145
+[INFO ]  sell(1, QSPBTC, 170.0) @ 1.754e-05 (bought @ 1.738e-05, 0.92%)	3.3%
+[INFO ]  buy(1, XVGBTC, 230.0) @ 1.293e-05
+[INFO ]  sell(1, WAVESBTC, 5.83) @ 0.0005254 (bought @ 0.0005142, 2.18%)	3.46%
+[INFO ]  buy(1, ADABTC, 130.0) @ 2.244e-05
+[INFO ]  sell(1, NEOBTC, 0.4) @ 0.007554 (bought @ 0.007459, 1.27%)	3.82%
 [INFO ]  buy(1, OMGBTC, 2.22) @ 0.00135
-[INFO ]  sell(1, XVGBTC, 250.0) @ 1.298e-05 (bought @ 1.202e-05, 7.99%)	3.07%
-[INFO ]  buy(1, ONTBTC, 4.65) @ 0.00064471
-[INFO ]  sell(1, IOTABTC, 20.0) @ 0.00014754 (bought @ 0.00014639, 0.79%)	3.05%
-[INFO ]  buy(1, NEOBTC, 0.39) @ 0.007661
-[INFO ]  sell(1, ICXBTC, 9.76) @ 0.0003103 (bought @ 0.0003073, 0.98%)	3.26%
-[INFO ]  buy(1, WPRBTC, 250.0) @ 1.221e-05
-[INFO ]  sell(1, ADABTC, 140.0) @ 2.258e-05 (bought @ 2.222e-05, 1.62%)	3.33%
-[INFO ]  buy(1, ELFBTC, 20.0) @ 0.0001289
-[INFO ]  sell(1, NCASHBTC, 710.0) @ 4.34e-06 (bought @ 4.22e-06, 2.84%)	3.31%
-[INFO ]  buy(1, XVGBTC, 230.0) @ 1.288e-05
-[INFO ]  sell(1, WPRBTC, 250.0) @ 1.244e-05 (bought @ 1.221e-05, 1.88%)	3.06%
-[INFO ]  buy(1, SALTBTC, 9.15) @ 0.000328
-[INFO ]  sell(1, OSTBTC, 150.0) @ 2.13e-05 (bought @ 2.042e-05, 4.31%)	3.07%
-[INFO ]  buy(1, IOSTBTC, 700.0) @ 4.27e-06
-[INFO ]  sell(1, INSBTC, 19.17) @ 0.00016 (bought @ 0.0001565, 2.24%)	3.01%
-[INFO ]  buy(1, DNTBTC, 340.0) @ 8.9e-06
-[INFO ]  sell(1, DNTBTC, 340.0) @ 8.95e-06 (bought @ 8.9e-06, 0.56%)	3.12%
-[INFO ]  buy(1, QTUMBTC, 1.53) @ 0.001958
-[INFO ]  buy(1, ENGBTC, 10.0) @ 0.00020854
-[INFO ]  sell(1, ELFBTC, 20.0) @ 0.00011685 (bought @ 0.0001289, -9.35%)	3.04%
-[INFO ]  sell(1, STRATBTC, 5.69) @ 0.0005533 (bought @ 0.0005287, 4.65%)	3.3%
-[INFO ]  buy(1, LUNBTC, 2.51) @ 0.0011933
-[INFO ]  sell(1, IOSTBTC, 700.0) @ 4.32e-06 (bought @ 4.27e-06, 1.17%)	3.31%
-[INFO ]  buy(1, IOTABTC, 20.0) @ 0.00014785
-[INFO ]  sell(1, ONTBTC, 4.65) @ 0.00065898 (bought @ 0.00064471, 2.21%)	3.26%
+[INFO ]  sell(1, WPRETH, 150.0) @ 0.00020458 (bought @ 0.00020191, 1.32%)	3.92%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.005536 new_size=0.036223
+[INFO ]  buy(1, XVGETH, 140.0) @ 0.00022097
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.036223 new_size=0.0052872
+[INFO ]  sell(1, VENBTC, 10.0) @ 0.00039705 (bought @ 0.00039315, 0.99%)	4.05%
+[INFO ]  buy(1, RCNBTC, 220.0) @ 1.38e-05
+[INFO ]  buy(1, ELFBTC, 20.0) @ 0.00012005
+[INFO ]  sell(1, XVGBTC, 230.0) @ 1.306e-05 (bought @ 1.293e-05, 1.01%)	4.23%
+[INFO ]  buy(1, QSPBTC, 160.0) @ 1.89e-05
+[INFO ]  sell(1, ICXBTC, 9.94) @ 0.0003096 (bought @ 0.0003017, 2.62%)	4.27%
+[INFO ]  buy(1, NEOBTC, 0.4) @ 0.007579
+[INFO ]  sell(1, RCNBTC, 220.0) @ 1.399e-05 (bought @ 1.38e-05, 1.38%)	4.61%
+[INFO ]  buy(1, STORMBTC, 720.0) @ 4.14e-06
+[INFO ]  sell(1, BLZETH, 40.0) @ 0.00086408 (bought @ 0.000779, 10.92%)	4.71%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0052872 new_size=0.0398504
+[INFO ]  buy(1, ADAETH, 80.0) @ 0.00037842
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0398504 new_size=0.0095768
+[INFO ]  sell(1, NEOBTC, 0.4) @ 0.007658 (bought @ 0.007579, 1.04%)	4.75%
+[INFO ]  buy(1, BLZBTC, 60.0) @ 5.238e-05
+[INFO ]  sell(1, ELFBTC, 20.0) @ 0.00012431 (bought @ 0.00012005, 3.55%)	4.55%
+[INFO ]  sell(1, ADABTC, 130.0) @ 2.266e-05 (bought @ 2.244e-05, 0.98%)	4.61%
+[INFO ]  buy(1, XVGBTC, 230.0) @ 1.286e-05
+[INFO ]  sell(1, ZILBTC, 510.0) @ 5.97e-06 (bought @ 5.91e-06, 1.02%)	4.62%
+[INFO ]  buy(1, IOTABTC, 20.0) @ 0.00014771
+[INFO ]  sell(1, GVTBTC, 1.22) @ 0.0024899 (bought @ 0.0024521, 1.54%)	3.95%
+[INFO ]  buy(1, ONTBTC, 4.65) @ 0.00064516
+[INFO ]  buy(1, ADXBTC, 30.0) @ 8.82e-05
+[INFO ]  sell(1, ENGBTC, 10.0) @ 0.00020771 (bought @ 0.00020152, 3.07%)	3.93%
+[INFO ]  sell(1, ADXBTC, 30.0) @ 8.909e-05 (bought @ 8.82e-05, 1.01%)	4.08%
+[INFO ]  buy(1, NCASHBTC, 690.0) @ 4.33e-06
+[INFO ]  sell(1, ZILETH, 300.0) @ 9.926e-05 (bought @ 9.89e-05, 0.36%)	4.06%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0095768 new_size=0.0393548
+[INFO ]  buy(1, FUELETH, 230.0) @ 0.00013082
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0393548 new_size=0.0092662
+[INFO ]  sell(1, FUELETH, 230.0) @ 0.00013532 (bought @ 0.00013082, 3.44%)	4.45%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0092662 new_size=0.0403898
+[INFO ]  buy(1, VIAETH, 7.38) @ 0.004065
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0403898 new_size=0.0103898
+[INFO ]  sell(1, VIAETH, 7.38) @ 0.004124 (bought @ 0.004065, 1.45%)	4.65%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0103898 new_size=0.0408248
+[INFO ]  buy(1, TRXETH, 340.0) @ 8.948e-05
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0408248 new_size=0.0104016
+[INFO ]  sell(1, NCASHBTC, 690.0) @ 4.36e-06 (bought @ 4.33e-06, 0.69%)	4.94%
+[INFO ]  buy(1, VIABTC, 12.16) @ 0.000246
+[INFO ]  sell(1, ADAETH, 80.0) @ 0.0003825 (bought @ 0.00037842, 1.08%)	5.07%
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0104016 new_size=0.0410016
+[INFO ]  buy(1, IOSTETH, 420.0) @ 7.22e-05
+[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0410016 new_size=0.0106776
+[INFO ]  sell(1, ONTBTC, 4.65) @ 0.00065898 (bought @ 0.00064516, 2.14%)	5.13%
 [INFO ]  buy(1, BQXBTC, 10.0) @ 0.00028957
-[INFO ]  buy(1, GRSBTC, 30.0) @ 8.96e-05
+[INFO ]  sell(1, WANBTC, 4.88) @ 0.00063478 (bought @ 0.0006145, 3.3%)	4.9%
+[INFO ]  buy(1, ARNBTC, 20.0) @ 0.00014164
 [INFO ]  total time (hours): 16.87
-[INFO ]  {u'NEO': {'available': 0.39, 'balance': 0.39}, u'NULS': {'available': 10.0, 'balance': 10.0}, u'EOS': {'available': 3.39, 'balance': 3.39}, u'ETC': {'available': 1.5, 'balance': 1.5}, u'LUN': {'available': 2.51, 'balance': 2.51}, u'NANO': {'available': 4.19, 'balance': 4.19}, u'QTUM': {'available': 1.53, 'balance': 1.53}, u'MANA': {'available': 250.0, 'balance': 250.0}, u'BQX': {'available': 10.0, 'balance': 10.0}, u'SALT': {'available': 9.15, 'balance': 9.15}, u'IOTA': {'available': 20.0, 'balance': 20.0}, u'GRS': {'available': 30.0, 'balance': 30.0}, u'ENG': {'available': 10.0, 'balance': 10.0}, u'DASH': {'available': 0.068, 'balance': 0.068}, u'TRX': {'available': 560.0, 'balance': 560.0}, u'VEN': {'available': 10.0, 'balance': 10.0}, u'XRP': {'available': 40.0, 'balance': 40.0}, u'XVG': {'available': 230.0, 'balance': 230.0}, u'LTC': {'available': 0.18, 'balance': 0.18}, u'OMG': {'available': 2.22, 'balance': 2.22}, u'DGD': {'available': 0.098, 'balance': 0.098}, 'BTC': {'available': 0.00015999999999999391, 'balance': 0.00015999999999999391}}
-[INFO ]  Final BTC=0.0619795507 profit=3.3%
+[INFO ]  {u'EOS': {'available': 4.440892098500626e-16, 'balance': 4.440892098500626e-16}, u'ETC': {'available': 1.5, 'balance': 1.5}, u'ETH': {'available': 0.010677600000000006, 'balance': 0.010677600000000006}, u'IOST': {'available': 420.0, 'balance': 420.0}, u'BLZ': {'available': 60.0, 'balance': 60.0}, u'BQX': {'available': 10.0, 'balance': 10.0}, u'NCASH': {'available': 420.0, 'balance': 420.0}, u'IOTA': {'available': 30.0, 'balance': 30.0}, u'ONT': {'available': 3.179999999999999, 'balance': 3.179999999999999}, u'AE': {'available': 15.27, 'balance': 15.27}, u'DASH': {'available': 0.068, 'balance': 0.068}, u'TRX': {'available': 890.0, 'balance': 890.0}, u'STORM': {'available': 720.0, 'balance': 720.0}, u'XRP': {'available': 60.0, 'balance': 60.0}, u'XMR': {'available': 0.072, 'balance': 0.072}, u'VIA': {'available': 12.16, 'balance': 12.16}, u'OMG': {'available': 2.22, 'balance': 2.22}, u'XEM': {'available': 90.0, 'balance': 90.0}, u'INS': {'available': 11.07, 'balance': 11.07}, u'QSP': {'available': 160.0, 'balance': 160.0}, 'BTC': {'available': 0.0022357000000000037, 'balance': 0.0022357000000000037}, u'XVG': {'available': 370.0, 'balance': 370.0}, u'ARN': {'available': 20.0, 'balance': 20.0}}
+[INFO ]  Final BTC=0.0629894683504 profit=4.98%
 [INFO ]  BQXBTC (1): 0.12%
-[INFO ]  NEOBTC (1): 0.09%
+[INFO ]  ONTETH (1): 18.67%
 [INFO ]  DASHBTC (1): -2.05%
 [INFO ]  OMGBTC (1): 0.07%
-[INFO ]  ENGBTC (1): -1.24%
-[INFO ]  NULSBTC (1): 1.53%
-[INFO ]  XVGBTC (1): -0.62%
-[INFO ]  LTCBTC (1): -0.92%
-[INFO ]  LUNBTC (1): -0.28%
-[INFO ]  QTUMBTC (1): 0.51%
-[INFO ]  NANOBTC (1): -0.57%
-[INFO ]  IOTABTC (1): 0.18%
-[INFO ]  XRPBTC (1): 0.52%
-[INFO ]  EOSBTC (1): -0.51%
-[INFO ]  VENBTC (1): -0.4%
-[INFO ]  TRXBTC (1): -0.18%
-[INFO ]  MANABTC (1): -4.72%
-[INFO ]  ETCBTC (1): 0.7%
-[INFO ]  GRSBTC (1): 0.7%
-[INFO ]  SALTBTC (1): -2.93%
-[INFO ]  DGDBTC (1): -0.31%
-[INFO ]  {u'STEEM': {'balance': 0.0}, u'XLM': {'balance': 0.0}, u'NULS': {'balance': 10.0}, u'SUB': {'balance': 0.0}, u'NEO': {'balance': 0.39}, u'EOS': {'balance': 3.39}, u'ETC': {'balance': 1.5}, u'LINK': {'balance': 0.0}, u'IOST': {'balance': 0.0}, u'LUN': {'balance': 2.51}, u'NEBL': {'balance': 0.0}, u'NANO': {'balance': 4.19}, u'QTUM': {'balance': 1.53}, u'STRAT': {'balance': 0.0}, u'OST': {'balance': 0.0}, u'WPR': {'balance': 0.0}, u'MANA': {'balance': 250.0}, u'GVT': {'balance': 0.0}, u'NCASH': {'balance': 0.0}, u'SALT': {'balance': 9.15}, u'IOTA': {'balance': 20.0}, u'ONT': {'balance': 0.0}, u'POA': {'balance': 0.0}, u'GRS': {'balance': 30.0}, u'ENG': {'balance': 10.0}, u'ELF': {'balance': 0.0}, u'DASH': {'balance': 0.068}, u'TRX': {'balance': 560.0}, u'ICX': {'balance': 0.0}, u'ADA': {'balance': 0.0}, u'VEN': {'balance': 10.0}, u'XRP': {'balance': 40.0}, u'XVG': {'balance': 230.0}, u'LTC': {'balance': 0.18}, u'OMG': {'balance': 2.22}, u'DGD': {'balance': 0.098}, u'DNT': {'balance': 0.0}, u'XEM': {'balance': 0.0}, u'INS': {'balance': 0.0}, u'QSP': {'balance': 0.0}, u'WAVES': {'balance': 0.0}, u'BQX': {'balance': 10.0}}
+[INFO ]  STORMBTC (1): 1.45%
+[INFO ]  BLZBTC (1): -3.57%
+[INFO ]  ARNBTC (1): -0.37%
+[INFO ]  XMRETH (1): -3.35%
+[INFO ]  XVGBTC (1): -0.47%
+[INFO ]  XEMBTC (1): 0.68%
+[INFO ]  TRXETH (1): -0.27%
+[INFO ]  QSPBTC (1): -2.7%
+[INFO ]  AEBTC (1): 0.56%
+[INFO ]  IOSTETH (1): -0.71%
+[INFO ]  VIABTC (1): -5.0%
+[INFO ]  NCASHETH (1): -0.03%
+[INFO ]  IOTABTC (1): 0.28%
+[INFO ]  XRPBTC (1): -0.07%
+[INFO ]  IOTAETH (1): -1.92%
+[INFO ]  ETHBTC (1): 1.9%
+[INFO ]  XVGETH (1): -4.35%
+[INFO ]  XRPETH (1): -2.27%
+[INFO ]  TRXBTC (1): -1.64%
+[INFO ]  INSETH (1): -4.39%
+[INFO ]  ETCBTC (1): 0.35%
+[INFO ]  {u'NEO': {'balance': 0.0}, u'XLM': {'balance': 0.0}, u'EOS': {'balance': 4.440892098500626e-16}, u'ETC': {'balance': 1.5}, u'RCN': {'balance': 0.0}, u'LINK': {'balance': 0.0}, u'ETH': {'balance': 0.010677600000000006}, u'CMT': {'balance': 0.0}, u'IOST': {'balance': 420.0}, u'OAX': {'balance': 0.0}, u'NEBL': {'balance': 0.0}, u'DGD': {'balance': 0.0}, u'POWR': {'balance': 0.0}, u'BLZ': {'balance': 60.0}, u'WPR': {'balance': 0.0}, u'XVG': {'balance': 370.0}, u'NCASH': {'balance': 420.0}, u'IOTA': {'balance': 30.0}, u'ONT': {'balance': 3.179999999999999}, u'POA': {'balance': 0.0}, u'WAN': {'balance': 0.0}, u'AE': {'balance': 15.27}, u'ENG': {'balance': 0.0}, u'GVT': {'balance': 0.0}, u'ELF': {'balance': 0.0}, u'ADX': {'balance': 0.0}, u'DASH': {'balance': 0.068}, u'TRX': {'balance': 890.0}, u'ICX': {'balance': 0.0}, u'STORM': {'balance': 720.0}, u'ADA': {'balance': 0.0}, u'VEN': {'balance': 0.0}, u'ZIL': {'balance': 0.0}, u'XRP': {'balance': 60.0}, u'XMR': {'balance': 0.072}, u'VIA': {'balance': 12.16}, u'OMG': {'balance': 2.22}, u'DNT': {'balance': 0.0}, u'XEM': {'balance': 90.0}, u'INS': {'balance': 11.07}, u'QSP': {'balance': 160.0}, u'WAVES': {'balance': 0.0}, u'FUEL': {'balance': 0.0}, u'BQX': {'balance': 10.0}, u'ARN': {'balance': 20.0}}
