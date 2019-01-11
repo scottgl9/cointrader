@@ -3,6 +3,7 @@ from trader.strategy import *
 
 from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
 from trader.strategy.basic_signal_stop_loss_strategy import basic_signal_stop_loss_strategy
+from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
 from trader.strategy.null_strategy import null_strategy
 
 
@@ -27,6 +28,16 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
                                                base_min_size=base_min_size,
                                                tick_size=tick_size,
                                                logger=logger)
+    elif sname == 'signal_market_trailing_stop_loss_strategy':
+        return signal_market_trailing_stop_loss_strategy(client,
+                                                         base,
+                                                         currency,
+                                                         signal_names,
+                                                         account_handler,
+                                                         asset_info=asset_info,
+                                                         base_min_size=base_min_size,
+                                                         tick_size=tick_size,
+                                                         logger=logger)
     elif sname == 'null_strategy':
         return null_strategy(client,
                              base,
