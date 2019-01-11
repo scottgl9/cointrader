@@ -13,7 +13,7 @@ class TSI:
         self.last_price = 0.0
         self.count = 0
 
-    def update(self, price):
+    def update(self, price, ts=0):
         if float(self.count) < self.weight1:
             self.count += 1
         if self.last_price == 0.0:

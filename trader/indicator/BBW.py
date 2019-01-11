@@ -6,7 +6,7 @@ class BollingerBandwidth(object):
         self.bb = BollingerBands(weight=weight, dev_count=dev_count)
         self.result = 0
 
-    def update(self, price):
+    def update(self, price, ts=0):
         self.bb.update(price)
 
         if self.bb.mid_band == 0 or self.bb.low_band == 0 or self.bb.high_band == 0:

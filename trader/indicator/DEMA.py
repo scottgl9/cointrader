@@ -8,7 +8,7 @@ class DEMA:
         self.inner = EMA(self.weight)
         self.outer = EMA(self.weight)
 
-    def update(self, price):
+    def update(self, price, ts=0):
         self.inner.update(price)
         self.outer.update(self.inner.result)
         self.result = 2.0 * self.inner.result - self.outer.result

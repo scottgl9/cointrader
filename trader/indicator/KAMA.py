@@ -22,7 +22,7 @@ class KAMA(object):
         if self.lagging:
             self.value_lag = ValueLag(window=lag_window)
 
-    def update(self, price):
+    def update(self, price, ts=0):
         volatility = 0.0
         price = float(price)
 

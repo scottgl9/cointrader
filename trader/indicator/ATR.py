@@ -11,7 +11,7 @@ class ATR:
         self.atr = 0.0
         self.prior_atr = 0.0
 
-    def update(self, close, low, high):
+    def update(self, close, low=0, high=0, ts=0):
         if len(self.trs) == 0.0:
             tr = high - low
         else:

@@ -12,7 +12,7 @@ class STOCH(object):
         self.D = 0
         self.result = 0
 
-    def update(self, close, low=0, high=0):
+    def update(self, close, low=0, high=0, ts=0):
         if len(self.values) < self.window:
             if low == 0 or high == 0:
                 self.values.append(float(close))

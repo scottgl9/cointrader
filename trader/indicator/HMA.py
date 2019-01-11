@@ -12,7 +12,7 @@ class HMA(object):
         self.window = window
         self.result = 0.0
 
-    def update(self, value):
+    def update(self, value, ts=0):
         result1 = self.wma1.update(float(value))
         result2 = self.wma2.update(float(value))
         self.result = self.wma3.update(2.0 * result1 - result2)

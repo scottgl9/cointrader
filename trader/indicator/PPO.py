@@ -17,7 +17,7 @@ class PPO:
         self.macd_signal = EMA(self.signal_weight, scale=scale)
         self.ppo_signal = EMA(self.signal_weight, scale=scale)
 
-    def update(self, price):
+    def update(self, price, ts=0):
         self.short.update(price)
         self.long.update(price)
         self.calculatePPO()

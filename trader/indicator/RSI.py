@@ -16,7 +16,7 @@ class RSI:
         self.result = 0
         self.smoother = smoother
 
-    def update(self, price):
+    def update(self, price, ts=0):
         if self.last_price == 0:
             self.last_price = float(price)
             return self.result

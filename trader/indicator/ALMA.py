@@ -10,7 +10,7 @@ class ALMA(object):
         self.age = 0
         self.result = 0
 
-    def update(self, price):
+    def update(self, price, ts=0):
         if len(self.prices) < self.window:
             self.prices.append(float(price))
             return self.result

@@ -30,7 +30,7 @@ class EMA(object):
     def ready(self):
         return self.count == self.weight
 
-    def update(self, price):
+    def update(self, price, ts=0):
         if self.count < self.weight:
             self.result = self.sma.update(float(price))
             self.count += 1

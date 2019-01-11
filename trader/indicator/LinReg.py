@@ -32,7 +32,7 @@ class LinReg(object):
         b = (sum_y - a * sum_x) / length
         return a, b
 
-    def update(self, value):
+    def update(self, value, ts=0):
         if len(self.values) < self.window:
             self.values.append(float(value))
             self.xvalues.append(self.age)

@@ -20,7 +20,7 @@ class PMO:
         self.scale = scale
         self.count = 0
 
-    def update(self, price):
+    def update(self, price, ts=0):
         if self.last_price == 0:
             self.last_price = price
             return self.result

@@ -13,7 +13,7 @@ class Fibonacci(object):
         self.s3 = 0
         self.pp = 0
 
-    def update(self, close, low, high):
+    def update(self, close, low, high, ts=0):
         self.low = low
         self.high = high
 

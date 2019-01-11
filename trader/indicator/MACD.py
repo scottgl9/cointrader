@@ -26,7 +26,7 @@ class MACD:
         self.plot_mode = plot_mode
         self.smoother = None
 
-    def update(self, price):
+    def update(self, price, ts=0):
         self.shortEMA = self.short.update(price)
         self.longEMA = self.long.update(price)
 

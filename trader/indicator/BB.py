@@ -23,7 +23,7 @@ class BollingerBands:
     def ready(self):
         return self.stddev.ready()
 
-    def update(self, price):
+    def update(self, price, ts=0):
         self.mid_band = self.smoother.update(price)
         value = self.stddev.update(price)
         if value != 0.0:

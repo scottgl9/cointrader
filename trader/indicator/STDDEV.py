@@ -13,7 +13,7 @@ class STDDEV:
     def ready(self):
         return len(self.values) == self.window
 
-    def update(self, value):
+    def update(self, value, ts=0):
         if len(self.values) < self.window:
             self.values.append(float(value))
             self.sum += float(value)

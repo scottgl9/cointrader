@@ -26,7 +26,7 @@ class KST(object):
         self.signal_result = 0
 
 
-    def update(self, close):
+    def update(self, close, ts=0):
         result1 = self.rocma1.update(self.roc1.update(float(close)))
         result2 = self.rocma2.update(self.roc2.update(float(close)))
         result3 = self.rocma3.update(self.roc3.update(float(close)))

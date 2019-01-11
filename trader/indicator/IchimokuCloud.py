@@ -35,7 +35,7 @@ class IchimokuCloud(object):
         self.Senkou_SpanB = 0.0
         self.close_last_window = 0.0
 
-    def update(self, close, low, high):
+    def update(self, close, low=0, high=0, ts=0):
         low = float(low)#self.ema_klow.update(float(low))
         high = float(high)#self.ema_khigh.update(float(high))
 

@@ -7,7 +7,7 @@ class SMMA:
         self.scale = scale
         self.sma = SMA(weight)
 
-    def update(self, price):
+    def update(self, price, ts=0):
         value = self.sma.update(price)
         if self.result == 0.0: self.result = float(price)
         else:

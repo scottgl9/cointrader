@@ -9,7 +9,7 @@ class DeMark(object):
         self.s1 = 0
         self.pp = 0
 
-    def update(self, open, close, low, high):
+    def update(self, close, open=0, low=0, high=0, ts=0):
         self.low = low
         self.high = high
         if close < open:

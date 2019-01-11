@@ -21,7 +21,7 @@ class VWAP:
         self.volume_sum = 0.0
         self.result = 0.0
 
-    def kline_update(self, low, high, close, volume):
+    def update(self, close, low=0, high=0, volume=0, ts=0):
         pricevolume = ((high + low + close) / 3.0) * volume
         if len(self.pricevolumes) < self.window:
             tail_pricevolume = 0.0

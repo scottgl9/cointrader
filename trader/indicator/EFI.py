@@ -10,7 +10,7 @@ class EFI(object):
         self.ema = EMA(window, scale=scale)
         self.result = 0
 
-    def update(self, price, volume):
+    def update(self, price, volume, ts=0):
         self.lag.update(float(price))
 
         if self.lag.result == 0:

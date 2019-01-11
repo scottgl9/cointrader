@@ -8,7 +8,7 @@ class SMA:
         self.age = 0
         self.sum = 0.0
 
-    def update(self, price):
+    def update(self, price, ts=0):
         tail = 0.0
         if len(self.prices) < self.window:
             tail = 0.0

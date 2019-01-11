@@ -13,7 +13,7 @@ class RVI:
         self.result = 0
         self.age = 0
 
-    def update(self, close):
+    def update(self, close, ts=0):
         if self.last_close == 0:
             self.last_close = float(close)
             return self.result

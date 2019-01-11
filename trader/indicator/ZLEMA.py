@@ -15,7 +15,7 @@ class ZLEMA(object):
         self.last_result = 0
         self.result = 0
 
-    def update(self, value):
+    def update(self, value, ts=0):
         if len(self.values) < self.window:
             result = self.ema.update(float(value))
             self.values.append(result)
@@ -46,7 +46,7 @@ class DZLEMA(object):
         if self.lagging:
             self.value_lag = ValueLag(window=lag_window)
 
-    def update(self, value):
+    def update(self, value, ts=0):
         self.result = self.zlema2.update(self.zlema1.update(value))
 
         if self.lagging:

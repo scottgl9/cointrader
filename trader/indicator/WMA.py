@@ -9,7 +9,7 @@ class WMA(object):
         self.age = 0
         self.result = 0
 
-    def update(self, value):
+    def update(self, value, ts=0):
         if len(self.values) < self.window:
             self.values.append(float(value))
 
