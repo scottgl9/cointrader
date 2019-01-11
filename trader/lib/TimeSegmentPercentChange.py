@@ -19,6 +19,8 @@ class TimeSegmentPercentChange(object):
         return self.tsv.ready()
 
     def update(self, value, ts):
+        if self.smoother:
+            value = self.smoother.update(value, ts)
         self.tsv.update(value, ts)
 
     def get_values_seconds(self, seconds):
@@ -49,8 +51,8 @@ class TimeSegmentPercentChange(object):
         if not values:
             return 0
         result = 100.0 * (values[-1] - values[0]) / values[0]
-        if self.smoother:
-            result = self.smoother.update(result)
+        #if self.smoother:
+        #    result = self.smoother.update(result)
         return result
 
     def greater_than_percent_time_up(self, percent, seconds):

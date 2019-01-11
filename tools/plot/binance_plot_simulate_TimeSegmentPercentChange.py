@@ -18,6 +18,7 @@ from trader.lib.TimeSegmentValues import TimeSegmentValues
 from trader.lib.TimeSegmentPercentChange import TimeSegmentPercentChange
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.EMA import EMA
+from trader.indicator.DTWMA_EMA import DTWMA_EMA
 
 
 def get_rows_as_msgs(c):
@@ -46,19 +47,19 @@ def simulate(conn, client, base, currency, type="channel"):
     #tspc12_values = []
     #tspc12_x_values = []
 
-    tspc1 = TimeSegmentPercentChange(seconds=3600, smoother=EMA(26, scale=24))
+    tspc1 = TimeSegmentPercentChange(seconds=3600, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc1_values = []
     tspc1_x_values = []
 
-    tspc4 = TimeSegmentPercentChange(seconds=3600*4, smoother=EMA(26, scale=24))
+    tspc4 = TimeSegmentPercentChange(seconds=3600*4, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc4_values = []
     tspc4_x_values = []
 
-    tspc12 = TimeSegmentPercentChange(seconds=3600*12, smoother=EMA(26, scale=24))
+    tspc12 = TimeSegmentPercentChange(seconds=3600*12, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc12_values = []
     tspc12_x_values = []
 
-    tspc30 = TimeSegmentPercentChange(seconds=1800, smoother=EMA(26, scale=24))
+    tspc30 = TimeSegmentPercentChange(seconds=1800, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc30_values = []
     tspc30_x_values = []
 
