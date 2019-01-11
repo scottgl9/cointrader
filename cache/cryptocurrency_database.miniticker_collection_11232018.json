@@ -1,37 +1,87 @@
 {
     "basic_signal_market_strategy-Hybrid_Crossover_Test": {
         "trades": {
-            "XMRBTC": [
+            "ZRXETH": [
                 {
-                    "index": 237, 
-                    "symbol": "XMRBTC", 
+                    "index": 270, 
+                    "symbol": "ZRXETH", 
                     "type": "buy", 
-                    "price": 0.015153, 
-                    "size": "0.198"
-                }, 
-                {
-                    "index": 6196, 
-                    "symbol": "XMRBTC", 
-                    "buy_price": 0.015153, 
-                    "type": "sell", 
-                    "price": 0.015358, 
-                    "size": "0.198"
-                }, 
-                {
-                    "index": 11921, 
-                    "symbol": "XMRBTC", 
-                    "type": "buy", 
-                    "price": 0.015179, 
-                    "size": "0.197"
+                    "price": 0.00327274, 
+                    "size": "10.0"
                 }
             ], 
-            "ZECBTC": [
+            "XMRBTC": [
                 {
-                    "index": 5151, 
-                    "symbol": "ZECBTC", 
+                    "index": 139, 
+                    "symbol": "XMRBTC", 
                     "type": "buy", 
-                    "price": 0.017964, 
-                    "size": "0.167"
+                    "price": 0.015107, 
+                    "size": "0.198"
+                }, 
+                {
+                    "index": 6213, 
+                    "symbol": "XMRBTC", 
+                    "buy_price": 0.015107, 
+                    "type": "sell", 
+                    "price": 0.015387, 
+                    "size": "0.198"
+                }, 
+                {
+                    "index": 7142, 
+                    "symbol": "XMRBTC", 
+                    "type": "buy", 
+                    "price": 0.015344, 
+                    "size": "0.196"
+                }
+            ], 
+            "OMGBTC": [
+                {
+                    "index": 4008, 
+                    "symbol": "OMGBTC", 
+                    "type": "buy", 
+                    "price": 0.0004, 
+                    "size": "7.5"
+                }
+            ], 
+            "ONTETH": [
+                {
+                    "index": 111, 
+                    "symbol": "ONTETH", 
+                    "type": "buy", 
+                    "price": 0.007596, 
+                    "size": "3.95"
+                }, 
+                {
+                    "index": 236, 
+                    "symbol": "ONTETH", 
+                    "buy_price": 0.007596, 
+                    "type": "sell", 
+                    "price": 0.007668, 
+                    "size": "3.95"
+                }, 
+                {
+                    "index": 1697, 
+                    "symbol": "ONTETH", 
+                    "type": "buy", 
+                    "price": 0.008032, 
+                    "size": "3.74"
+                }
+            ], 
+            "CNDETH": [
+                {
+                    "index": 91, 
+                    "symbol": "CNDETH", 
+                    "type": "buy", 
+                    "price": 0.00010775, 
+                    "size": "280.0"
+                }, 
+                {
+                    "index": 511, 
+                    "symbol": "CNDETH", 
+                    "buy_price": 0.00010775, 
+                    "type": "sell", 
+                    "price": 0.00010848, 
+                    "size": "280.0"
                 }
             ], 
             "NEOBTC": [
@@ -43,19 +93,12 @@
                     "size": "1.55"
                 }, 
                 {
-                    "index": 8380, 
+                    "index": 8419, 
                     "symbol": "NEOBTC", 
                     "buy_price": 0.00193, 
                     "type": "sell", 
-                    "price": 0.001981, 
+                    "price": 0.001976, 
                     "size": "1.55"
-                }, 
-                {
-                    "index": 15049, 
-                    "symbol": "NEOBTC", 
-                    "type": "buy", 
-                    "price": 0.001942, 
-                    "size": "1.54"
                 }
             ], 
             "DASHBTC": [
@@ -67,547 +110,843 @@
                     "size": "0.127"
                 }, 
                 {
-                    "index": 8148, 
+                    "index": 8346, 
                     "symbol": "DASHBTC", 
                     "buy_price": 0.023612, 
                     "type": "sell", 
-                    "price": 0.023863, 
+                    "price": 0.023789, 
                     "size": "0.127"
                 }
             ], 
             "ADABTC": [
                 {
-                    "index": 187, 
+                    "index": 305, 
                     "symbol": "ADABTC", 
                     "type": "buy", 
                     "price": 9.99e-06, 
                     "size": "300.0"
                 }
             ], 
-            "OMGBTC": [
+            "LOOMETH": [
                 {
-                    "index": 177, 
-                    "symbol": "OMGBTC", 
+                    "index": 1958, 
+                    "symbol": "LOOMETH", 
                     "type": "buy", 
-                    "price": 0.000403, 
-                    "size": "7.44"
+                    "price": 0.00039598, 
+                    "size": "80.0"
                 }
             ], 
-            "LOOMBTC": [
+            "RLCBTC": [
                 {
-                    "index": 1052, 
-                    "symbol": "LOOMBTC", 
+                    "index": 187, 
+                    "symbol": "RLCBTC", 
                     "type": "buy", 
-                    "price": 1.199e-05, 
-                    "size": "250.0"
+                    "price": 5.64e-05, 
+                    "size": "53.19"
                 }, 
                 {
-                    "index": 1635, 
-                    "symbol": "LOOMBTC", 
-                    "buy_price": 1.199e-05, 
+                    "index": 1037, 
+                    "symbol": "RLCBTC", 
+                    "buy_price": 5.64e-05, 
                     "type": "sell", 
-                    "price": 1.222e-05, 
-                    "size": "250.0"
+                    "price": 5.06e-05, 
+                    "size": "53.19"
                 }
             ], 
-            "GVTBTC": [
+            "XRPETH": [
                 {
-                    "index": 3182, 
-                    "symbol": "GVTBTC", 
+                    "index": 448, 
+                    "symbol": "XRPETH", 
                     "type": "buy", 
-                    "price": 0.0012726, 
-                    "size": "2.36"
+                    "price": 0.00331598, 
+                    "size": "10.0"
                 }, 
                 {
-                    "index": 6283, 
-                    "symbol": "GVTBTC", 
-                    "buy_price": 0.0012726, 
+                    "index": 2970, 
+                    "symbol": "XRPETH", 
+                    "buy_price": 0.00331598, 
                     "type": "sell", 
-                    "price": 0.0012983, 
-                    "size": "2.36"
+                    "price": 0.00335306, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 6608, 
+                    "symbol": "XRPETH", 
+                    "type": "buy", 
+                    "price": 0.0033151, 
+                    "size": "10.0"
+                }
+            ], 
+            "BATETH": [
+                {
+                    "index": 191, 
+                    "symbol": "BATETH", 
+                    "type": "buy", 
+                    "price": 0.0013094, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 471, 
+                    "symbol": "BATETH", 
+                    "buy_price": 0.0013094, 
+                    "type": "sell", 
+                    "price": 0.00131806, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 1127, 
+                    "symbol": "BATETH", 
+                    "type": "buy", 
+                    "price": 0.0013195, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 1830, 
+                    "symbol": "BATETH", 
+                    "buy_price": 0.0013195, 
+                    "type": "sell", 
+                    "price": 0.00133255, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 2421, 
+                    "symbol": "BATETH", 
+                    "type": "buy", 
+                    "price": 0.00132412, 
+                    "size": "20.0"
+                }
+            ], 
+            "INSBTC": [
+                {
+                    "index": 153, 
+                    "symbol": "INSBTC", 
+                    "type": "buy", 
+                    "price": 5.79e-05, 
+                    "size": "51.72"
+                }, 
+                {
+                    "index": 200, 
+                    "symbol": "INSBTC", 
+                    "buy_price": 5.79e-05, 
+                    "type": "sell", 
+                    "price": 5.85e-05, 
+                    "size": "51.72"
+                }
+            ], 
+            "ADXETH": [
+                {
+                    "index": 78, 
+                    "symbol": "ADXETH", 
+                    "type": "buy", 
+                    "price": 0.0007597, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 641, 
+                    "symbol": "ADXETH", 
+                    "buy_price": 0.0007597, 
+                    "type": "sell", 
+                    "price": 0.0008341, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 1112, 
+                    "symbol": "ADXETH", 
+                    "type": "buy", 
+                    "price": 0.0008599, 
+                    "size": "30.0"
+                }, 
+                {
+                    "index": 1753, 
+                    "symbol": "ADXETH", 
+                    "buy_price": 0.0008599, 
+                    "type": "sell", 
+                    "price": 0.0007199, 
+                    "size": "30.0"
+                }
+            ], 
+            "NEOETH": [
+                {
+                    "index": 260, 
+                    "symbol": "NEOETH", 
+                    "type": "buy", 
+                    "price": 0.06708, 
+                    "size": "0.45"
+                }, 
+                {
+                    "index": 1623, 
+                    "symbol": "NEOETH", 
+                    "buy_price": 0.06708, 
+                    "type": "sell", 
+                    "price": 0.067864, 
+                    "size": "0.45"
+                }, 
+                {
+                    "index": 1884, 
+                    "symbol": "NEOETH", 
+                    "type": "buy", 
+                    "price": 0.067992, 
+                    "size": "0.44"
+                }
+            ], 
+            "XLMETH": [
+                {
+                    "index": 223, 
+                    "symbol": "XLMETH", 
+                    "type": "buy", 
+                    "price": 0.00146875, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 8714, 
+                    "symbol": "XLMETH", 
+                    "buy_price": 0.00146875, 
+                    "type": "sell", 
+                    "price": 0.00133015, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 16718, 
+                    "symbol": "XLMETH", 
+                    "type": "buy", 
+                    "price": 0.00130439, 
+                    "size": "20.0"
                 }
             ], 
             "TRXBTC": [
                 {
-                    "index": 201, 
+                    "index": 258, 
                     "symbol": "TRXBTC", 
                     "type": "buy", 
-                    "price": 3.15e-06, 
+                    "price": 3.14e-06, 
                     "size": "960.0"
                 }, 
                 {
-                    "index": 11329, 
+                    "index": 11110, 
                     "symbol": "TRXBTC", 
-                    "buy_price": 3.15e-06, 
-                    "type": "sell", 
-                    "price": 3.19e-06, 
-                    "size": "960.0"
-                }, 
-                {
-                    "index": 18650, 
-                    "symbol": "TRXBTC", 
-                    "type": "buy", 
-                    "price": 3.15e-06, 
-                    "size": "950.0"
-                }, 
-                {
-                    "index": 20371, 
-                    "symbol": "TRXBTC", 
-                    "buy_price": 3.15e-06, 
+                    "buy_price": 3.14e-06, 
                     "type": "sell", 
                     "price": 3.17e-06, 
-                    "size": "950.0"
+                    "size": "960.0"
                 }, 
                 {
-                    "index": 25042, 
+                    "index": 20042, 
                     "symbol": "TRXBTC", 
                     "type": "buy", 
-                    "price": 3.12e-06, 
+                    "price": 3.14e-06, 
+                    "size": "960.0"
+                }, 
+                {
+                    "index": 20329, 
+                    "symbol": "TRXBTC", 
+                    "buy_price": 3.14e-06, 
+                    "type": "sell", 
+                    "price": 3.18e-06, 
                     "size": "960.0"
                 }
             ], 
-            "NEBLBTC": [
+            "NULSETH": [
                 {
-                    "index": 1941, 
-                    "symbol": "NEBLBTC", 
+                    "index": 181, 
+                    "symbol": "NULSETH", 
                     "type": "buy", 
-                    "price": 0.0002457, 
-                    "size": "12.21"
-                }
-            ], 
-            "WTCBTC": [
-                {
-                    "index": 785, 
-                    "symbol": "WTCBTC", 
-                    "type": "buy", 
-                    "price": 0.000314, 
-                    "size": "9.55"
+                    "price": 0.00441413, 
+                    "size": "10.0"
                 }, 
                 {
-                    "index": 2666, 
-                    "symbol": "WTCBTC", 
-                    "buy_price": 0.000314, 
+                    "index": 765, 
+                    "symbol": "NULSETH", 
+                    "buy_price": 0.00441413, 
                     "type": "sell", 
-                    "price": 0.0003172, 
-                    "size": "9.55"
+                    "price": 0.00453786, 
+                    "size": "10.0"
                 }
             ], 
             "ONTBTC": [
                 {
-                    "index": 128, 
+                    "index": 122, 
                     "symbol": "ONTBTC", 
                     "type": "buy", 
-                    "price": 0.0002199, 
-                    "size": "13.64"
+                    "price": 0.0002197, 
+                    "size": "13.67"
                 }, 
                 {
-                    "index": 8710, 
+                    "index": 6047, 
                     "symbol": "ONTBTC", 
-                    "buy_price": 0.0002199, 
+                    "buy_price": 0.0002197, 
                     "type": "sell", 
-                    "price": 0.0002255, 
-                    "size": "13.64"
+                    "price": 0.0002207, 
+                    "size": "13.67"
                 }, 
                 {
-                    "index": 20281, 
+                    "index": 11101, 
                     "symbol": "ONTBTC", 
                     "type": "buy", 
-                    "price": 0.0002328, 
-                    "size": "12.9"
+                    "price": 0.0002305, 
+                    "size": "13.02"
+                }, 
+                {
+                    "index": 21749, 
+                    "symbol": "ONTBTC", 
+                    "buy_price": 0.0002305, 
+                    "type": "sell", 
+                    "price": 0.0002318, 
+                    "size": "13.02"
                 }
             ], 
-            "XEMBTC": [
+            "AIONBTC": [
                 {
-                    "index": 2287, 
-                    "symbol": "XEMBTC", 
+                    "index": 62, 
+                    "symbol": "AIONBTC", 
                     "type": "buy", 
-                    "price": 1.791e-05, 
-                    "size": "170.0"
+                    "price": 3.73e-05, 
+                    "size": "80.43"
+                }, 
+                {
+                    "index": 5626, 
+                    "symbol": "AIONBTC", 
+                    "buy_price": 3.73e-05, 
+                    "type": "sell", 
+                    "price": 3.38e-05, 
+                    "size": "80.43"
                 }
             ], 
             "TUSDBTC": [
                 {
-                    "index": 1045, 
+                    "index": 7851, 
                     "symbol": "TUSDBTC", 
                     "type": "buy", 
-                    "price": 0.0002363, 
+                    "price": 0.00023836, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 23697, 
+                    "index": 28585, 
                     "symbol": "TUSDBTC", 
-                    "buy_price": 0.0002363, 
+                    "buy_price": 0.00023836, 
                     "type": "sell", 
-                    "price": 0.00024073, 
+                    "price": 0.00026466, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 30904, 
+                    "index": 31142, 
                     "symbol": "TUSDBTC", 
                     "type": "buy", 
-                    "price": 0.00026571, 
+                    "price": 0.00026453, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 33284, 
+                    "index": 31813, 
                     "symbol": "TUSDBTC", 
-                    "buy_price": 0.00026571, 
+                    "buy_price": 0.00026453, 
                     "type": "sell", 
-                    "price": 0.00026874, 
+                    "price": 0.00026715, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 40547, 
+                    "index": 35371, 
                     "symbol": "TUSDBTC", 
                     "type": "buy", 
-                    "price": 0.00028605, 
+                    "price": 0.00027366, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 41726, 
+                    "index": 41374, 
                     "symbol": "TUSDBTC", 
-                    "buy_price": 0.00028605, 
+                    "buy_price": 0.00027366, 
                     "type": "sell", 
-                    "price": 0.00025903, 
+                    "price": 0.00028052, 
                     "size": "10.0"
+                }, 
+                {
+                    "index": 43798, 
+                    "symbol": "TUSDBTC", 
+                    "type": "buy", 
+                    "price": 0.00026538, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 48399, 
+                    "symbol": "TUSDBTC", 
+                    "buy_price": 0.00026538, 
+                    "type": "sell", 
+                    "price": 0.00026808, 
+                    "size": "10.0"
+                }
+            ], 
+            "TRXETH": [
+                {
+                    "index": 598, 
+                    "symbol": "TRXETH", 
+                    "type": "buy", 
+                    "price": 0.00010893, 
+                    "size": "280.0"
+                }, 
+                {
+                    "index": 2547, 
+                    "symbol": "TRXETH", 
+                    "buy_price": 0.00010893, 
+                    "type": "sell", 
+                    "price": 0.00011013, 
+                    "size": "280.0"
+                }, 
+                {
+                    "index": 3352, 
+                    "symbol": "TRXETH", 
+                    "type": "buy", 
+                    "price": 0.00010995, 
+                    "size": "270.0"
+                }, 
+                {
+                    "index": 4482, 
+                    "symbol": "TRXETH", 
+                    "buy_price": 0.00010995, 
+                    "type": "sell", 
+                    "price": 0.00011105, 
+                    "size": "270.0"
+                }, 
+                {
+                    "index": 6428, 
+                    "symbol": "TRXETH", 
+                    "type": "buy", 
+                    "price": 0.00011133, 
+                    "size": "270.0"
                 }
             ], 
             "LTCBTC": [
                 {
-                    "index": 164, 
+                    "index": 15548, 
                     "symbol": "LTCBTC", 
                     "type": "buy", 
-                    "price": 0.007566, 
+                    "price": 0.007535, 
                     "size": "0.4"
                 }, 
                 {
-                    "index": 18359, 
+                    "index": 18336, 
                     "symbol": "LTCBTC", 
-                    "buy_price": 0.007566, 
+                    "buy_price": 0.007535, 
                     "type": "sell", 
-                    "price": 0.007627, 
+                    "price": 0.007616, 
                     "size": "0.4"
+                }
+            ], 
+            "BCHABCBTC": [
+                {
+                    "index": 20199, 
+                    "symbol": "BCHABCBTC", 
+                    "type": "buy", 
+                    "price": 0.045946, 
+                    "size": "0.065000000"
                 }, 
                 {
-                    "index": 19564, 
-                    "symbol": "LTCBTC", 
+                    "index": 22617, 
+                    "symbol": "BCHABCBTC", 
+                    "buy_price": 0.045946, 
+                    "type": "sell", 
+                    "price": 0.046493, 
+                    "size": "0.065000000"
+                }, 
+                {
+                    "index": 30392, 
+                    "symbol": "BCHABCBTC", 
                     "type": "buy", 
-                    "price": 0.007675, 
-                    "size": "0.39"
+                    "price": 0.044654, 
+                    "size": "0.067000000"
                 }
             ], 
             "DOCKBTC": [
                 {
-                    "index": 154, 
+                    "index": 75, 
                     "symbol": "DOCKBTC", 
                     "type": "buy", 
-                    "price": 2.92e-06, 
-                    "size": "1020.0"
+                    "price": 2.9e-06, 
+                    "size": "1030.0"
                 }, 
                 {
                     "index": 1012, 
                     "symbol": "DOCKBTC", 
-                    "buy_price": 2.92e-06, 
+                    "buy_price": 2.9e-06, 
                     "type": "sell", 
                     "price": 2.97e-06, 
-                    "size": "1020.0"
-                }, 
-                {
-                    "index": 6434, 
-                    "symbol": "DOCKBTC", 
-                    "type": "buy", 
-                    "price": 2.91e-06, 
-                    "size": "1030.0"
-                }, 
-                {
-                    "index": 6800, 
-                    "symbol": "DOCKBTC", 
-                    "buy_price": 2.91e-06, 
-                    "type": "sell", 
-                    "price": 2.94e-06, 
                     "size": "1030.0"
                 }
             ], 
-            "PPTBTC": [
+            "LTCETH": [
                 {
-                    "index": 1143, 
-                    "symbol": "PPTBTC", 
+                    "index": 1648, 
+                    "symbol": "LTCETH", 
                     "type": "buy", 
-                    "price": 0.0003815, 
-                    "size": "7.86"
-                }, 
-                {
-                    "index": 2179, 
-                    "symbol": "PPTBTC", 
-                    "buy_price": 0.0003815, 
-                    "type": "sell", 
-                    "price": 0.0003854, 
-                    "size": "7.86"
+                    "price": 0.26099, 
+                    "size": "0.115"
                 }
             ], 
-            "BTGBTC": [
+            "BTSETH": [
                 {
-                    "index": 7480, 
-                    "symbol": "BTGBTC", 
+                    "index": 178, 
+                    "symbol": "BTSETH", 
                     "type": "buy", 
-                    "price": 0.004909, 
-                    "size": "0.61"
+                    "price": 0.00041576, 
+                    "size": "70.0"
                 }, 
                 {
-                    "index": 9611, 
-                    "symbol": "BTGBTC", 
-                    "buy_price": 0.004909, 
+                    "index": 185, 
+                    "symbol": "BTSETH", 
+                    "buy_price": 0.00041576, 
                     "type": "sell", 
-                    "price": 0.004948, 
-                    "size": "0.61"
+                    "price": 0.00042016, 
+                    "size": "70.0"
+                }, 
+                {
+                    "index": 219, 
+                    "symbol": "BTSETH", 
+                    "type": "buy", 
+                    "price": 0.00042555, 
+                    "size": "70.0"
                 }
             ], 
             "BCHSVBTC": [
                 {
-                    "index": 205, 
+                    "index": 263, 
                     "symbol": "BCHSVBTC", 
                     "type": "buy", 
-                    "price": 0.009384, 
-                    "size": "0.32"
+                    "price": 0.00935, 
+                    "size": "0.321"
                 }, 
                 {
-                    "index": 1117, 
+                    "index": 969, 
                     "symbol": "BCHSVBTC", 
-                    "buy_price": 0.009384, 
+                    "buy_price": 0.00935, 
                     "type": "sell", 
-                    "price": 0.009485, 
-                    "size": "0.32"
+                    "price": 0.00945, 
+                    "size": "0.321"
                 }, 
                 {
-                    "index": 8272, 
+                    "index": 1694, 
                     "symbol": "BCHSVBTC", 
                     "type": "buy", 
-                    "price": 0.0129, 
-                    "size": "0.232"
+                    "price": 0.009764, 
+                    "size": "0.308"
                 }, 
                 {
-                    "index": 15329, 
+                    "index": 10006, 
                     "symbol": "BCHSVBTC", 
-                    "buy_price": 0.0129, 
+                    "buy_price": 0.009764, 
                     "type": "sell", 
-                    "price": 0.014866, 
-                    "size": "0.232"
+                    "price": 0.012567, 
+                    "size": "0.308"
                 }, 
                 {
-                    "index": 29156, 
+                    "index": 28229, 
                     "symbol": "BCHSVBTC", 
                     "type": "buy", 
-                    "price": 0.01306, 
+                    "price": 0.013062, 
                     "size": "0.229"
                 }, 
                 {
                     "index": 29642, 
                     "symbol": "BCHSVBTC", 
-                    "buy_price": 0.01306, 
+                    "buy_price": 0.013062, 
                     "type": "sell", 
                     "price": 0.013195, 
                     "size": "0.229"
                 }, 
                 {
-                    "index": 44110, 
+                    "index": 36293, 
                     "symbol": "BCHSVBTC", 
                     "type": "buy", 
-                    "price": 0.016246, 
-                    "size": "0.185"
+                    "price": 0.01358, 
+                    "size": "0.221"
                 }, 
                 {
-                    "index": 50132, 
+                    "index": 36340, 
                     "symbol": "BCHSVBTC", 
-                    "buy_price": 0.016246, 
+                    "buy_price": 0.01358, 
                     "type": "sell", 
-                    "price": 0.016413, 
-                    "size": "0.185"
+                    "price": 0.01375, 
+                    "size": "0.221"
                 }, 
                 {
-                    "index": 58617, 
+                    "index": 82434, 
                     "symbol": "BCHSVBTC", 
                     "type": "buy", 
-                    "price": 0.015136, 
-                    "size": "0.198"
+                    "price": 0.019748, 
+                    "size": "0.152"
                 }, 
                 {
-                    "index": 62811, 
+                    "index": 83706, 
                     "symbol": "BCHSVBTC", 
-                    "buy_price": 0.015136, 
+                    "buy_price": 0.019748, 
                     "type": "sell", 
-                    "price": 0.01596, 
-                    "size": "0.198"
-                }, 
-                {
-                    "index": 82721, 
-                    "symbol": "BCHSVBTC", 
-                    "type": "buy", 
-                    "price": 0.019537, 
-                    "size": "0.154"
-                }, 
-                {
-                    "index": 82752, 
-                    "symbol": "BCHSVBTC", 
-                    "buy_price": 0.019537, 
-                    "type": "sell", 
-                    "price": 0.01974, 
-                    "size": "0.154"
-                }, 
-                {
-                    "index": 85038, 
-                    "symbol": "BCHSVBTC", 
-                    "type": "buy", 
-                    "price": 0.0208, 
-                    "size": "0.144"
+                    "price": 0.019953, 
+                    "size": "0.152"
                 }
             ], 
-            "NULSBTC": [
+            "SCETH": [
                 {
-                    "index": 8624, 
-                    "symbol": "NULSBTC", 
+                    "index": 1021, 
+                    "symbol": "SCETH", 
                     "type": "buy", 
-                    "price": 0.00012386, 
-                    "size": "20.0"
-                }, 
-                {
-                    "index": 9350, 
-                    "symbol": "NULSBTC", 
-                    "buy_price": 0.00012386, 
-                    "type": "sell", 
-                    "price": 0.00012481, 
-                    "size": "20.0"
-                }, 
-                {
-                    "index": 9681, 
-                    "symbol": "NULSBTC", 
-                    "type": "buy", 
-                    "price": 0.00012559, 
-                    "size": "20.0"
-                }, 
-                {
-                    "index": 10523, 
-                    "symbol": "NULSBTC", 
-                    "buy_price": 0.00012559, 
-                    "type": "sell", 
-                    "price": 0.00012705, 
-                    "size": "20.0"
+                    "price": 2.438e-05, 
+                    "size": "1230.0"
                 }
             ], 
-            "ZRXBTC": [
+            "ADAETH": [
                 {
-                    "index": 4261, 
-                    "symbol": "ZRXBTC", 
+                    "index": 342, 
+                    "symbol": "ADAETH", 
                     "type": "buy", 
-                    "price": 9.375e-05, 
-                    "size": "30.0"
-                }
-            ], 
-            "BTSBTC": [
-                {
-                    "index": 3524, 
-                    "symbol": "BTSBTC", 
-                    "type": "buy", 
-                    "price": 1.187e-05, 
-                    "size": "250.0"
+                    "price": 0.00034594, 
+                    "size": "90.0"
                 }, 
                 {
-                    "index": 4698, 
-                    "symbol": "BTSBTC", 
-                    "buy_price": 1.187e-05, 
+                    "index": 1496, 
+                    "symbol": "ADAETH", 
+                    "buy_price": 0.00034594, 
                     "type": "sell", 
-                    "price": 1.202e-05, 
-                    "size": "250.0"
+                    "price": 0.00034956, 
+                    "size": "90.0"
+                }, 
+                {
+                    "index": 2560, 
+                    "symbol": "ADAETH", 
+                    "type": "buy", 
+                    "price": 0.00035324, 
+                    "size": "80.0"
+                }, 
+                {
+                    "index": 15650, 
+                    "symbol": "ADAETH", 
+                    "buy_price": 0.00035324, 
+                    "type": "sell", 
+                    "price": 0.00031724, 
+                    "size": "80.0"
+                }
+            ], 
+            "ZILETH": [
+                {
+                    "index": 195, 
+                    "symbol": "ZILETH", 
+                    "type": "buy", 
+                    "price": 0.00013547, 
+                    "size": "220.0"
+                }, 
+                {
+                    "index": 3906, 
+                    "symbol": "ZILETH", 
+                    "buy_price": 0.00013547, 
+                    "type": "sell", 
+                    "price": 0.00012302, 
+                    "size": "220.0"
+                }
+            ], 
+            "SYSETH": [
+                {
+                    "index": 649, 
+                    "symbol": "SYSETH", 
+                    "type": "buy", 
+                    "price": 0.00031275, 
+                    "size": "100.0"
+                }, 
+                {
+                    "index": 669, 
+                    "symbol": "SYSETH", 
+                    "buy_price": 0.00031275, 
+                    "type": "sell", 
+                    "price": 0.00031528, 
+                    "size": "100.0"
+                }
+            ], 
+            "BRDETH": [
+                {
+                    "index": 128, 
+                    "symbol": "BRDETH", 
+                    "type": "buy", 
+                    "price": 0.0023156, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 489, 
+                    "symbol": "BRDETH", 
+                    "buy_price": 0.0023156, 
+                    "type": "sell", 
+                    "price": 0.0024373, 
+                    "size": "10.0"
+                }
+            ], 
+            "ZECETH": [
+                {
+                    "index": 125, 
+                    "symbol": "ZECETH", 
+                    "type": "buy", 
+                    "price": 0.61638, 
+                    "size": "0.049000000"
+                }, 
+                {
+                    "index": 1019, 
+                    "symbol": "ZECETH", 
+                    "buy_price": 0.61638, 
+                    "type": "sell", 
+                    "price": 0.62026, 
+                    "size": "0.049000000"
+                }
+            ], 
+            "VIBBTC": [
+                {
+                    "index": 172, 
+                    "symbol": "VIBBTC", 
+                    "type": "buy", 
+                    "price": 5.41e-06, 
+                    "size": "550.0"
+                }
+            ], 
+            "BCDBTC": [
+                {
+                    "index": 14377, 
+                    "symbol": "BCDBTC", 
+                    "type": "buy", 
+                    "price": 0.000291, 
+                    "size": "10.345"
                 }
             ], 
             "ENGBTC": [
                 {
-                    "index": 2146, 
+                    "index": 2787, 
                     "symbol": "ENGBTC", 
                     "type": "buy", 
-                    "price": 7.716e-05, 
+                    "price": 7.167e-05, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 2799, 
+                    "symbol": "ENGBTC", 
+                    "buy_price": 7.167e-05, 
+                    "type": "sell", 
+                    "price": 7.195e-05, 
                     "size": "40.0"
                 }
             ], 
             "XLMBTC": [
                 {
-                    "index": 232, 
+                    "index": 4465, 
                     "symbol": "XLMBTC", 
                     "type": "buy", 
-                    "price": 4.241e-05, 
+                    "price": 4.18e-05, 
                     "size": "70.0"
                 }, 
                 {
-                    "index": 29879, 
+                    "index": 30676, 
                     "symbol": "XLMBTC", 
-                    "buy_price": 4.241e-05, 
+                    "buy_price": 4.18e-05, 
                     "type": "sell", 
-                    "price": 3.778e-05, 
+                    "price": 3.761e-05, 
                     "size": "70.0"
                 }, 
                 {
-                    "index": 48310, 
+                    "index": 48136, 
                     "symbol": "XLMBTC", 
                     "type": "buy", 
-                    "price": 3.729e-05, 
+                    "price": 3.677e-05, 
+                    "size": "80.0"
+                }, 
+                {
+                    "index": 50456, 
+                    "symbol": "XLMBTC", 
+                    "buy_price": 3.677e-05, 
+                    "type": "sell", 
+                    "price": 3.72e-05, 
+                    "size": "80.0"
+                }, 
+                {
+                    "index": 52447, 
+                    "symbol": "XLMBTC", 
+                    "type": "buy", 
+                    "price": 3.753e-05, 
                     "size": "80.0"
                 }
             ], 
-            "KNCBTC": [
+            "XMRETH": [
                 {
-                    "index": 145, 
-                    "symbol": "KNCBTC", 
+                    "index": 1468, 
+                    "symbol": "XMRETH", 
                     "type": "buy", 
-                    "price": 4.382e-05, 
-                    "size": "70.0"
+                    "price": 0.53739, 
+                    "size": "0.056000000"
                 }
             ], 
-            "LINKBTC": [
+            "AEETH": [
                 {
-                    "index": 9734, 
-                    "symbol": "LINKBTC", 
+                    "index": 2183, 
+                    "symbol": "AEETH", 
                     "type": "buy", 
-                    "price": 6.887e-05, 
-                    "size": "40.0"
-                }, 
-                {
-                    "index": 12350, 
-                    "symbol": "LINKBTC", 
-                    "buy_price": 6.887e-05, 
-                    "type": "sell", 
-                    "price": 6.888e-05, 
-                    "size": "40.0"
+                    "price": 0.005332, 
+                    "size": "5.63"
                 }
             ], 
-            "BCHABCBTC": [
+            "KNCETH": [
                 {
-                    "index": 406, 
-                    "symbol": "BCHABCBTC", 
+                    "index": 147, 
+                    "symbol": "KNCETH", 
                     "type": "buy", 
-                    "price": 0.0466, 
-                    "size": "0.064000000"
+                    "price": 0.0015165, 
+                    "size": "20.0"
                 }, 
                 {
-                    "index": 4100, 
-                    "symbol": "BCHABCBTC", 
-                    "buy_price": 0.0466, 
+                    "index": 1479, 
+                    "symbol": "KNCETH", 
+                    "buy_price": 0.0015165, 
                     "type": "sell", 
-                    "price": 0.04789, 
-                    "size": "0.064000000"
-                }, 
+                    "price": 0.0015494, 
+                    "size": "20.0"
+                }
+            ], 
+            "QKCETH": [
                 {
-                    "index": 27874, 
-                    "symbol": "BCHABCBTC", 
+                    "index": 252, 
+                    "symbol": "QKCETH", 
                     "type": "buy", 
-                    "price": 0.044112, 
-                    "size": "0.068000000"
+                    "price": 0.00035428, 
+                    "size": "80.0"
                 }, 
                 {
-                    "index": 30866, 
-                    "symbol": "BCHABCBTC", 
-                    "buy_price": 0.044112, 
+                    "index": 1308, 
+                    "symbol": "QKCETH", 
+                    "buy_price": 0.00035428, 
                     "type": "sell", 
-                    "price": 0.044603, 
-                    "size": "0.068000000"
+                    "price": 0.0003633, 
+                    "size": "80.0"
+                }
+            ], 
+            "ADXBTC": [
+                {
+                    "index": 4162, 
+                    "symbol": "ADXBTC", 
+                    "type": "buy", 
+                    "price": 2.339e-05, 
+                    "size": "130.0"
+                }, 
+                {
+                    "index": 6377, 
+                    "symbol": "ADXBTC", 
+                    "buy_price": 2.339e-05, 
+                    "type": "sell", 
+                    "price": 2.103e-05, 
+                    "size": "130.0"
+                }
+            ], 
+            "ARNETH": [
+                {
+                    "index": 400, 
+                    "symbol": "ARNETH", 
+                    "type": "buy", 
+                    "price": 0.00252918, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 1160, 
+                    "symbol": "ARNETH", 
+                    "buy_price": 0.00252918, 
+                    "type": "sell", 
+                    "price": 0.00230263, 
+                    "size": "10.0"
                 }
             ], 
             "THETABTC": [
@@ -619,30 +958,28 @@
                     "size": "220.0"
                 }
             ], 
-            "GTOBTC": [
+            "ZRXBTC": [
                 {
-                    "index": 5225, 
-                    "symbol": "GTOBTC", 
+                    "index": 8391, 
+                    "symbol": "ZRXBTC", 
                     "type": "buy", 
-                    "price": 6.85e-06, 
-                    "size": "440.0"
-                }
-            ], 
-            "WANBTC": [
-                {
-                    "index": 485, 
-                    "symbol": "WANBTC", 
-                    "type": "buy", 
-                    "price": 0.0001029, 
-                    "size": "29.07"
+                    "price": 9.135e-05, 
+                    "size": "30.0"
                 }, 
                 {
-                    "index": 3161, 
-                    "symbol": "WANBTC", 
-                    "buy_price": 0.0001029, 
+                    "index": 8425, 
+                    "symbol": "ZRXBTC", 
+                    "buy_price": 9.135e-05, 
                     "type": "sell", 
-                    "price": 0.0001038, 
-                    "size": "29.07"
+                    "price": 9.3e-05, 
+                    "size": "30.0"
+                }, 
+                {
+                    "index": 9931, 
+                    "symbol": "ZRXBTC", 
+                    "type": "buy", 
+                    "price": 9.29e-05, 
+                    "size": "30.0"
                 }
             ], 
             "MANABTC": [
@@ -664,289 +1001,530 @@
             ], 
             "XRPBTC": [
                 {
-                    "index": 1045, 
+                    "index": 1090, 
                     "symbol": "XRPBTC", 
                     "type": "buy", 
-                    "price": 9.54e-05, 
+                    "price": 9.543e-05, 
                     "size": "30.0"
                 }, 
                 {
-                    "index": 56699, 
+                    "index": 57833, 
                     "symbol": "XRPBTC", 
-                    "buy_price": 9.54e-05, 
+                    "buy_price": 9.543e-05, 
                     "type": "sell", 
-                    "price": 9.663e-05, 
+                    "price": 9.63e-05, 
                     "size": "30.0"
                 }, 
                 {
-                    "index": 70822, 
+                    "index": 60526, 
                     "symbol": "XRPBTC", 
                     "type": "buy", 
-                    "price": 9.117e-05, 
-                    "size": "30.0"
-                }, 
-                {
-                    "index": 71958, 
-                    "symbol": "XRPBTC", 
-                    "buy_price": 9.117e-05, 
-                    "type": "sell", 
-                    "price": 9.237e-05, 
-                    "size": "30.0"
-                }, 
-                {
-                    "index": 86371, 
-                    "symbol": "XRPBTC", 
-                    "type": "buy", 
-                    "price": 9.177e-05, 
+                    "price": 9.658e-05, 
                     "size": "30.0"
                 }
             ], 
             "QKCBTC": [
                 {
-                    "index": 353, 
+                    "index": 144, 
                     "symbol": "QKCBTC", 
                     "type": "buy", 
-                    "price": 1.018e-05, 
+                    "price": 1.01e-05, 
+                    "size": "300.0"
+                }, 
+                {
+                    "index": 1460, 
+                    "symbol": "QKCBTC", 
+                    "buy_price": 1.01e-05, 
+                    "type": "sell", 
+                    "price": 1.021e-05, 
+                    "size": "300.0"
+                }, 
+                {
+                    "index": 9898, 
+                    "symbol": "QKCBTC", 
+                    "type": "buy", 
+                    "price": 1.02e-05, 
                     "size": "290.0"
                 }, 
                 {
-                    "index": 1486, 
+                    "index": 12862, 
                     "symbol": "QKCBTC", 
-                    "buy_price": 1.018e-05, 
+                    "buy_price": 1.02e-05, 
                     "type": "sell", 
-                    "price": 1.029e-05, 
+                    "price": 1.107e-05, 
                     "size": "290.0"
                 }, 
                 {
-                    "index": 21476, 
+                    "index": 21510, 
                     "symbol": "QKCBTC", 
                     "type": "buy", 
-                    "price": 1.169e-05, 
+                    "price": 1.163e-05, 
                     "size": "260.0"
                 }, 
                 {
-                    "index": 22934, 
+                    "index": 23064, 
                     "symbol": "QKCBTC", 
-                    "buy_price": 1.169e-05, 
+                    "buy_price": 1.163e-05, 
                     "type": "sell", 
-                    "price": 1.193e-05, 
+                    "price": 1.195e-05, 
                     "size": "260.0"
+                }
+            ], 
+            "YOYOETH": [
+                {
+                    "index": 503, 
+                    "symbol": "YOYOETH", 
+                    "type": "buy", 
+                    "price": 0.00014857, 
+                    "size": "200.0"
                 }
             ], 
             "ELFBTC": [
                 {
-                    "index": 1848, 
+                    "index": 4554, 
                     "symbol": "ELFBTC", 
                     "type": "buy", 
-                    "price": 3.023e-05, 
+                    "price": 2.933e-05, 
+                    "size": "100.0"
+                }, 
+                {
+                    "index": 5317, 
+                    "symbol": "ELFBTC", 
+                    "buy_price": 2.933e-05, 
+                    "type": "sell", 
+                    "price": 2.963e-05, 
                     "size": "100.0"
                 }
             ], 
-            "POWRBTC": [
+            "ARNBTC": [
                 {
-                    "index": 2374, 
-                    "symbol": "POWRBTC", 
+                    "index": 8611, 
+                    "symbol": "ARNBTC", 
                     "type": "buy", 
-                    "price": 2.07e-05, 
-                    "size": "140.0"
+                    "price": 6.637e-05, 
+                    "size": "40.0"
                 }, 
                 {
-                    "index": 4673, 
-                    "symbol": "POWRBTC", 
-                    "buy_price": 2.07e-05, 
+                    "index": 8947, 
+                    "symbol": "ARNBTC", 
+                    "buy_price": 6.637e-05, 
                     "type": "sell", 
-                    "price": 1.861e-05, 
-                    "size": "140.0"
+                    "price": 6.721e-05, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 9509, 
+                    "symbol": "ARNBTC", 
+                    "type": "buy", 
+                    "price": 6.709e-05, 
+                    "size": "40.0"
                 }
             ], 
             "USDCBTC": [
                 {
-                    "index": 2191, 
+                    "index": 1313, 
                     "symbol": "USDCBTC", 
                     "type": "buy", 
-                    "price": 0.000232, 
+                    "price": 0.00023809, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 2549, 
+                    "index": 5567, 
                     "symbol": "USDCBTC", 
-                    "buy_price": 0.000232, 
+                    "buy_price": 0.00023809, 
                     "type": "sell", 
-                    "price": 0.00023447, 
-                    "size": "10.0"
-                }, 
-                {
-                    "index": 6257, 
-                    "symbol": "USDCBTC", 
-                    "type": "buy", 
-                    "price": 0.0002655, 
-                    "size": "10.0"
-                }, 
-                {
-                    "index": 7529, 
-                    "symbol": "USDCBTC", 
-                    "buy_price": 0.0002655, 
-                    "type": "sell", 
-                    "price": 0.00027059, 
+                    "price": 0.00026199, 
                     "size": "10.0"
                 }
             ], 
-            "RVNBTC": [
+            "VETETH": [
                 {
-                    "index": 187, 
-                    "symbol": "RVNBTC", 
+                    "index": 560, 
+                    "symbol": "VETETH", 
                     "type": "buy", 
-                    "price": 4.12e-06, 
+                    "price": 4.131e-05, 
                     "size": "730.0"
                 }, 
                 {
-                    "index": 6650, 
-                    "symbol": "RVNBTC", 
-                    "buy_price": 4.12e-06, 
+                    "index": 3959, 
+                    "symbol": "VETETH", 
+                    "buy_price": 4.131e-05, 
                     "type": "sell", 
-                    "price": 4.15e-06, 
+                    "price": 4.184e-05, 
                     "size": "730.0"
+                }, 
+                {
+                    "index": 4492, 
+                    "symbol": "VETETH", 
+                    "type": "buy", 
+                    "price": 4.186e-05, 
+                    "size": "720.0"
+                }
+            ], 
+            "MDABTC": [
+                {
+                    "index": 8854, 
+                    "symbol": "MDABTC", 
+                    "type": "buy", 
+                    "price": 0.00015082, 
+                    "size": "20.0"
+                }
+            ], 
+            "IOTABTC": [
+                {
+                    "index": 11980, 
+                    "symbol": "IOTABTC", 
+                    "type": "buy", 
+                    "price": 7.161e-05, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 18558, 
+                    "symbol": "IOTABTC", 
+                    "buy_price": 7.161e-05, 
+                    "type": "sell", 
+                    "price": 7.239e-05, 
+                    "size": "40.0"
+                }
+            ], 
+            "LINKBTC": [
+                {
+                    "index": 9745, 
+                    "symbol": "LINKBTC", 
+                    "type": "buy", 
+                    "price": 6.874e-05, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 9967, 
+                    "symbol": "LINKBTC", 
+                    "buy_price": 6.874e-05, 
+                    "type": "sell", 
+                    "price": 6.949e-05, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 11029, 
+                    "symbol": "LINKBTC", 
+                    "type": "buy", 
+                    "price": 6.852e-05, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 12350, 
+                    "symbol": "LINKBTC", 
+                    "buy_price": 6.852e-05, 
+                    "type": "sell", 
+                    "price": 6.888e-05, 
+                    "size": "40.0"
+                }
+            ], 
+            "REPETH": [
+                {
+                    "index": 112, 
+                    "symbol": "REPETH", 
+                    "type": "buy", 
+                    "price": 0.08366, 
+                    "size": "0.358"
+                }, 
+                {
+                    "index": 1612, 
+                    "symbol": "REPETH", 
+                    "buy_price": 0.08366, 
+                    "type": "sell", 
+                    "price": 0.07525, 
+                    "size": "0.358"
+                }
+            ], 
+            "BCDETH": [
+                {
+                    "index": 123, 
+                    "symbol": "BCDETH", 
+                    "type": "buy", 
+                    "price": 0.00754, 
+                    "size": "3.979"
+                }, 
+                {
+                    "index": 140, 
+                    "symbol": "BCDETH", 
+                    "buy_price": 0.00754, 
+                    "type": "sell", 
+                    "price": 0.00763, 
+                    "size": "3.979"
+                }
+            ], 
+            "ETHBTC": [
+                {
+                    "index": 2000, 
+                    "symbol": "ETHBTC", 
+                    "type": "buy", 
+                    "price": 0.02893, 
+                    "size": "0.52"
+                }
+            ], 
+            "ETCETH": [
+                {
+                    "index": 700, 
+                    "symbol": "ETCETH", 
+                    "type": "buy", 
+                    "price": 0.041445, 
+                    "size": "0.72"
+                }, 
+                {
+                    "index": 1907, 
+                    "symbol": "ETCETH", 
+                    "buy_price": 0.041445, 
+                    "type": "sell", 
+                    "price": 0.041864, 
+                    "size": "0.72"
                 }
             ], 
             "EOSBTC": [
                 {
-                    "index": 236, 
+                    "index": 22938, 
                     "symbol": "EOSBTC", 
                     "type": "buy", 
-                    "price": 0.0008297, 
-                    "size": "3.62"
-                }, 
-                {
-                    "index": 21955, 
-                    "symbol": "EOSBTC", 
-                    "buy_price": 0.0008297, 
-                    "type": "sell", 
-                    "price": 0.0008537, 
-                    "size": "3.62"
-                }, 
-                {
-                    "index": 26744, 
-                    "symbol": "EOSBTC", 
-                    "type": "buy", 
-                    "price": 0.000841, 
-                    "size": "3.57"
-                }, 
-                {
-                    "index": 40622, 
-                    "symbol": "EOSBTC", 
-                    "buy_price": 0.000841, 
-                    "type": "sell", 
-                    "price": 0.0008495, 
-                    "size": "3.57"
+                    "price": 0.0008424, 
+                    "size": "3.55"
                 }
             ], 
-            "NANOBTC": [
+            "GTOETH": [
                 {
-                    "index": 9013, 
-                    "symbol": "NANOBTC", 
+                    "index": 119, 
+                    "symbol": "GTOETH", 
                     "type": "buy", 
-                    "price": 0.0002427, 
-                    "size": "12.37"
+                    "price": 0.00024178, 
+                    "size": "120.0"
                 }, 
                 {
-                    "index": 12117, 
-                    "symbol": "NANOBTC", 
-                    "buy_price": 0.0002427, 
+                    "index": 553, 
+                    "symbol": "GTOETH", 
+                    "buy_price": 0.00024178, 
                     "type": "sell", 
-                    "price": 0.000245, 
-                    "size": "12.37"
+                    "price": 0.00024406, 
+                    "size": "120.0"
+                }, 
+                {
+                    "index": 1859, 
+                    "symbol": "GTOETH", 
+                    "type": "buy", 
+                    "price": 0.00024782, 
+                    "size": "120.0"
+                }
+            ], 
+            "MTHETH": [
+                {
+                    "index": 50, 
+                    "symbol": "MTHETH", 
+                    "type": "buy", 
+                    "price": 0.00018239, 
+                    "size": "160.0"
+                }, 
+                {
+                    "index": 665, 
+                    "symbol": "MTHETH", 
+                    "buy_price": 0.00018239, 
+                    "type": "sell", 
+                    "price": 0.0001641, 
+                    "size": "160.0"
                 }
             ], 
             "IOTXBTC": [
                 {
-                    "index": 96, 
+                    "index": 167, 
                     "symbol": "IOTXBTC", 
                     "type": "buy", 
-                    "price": 2.16e-06, 
-                    "size": "1380.0"
+                    "price": 2.19e-06, 
+                    "size": "1360.0"
                 }, 
                 {
-                    "index": 715, 
+                    "index": 733, 
                     "symbol": "IOTXBTC", 
-                    "buy_price": 2.16e-06, 
+                    "buy_price": 2.19e-06, 
                     "type": "sell", 
                     "price": 2.21e-06, 
-                    "size": "1380.0"
+                    "size": "1360.0"
+                }
+            ], 
+            "EOSETH": [
+                {
+                    "index": 224, 
+                    "symbol": "EOSETH", 
+                    "type": "buy", 
+                    "price": 0.0289, 
+                    "size": "1.04"
+                }, 
+                {
+                    "index": 2161, 
+                    "symbol": "EOSETH", 
+                    "buy_price": 0.0289, 
+                    "type": "sell", 
+                    "price": 0.029129, 
+                    "size": "1.04"
+                }, 
+                {
+                    "index": 8638, 
+                    "symbol": "EOSETH", 
+                    "type": "buy", 
+                    "price": 0.029138, 
+                    "size": "1.03"
+                }, 
+                {
+                    "index": 12726, 
+                    "symbol": "EOSETH", 
+                    "buy_price": 0.029138, 
+                    "type": "sell", 
+                    "price": 0.029435, 
+                    "size": "1.03"
+                }
+            ], 
+            "STEEMBTC": [
+                {
+                    "index": 95, 
+                    "symbol": "STEEMBTC", 
+                    "type": "buy", 
+                    "price": 8.9e-05, 
+                    "size": "33.82"
+                }, 
+                {
+                    "index": 1906, 
+                    "symbol": "STEEMBTC", 
+                    "buy_price": 8.9e-05, 
+                    "type": "sell", 
+                    "price": 9.01e-05, 
+                    "size": "33.82"
                 }
             ], 
             "PAXBTC": [
                 {
-                    "index": 494, 
+                    "index": 125, 
                     "symbol": "PAXBTC", 
                     "type": "buy", 
-                    "price": 0.00023572, 
+                    "price": 0.0002354, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 15830, 
+                    "index": 15895, 
                     "symbol": "PAXBTC", 
-                    "buy_price": 0.00023572, 
+                    "buy_price": 0.0002354, 
                     "type": "sell", 
-                    "price": 0.00026257, 
+                    "price": 0.00025599, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 16821, 
+                    "index": 16901, 
                     "symbol": "PAXBTC", 
                     "type": "buy", 
-                    "price": 0.00026425, 
+                    "price": 0.00026301, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 18407, 
+                    "index": 18569, 
                     "symbol": "PAXBTC", 
-                    "buy_price": 0.00026425, 
+                    "buy_price": 0.00026301, 
                     "type": "sell", 
-                    "price": 0.00027065, 
+                    "price": 0.00026826, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 20807, 
+                    "symbol": "PAXBTC", 
+                    "type": "buy", 
+                    "price": 0.00027423, 
                     "size": "10.0"
                 }
             ], 
-            "SALTBTC": [
+            "IOTXETH": [
                 {
-                    "index": 141, 
-                    "symbol": "SALTBTC", 
+                    "index": 181, 
+                    "symbol": "IOTXETH", 
                     "type": "buy", 
-                    "price": 5.89e-05, 
-                    "size": "51.19"
+                    "price": 7.525e-05, 
+                    "size": "400.0"
                 }, 
                 {
-                    "index": 3264, 
-                    "symbol": "SALTBTC", 
-                    "buy_price": 5.89e-05, 
+                    "index": 757, 
+                    "symbol": "IOTXETH", 
+                    "buy_price": 7.525e-05, 
                     "type": "sell", 
-                    "price": 5.3e-05, 
-                    "size": "51.19"
+                    "price": 7.716e-05, 
+                    "size": "400.0"
                 }
             ], 
-            "AEBTC": [
+            "APPCETH": [
                 {
-                    "index": 5818, 
-                    "symbol": "AEBTC", 
+                    "index": 631, 
+                    "symbol": "APPCETH", 
                     "type": "buy", 
-                    "price": 0.000153, 
-                    "size": "19.61"
+                    "price": 0.0003817, 
+                    "size": "80.0"
+                }
+            ], 
+            "GRSBTC": [
+                {
+                    "index": 2611, 
+                    "symbol": "GRSBTC", 
+                    "type": "buy", 
+                    "price": 6.775e-05, 
+                    "size": "40.0"
+                }
+            ], 
+            "NANOETH": [
+                {
+                    "index": 293, 
+                    "symbol": "NANOETH", 
+                    "type": "buy", 
+                    "price": 0.008633, 
+                    "size": "3.46"
                 }, 
                 {
-                    "index": 6187, 
-                    "symbol": "AEBTC", 
-                    "buy_price": 0.000153, 
+                    "index": 1026, 
+                    "symbol": "NANOETH", 
+                    "buy_price": 0.008633, 
                     "type": "sell", 
-                    "price": 0.0001548, 
-                    "size": "19.61"
+                    "price": 0.00876, 
+                    "size": "3.46"
                 }
             ], 
-            "QTUMBTC": [
+            "DCRBTC": [
                 {
-                    "index": 7232, 
-                    "symbol": "QTUMBTC", 
+                    "index": 110, 
+                    "symbol": "DCRBTC", 
                     "type": "buy", 
-                    "price": 0.000518, 
-                    "size": "5.79"
+                    "price": 0.005385, 
+                    "size": "0.559"
+                }
+            ], 
+            "IOTAETH": [
+                {
+                    "index": 2170, 
+                    "symbol": "IOTAETH", 
+                    "type": "buy", 
+                    "price": 0.00256024, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 2936, 
+                    "symbol": "IOTAETH", 
+                    "buy_price": 0.00256024, 
+                    "type": "sell", 
+                    "price": 0.002591, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 6722, 
+                    "symbol": "IOTAETH", 
+                    "type": "buy", 
+                    "price": 0.00246156, 
+                    "size": "10.0"
+                }, 
+                {
+                    "index": 7629, 
+                    "symbol": "IOTAETH", 
+                    "buy_price": 0.00246156, 
+                    "type": "sell", 
+                    "price": 0.00251113, 
+                    "size": "10.0"
                 }
             ]
         }
