@@ -24,7 +24,8 @@ class Message(object):
     MSG_SELL_ENABLE = 21
     MSG_ORDER_SIZE_UPDATE = 22
 
-    def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0, asset_info=None):
+    def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0,
+                 asset_info=None, buy_type=0, sell_type=0):
         self.src_id = src_id
         self.dst_id = dst_id
         self.cmd = cmd
@@ -35,6 +36,8 @@ class Message(object):
         self.ts = ts
         # AssetInfo class object stored in self.asset_info
         self.asset_info = asset_info
+        self.buy_type = buy_type
+        self.sell_type = sell_type
         self.read = False
 
     def mark_read(self):

@@ -48,6 +48,11 @@ class SignalBase(object):
         self.sell_pending_price = 0.0
         self.sell_marked = False
 
+        # define buy type and sell type to help with determining which condition in signal
+        # initiated the buy or sell (0 = NONE, 1=TYPE1, 2=TYPE2, etc)
+        self.buy_type = 0
+        self.sell_type = 0
+
     def get_id(self):
         return self.id
 
