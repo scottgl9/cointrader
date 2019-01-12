@@ -10,15 +10,6 @@
                     "size": "80.0"
                 }
             ], 
-            "OMGETH": [
-                {
-                    "index": 4105, 
-                    "symbol": "OMGETH", 
-                    "type": "buy", 
-                    "price": 0.013101, 
-                    "size": "2.29"
-                }
-            ], 
             "XMRBTC": [
                 {
                     "index": 144, 
@@ -143,6 +134,15 @@
                     "type": "buy", 
                     "price": 9.99e-06, 
                     "size": "300.0"
+                }
+            ], 
+            "BATETH": [
+                {
+                    "index": 4893, 
+                    "symbol": "BATETH", 
+                    "type": "buy", 
+                    "price": 0.00125251, 
+                    "size": "20.0"
                 }
             ], 
             "XRPETH": [
@@ -298,15 +298,6 @@
                     "type": "sell", 
                     "price": 3.19e-06, 
                     "size": "950.0"
-                }
-            ], 
-            "BLZETH": [
-                {
-                    "index": 1086, 
-                    "symbol": "BLZETH", 
-                    "type": "buy", 
-                    "price": 0.00048885, 
-                    "size": "60.0"
                 }
             ], 
             "ONTBTC": [
@@ -698,6 +689,15 @@
                     "size": "70.0"
                 }
             ], 
+            "INSETH": [
+                {
+                    "index": 2226, 
+                    "symbol": "INSETH", 
+                    "type": "buy", 
+                    "price": 0.001852, 
+                    "size": "16.19"
+                }
+            ], 
             "KNCETH": [
                 {
                     "index": 147, 
@@ -712,6 +712,21 @@
                     "buy_price": 0.0015165, 
                     "type": "sell", 
                     "price": 0.0015494, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 4413, 
+                    "symbol": "KNCETH", 
+                    "type": "buy", 
+                    "price": 0.0015142, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 5974, 
+                    "symbol": "KNCETH", 
+                    "buy_price": 0.0015142, 
+                    "type": "sell", 
+                    "price": 0.0013855, 
                     "size": "20.0"
                 }
             ], 
@@ -732,18 +747,18 @@
                     "size": "80.0"
                 }, 
                 {
-                    "index": 3841, 
+                    "index": 6324, 
                     "symbol": "QKCETH", 
                     "type": "buy", 
-                    "price": 0.000418, 
+                    "price": 0.00045, 
                     "size": "70.0"
                 }, 
                 {
-                    "index": 6218, 
+                    "index": 7049, 
                     "symbol": "QKCETH", 
-                    "buy_price": 0.000418, 
+                    "buy_price": 0.00045, 
                     "type": "sell", 
-                    "price": 0.00043482, 
+                    "price": 0.00045496, 
                     "size": "70.0"
                 }
             ], 
@@ -1150,10 +1165,10 @@
                     "size": "1.04"
                 }, 
                 {
-                    "index": 8431, 
+                    "index": 8439, 
                     "symbol": "EOSETH", 
                     "type": "buy", 
-                    "price": 0.029524, 
+                    "price": 0.029481, 
                     "size": "1.02"
                 }
             ], 
@@ -1236,16 +1251,16 @@
             ], 
             "GRSBTC": [
                 {
-                    "index": 1427, 
+                    "index": 1452, 
                     "symbol": "GRSBTC", 
                     "type": "buy", 
-                    "price": 6.669e-05, 
+                    "price": 6.667e-05, 
                     "size": "40.0"
                 }, 
                 {
                     "index": 2546, 
                     "symbol": "GRSBTC", 
-                    "buy_price": 6.669e-05, 
+                    "buy_price": 6.667e-05, 
                     "type": "sell", 
                     "price": 6.628e-05, 
                     "size": "40.0"
@@ -1304,18 +1319,18 @@
             ], 
             "IOTAETH": [
                 {
-                    "index": 6713, 
+                    "index": 6582, 
                     "symbol": "IOTAETH", 
                     "type": "buy", 
-                    "price": 0.00246574, 
+                    "price": 0.00245601, 
                     "size": "10.0"
                 }, 
                 {
-                    "index": 7629, 
+                    "index": 6687, 
                     "symbol": "IOTAETH", 
-                    "buy_price": 0.00246574, 
+                    "buy_price": 0.00245601, 
                     "type": "sell", 
-                    "price": 0.00251113, 
+                    "price": 0.00248685, 
                     "size": "10.0"
                 }
             ]
