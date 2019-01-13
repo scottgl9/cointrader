@@ -256,18 +256,22 @@ class AccountBinance(AccountBase):
         min_price = 0
         max_price = 0
         type = None
+        order_type = None
 
         if self.simulate:
             return None
 
+        self.logger.info("result={}".format(result))
+
         if 'orderId' in result: orderid = result['orderId']
         if 'origQty' in result: origqty = result['origQty']
-        if 'fills' in result: fills = result['fills']
-        if 'cummulativeQuoteQty' in result: quoteqty = result['cummulativeQuoteQty']
+        fills = result['fills']
+        if 'cummulativeQuoteQty' in result: quoteqty = float(result['cummulativeQuoteQty'])
+
         if fills:
             for fill in fills:
                 if 'side' in fill: side = fill['side']
-                if 'type' in fill: type = fill['type']
+                if 'type' in fill: order_type = fill['type']
                 if 'status' in fill: status = fill['status']
                 if 'price' in fill and float(price) != 0:
                     price = float(fill['price'])
@@ -275,8 +279,9 @@ class AccountBinance(AccountBase):
                         max_price = price
                     if min_price == 0 or price < min_price:
                         min_price = price
-                if 'type' in fill: type = fill['type']
+                if 'type' in fill: order_type = fill['type']
                 if 'symbol' in fill: symbol = fill['symbol']
+                if 'commission' in fill: commission = fill['commission']
 
         if not symbol or status != 'FILLED':
             return None
@@ -307,6 +312,8 @@ class AccountBinance(AccountBase):
                       orderid=orderid,
                       quote_size=quoteqty,
                       commission=commission)
+
+        self.logger.info("order: {}".format(str(order)))
         return order
 
     # determine if asset has disabled deposits, if so don't trade

@@ -318,8 +318,8 @@ class OrderHandler(object):
             return
 
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
-        if not self.accnt.simulate:
-            self.logger.info(result)
+        #if not self.accnt.simulate:
+        #    self.logger.info(result)
 
         if not result:
             self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
@@ -336,10 +336,9 @@ class OrderHandler(object):
             if order:
                 self.logger.info("buy_order: {}".format(str(order)))
                 # update price from actual sell price for live trading
-                if not self.accnt.simulate:
-                    if float(order.price) != 0 and float(price) != float(order.price):
-                        self.logger.info("update_buy_price({}, {} -> {})".format(ticker_id, price, order.price))
-                        price = float(order.price)
+                if float(order.price) != 0 and float(price) != float(order.price):
+                    self.logger.info("update_buy_price({}, {} -> {})".format(ticker_id, price, order.price))
+                    price = float(order.price)
 
                 self.buy_order_id = order.orderid
                 message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
@@ -352,6 +351,7 @@ class OrderHandler(object):
                     self.notify.send(subject="MultiTrader", text=message)
             else:
                 self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
+                sys.exit(0)
                 return
 
         self.trade_balance_handler.update_for_buy(price, size, asset_info=msg.asset_info, symbol=ticker_id)
