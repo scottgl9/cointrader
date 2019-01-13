@@ -351,7 +351,6 @@ class OrderHandler(object):
                     self.notify.send(subject="MultiTrader", text=message)
             else:
                 self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
-                sys.exit(0)
                 return
 
         self.trade_balance_handler.update_for_buy(price, size, asset_info=msg.asset_info, symbol=ticker_id)
