@@ -322,6 +322,9 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def buy(self, signal, price):
+        if float(signal.buy_price) != 0:
+            return
+
         if 'e' in str(self.min_trade_size):
             self.signal_handler.clear_handler_signaled()
             return
@@ -359,6 +362,9 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def sell(self, signal, price):
+        if float(signal.buy_price) == 0:
+            return
+
         # if self.mm_enabled:
         #    sell_price = self.kline.close
         # else:
