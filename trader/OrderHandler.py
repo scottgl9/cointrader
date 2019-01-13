@@ -332,11 +332,12 @@ class OrderHandler(object):
             if self.store_trades:
                 self.store_trade_json(ticker_id, price, size, 'buy')
         else:
-            order = self.accnt.parse_order_result(result)
+            order = self.accnt.parse_order_result(result, symbol=ticker_id)
             if order:
+                self.logger.info("buy_order: {}".format(str(order)))
                 # update price from actual sell price for live trading
                 if not self.accnt.simulate:
-                    if order.price != 0:
+                    if float(order.price) != 0 and float(price) != float(order.price):
                         self.logger.info("update_buy_price({}, {} -> {})".format(ticker_id, price, order.price))
                         price = float(order.price)
 
@@ -395,10 +396,12 @@ class OrderHandler(object):
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             return
 
-        order = self.accnt.parse_order_result(result)
+        order = self.accnt.parse_order_result(result, symbol=ticker_id)
         if self.accnt.simulate or order:
+            if order:
+                self.logger.info("sell_order: {}".format(str(order)))
             # update price from actual sell price for live trading
-            if not self.accnt.simulate and order.price != 0:
+            if not self.accnt.simulate and float(order.price) != 0 and float(price) != float(order.price):
                 self.logger.info("update_sell_price({}, {} -> {})".format(ticker_id, price, order.price))
                 price = float(order.price)
 

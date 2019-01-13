@@ -82,5 +82,16 @@ class Order(object):
     def __len__(self):
         return self.size
 
+    def __str__(self):
+        return self.__repr__()
+
     def __repr__(self):
-        return {'id': self.orderid, 'price': self.price, 'size': self.size, 'type': self.type}
+        return {'symbol': self.symbol,
+                'id': self.orderid,
+                'price': self.price,
+                'size': self.size,
+                'quote_size': self.quote_size,
+                'sig_id': self.sig_id,
+                'type': self.type,
+                'commission': self.commission
+                }

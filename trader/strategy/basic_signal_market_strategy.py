@@ -209,6 +209,9 @@ class basic_signal_market_strategy(StrategyBase):
                     signal.buy_price = 0.0
                     signal.buy_size = 0.0
                     signal.buy_timestamp = 0
+                    # for failed buy, disable buys for this symbol for 4 hours
+                    signal.disabled = True
+                    signal.disabled_end_ts = signal.timestamp + 1000 * 3600 * 4
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_SELL_FAILED:
                     id = msg.sig_id
