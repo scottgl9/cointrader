@@ -199,6 +199,14 @@ class MultiTrader(object):
         if self.last_ts == 0 or self.current_ts == 0:
             return
 
+
+        # *TODO* handle external completed sells
+        #if msg['X'] == 'FILLED' and msg['S'] == 'SELL':
+        #    symbol = msg['s']
+        #    price = float(msg['p'])
+        #    size = float(msg['q'])
+        #    self.msg_handler.sell_complete(symbol, price, size, buy_price=0, sig_id=0)
+
         if (self.current_ts - self.last_ts) > self.check_ts_min:
             self.accnt.get_account_balances()
             self.last_ts = self.current_ts
