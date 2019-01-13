@@ -262,18 +262,19 @@ class AccountBinance(AccountBase):
         if self.simulate:
             return None
 
-        result = json.dumps(result)
-
         self.logger.info("result={}".format(result))
 
         if 'orderId' in result: orderid = result['orderId']
         if 'origQty' in result: origqty = result['origQty']
         fills = result['fills']
         if 'cummulativeQuoteQty' in result: quoteqty = float(result['cummulativeQuoteQty'])
+        if 'symbol' in result: symbol = result['symbol']
+        if 'status' in result: status = result['status']
+        if 'type' in result: order_type = result['type']
+        if 'side' in result: side = result['side']
 
         if fills:
             for fill in fills:
-                self.logger.info(fill)
                 if 'side' in fill: side = fill['side']
                 if 'type' in fill: order_type = fill['type']
                 if 'status' in fill: status = fill['status']

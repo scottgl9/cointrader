@@ -83,7 +83,7 @@ class Order(object):
         return self.size
 
     def __str__(self):
-        return self.__repr__()
+        return str(self.__repr__())
 
     def __repr__(self):
         return {'symbol': self.symbol,
