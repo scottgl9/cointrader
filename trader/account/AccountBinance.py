@@ -263,35 +263,36 @@ class AccountBinance(AccountBase):
 
         self.logger.info("result={}".format(result))
 
-        if 'orderId' in result: orderid = result['orderId']
-        if 'origQty' in result: origqty = result['origQty']
-        fills = result['fills']
-        if 'cummulativeQuoteQty' in result: quoteqty = float(result['cummulativeQuoteQty'])
+        if u'orderId' in result: orderid = str(result[u'orderId'])
+        if u'origQty' in result: origqty = float(result[u'origQty'])
+        fills = result[u'fills']
+        if u'cummulativeQuoteQty' in result: quoteqty = float(result[u'cummulativeQuoteQty'])
 
         if fills:
             for fill in fills:
-                if 'side' in fill: side = fill['side']
-                if 'type' in fill: order_type = fill['type']
-                if 'status' in fill: status = fill['status']
-                if 'price' in fill and float(price) != 0:
-                    price = float(fill['price'])
+                self.logger.info(fill)
+                if u'side' in fill: side = str(fill[u'side'])
+                if u'type' in fill: order_type = str(fill[u'type'])
+                if u'status' in fill: status = str(fill[u'status'])
+                if u'price' in fill and float(price) != 0:
+                    price = float(fill[u'price'])
                     if price > max_price:
                         max_price = price
                     if min_price == 0 or price < min_price:
                         min_price = price
-                if 'type' in fill: order_type = fill['type']
-                if 'symbol' in fill: symbol = fill['symbol']
-                if 'commission' in fill: commission = fill['commission']
+                if u'type' in fill: order_type = str(fill[u'type'])
+                if u'symbol' in fill: symbol = str(fill[u'symbol'])
+                if u'commission' in fill: commission = float(fill[u'commission'])
 
-        if not symbol or status != 'FILLED':
+        if not symbol or (status != 'FILLED' and status != u'FILLED'):
             return None
 
         if not side or not order_type:
             return None
 
-        if side == 'BUY':
+        if side == 'BUY' or side == u'BUY':
             price = max_price
-        elif side == 'SELL':
+        elif side == 'SELL' or side == u'SELL':
             price = min_price
 
         if order_type == 'MARKET' and side == 'BUY':
