@@ -335,7 +335,10 @@ class OrderHandler(object):
             order = self.accnt.parse_order_result(result, symbol=ticker_id)
             if isinstance(order, type(None)):
                 # parse_order_result() failed to parse json
-                self.logger.info("order failed: {}".format(str(result)))
+                message = "order failed: {}".format(str(result))
+                self.logger.info(message)
+                if self.notify:
+                    self.notify.send(subject="MultiTrader", text=message)
                 self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
                 return
             else:
