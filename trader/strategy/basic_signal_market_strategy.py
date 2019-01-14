@@ -349,10 +349,11 @@ class basic_signal_market_strategy(StrategyBase):
                                            signal.id,
                                            price,
                                            signal.buy_size,
-                                           asset_info=self.asset_info)
+                                           asset_info=self.asset_info,
+                                           buy_type=signal.buy_type)
         else:
             self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size,
-                                        sig_id=signal.id, asset_info=self.asset_info)
+                                        sig_id=signal.id, asset_info=self.asset_info, buy_type=signal.buy_type)
             # for trader running live. Delay setting buy_price until next price
             self.update_buy_price = True
 
@@ -377,10 +378,11 @@ class basic_signal_market_strategy(StrategyBase):
                                             sell_price,
                                             signal.buy_size,
                                             signal.buy_price,
-                                            asset_info=self.asset_info)
+                                            asset_info=self.asset_info,
+                                            sell_type=signal.sell_type)
         else:
             self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price,
-                                         sig_id=signal.id, asset_info=self.asset_info)
+                                         sig_id=signal.id, asset_info=self.asset_info, sell_type=signal.sell_type)
 
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0

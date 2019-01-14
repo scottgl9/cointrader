@@ -330,7 +330,7 @@ class OrderHandler(object):
             message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
             self.logger.info(message)
             if self.store_trades:
-                self.store_trade_json(ticker_id, price, size, 'buy')
+                self.store_trade_json(ticker_id, price, size, 'buy', trade_type=msg.buy_type)
         else:
             order = self.accnt.parse_order_result(result, symbol=ticker_id)
             if isinstance(order, type(None)):
@@ -430,7 +430,7 @@ class OrderHandler(object):
 
             self.logger.info(message)
             if self.store_trades:
-                self.store_trade_json(ticker_id, price, size, 'sell', buy_price)
+                self.store_trade_json(ticker_id, price, size, 'sell', buy_price, trade_type=msg.sell_type)
 
             if not self.accnt.simulate:
                 self.accnt.get_account_balances()
@@ -459,12 +459,13 @@ class OrderHandler(object):
 
 
     # store trade into json trade cache
-    def store_trade_json(self, ticker_id, price, size, type, buy_price=0):
+    def store_trade_json(self, ticker_id, price, size, type, buy_price=0, trade_type=0):
         result = {'symbol': ticker_id,
                   'size': size,
                   'price': price,
                   'type': type,
-                  'index': self.counters[ticker_id]}
+                  'index': self.counters[ticker_id],
+                  'trade_type': trade_type}
 
         if type == 'sell':
             result['buy_price'] = buy_price

@@ -222,8 +222,8 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.sell_type = 6
             return True
 
-        if (self.ema_cross_12_26.ma1_trend_down() and self.ema_cross_12_26.ma2_trend_down() and
-                self.ema_cross_26_50.ma2_trend_down()) and self.obv_ema_cross_26_50.ma2_trend_down():
+        if (self.ema_cross_12_200.ma1_trend_down() and self.ema_cross_12_200.ma2_trend_down() and
+                self.ema_cross_26_100.ma1_trend_down()) and self.ema_cross_26_100.ma2_trend_down():
             # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
             if (self.last_close - self.buy_price) / self.buy_price < -0.05:
                 self.disabled = True
