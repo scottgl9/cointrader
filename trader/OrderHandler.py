@@ -436,7 +436,7 @@ class OrderHandler(object):
                 self.accnt.get_account_balances()
                 # remove from trade db since it has been sold
                 self.trader_db.remove_trade(ticker_id, sig_id)
-                self.msg_handler.sell_complete(ticker_id, price, size, sig_id)
+                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
         elif not self.accnt.simulate:
