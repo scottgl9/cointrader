@@ -350,6 +350,7 @@ class OrderHandler(object):
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
             else:
+                self.logger.info("order failed: {}".format(str(order)))
                 self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
                 return
 

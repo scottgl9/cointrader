@@ -185,6 +185,8 @@ class basic_signal_market_strategy(StrategyBase):
 
         self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp, cache_db=cache_db)
 
+        completed = False
+
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages(src_id=Message.ID_MULTI, dst_id=self.ticker_id):
                 if not msg:
@@ -194,10 +196,12 @@ class basic_signal_market_strategy(StrategyBase):
                     signal.buy_price = msg.price
                     signal.buy_price_high = signal.buy_price
                     msg.mark_read()
+                    completed = True
                 elif msg.cmd == Message.MSG_SELL_COMPLETE:
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
                     msg.mark_read()
+                    completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     if not self.accnt.simulate:
@@ -246,7 +250,7 @@ class basic_signal_market_strategy(StrategyBase):
                 self.disable_buy = signal.disable_buy
                 self.enable_buy = signal.enable_buy
             else:
-                self.run_update_signal(signal, close)
+                self.run_update_signal(signal, close, signal_completed=completed)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
@@ -255,7 +259,7 @@ class basic_signal_market_strategy(StrategyBase):
         self.last_high = self.high
 
 
-    def run_update_signal(self, signal, price):
+    def run_update_signal(self, signal, price, signal_completed=False):
         # handle delayed buy/sell message
         if self.accnt.simulate and self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
             signal.buy_price = price
@@ -284,13 +288,6 @@ class basic_signal_market_strategy(StrategyBase):
         if signal.buy_price_high != 0 and price > signal.buy_price_high:
             signal.buy_price_high = price
 
-        #if not self.accnt.simulate and self.update_buy_price and price > signal.buy_price:
-        #    signal.buy_price = price
-        #    self.update_buy_price = False
-        #elif not self.accnt.simulate and self.update_sell_price:
-        #    signal.last_sell_price = price
-        #    self.update_sell_price = False
-
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
             return
@@ -314,10 +311,10 @@ class basic_signal_market_strategy(StrategyBase):
             if balance_available != 0 and signal.sell_signal():
                 self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
 
-        if self.buy_signal(signal, price):
+        if not signal_completed and self.buy_signal(signal, price):
             self.buy(signal, price)
 
-        if self.sell_signal(signal, price):
+        if not signal_completed and self.sell_signal(signal, price):
             self.sell(signal, price)
 
 
