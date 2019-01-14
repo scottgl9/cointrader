@@ -131,12 +131,12 @@ class basic_signal_market_strategy(StrategyBase):
         #if not signal.sell_marked and signal.sell_signal():
         #    signal.sell_marked = True
 
-        if self.base == 'ETH' or self.base == 'BNB':
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
-                return False
-        else:
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
-                return False
+        #if self.base == 'ETH' or self.base == 'BNB':
+        #    if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
+        #        return False
+        #else:
+        if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
+            return False
 
         #if signal.sell_marked:
         #    return True
@@ -295,9 +295,9 @@ class basic_signal_market_strategy(StrategyBase):
         # check if coin was already sold (probably manually), and if so mark as SOLD
         balance = self.round_base(float(self.accnt.get_asset_balance(self.base)['balance']))
         if not self.simulate and signal.buy_size != 0 and balance != 0 and signal.buy_size < balance:
-            #self.logger.info("ALREADY_SOLD for {} buy_price={} size={}".format(self.ticker_id,
-            #                                                                   signal.buy_price,
-            #                                                                   signal.size))
+            self.logger.info("ALREADY_SOLD for {} buy_price={} size={}".format(self.ticker_id,
+                                                                               signal.buy_price,
+                                                                               signal.size))
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0
             signal.last_buy_price = signal.buy_price
@@ -339,7 +339,6 @@ class basic_signal_market_strategy(StrategyBase):
         signal.buy_timestamp = self.timestamp
         signal.last_buy_ts = self.timestamp
         signal.sell_timestamp = 0
-        signal.buy_price_high = signal.buy_price
 
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
@@ -393,7 +392,6 @@ class basic_signal_market_strategy(StrategyBase):
             signal.last_sell_ts = self.timestamp
             signal.buy_timestamp = 0
             signal.sell_timestamp = self.timestamp
-            signal.buy_price_high = 0
 
             # for trader running live. Delay setting sell_price until next price
             self.update_sell_price = True

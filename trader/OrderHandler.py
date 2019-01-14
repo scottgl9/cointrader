@@ -333,7 +333,12 @@ class OrderHandler(object):
                 self.store_trade_json(ticker_id, price, size, 'buy')
         else:
             order = self.accnt.parse_order_result(result, symbol=ticker_id)
-            if order:
+            if isinstance(order, type(None)):
+                # parse_order_result() failed to parse json
+                self.logger.info("order failed: {}".format(str(result)))
+                self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
+                return
+            else:
                 self.logger.info("buy_order: {}".format(str(order)))
                 # update price from actual sell price for live trading
                 if float(order.price) != 0 and float(price) != float(order.price):
@@ -349,10 +354,6 @@ class OrderHandler(object):
                 self.msg_handler.buy_complete(ticker_id, price, size, sig_id)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
-            else:
-                self.logger.info("order failed: {}".format(str(order)))
-                self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
-                return
 
         self.trade_balance_handler.update_for_buy(price, size, asset_info=msg.asset_info, symbol=ticker_id)
 
