@@ -252,12 +252,14 @@ class mainWindow(QtGui.QTabWidget):
             #    macd_signal_values.append(macd.signal.result)
             i += 1
 
+
+        handles = []
         ax = self.tabs[name].figure.add_subplot(211)
         for trade in trades:
             if trade['type'] == 'buy':
-                ax.axvline(x=trade['index'], color='green')
+                handles.append(ax.axvline(x=trade['index'], color='green', label="BUY_{}".format(trade['trade_type'])))
             elif trade['type'] == 'sell':
-                ax.axvline(x=trade['index'], color='red')
+                handles.append(ax.axvline(x=trade['index'], color='red', label="SELL_{}".format(trade['trade_type'])))
         fig1, = ax.plot(prices, label=name)
         fig2, = ax.plot(tspc_x_values, tspc_values, label="TPSC")
         fig3, = ax.plot(ema12_values, label="EMA12")
@@ -265,7 +267,9 @@ class mainWindow(QtGui.QTabWidget):
         fig5, = ax.plot(ema50_values, label="EMA50")
         fig6, = ax.plot(maavg_x_values, maavg_values, label="MAAVG")
         fig7, = ax.plot(ema200_values, label="EMA200")
-        ax.legend(handles=[fig1, fig2, fig3, fig4, fig5, fig6, fig7])
+        for f in [fig1, fig2, fig3, fig4, fig5, fig6, fig7]:
+            handles.append(f)
+        ax.legend(handles=handles)
         #ax2 = self.tabs[name].figure.add_subplot(312)
         #ax2.plot(macd_diff_values)
         #ax2.plot(macd_signal_values)
