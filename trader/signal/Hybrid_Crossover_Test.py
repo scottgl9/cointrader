@@ -184,7 +184,10 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        if self.diff_ema_12_200.cross_up and self.diff_ema_12_200.is_near_current_max(percent=1.0):
+        if self.diff_ema_12_200.is_near_current_max(percent=1.0):
+            return False
+
+        if self.ema_cross_12_200.is_near_post_crossup_max(percent=1.0):
             return False
 
         if (self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up and

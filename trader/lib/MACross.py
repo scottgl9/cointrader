@@ -81,11 +81,6 @@ class MACross(object):
     # that is already being updated, so that we don't have to compute
     # for example, EMA50(value) twice, instead we can re-use from another MACross instance
     def update(self, value, ts, ma1=None, ma2=None, ma1_result=0, ma2_result=0):
-        #if not self.ma1:
-        #    self.ma1 = self.indicator(self.ema_win1, scale=self.scale, lag_window=self.lag_window)
-        #if not self.ma2:
-        #    self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
-
         if self.ma1 and not ma1 and ma1_result == 0:
             self.ma1.update(value)
             self.ma1_result = self.ma1.result
@@ -262,3 +257,20 @@ class MACross(object):
         if self.pre_cross_down_max_value == 0:
             return 0
         return 100.0 * (self.pre_cross_down_max_value - self.cross_down_value) / self.pre_cross_down_max_value
+
+    def is_near_post_crossup_max(self, value=0, cutoff=0.01, percent=0.5):
+        if self.post_cross_up_max_value == 0 or self.cross_up_value == 0:
+            return False
+
+        if self.cross_up_ts == 0 or self.cross_down_ts > self.cross_up_ts:
+            return False
+
+        if value == 0:
+            value = self.last_value
+
+        if abs((self.cross_up_value - self.post_cross_up_max_value) / self.cross_up_value) < cutoff:
+            return False
+
+        if abs(100.0 * (value - self.post_cross_up_max_value) / self.post_cross_up_max_value) <= percent:
+            return True
+        return False

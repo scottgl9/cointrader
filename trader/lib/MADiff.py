@@ -73,7 +73,7 @@ class MADiff(object):
         if not self._ready or self.max_diff == 0 or self.result == 0:
             return False
 
-        if not self.cross_up and not self.cross_down:
+        if self.cross_up_ts == 0 or self.cross_down_ts > self.cross_up_ts:
             return False
 
         if abs((self.ma1_result - self.ma2_result) / self.ma2_result) < cutoff:
