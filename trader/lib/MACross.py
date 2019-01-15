@@ -258,11 +258,14 @@ class MACross(object):
             return 0
         return 100.0 * (self.pre_cross_down_max_value - self.cross_down_value) / self.pre_cross_down_max_value
 
-    def is_near_post_crossup_max(self, value=0, cutoff=0.01, percent=0.5):
+    def is_near_post_crossup_max(self, value=0, cutoff=0.01, percent=0.5, ts_diff_cross=(1000*500)):
         if self.post_cross_up_max_value == 0 or self.cross_up_value == 0:
             return False
 
         if self.cross_up_ts == 0 or self.cross_down_ts > self.cross_up_ts:
+            return False
+
+        if ts_diff_cross != 0 and (self.last_ts - self.cross_up_ts) < ts_diff_cross:
             return False
 
         if value == 0:
