@@ -1,84 +1,87 @@
-[INFO ]  Running simulate with cryptocurrency_database.miniticker_collection_11202018.db signal Hybrid_Crossover_Test
-[INFO ]  Resetting initial BTC...
-[INFO ]  Initial BTC value = 0.06
-[INFO ]  Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
-[INFO ]  Resetting initial BTC...
-[INFO ]  Initial BTC=0.06
-[INFO ]  buy(1, XRPBTC, 40.0) @ 9.914e-05
-[INFO ]  buy(1, IOTABTC, 60.0) @ 6.71e-05
-[INFO ]  buy(1, BCHSVBTC, 0.311) @ 0.012866
-[INFO ]  buy(1, ETCBTC, 3.14) @ 0.001274
-[INFO ]  buy(1, TUSDBTC, 20.0) @ 0.00023433
-[INFO ]  buy(1, HCBTC, 18.87) @ 0.000212
-[INFO ]  buy(1, EOSBTC, 4.72) @ 0.0008474
-[INFO ]  buy(1, PPTBTC, 10.82) @ 0.0003628
-[INFO ]  buy(1, LTCBTC, 0.53) @ 0.007522
-[INFO ]  buy(1, GASBTC, 6.43) @ 0.000622
-[INFO ]  buy(1, MCOBTC, 7.17) @ 0.000556
-[INFO ]  buy(1, QKCBTC, 430.0) @ 9.32e-06
-[INFO ]  buy(1, CVCBTC, 240.0) @ 1.643e-05
-[INFO ]  buy(1, ZECBTC, 0.209) @ 0.019164
-[INFO ]  sell(1, CVCBTC, 240.0) @ 1.72e-05 (bought @ 1.643e-05, 4.69%)	-0.62%
-[INFO ]  buy(1, REPBTC, 2.133) @ 0.001876
-[INFO ]  sell(1, PPTBTC, 10.82) @ 0.00037 (bought @ 0.0003628, 1.98%)	-0.66%
-[INFO ]  buy(1, POLYBTC, 120.0) @ 3.302e-05
-[INFO ]  buy(1, NULSBTC, 30.0) @ 0.00011535
-[INFO ]  sell(1, MCOBTC, 7.17) @ 0.000565 (bought @ 0.000556, 1.62%)	-0.16%
-[INFO ]  buy(1, ONTBTC, 18.09) @ 0.000221
-[INFO ]  sell(1, BCHSVBTC, 0.311) @ 0.013053 (bought @ 0.012866, 1.45%)	-1.33%
-[INFO ]  buy(1, GVTBTC, 3.32) @ 0.001203
-[INFO ]  sell(1, GVTBTC, 3.32) @ 0.0012202 (bought @ 0.001203, 1.43%)	-0.47%
-[INFO ]  buy(1, BCHSVBTC, 0.302) @ 0.013283
-[INFO ]  sell(1, NULSBTC, 30.0) @ 0.0001309 (bought @ 0.00011535, 13.48%)	-0.48%
-[INFO ]  buy(1, XLMBTC, 90.0) @ 4.296e-05
-[INFO ]  sell(1, ONTBTC, 18.09) @ 0.0002278 (bought @ 0.000221, 3.08%)	-0.56%
-[INFO ]  buy(1, ADABTC, 400.0) @ 1.006e-05
-[INFO ]  sell(1, IOTABTC, 60.0) @ 6.881e-05 (bought @ 6.71e-05, 2.55%)	-0.62%
-[INFO ]  buy(1, ZRXBTC, 40.0) @ 9.504e-05
-[INFO ]  sell(1, XLMBTC, 90.0) @ 4.452e-05 (bought @ 4.296e-05, 3.63%)	0.63%
-[INFO ]  buy(1, CVCBTC, 230.0) @ 1.724e-05
-[INFO ]  sell(1, QKCBTC, 430.0) @ 9.8e-06 (bought @ 9.32e-06, 5.15%)	0.59%
-[INFO ]  buy(1, XMRBTC, 0.265) @ 0.015087
-[INFO ]  sell(1, ADABTC, 400.0) @ 1.02e-05 (bought @ 1.006e-05, 1.39%)	0.25%
-[INFO ]  buy(1, DOCKBTC, 1300.0) @ 3.08e-06
-[INFO ]  sell(1, XMRBTC, 0.265) @ 0.015216 (bought @ 0.015087, 0.86%)	0.94%
-[INFO ]  buy(1, USDCBTC, 20.0) @ 0.00022778
-[INFO ]  sell(1, ZRXBTC, 40.0) @ 9.666e-05 (bought @ 9.504e-05, 1.7%)	0.98%
-[INFO ]  buy(1, XLMBTC, 90.0) @ 4.42e-05
-[INFO ]  sell(1, HCBTC, 18.87) @ 0.0002142 (bought @ 0.000212, 1.04%)	1.02%
-[INFO ]  buy(1, ONTBTC, 18.02) @ 0.000222
-[INFO ]  sell(1, DOCKBTC, 1300.0) @ 3.12e-06 (bought @ 3.08e-06, 1.3%)	1.05%
-[INFO ]  buy(1, WTCBTC, 11.94) @ 0.0003335
-[INFO ]  sell(1, BCHSVBTC, 0.302) @ 0.01196 (bought @ 0.013283, -9.96%)	0.99%
-[INFO ]  buy(1, XMRBTC, 0.263) @ 0.015235
-[INFO ]  sell(1, CVCBTC, 230.0) @ 1.557e-05 (bought @ 1.724e-05, -9.69%)	0.65%
-[INFO ]  buy(1, ZRXBTC, 40.0) @ 9.525e-05
-[INFO ]  sell(1, REPBTC, 2.133) @ 0.002278 (bought @ 0.001876, 21.43%)	-0.05%
-[INFO ]  buy(1, EVXBTC, 60.0) @ 6.571e-05
-[INFO ]  sell(1, POLYBTC, 120.0) @ 2.969e-05 (bought @ 3.302e-05, -10.08%)	-0.65%
-[INFO ]  buy(1, DASHBTC, 0.171) @ 0.023364
-[INFO ]  sell(1, TUSDBTC, 20.0) @ 0.0002381 (bought @ 0.00023433, 1.61%)	-0.55%
-[INFO ]  buy(1, NEOBTC, 2.09) @ 0.001918
-[INFO ]  sell(1, USDCBTC, 20.0) @ 0.00023592 (bought @ 0.00022778, 3.57%)	-0.26%
-[INFO ]  buy(1, TRXBTC, 1270.0) @ 3.14e-06
-[INFO ]  sell(1, DASHBTC, 0.171) @ 0.023693 (bought @ 0.023364, 1.41%)	0.07%
-[INFO ]  buy(1, IOTABTC, 60.0) @ 7.04e-05
-[INFO ]  total time (hours): 56.97
-[INFO ]  {u'NEO': {'available': 2.09, 'balance': 2.09}, u'XLM': {'available': 90.0, 'balance': 90.0}, u'EOS': {'available': 4.72, 'balance': 4.72}, u'ETC': {'available': 3.14, 'balance': 3.14}, u'GAS': {'available': 6.43, 'balance': 6.43}, u'WTC': {'available': 11.94, 'balance': 11.94}, u'IOTA': {'available': 60.0, 'balance': 60.0}, u'ONT': {'available': 18.02, 'balance': 18.02}, u'ZRX': {'available': 40.0, 'balance': 40.0}, u'LTC': {'available': 0.53, 'balance': 0.53}, u'TRX': {'available': 1270.0, 'balance': 1270.0}, u'XRP': {'available': 40.0, 'balance': 40.0}, u'XMR': {'available': 0.263, 'balance': 0.263}, u'ZEC': {'available': 0.209, 'balance': 0.209}, u'EVX': {'available': 60.0, 'balance': 60.0}, 'BTC': {'available': 0.0018014999999999975, 'balance': 0.0018014999999999975}}
-[INFO ]  Final BTC=0.060164958 profit=0.27%
-[INFO ]  NEOBTC (1): 0.52%
-[INFO ]  LTCBTC (1): 0.13%
-[INFO ]  IOTABTC (1): 0.1%
-[INFO ]  EOSBTC (1): -2.27%
-[INFO ]  TRXBTC (1): -0.32%
-[INFO ]  GASBTC (1): -6.11%
-[INFO ]  ONTBTC (1): -1.08%
-[INFO ]  WTCBTC (1): -5.67%
-[INFO ]  ZRXBTC (1): -1.51%
-[INFO ]  EVXBTC (1): -3.82%
-[INFO ]  XMRBTC (1): -0.63%
-[INFO ]  XRPBTC (1): -3.65%
-[INFO ]  ZECBTC (1): -7.07%
-[INFO ]  XLMBTC (1): -4.12%
-[INFO ]  ETCBTC (1): -3.06%
-[INFO ]  {u'NEO': {'balance': 2.09}, u'XLM': {'balance': 90.0}, u'NULS': {'balance': 0.0}, u'DASH': {'balance': 0.0}, u'REP': {'balance': 0.0}, u'POLY': {'balance': 0.0}, u'EOS': {'balance': 4.72}, u'ETC': {'balance': 3.14}, u'HC': {'balance': 0.0}, u'CVC': {'balance': 0.0}, u'QKC': {'balance': 0.0}, u'GAS': {'balance': 6.43}, u'WTC': {'balance': 11.94}, u'XMR': {'balance': 0.263}, u'PPT': {'balance': 0.0}, u'IOTA': {'balance': 60.0}, u'ONT': {'balance': 18.02}, u'BCHSV': {'balance': 0.0}, u'USDC': {'balance': 0.0}, u'ZRX': {'balance': 40.0}, u'LTC': {'balance': 0.53}, u'DOCK': {'balance': 0.0}, u'ADA': {'balance': 0.0}, u'XRP': {'balance': 40.0}, u'GVT': {'balance': 0.0}, u'MCO': {'balance': 0.0}, u'ZEC': {'balance': 0.209}, u'TRX': {'balance': 1270.0}, u'EVX': {'balance': 60.0}, u'TUSD': {'balance': 0.0}}
+Running simulate with cryptocurrency_database.miniticker_collection_11202018.db signal Hybrid_Crossover_Test
+Resetting initial BTC...
+Initial BTC value = 0.06
+Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
+Resetting initial BTC...
+buy(1, XRPBTC, 40.0) @ 9.914e-05
+buy(1, IOTABTC, 60.0) @ 6.71e-05
+buy(1, BCHSVBTC, 0.311) @ 0.012866
+buy(1, ETCBTC, 3.14) @ 0.001274
+buy(1, TUSDBTC, 20.0) @ 0.00023433
+buy(1, HCBTC, 18.87) @ 0.000212
+buy(1, EOSBTC, 4.72) @ 0.0008474
+buy(1, PPTBTC, 10.82) @ 0.0003628
+buy(1, LTCBTC, 0.53) @ 0.007522
+buy(1, GASBTC, 6.43) @ 0.000622
+buy(1, MCOBTC, 7.17) @ 0.000556
+buy(1, QKCBTC, 430.0) @ 9.32e-06
+buy(1, CVCBTC, 240.0) @ 1.643e-05
+buy(1, ZECBTC, 0.209) @ 0.019164
+sell(1, CVCBTC, 240.0) @ 1.72e-05 (bought @ 1.643e-05, 4.69%)	-0.62%
+buy(1, REPBTC, 2.133) @ 0.001876
+sell(1, PPTBTC, 10.82) @ 0.00037 (bought @ 0.0003628, 1.98%)	-0.66%
+buy(1, POLYBTC, 120.0) @ 3.302e-05
+buy(1, NULSBTC, 30.0) @ 0.00011535
+sell(1, MCOBTC, 7.17) @ 0.000565 (bought @ 0.000556, 1.62%)	-0.16%
+buy(1, ONTBTC, 18.09) @ 0.000221
+sell(1, BCHSVBTC, 0.311) @ 0.013053 (bought @ 0.012866, 1.45%)	-1.33%
+buy(1, GVTBTC, 3.32) @ 0.001203
+sell(1, GVTBTC, 3.32) @ 0.0012202 (bought @ 0.001203, 1.43%)	-0.47%
+buy(1, BCHSVBTC, 0.302) @ 0.013283
+sell(1, NULSBTC, 30.0) @ 0.0001309 (bought @ 0.00011535, 13.48%)	-0.48%
+buy(1, XLMBTC, 90.0) @ 4.296e-05
+sell(1, ONTBTC, 18.09) @ 0.0002278 (bought @ 0.000221, 3.08%)	-0.56%
+buy(1, ADABTC, 400.0) @ 1.006e-05
+sell(1, IOTABTC, 60.0) @ 6.881e-05 (bought @ 6.71e-05, 2.55%)	-0.62%
+buy(1, ZRXBTC, 40.0) @ 9.504e-05
+sell(1, XLMBTC, 90.0) @ 4.452e-05 (bought @ 4.296e-05, 3.63%)	0.63%
+buy(1, CVCBTC, 230.0) @ 1.724e-05
+sell(1, QKCBTC, 430.0) @ 9.8e-06 (bought @ 9.32e-06, 5.15%)	0.59%
+buy(1, XMRBTC, 0.265) @ 0.015087
+sell(1, ADABTC, 400.0) @ 1.02e-05 (bought @ 1.006e-05, 1.39%)	0.25%
+buy(1, DOCKBTC, 1300.0) @ 3.08e-06
+sell(1, XMRBTC, 0.265) @ 0.015216 (bought @ 0.015087, 0.86%)	0.94%
+buy(1, USDCBTC, 20.0) @ 0.00022778
+sell(1, ZRXBTC, 40.0) @ 9.666e-05 (bought @ 9.504e-05, 1.7%)	0.98%
+buy(1, XLMBTC, 90.0) @ 4.42e-05
+sell(1, HCBTC, 18.87) @ 0.0002142 (bought @ 0.000212, 1.04%)	1.02%
+buy(1, ONTBTC, 18.02) @ 0.000222
+sell(1, DOCKBTC, 1300.0) @ 3.12e-06 (bought @ 3.08e-06, 1.3%)	1.05%
+buy(1, WTCBTC, 11.94) @ 0.0003335
+sell(1, BCHSVBTC, 0.302) @ 0.01196 (bought @ 0.013283, -9.96%)	0.99%
+buy(1, XMRBTC, 0.263) @ 0.015235
+sell(1, CVCBTC, 230.0) @ 1.557e-05 (bought @ 1.724e-05, -9.69%)	0.65%
+buy(1, ZRXBTC, 40.0) @ 9.525e-05
+sell(1, REPBTC, 2.133) @ 0.002278 (bought @ 0.001876, 21.43%)	-0.05%
+buy(1, EVXBTC, 60.0) @ 6.571e-05
+sell(1, POLYBTC, 120.0) @ 2.969e-05 (bought @ 3.302e-05, -10.08%)	-0.65%
+buy(1, DASHBTC, 0.171) @ 0.023364
+sell(1, TUSDBTC, 20.0) @ 0.0002381 (bought @ 0.00023433, 1.61%)	-0.55%
+buy(1, NEOBTC, 2.09) @ 0.001918
+sell(1, USDCBTC, 20.0) @ 0.00023592 (bought @ 0.00022778, 3.57%)	-0.26%
+buy(1, TRXBTC, 1270.0) @ 3.14e-06
+sell(1, DASHBTC, 0.171) @ 0.023693 (bought @ 0.023364, 1.41%)	0.07%
+buy(1, IOTABTC, 60.0) @ 7.04e-05
+
+Trade Symbol Profits:
+NEOBTC (1): 0.52%
+LTCBTC (1): 0.13%
+IOTABTC (1): 0.1%
+EOSBTC (1): -2.27%
+TRXBTC (1): -0.32%
+GASBTC (1): -6.11%
+ONTBTC (1): -1.08%
+WTCBTC (1): -5.67%
+ZRXBTC (1): -1.51%
+EVXBTC (1): -3.82%
+XMRBTC (1): -0.63%
+XRPBTC (1): -3.65%
+ZECBTC (1): -7.07%
+XLMBTC (1): -4.12%
+ETCBTC (1): -3.06%
+
+Results:
+Total Capture Time:	56.97 hours
+Initial BTC total:	0.06
+Final BTC total:	0.060164958
+Percent Profit: 	0.27%

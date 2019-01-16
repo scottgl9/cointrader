@@ -53,6 +53,7 @@ def add_column(c, name, id):
     c.commit()
 
 def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
+    start_time = time.time()
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
@@ -116,13 +117,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                 total_btc = multitrader.accnt.get_total_btc_value(tickers)
                 initial_btc_total = total_btc
                 multitrader.update_initial_btc()
-                logger.info("Initial BTC={}".format(total_btc))
-
-        # if we are using BTC_USDT_Signal, make sure BTCUSDT get processed as well
-        #if "BTC_USDT_Signal" not in signal_names:
-        #    disable_usdt = True
-        #else:
-        #    disable_usdt = False
+                #logger.info("Initial BTC={}".format(total_btc))
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
         if msg['s'].endswith("USDT"):
@@ -156,13 +151,10 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
         cache_db.commit()
         cache_db.close()
 
-    total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
-    logger.info("total time (hours): {}".format(round(total_time_hours, 2)))
-
-    logger.info(multitrader.accnt.balances)
+    print(multitrader.accnt.balances)
+    logger.info("\nTrade Symbol Profits:")
     final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
-    pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
-    logger.info("Final BTC={} profit={}%".format(multitrader.accnt.get_total_btc_value(tickers=tickers), pprofit))
+    total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
     for pair in multitrader.trade_pairs.values():
         for signal in pair.strategy.get_signals():
             if signal.buy_price != 0.0:
@@ -172,7 +164,16 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                 pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
                 logger.info("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
-    logger.info(multitrader.order_handler.trade_balance_handler.get_balances())
+    total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
+    logger.info("\nResults:")
+    logger.info("Total Capture Time:\t{} hours".format(round(total_time_hours, 2)))
+    logger.info("Initial BTC total:\t{}".format(initial_btc_total))
+    logger.info("Final BTC total:\t{}".format(final_btc_total))
+    logger.info("Percent Profit: \t{}%".format(total_pprofit))
+
+    run_time = int(time.time() - start_time)
+    print("Simulation Run Time:\t{} seconds".format(run_time))
+    print(multitrader.order_handler.trade_balance_handler.get_balances())
 
     return multitrader.get_stored_trades()
 
@@ -237,7 +238,8 @@ if __name__ == '__main__':
     if not os.path.exists(results.cache_dir):
         os.mkdir(results.cache_dir)
 
-    logFormatter = logging.Formatter("[%(levelname)-5.5s]  %(message)s")
+    #logFormatter = logging.Formatter("[%(levelname)-5.5s]  %(message)s")
+    logFormatter = logging.Formatter("%(message)s")
     logger = logging.getLogger()
 
     trade_log_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.log'))

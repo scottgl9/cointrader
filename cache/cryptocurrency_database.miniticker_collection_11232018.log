@@ -1,128 +1,131 @@
-[INFO ]  Running simulate with cryptocurrency_database.miniticker_collection_11232018.db signal Hybrid_Crossover_Test
-[INFO ]  Resetting initial BTC...
-[INFO ]  Initial BTC value = 0.06
-[INFO ]  Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
-[INFO ]  Resetting initial BTC...
-[INFO ]  Initial BTC=0.06
-[INFO ]  buy(1, ONTBTC, 18.19) @ 0.0002199
-[INFO ]  buy(1, DOCKBTC, 1370.0) @ 2.9e-06
-[INFO ]  buy(1, QKCBTC, 390.0) @ 1.011e-05
-[INFO ]  buy(1, XMRBTC, 0.264) @ 0.01515
-[INFO ]  buy(1, BCHSVBTC, 0.427) @ 0.00935
-[INFO ]  buy(1, TRXBTC, 1280.0) @ 3.14e-06
-[INFO ]  buy(1, ADABTC, 400.0) @ 9.99e-06
-[INFO ]  buy(1, XRPBTC, 40.0) @ 9.543e-05
-[INFO ]  buy(1, ETHBTC, 0.276) @ 0.028955
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.276 new_size=0.276
-[INFO ]  buy(1, TRXETH, 920.0) @ 0.00010893
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.276 new_size=0.1757844
-[INFO ]  buy(1, XRPETH, 30.0) @ 0.00330275
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1757844 new_size=0.0767019
-[INFO ]  buy(1, NEOBTC, 2.07) @ 0.00193
-[INFO ]  buy(1, IOTXBTC, 1820.0) @ 2.19e-06
-[INFO ]  buy(1, DASHBTC, 0.17) @ 0.023612
-[INFO ]  buy(1, STEEMBTC, 44.89) @ 8.93e-05
-[INFO ]  buy(1, AIONBTC, 106.38) @ 3.77e-05
-[INFO ]  sell(1, QKCBTC, 390.0) @ 1.023e-05 (bought @ 1.011e-05, 1.19%)	0.39%
-[INFO ]  buy(1, INSBTC, 68.38) @ 5.85e-05
-[INFO ]  sell(1, BCHSVBTC, 0.427) @ 0.00953 (bought @ 0.00935, 1.93%)	0.25%
-[INFO ]  buy(1, ENGBTC, 50.0) @ 7.879e-05
-[INFO ]  sell(1, INSBTC, 68.38) @ 5.85e-05 (bought @ 5.85e-05, 0.0%)	-0.57%
-[INFO ]  buy(1, BTSBTC, 330.0) @ 1.207e-05
-[INFO ]  sell(1, DOCKBTC, 1370.0) @ 2.97e-06 (bought @ 2.9e-06, 2.41%)	-0.19%
-[INFO ]  buy(1, PHXBTC, 1570.0) @ 2.56e-06
-[INFO ]  sell(1, TRXETH, 920.0) @ 0.00011134 (bought @ 0.00010893, 2.21%)	-0.98%
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0767019 new_size=0.1791347
-[INFO ]  buy(1, EOSETH, 3.39) @ 0.029446
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1791347 new_size=0.0793127
-[INFO ]  sell(1, ONTBTC, 18.19) @ 0.0002207 (bought @ 0.0002199, 0.36%)	-0.96%
-[INFO ]  buy(1, XLMBTC, 100.0) @ 4.112e-05
-[INFO ]  sell(1, XRPETH, 30.0) @ 0.0033393 (bought @ 0.00330275, 1.11%)	-1.28%
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0793127 new_size=0.1794917
-[INFO ]  buy(1, MANAETH, 210.0) @ 0.00046745
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1794917 new_size=0.0813272
-[INFO ]  sell(1, NEOBTC, 2.07) @ 0.001976 (bought @ 0.00193, 2.38%)	0.48%
-[INFO ]  buy(1, OMGBTC, 10.08) @ 0.000398
-[INFO ]  sell(1, STEEMBTC, 44.89) @ 9.02e-05 (bought @ 8.93e-05, 1.01%)	0.65%
-[INFO ]  buy(1, BCHSVBTC, 0.309) @ 0.012945
-[INFO ]  sell(1, XMRBTC, 0.264) @ 0.015387 (bought @ 0.01515, 1.56%)	0.93%
-[INFO ]  buy(1, KEYBTC, 5060.0) @ 7.8e-07
-[INFO ]  sell(1, BCHSVBTC, 0.309) @ 0.01309 (bought @ 0.012945, 1.12%)	0.97%
-[INFO ]  buy(1, THETABTC, 300.0) @ 1.315e-05
-[INFO ]  buy(1, PAXETH, 10.0) @ 0.00809358
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0813272 new_size=0.0003914
-[INFO ]  sell(1, XLMBTC, 100.0) @ 4.162e-05 (bought @ 4.112e-05, 1.22%)	0.72%
-[INFO ]  buy(1, RVNBTC, 990.0) @ 4.03e-06
-[INFO ]  sell(1, TRXBTC, 1280.0) @ 3.17e-06 (bought @ 3.14e-06, 0.96%)	0.35%
-[INFO ]  buy(1, TUSDBTC, 20.0) @ 0.00023426
-[INFO ]  sell(1, IOTXBTC, 1820.0) @ 2.22e-06 (bought @ 2.19e-06, 1.37%)	-0.42%
-[INFO ]  buy(1, EOSBTC, 4.86) @ 0.0008239
-[INFO ]  sell(1, TUSDBTC, 20.0) @ 0.00023652 (bought @ 0.00023426, 0.96%)	-0.17%
-[INFO ]  buy(1, BATBTC, 110.0) @ 3.703e-05
-[INFO ]  sell(1, PAXETH, 10.0) @ 0.00826875 (bought @ 0.00809358, 2.16%)	-0.1%
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0003914 new_size=0.0830789
-[INFO ]  sell(1, BATBTC, 110.0) @ 3.734e-05 (bought @ 3.703e-05, 0.84%)	0.2%
-[INFO ]  buy(1, BCHSVBTC, 0.25) @ 0.016054
-[INFO ]  buy(1, PAXETH, 10.0) @ 0.00821912
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0830789 new_size=0.0008877
-[INFO ]  sell(1, PAXETH, 10.0) @ 0.00828659 (bought @ 0.00821912, 0.82%)	0.1%
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0008877 new_size=0.0837536
-[INFO ]  buy(1, TUSDETH, 10.0) @ 0.00832395
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0837536 new_size=0.0005141
-[INFO ]  sell(1, BCHSVBTC, 0.25) @ 0.016232 (bought @ 0.016054, 1.11%)	0.08%
-[INFO ]  buy(1, DOCKBTC, 1370.0) @ 2.94e-06
-[INFO ]  sell(1, EOSBTC, 4.86) @ 0.0008332 (bought @ 0.0008239, 1.13%)	0.09%
-[INFO ]  buy(1, QKCBTC, 350.0) @ 1.132e-05
-[INFO ]  sell(1, RVNBTC, 990.0) @ 4.07e-06 (bought @ 4.03e-06, 0.99%)	-0.38%
-[INFO ]  buy(1, TRXBTC, 1270.0) @ 3.16e-06
-[INFO ]  sell(1, AIONBTC, 106.38) @ 3.4e-05 (bought @ 3.77e-05, -9.81%)	0.12%
-[INFO ]  buy(1, XEMBTC, 230.0) @ 1.752e-05
-[INFO ]  sell(1, MANAETH, 210.0) @ 0.00047064 (bought @ 0.00046745, 0.68%)	-0.95%
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0005141 new_size=0.0993485
-[INFO ]  sell(1, TRXBTC, 1270.0) @ 3.19e-06 (bought @ 3.16e-06, 0.95%)	-0.84%
-[INFO ]  buy(1, BNTBTC, 20.0) @ 0.00017221
-[INFO ]  sell(1, XRPBTC, 40.0) @ 9.63e-05 (bought @ 9.543e-05, 0.91%)	-0.5%
-[INFO ]  buy(1, XRPETH, 30.0) @ 0.00330501
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0993485 new_size=0.0001982
-[INFO ]  buy(1, NANOBTC, 16.76) @ 0.0002398
-[INFO ]  sell(1, QKCBTC, 350.0) @ 1.164e-05 (bought @ 1.132e-05, 2.83%)	0.23%
-[INFO ]  buy(1, IOTABTC, 60.0) @ 7.194e-05
-[INFO ]  sell(1, NANOBTC, 16.76) @ 0.0002428 (bought @ 0.0002398, 1.25%)	-0.3%
-[INFO ]  buy(1, BCHABCBTC, 0.085000000) @ 0.046958
-[INFO ]  sell(1, XEMBTC, 230.0) @ 1.778e-05 (bought @ 1.752e-05, 1.48%)	-1.51%
-[INFO ]  buy(1, HCBTC, 17.53) @ 0.000229
-[INFO ]  sell(1, PHXBTC, 1570.0) @ 2.31e-06 (bought @ 2.56e-06, -9.77%)	-2.25%
-[INFO ]  buy(1, MDABTC, 30.0) @ 0.00015024
-[INFO ]  sell(1, ENGBTC, 50.0) @ 7.077e-05 (bought @ 7.879e-05, -10.18%)	-2.55%
-[INFO ]  buy(1, XRPBTC, 40.0) @ 8.972e-05
-[INFO ]  sell(1, XRPBTC, 40.0) @ 9.119e-05 (bought @ 8.972e-05, 1.64%)	-2.1%
-[INFO ]  buy(1, TUSDBTC, 10.0) @ 0.00027398
-[INFO ]  sell(1, DOCKBTC, 1370.0) @ 2.68e-06 (bought @ 2.94e-06, -8.84%)	-3.13%
-[INFO ]  buy(1, ETCBTC, 3.38) @ 0.001184
-[INFO ]  sell(1, TUSDETH, 10.0) @ 0.00957 (bought @ 0.00832395, 14.97%)	-2.59%
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0001982 new_size=0.0958982
-[INFO ]  buy(1, TUSDETH, 10.0) @ 0.00932753
-[INFO ]  ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0958982 new_size=0.0026229
-[INFO ]  sell(1, BTSBTC, 330.0) @ 1.235e-05 (bought @ 1.207e-05, 2.32%)	-1.26%
-[INFO ]  buy(1, XRPBTC, 40.0) @ 9.117e-05
-[INFO ]  total time (hours): 58.09
-[INFO ]  {u'EOS': {'available': 3.3899999999999997, 'balance': 3.3899999999999997}, u'ETC': {'available': 3.38, 'balance': 3.38}, u'HC': {'available': 17.53, 'balance': 17.53}, u'ETH': {'available': 0.002622900000000025, 'balance': 0.002622900000000025}, u'MDA': {'available': 30.0, 'balance': 30.0}, u'IOTA': {'available': 60.0, 'balance': 60.0}, u'BCHABC': {'available': 0.085, 'balance': 0.085}, u'KEY': {'available': 5060.0, 'balance': 5060.0}, u'BNT': {'available': 20.0, 'balance': 20.0}, u'DASH': {'available': 0.17, 'balance': 0.17}, u'ADA': {'available': 400.0, 'balance': 400.0}, u'THETA': {'available': 300.0, 'balance': 300.0}, u'XRP': {'available': 70.0, 'balance': 70.0}, u'OMG': {'available': 10.08, 'balance': 10.08}, 'BTC': {'available': 0.001163999999999998, 'balance': 0.001163999999999998}, u'TUSD': {'available': 20.0, 'balance': 20.0}}
-[INFO ]  Final BTC=0.0591294961367 profit=-1.45%
-[INFO ]  OMGBTC (1): -4.77%
-[INFO ]  IOTABTC (1): -0.32%
-[INFO ]  XRPETH (1): -5.22%
-[INFO ]  MDABTC (1): 5.78%
-[INFO ]  BNTBTC (1): -0.56%
-[INFO ]  KEYBTC (1): -5.13%
-[INFO ]  DASHBTC (1): -3.61%
-[INFO ]  ADABTC (1): -8.71%
-[INFO ]  TUSDBTC (1): -1.94%
-[INFO ]  ETHBTC (1): -0.11%
-[INFO ]  HCBTC (1): 3.36%
-[INFO ]  EOSETH (1): -0.73%
-[INFO ]  TUSDETH (1): -0.11%
-[INFO ]  BCHABCBTC (1): -5.85%
-[INFO ]  XRPBTC (1): -0.49%
-[INFO ]  THETABTC (1): -1.52%
-[INFO ]  ETCBTC (1): -1.69%
-[INFO ]  {u'STEEM': {'balance': 0.0}, u'XLM': {'balance': 0.0}, u'NEO': {'balance': 0.0}, u'PAX': {'balance': 0.0}, u'BAT': {'balance': 0.0}, u'EOS': {'balance': 3.3899999999999997}, u'ETC': {'balance': 3.38}, u'HC': {'balance': 17.53}, u'ETH': {'balance': 0.002622900000000025}, u'IOTX': {'balance': 0.0}, u'NANO': {'balance': 0.0}, u'QKC': {'balance': 0.0}, u'MDA': {'balance': 30.0}, u'RVN': {'balance': 0.0}, u'MANA': {'balance': 0.0}, u'AION': {'balance': 0.0}, u'IOTA': {'balance': 60.0}, u'ONT': {'balance': 0.0}, u'BCHABC': {'balance': 0.085}, u'BCHSV': {'balance': 0.0}, u'ENG': {'balance': 0.0}, u'BNT': {'balance': 20.0}, u'DASH': {'balance': 0.17}, u'TRX': {'balance': 0.0}, u'ADA': {'balance': 400.0}, u'THETA': {'balance': 300.0}, u'XRP': {'balance': 70.0}, u'XMR': {'balance': 0.0}, u'OMG': {'balance': 10.08}, u'BTS': {'balance': 0.0}, u'DOCK': {'balance': 0.0}, u'XEM': {'balance': 0.0}, u'INS': {'balance': 0.0}, u'PHX': {'balance': 0.0}, u'KEY': {'balance': 5060.0}, u'TUSD': {'balance': 20.0}}
+Running simulate with cryptocurrency_database.miniticker_collection_11232018.db signal Hybrid_Crossover_Test
+Resetting initial BTC...
+Initial BTC value = 0.06
+Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
+Resetting initial BTC...
+buy(1, ONTBTC, 18.19) @ 0.0002199
+buy(1, DOCKBTC, 1370.0) @ 2.9e-06
+buy(1, QKCBTC, 390.0) @ 1.011e-05
+buy(1, XMRBTC, 0.264) @ 0.01515
+buy(1, BCHSVBTC, 0.427) @ 0.00935
+buy(1, TRXBTC, 1280.0) @ 3.14e-06
+buy(1, ADABTC, 400.0) @ 9.99e-06
+buy(1, XRPBTC, 40.0) @ 9.543e-05
+buy(1, ETHBTC, 0.276) @ 0.028955
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.276 new_size=0.276
+buy(1, TRXETH, 920.0) @ 0.00010893
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.276 new_size=0.1757844
+buy(1, XRPETH, 30.0) @ 0.00330275
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1757844 new_size=0.0767019
+buy(1, NEOBTC, 2.07) @ 0.00193
+buy(1, IOTXBTC, 1820.0) @ 2.19e-06
+buy(1, DASHBTC, 0.17) @ 0.023612
+buy(1, STEEMBTC, 44.89) @ 8.93e-05
+buy(1, AIONBTC, 106.38) @ 3.77e-05
+sell(1, QKCBTC, 390.0) @ 1.023e-05 (bought @ 1.011e-05, 1.19%)	0.39%
+buy(1, INSBTC, 68.38) @ 5.85e-05
+sell(1, BCHSVBTC, 0.427) @ 0.00953 (bought @ 0.00935, 1.93%)	0.25%
+buy(1, ENGBTC, 50.0) @ 7.879e-05
+sell(1, INSBTC, 68.38) @ 5.85e-05 (bought @ 5.85e-05, 0.0%)	-0.57%
+buy(1, BTSBTC, 330.0) @ 1.207e-05
+sell(1, DOCKBTC, 1370.0) @ 2.97e-06 (bought @ 2.9e-06, 2.41%)	-0.19%
+buy(1, PHXBTC, 1570.0) @ 2.56e-06
+sell(1, TRXETH, 920.0) @ 0.00011134 (bought @ 0.00010893, 2.21%)	-0.98%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0767019 new_size=0.1791347
+buy(1, EOSETH, 3.39) @ 0.029446
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1791347 new_size=0.0793127
+sell(1, ONTBTC, 18.19) @ 0.0002207 (bought @ 0.0002199, 0.36%)	-0.96%
+buy(1, XLMBTC, 100.0) @ 4.112e-05
+sell(1, XRPETH, 30.0) @ 0.0033393 (bought @ 0.00330275, 1.11%)	-1.28%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0793127 new_size=0.1794917
+buy(1, MANAETH, 210.0) @ 0.00046745
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1794917 new_size=0.0813272
+sell(1, NEOBTC, 2.07) @ 0.001976 (bought @ 0.00193, 2.38%)	0.48%
+buy(1, OMGBTC, 10.08) @ 0.000398
+sell(1, STEEMBTC, 44.89) @ 9.02e-05 (bought @ 8.93e-05, 1.01%)	0.65%
+buy(1, BCHSVBTC, 0.309) @ 0.012945
+sell(1, XMRBTC, 0.264) @ 0.015387 (bought @ 0.01515, 1.56%)	0.93%
+buy(1, KEYBTC, 5060.0) @ 7.8e-07
+sell(1, BCHSVBTC, 0.309) @ 0.01309 (bought @ 0.012945, 1.12%)	0.97%
+buy(1, THETABTC, 300.0) @ 1.315e-05
+buy(1, PAXETH, 10.0) @ 0.00809358
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0813272 new_size=0.0003914
+sell(1, XLMBTC, 100.0) @ 4.162e-05 (bought @ 4.112e-05, 1.22%)	0.72%
+buy(1, RVNBTC, 990.0) @ 4.03e-06
+sell(1, TRXBTC, 1280.0) @ 3.17e-06 (bought @ 3.14e-06, 0.96%)	0.35%
+buy(1, TUSDBTC, 20.0) @ 0.00023426
+sell(1, IOTXBTC, 1820.0) @ 2.22e-06 (bought @ 2.19e-06, 1.37%)	-0.42%
+buy(1, EOSBTC, 4.86) @ 0.0008239
+sell(1, TUSDBTC, 20.0) @ 0.00023652 (bought @ 0.00023426, 0.96%)	-0.17%
+buy(1, BATBTC, 110.0) @ 3.703e-05
+sell(1, PAXETH, 10.0) @ 0.00826875 (bought @ 0.00809358, 2.16%)	-0.1%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0003914 new_size=0.0830789
+sell(1, BATBTC, 110.0) @ 3.734e-05 (bought @ 3.703e-05, 0.84%)	0.2%
+buy(1, BCHSVBTC, 0.25) @ 0.016054
+buy(1, PAXETH, 10.0) @ 0.00821912
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0830789 new_size=0.0008877
+sell(1, PAXETH, 10.0) @ 0.00828659 (bought @ 0.00821912, 0.82%)	0.1%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0008877 new_size=0.0837536
+buy(1, TUSDETH, 10.0) @ 0.00832395
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0837536 new_size=0.0005141
+sell(1, BCHSVBTC, 0.25) @ 0.016232 (bought @ 0.016054, 1.11%)	0.08%
+buy(1, DOCKBTC, 1370.0) @ 2.94e-06
+sell(1, EOSBTC, 4.86) @ 0.0008332 (bought @ 0.0008239, 1.13%)	0.09%
+buy(1, QKCBTC, 350.0) @ 1.132e-05
+sell(1, RVNBTC, 990.0) @ 4.07e-06 (bought @ 4.03e-06, 0.99%)	-0.38%
+buy(1, TRXBTC, 1270.0) @ 3.16e-06
+sell(1, AIONBTC, 106.38) @ 3.4e-05 (bought @ 3.77e-05, -9.81%)	0.12%
+buy(1, XEMBTC, 230.0) @ 1.752e-05
+sell(1, MANAETH, 210.0) @ 0.00047064 (bought @ 0.00046745, 0.68%)	-0.95%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0005141 new_size=0.0993485
+sell(1, TRXBTC, 1270.0) @ 3.19e-06 (bought @ 3.16e-06, 0.95%)	-0.84%
+buy(1, BNTBTC, 20.0) @ 0.00017221
+sell(1, XRPBTC, 40.0) @ 9.63e-05 (bought @ 9.543e-05, 0.91%)	-0.5%
+buy(1, XRPETH, 30.0) @ 0.00330501
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0993485 new_size=0.0001982
+buy(1, NANOBTC, 16.76) @ 0.0002398
+sell(1, QKCBTC, 350.0) @ 1.164e-05 (bought @ 1.132e-05, 2.83%)	0.23%
+buy(1, IOTABTC, 60.0) @ 7.194e-05
+sell(1, NANOBTC, 16.76) @ 0.0002428 (bought @ 0.0002398, 1.25%)	-0.3%
+buy(1, BCHABCBTC, 0.085000000) @ 0.046958
+sell(1, XEMBTC, 230.0) @ 1.778e-05 (bought @ 1.752e-05, 1.48%)	-1.51%
+buy(1, HCBTC, 17.53) @ 0.000229
+sell(1, PHXBTC, 1570.0) @ 2.31e-06 (bought @ 2.56e-06, -9.77%)	-2.25%
+buy(1, MDABTC, 30.0) @ 0.00015024
+sell(1, ENGBTC, 50.0) @ 7.077e-05 (bought @ 7.879e-05, -10.18%)	-2.55%
+buy(1, XRPBTC, 40.0) @ 8.972e-05
+sell(1, XRPBTC, 40.0) @ 9.119e-05 (bought @ 8.972e-05, 1.64%)	-2.1%
+buy(1, TUSDBTC, 10.0) @ 0.00027398
+sell(1, DOCKBTC, 1370.0) @ 2.68e-06 (bought @ 2.94e-06, -8.84%)	-3.13%
+buy(1, ETCBTC, 3.38) @ 0.001184
+sell(1, TUSDETH, 10.0) @ 0.00957 (bought @ 0.00832395, 14.97%)	-2.59%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0001982 new_size=0.0958982
+buy(1, TUSDETH, 10.0) @ 0.00932753
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0958982 new_size=0.0026229
+sell(1, BTSBTC, 330.0) @ 1.235e-05 (bought @ 1.207e-05, 2.32%)	-1.26%
+buy(1, XRPBTC, 40.0) @ 9.117e-05
+
+Trade Symbol Profits:
+OMGBTC (1): -4.77%
+IOTABTC (1): -0.32%
+XRPETH (1): -5.22%
+MDABTC (1): 5.78%
+BNTBTC (1): -0.56%
+KEYBTC (1): -5.13%
+DASHBTC (1): -3.61%
+ADABTC (1): -8.71%
+TUSDBTC (1): -1.94%
+ETHBTC (1): -0.11%
+HCBTC (1): 3.36%
+EOSETH (1): -0.73%
+TUSDETH (1): -0.11%
+BCHABCBTC (1): -5.85%
+XRPBTC (1): -0.49%
+THETABTC (1): -1.52%
+ETCBTC (1): -1.69%
+
+Results:
+Total Capture Time:	58.09 hours
+Initial BTC total:	0.06
+Final BTC total:	0.0591294961367
+Percent Profit: 	-1.45%
