@@ -297,7 +297,7 @@ class basic_signal_market_strategy(StrategyBase):
         if not self.simulate and signal.buy_size != 0 and balance != 0 and signal.buy_size < balance:
             self.logger.info("ALREADY_SOLD for {} buy_price={} size={}".format(self.ticker_id,
                                                                                signal.buy_price,
-                                                                               signal.size))
+                                                                               signal.buy_size))
             if self.min_trade_size_qty != 1.0:
                 self.min_trade_size_qty = 1.0
             signal.last_buy_price = signal.buy_price
