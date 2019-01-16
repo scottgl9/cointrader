@@ -256,8 +256,9 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.sell_type = 4
                 return True
 
-        if self.ema_12_cross_tpsc.cross_down: # and self.tspc.median_trend_down():
-            self.sell_type = 5
-            return True
+        if self.ema_12_cross_tpsc.cross_down:
+            if self.ema_cross_12_26.get_pre_crossdown_high_percent() >= 0.1:
+                self.sell_type = 5
+                return True
 
         return False
