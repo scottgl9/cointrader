@@ -12,6 +12,7 @@ from trader.lib.MADiff import MADiff
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TimePeakValley import TimePeakValley
 from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
+from trader.lib.TimeSegmentPercentChangeROC import TimeSegmentPercentChangeROC
 from trader.lib.IndicatorCache import IndicatorCache
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
@@ -50,6 +51,8 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema26 = EMA(26, scale=24, lag_window=5)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
 
+        self.tspc_roc = TimeSegmentPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
+
         ctimeout = 1000 * 3600
         self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)
         self.ema_cross_26_50 = MACross(cross_timeout=ctimeout)
@@ -70,6 +73,8 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
         self.maavg_cross_ema200 = MACross(cross_timeout=ctimeout * 2)
 
+        self.tspc_roc_cross_zero = MACross(cross_timeout=ctimeout) #(1000 * 500))
+
         self.diff_ema_12_200 = MADiff()
 
         self.cache = IndicatorCache(symbol=self.symbol)
@@ -85,6 +90,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.create_cache('200')
 
             self.cache.create_cache('TSPC')
+            self.cache.create_cache('TSPC_ROC')
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -119,6 +125,7 @@ class Hybrid_Crossover_Test(SignalBase):
             ema100_result = result['100']
             ema200_result = result['200']
             tspc_result = result['TSPC']
+            tspc_roc_result = result['TSPC_ROC']
         else:
             self.obv.update(close=close, volume=volume)
             obv12_result = self.obv_ema12.update(self.obv.result)
@@ -132,6 +139,7 @@ class Hybrid_Crossover_Test(SignalBase):
             ema200_result = self.ema200.update(close)
 
             tspc_result = self.tspc.update(close, ts)
+            tspc_roc_result = self.tspc_roc.update(close, ts)
 
         self.obv_ema_cross_12_26.update(0, ts, ma1_result=obv12_result, ma2_result=obv26_result)
         self.obv_ema_cross_26_50.update(0, ts, ma1_result=obv26_result, ma2_result=obv50_result)
@@ -149,6 +157,8 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_cross_100_200.update(close, ts, ma1_result=ema100_result, ma2_result=ema200_result)
 
         self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema12_result, ma2_result=tspc_result)
+
+        self.tspc_roc_cross_zero.update(close, ts, ma1_result=tspc_roc_result, ma2_result=0)
 
         self.diff_ema_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
 
@@ -169,6 +179,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.cache.add_result_to_cache('100', ts, ema100_result)
             self.cache.add_result_to_cache('200', ts, ema200_result)
             self.cache.add_result_to_cache('TSPC', ts, tspc_result)
+            self.cache.add_result_to_cache('TSPC_ROC', ts, tspc_result)
             self.cache.write_results_to_cache(cache_db)
 
 
@@ -203,6 +214,11 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
             self.buy_type = 3
             return True
+
+        if self.tspc_roc_cross_zero.cross_up:
+            if self.tspc_roc_cross_zero.get_pre_crossup_low_percent() >= 0.1:
+                self.buy_type = 4
+                return True
 
         return False
 
@@ -252,13 +268,20 @@ class Hybrid_Crossover_Test(SignalBase):
                 return True
 
         if self.ema_cross_26_200.cross_down:
+            #if self.ema_cross_26_200.get_pre_crossdown_high_percent() >= 0.1:
             if self.ema_cross_12_26.get_pre_crossdown_high_percent() >= 0.1:
                 self.sell_type = 4
                 return True
 
         if self.ema_12_cross_tpsc.cross_down:
+            #if self.ema_12_cross_tpsc.get_pre_crossdown_high_percent() >= 0.1:
             if self.ema_cross_12_26.get_pre_crossdown_high_percent() >= 0.1:
                 self.sell_type = 5
+                return True
+
+        if self.tspc_roc_cross_zero.cross_down:
+            if self.tspc_roc_cross_zero.get_pre_crossdown_high_percent() >= 0.1:
+                self.sell_type = 8
                 return True
 
         return False

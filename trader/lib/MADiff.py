@@ -17,11 +17,14 @@ class MADiff(object):
         self.cross_up_ts = 0
         self.cross_down = False
         self.cross_down_ts = 0
+        self.last_ts = 0
 
     def ready(self):
         return self._ready
 
     def update(self, value, ts, ma1_result=0, ma2_result=0):
+        self.last_ts = ts
+
         if self.ma1:
             self.ma1.update(value)
             self.ma1_result = self.ma1.result
@@ -69,8 +72,11 @@ class MADiff(object):
     def get_diff_max(self):
         return self.max_diff
 
-    def is_near_current_max(self, cutoff=0.01, percent=0.5):
+    def is_near_current_max(self, cutoff=0.01, percent=0.5, ts_diff_cross=0):
         if not self._ready or self.max_diff == 0 or self.result == 0:
+            return False
+
+        if ts_diff_cross != 0 and (self.last_ts - self.cross_up_ts) < ts_diff_cross:
             return False
 
         if self.cross_up_ts == 0 or self.cross_down_ts > self.cross_up_ts:
