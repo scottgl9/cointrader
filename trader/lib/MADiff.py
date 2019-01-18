@@ -18,13 +18,12 @@ class MADiff(object):
         self.cross_down = False
         self.cross_down_ts = 0
         self.last_ts = 0
+        self.last_diff = 0
 
     def ready(self):
         return self._ready
 
     def update(self, value, ts, ma1_result=0, ma2_result=0):
-        self.last_ts = ts
-
         if self.ma1:
             self.ma1.update(value)
             self.ma1_result = self.ma1.result
@@ -47,6 +46,9 @@ class MADiff(object):
             elif self.cross_down and abs(self.result) > abs(self.max_diff):
                 self.max_diff = self.result
                 self.max_diff_ts = ts
+
+        self.last_ts = ts
+        self.last_diff = self.result
 
         if self._ready:
             self.cross_diff_zero.update(self.result, 0)
@@ -88,3 +90,22 @@ class MADiff(object):
         if abs(100.0 * (self.result - self.max_diff) / self.max_diff) <= percent:
             return True
         return False
+
+    # if it's been 'seconds' time past last maximum, and we are 'percent' down from max value, return True
+    def is_past_current_max(self, seconds, percent, cutoff):
+        if not self._ready or self.max_diff == 0 or self.max_diff_ts == 0 or self.result == 0:
+            return False
+
+        if self.cross_up_ts == 0 or self.cross_down_ts > self.cross_up_ts:
+            return False
+
+        if abs((self.ma1_result - self.ma2_result) / self.ma2_result) < cutoff:
+            return False
+
+        if (self.last_ts - self.max_diff_ts) < seconds * 1000:
+            return False
+
+        if abs(100.0*(self.last_diff - self.max_diff) / self.max_diff) < percent:
+            return False
+
+        return True

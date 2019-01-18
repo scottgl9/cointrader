@@ -279,6 +279,10 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.sell_type = 'TPSC12'
                 return True
 
+        if self.ema_12_cross_tpsc.is_past_current_max(seconds=900, percent=2.0, cutoff=0.03):
+            self.sell_type='TPSC12_MAX'
+            return True
+
         if self.tspc_roc_cross_zero.cross_down:
             if self.tspc_roc_cross_zero.get_pre_crossdown_high_percent() >= 0.1:
                 self.sell_type = 'TPSC_ROC'
