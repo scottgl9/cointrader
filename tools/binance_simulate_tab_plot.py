@@ -274,7 +274,7 @@ class mainWindow(QtGui.QTabWidget):
         #ax2.plot(macd_diff_values)
         #ax2.plot(macd_signal_values)
         ax3 = self.tabs[name].figure.add_subplot(212)
-        ax3.plot(volumes)
+        ax3.plot(obv_values)
         #ax3.plot(obv_ema12_values)
         #ax3.plot(obv_ema26_values)
         #ax3.plot(obv_ema50_values)

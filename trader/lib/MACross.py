@@ -140,6 +140,9 @@ class MACross(object):
         if ma1_result != 0 and ma2_result != 0:
             self.cross.update(ma1_result, ma2_result)
 
+        #if ma1_result != 0:
+        #    self.update_min_max_values(ma1_result, ts) #(value, ts)
+        #else:
         self.update_min_max_values(value, ts)
 
         if self.cross.crossup_detected():
@@ -174,6 +177,9 @@ class MACross(object):
             self.post_cross_down_max_value = 0
 
         self.last_ts = ts
+        #if ma1_result != 0:
+        #    self.last_value = ma1_result
+        #else:
         self.last_value = value
 
         # implementation of cross timeout
