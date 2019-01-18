@@ -252,9 +252,7 @@ class AccountBinance(AccountBase):
         side = None
         commission = 0
         status = None
-        price = 0
-        min_price = 0
-        max_price = 0
+        prices = []
         type = None
         order_type = None
         symbol = symbol
@@ -272,21 +270,18 @@ class AccountBinance(AccountBase):
         if 'status' in result: status = result['status']
         if 'type' in result: order_type = result['type']
         if 'side' in result: side = result['side']
+        if 'price' in result and float(result['price']) != 0:
+            prices.append(float(result['price']))
 
-        if fills:
-            for fill in fills:
-                if 'side' in fill: side = fill['side']
-                if 'type' in fill: order_type = fill['type']
-                if 'status' in fill: status = fill['status']
-                if 'price' in fill and float(price) != 0:
-                    price = float(fill['price'])
-                    if price > max_price:
-                        max_price = price
-                    if min_price == 0 or price < min_price:
-                        min_price = price
-                if 'type' in fill: order_type = fill['type']
-                if 'symbol' in fill: symbol = fill['symbol']
-                if 'commission' in fill: commission = fill['commission']
+        for fill in fills:
+            if 'side' in fill: side = fill['side']
+            if 'type' in fill: order_type = fill['type']
+            if 'status' in fill: status = fill['status']
+            if 'price' in fill and float(fill['price']) != 0:
+                prices.append(float(result['price']))
+            if 'type' in fill: order_type = fill['type']
+            if 'symbol' in fill: symbol = fill['symbol']
+            if 'commission' in fill: commission = fill['commission']
 
         if not symbol or status != 'FILLED':
             return None
@@ -294,10 +289,12 @@ class AccountBinance(AccountBase):
         if not side or not order_type:
             return None
 
-        if side == 'BUY':
-            price = max_price
-        elif side == 'SELL':
-            price = min_price
+        price = 0
+        if len(prices) != 0:
+            if side == 'BUY':
+                price = max(prices)
+            elif side == 'SELL':
+                price = min(prices)
 
         if order_type == 'MARKET' and side == 'BUY':
             type = Message.MSG_MARKET_BUY
