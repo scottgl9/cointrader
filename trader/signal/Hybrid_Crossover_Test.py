@@ -203,22 +203,22 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if (self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up and
                 self.ema_cross_50_200.ma1_trend_up() and self.ema_cross_50_200.ma2_trend_up()):
-            self.buy_type = 1
+            self.buy_type = 'EMA26_200|EMA50_200'
             return True
 
         if (self.ema_cross_12_200.cross_up and self.ema_cross_26_200.cross_up and
                 self.ema_cross_26_200.ma1_trend_up() and self.ema_cross_26_200.ma2_trend_up()):
-            self.buy_type = 2
+            self.buy_type = 'EMA12_200|EMA26_200'
             return True
 
         if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
-            self.buy_type = 3
+            self.buy_type = 'TPSC12'
             return True
 
         if self.tspc_roc_cross_zero.cross_up:
-            if self.tspc_roc_cross_zero.get_pre_crossup_low_percent() >= 0.1:
-                self.buy_type = 4
-                return True
+            #if self.tspc_roc_cross_zero.get_pre_crossup_low_percent() >= 0.1:
+            self.buy_type = 'TPSC_ROC'
+            return True
 
         return False
 
@@ -238,7 +238,7 @@ class Hybrid_Crossover_Test(SignalBase):
             if (self.last_close - self.buy_price) / self.buy_price < -0.05:
                 self.disabled = True
                 self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
-                self.sell_type = 6
+                self.sell_type = "LONG:EMA50_200"
             return True
 
         if (self.ema_cross_12_200.ma1_trend_down() and self.ema_cross_12_200.ma2_trend_down() and
@@ -247,7 +247,7 @@ class Hybrid_Crossover_Test(SignalBase):
             if (self.last_close - self.buy_price) / self.buy_price < -0.05:
                 self.disabled = True
                 self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
-                self.sell_type = 7
+                self.sell_type = "LONG:EMA12_200|EMA26_200"
             return True
 
         return False
@@ -259,29 +259,29 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_cross_50_100.cross_down:
             if self.ema_cross_50_100.get_pre_crossdown_high_percent() >= 0.1:
-                self.sell_type = 2
+                self.sell_type = 'EMA50_100'
                 return True
 
         if self.ema_cross_12_200.cross_down:
             if self.ema_cross_12_200.get_pre_crossdown_high_percent() >= 0.1:
-                self.sell_type = 3
+                self.sell_type = 'EMA12_200'
                 return True
 
         if self.ema_cross_26_200.cross_down:
             #if self.ema_cross_26_200.get_pre_crossdown_high_percent() >= 0.1:
             if self.ema_cross_12_26.get_pre_crossdown_high_percent() >= 0.1:
-                self.sell_type = 4
+                self.sell_type = 'EMA26_200'
                 return True
 
         if self.ema_12_cross_tpsc.cross_down:
             #if self.ema_12_cross_tpsc.get_pre_crossdown_high_percent() >= 0.1:
             if self.ema_cross_12_26.get_pre_crossdown_high_percent() >= 0.1:
-                self.sell_type = 5
+                self.sell_type = 'TPSC12'
                 return True
 
         if self.tspc_roc_cross_zero.cross_down:
             if self.tspc_roc_cross_zero.get_pre_crossdown_high_percent() >= 0.1:
-                self.sell_type = 8
+                self.sell_type = 'TPSC_ROC'
                 return True
 
         return False
