@@ -7,6 +7,14 @@ class LargestPriceChange(object):
     def divide_price_segments(self):
         self.root.split()
 
+    def print_price_segments(self, node=None):
+        if not node:
+            node = self.root
+        if not node.child:
+            return
+
+        sel
+
 
 class SplitPriceSegment(object):
     def __init__(self, prices=None, timestamps=None, min_percent_price=1.0, min_segment_size=50):
@@ -35,6 +43,7 @@ class SplitPriceSegment(object):
         if 100.0*(self.max_price - self.min_price) / self.min_price <= self.min_percent_price:
             return
 
+        # if segment size is less than min_segment_size, return
         if abs(self.max_price_index - self.min_price_index) < self.min_segment_size:
             return
 
