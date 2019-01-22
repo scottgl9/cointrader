@@ -17,6 +17,7 @@ import argparse
 from trader.lib.LargestPriceChange import LargestPriceChange
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.EMA import EMA
+from trader.indicator.OBV import OBV
 
 
 def get_rows_as_msgs(c):
@@ -38,6 +39,10 @@ def simulate(conn, client, base, currency, type="channel"):
     ema26 = EMA(26, scale=24)
     ema50 = EMA(100, scale=24)
     ema200 = EMA(200, scale=24)
+
+    obv = OBV()
+    dtwma_obv = DTWMA(30)
+    obv_values = []
 
     ema12_values = []
     ema26_values = []
@@ -68,6 +73,10 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
+        obv.update(close, volume)
+        dtwma_obv.update(obv.result, ts)
+        obv_values.append(dtwma_obv.result)
+
         ts_values.append(ts)
         close_prices.append(close)
         open_prices.append(open)
@@ -81,7 +90,8 @@ def simulate(conn, client, base, currency, type="channel"):
     #ts_segments = lpc.get_timestamp_segments()
     #print(ts_segments)
     psp = lpc.get_price_segment_percents()
-    print(psp)
+    print(psp[0])
+    print(psp[1])
     psp_down_percent = psp[0][0]
     psp_down_start_ts = psp[0][1]
     psp_down_end_ts = psp[0][2]
@@ -92,9 +102,17 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.subplot(211)
     i=0
     for ts in ts_values:
-        if ts == psp_down_start_ts or ts == psp_down_end_ts:
+        if ts == psp_down_start_ts:
             plt.axvline(x=i, color='red')
-        if ts == psp_up_start_ts or ts == psp_up_end_ts:
+            plt.axvline(x=i+1, color='red')
+        elif ts == psp_down_end_ts:
+            plt.axvline(x=i-1, color='red')
+            plt.axvline(x=i, color='red')
+        elif ts == psp_up_start_ts:
+            plt.axvline(x=i, color='green')
+            plt.axvline(x=i+1, color='green')
+        elif ts == psp_up_end_ts:
+            plt.axvline(x=i-1, color='green')
             plt.axvline(x=i, color='green')
         i += 1
 
@@ -105,7 +123,7 @@ def simulate(conn, client, base, currency, type="channel"):
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    #fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
+    plt.plot(obv_values)
     #plt.legend(handles=[fig21, fig22, fig23, fig24])
 
     plt.show()
