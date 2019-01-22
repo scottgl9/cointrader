@@ -3,6 +3,7 @@ class LargestPriceChange(object):
         self.prices = prices
         self.timestamps = timestamps
         self.root = PriceSegment(self.prices, self.timestamps)
+        self.ts_segments = []
 
     def divide_price_segments(self):
         self.root.split()
@@ -13,7 +14,44 @@ class LargestPriceChange(object):
         if not node.child:
             return
 
-        sel
+        start_price = node.price_values[0]
+        end_price = node.price_values[-1]
+        start_ts = node.ts_values[0]
+        end_ts = node.ts_values[-1]
+        #print(start_ts, end_ts)
+
+        if node.child.start_segment:
+            self.print_price_segments(node.child.start_segment)
+        if node.child.mid_segment:
+            self.print_price_segments(node.child.mid_segment)
+        if node.child.end_segment:
+            self.print_price_segments(node.child.end_segment)
+
+    def get_timestamp_segments(self):
+        self.ts_segments = []
+        self.timestamp_segments()
+        return self.ts_segments
+
+    def timestamp_segments(self, node=None):
+        if not node:
+            node = self.root
+        if not node.child:
+            return
+
+        start_ts = node.ts_values[0]
+        end_ts = node.ts_values[-1]
+
+        if start_ts not in self.ts_segments:
+            self.ts_segments.append(start_ts)
+        if end_ts not in self.ts_segments:
+            self.ts_segments.append(end_ts)
+
+        if node.child.start_segment:
+            self.timestamp_segments(node.child.start_segment)
+        if node.child.mid_segment:
+            self.timestamp_segments(node.child.mid_segment)
+        if node.child.end_segment:
+            self.timestamp_segments(node.child.end_segment)
 
 
 class SplitPriceSegment(object):

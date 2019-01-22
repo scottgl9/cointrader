@@ -78,8 +78,16 @@ def simulate(conn, client, base, currency, type="channel"):
 
     lpc = LargestPriceChange(prices=close_prices, timestamps=ts_values)
     lpc.divide_price_segments()
+    ts_segments = lpc.get_timestamp_segments()
+    print(ts_segments)
 
     plt.subplot(211)
+    i=0
+    for ts in ts_values:
+        if ts in ts_segments:
+            plt.axvline(x=i, color='green')
+        i += 1
+
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
