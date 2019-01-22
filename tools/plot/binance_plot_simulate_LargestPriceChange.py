@@ -78,17 +78,24 @@ def simulate(conn, client, base, currency, type="channel"):
 
     lpc = LargestPriceChange(prices=close_prices, timestamps=ts_values)
     lpc.divide_price_segments()
-    ts_segments = lpc.get_timestamp_segments()
-    print(ts_segments)
+    #ts_segments = lpc.get_timestamp_segments()
+    #print(ts_segments)
+    psp = lpc.get_price_segment_percents()
+    print(psp)
+    psp_down_percent = psp[0][0]
+    psp_down_start_ts = psp[0][1]
+    psp_down_end_ts = psp[0][2]
+    psp_up_percent = psp[1][0]
+    psp_up_start_ts = psp[1][1]
+    psp_up_end_ts = psp[1][2]
 
     plt.subplot(211)
     i=0
     for ts in ts_values:
-        if ts in ts_segments.keys():
-            if ts_segments[ts] == 1:
-                plt.axvline(x=i, color='green')
-            elif ts_segments[ts] == -1:
-                plt.axvline(x=i, color='red')
+        if ts == psp_down_start_ts or ts == psp_down_end_ts:
+            plt.axvline(x=i, color='red')
+        if ts == psp_up_start_ts or ts == psp_up_end_ts:
+            plt.axvline(x=i, color='green')
         i += 1
 
     symprice, = plt.plot(close_prices, label=ticker_id)

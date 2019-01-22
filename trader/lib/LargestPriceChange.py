@@ -3,7 +3,7 @@ class LargestPriceChange(object):
         self.prices = prices
         self.timestamps = timestamps
         self.root = PriceSegment(self.prices, self.timestamps)
-        self.ts_segments = {}
+        self._price_segment_percents = []
 
     def divide_price_segments(self):
         self.root.split()
@@ -27,31 +27,28 @@ class LargestPriceChange(object):
         if node.child.end_segment:
             self.print_price_segments(node.child.end_segment)
 
-    def get_timestamp_segments(self):
-        self.ts_segments = {}
-        self.timestamp_segments()
-        return self.ts_segments
+    def get_price_segment_percents(self):
+        self._price_segment_percents = []
+        self.price_segment_percents(node=self.root)
+        # sort by percent
+        self._price_segment_percents.sort(key=lambda x: x[0])
+        return [self._price_segment_percents[0], self._price_segment_percents[-1]]
 
-    def timestamp_segments(self, node=None, n=1):
+    def price_segment_percents(self, node=None, n=1):
         if not node:
             node = self.root
+
+        self._price_segment_percents.append([node.percent, node.start_ts, node.end_ts])
+
         if not node.child:
             return
 
-        start_ts = node.ts_values[0]
-        end_ts = node.ts_values[-1]
-
-        if start_ts not in self.ts_segments.keys():
-            self.ts_segments[start_ts] = 1
-        if end_ts not in self.ts_segments.keys():
-            self.ts_segments[end_ts] = -1
-
         if node.child.start_segment:
-            self.timestamp_segments(node.child.start_segment, n=n+1)
+            self.price_segment_percents(node.child.start_segment, n=n+1)
         if node.child.mid_segment:
-            self.timestamp_segments(node.child.mid_segment, n=n+1)
+            self.price_segment_percents(node.child.mid_segment, n=n+1)
         if node.child.end_segment:
-            self.timestamp_segments(node.child.end_segment, n=n+1)
+            self.price_segment_percents(node.child.end_segment, n=n+1)
 
 
 # Class to handle splitting a price segment into three parts
@@ -154,15 +151,19 @@ class PriceSegment(object):
     def __init__(self, prices, timestamps):
         self.ts_values = timestamps
         self.price_values = prices
-        self.max_price = max(self.price_values)
-        self.max_price_index = self.price_values.index(self.max_price)
-        self.max_price_ts = self.ts_values[self.max_price_index]
-        self.min_price = min(self.price_values)
-        self.min_price_index = self.price_values.index(self.min_price)
-        self.min_price_ts = self.ts_values[self.min_price_index]
+        #self.max_price = max(self.price_values)
+        #self.max_price_index = self.price_values.index(self.max_price)
+        #self.max_price_ts = self.ts_values[self.max_price_index]
+        #self.min_price = min(self.price_values)
+        #self.min_price_index = self.price_values.index(self.min_price)
+        #self.min_price_ts = self.ts_values[self.min_price_index]
+        self.start_price = self.price_values[0]
+        self.end_price = self.price_values[-1]
+        self.start_ts = self.ts_values[0]
+        self.end_ts = self.ts_values[-1]
 
-        # factor to determine which price segment is "best"
-        self.factor = (self.max_price - self.min_price) / abs(self.max_price_ts - self.min_price_ts)
+        # percent change of price segment
+        self.percent = 100.0 * (self.end_price - self.start_price) / self.start_price
 
         # child SplitPriceSegment class
         self.child = None
