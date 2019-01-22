@@ -84,8 +84,11 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.subplot(211)
     i=0
     for ts in ts_values:
-        if ts in ts_segments:
-            plt.axvline(x=i, color='green')
+        if ts in ts_segments.keys():
+            if ts_segments[ts] == 1:
+                plt.axvline(x=i, color='green')
+            elif ts_segments[ts] == -1:
+                plt.axvline(x=i, color='red')
         i += 1
 
     symprice, = plt.plot(close_prices, label=ticker_id)
