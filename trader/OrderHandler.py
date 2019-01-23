@@ -112,27 +112,27 @@ class OrderHandler(object):
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_LIMIT_BUY:
-                    self.place_buy_limit_order(msg.src_id, msg.price, msg.size, msg.sig_id)
+                    self.place_buy_limit_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_LIMIT_SELL:
-                    self.place_sell_limit_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
+                    self.place_sell_limit_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_STOP_LOSS_BUY:
-                    self.place_buy_stop_loss_order(msg.src_id, msg.price, msg.size, msg.sig_id)
+                    self.place_buy_stop_loss_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_STOP_LOSS_SELL:
-                    self.place_sell_stop_loss_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
+                    self.place_sell_stop_loss_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_BUY_REPLACE:
-                    self.replace_buy_order(msg.src_id, msg.price, msg.size, msg.sig_id)
+                    self.replace_buy_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_SELL_REPLACE:
-                    self.replace_sell_order(msg.src_id, msg.price, msg.size, msg.buy_price, msg.sig_id)
+                    self.replace_sell_order(msg)
                     msg.mark_read()
                     received = True
                 elif msg.cmd == Message.MSG_BUY_DISABLE:
@@ -250,7 +250,11 @@ class OrderHandler(object):
             del self.open_orders[kline.symbol]
 
 
-    def replace_buy_order(self, ticker_id, price, size, sig_id):
+    def replace_buy_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        size = msg.size
+        sig_id = msg.sig_id
         if ticker_id not in self.open_orders.keys():
             return
 
@@ -265,14 +269,19 @@ class OrderHandler(object):
         del self.open_orders[ticker_id]
 
         if order.type == Message.MSG_STOP_LOSS_BUY:
-            self.place_buy_stop_loss_order(ticker_id, price, size, sig_id)
+            self.place_buy_stop_loss_order(msg)
         elif order.type == Message.MSG_LIMIT_BUY:
-            self.place_buy_limit_order(ticker_id, price, size, sig_id)
+            self.place_buy_limit_order(msg)
         else:
             self.logger.warn("unknown order type {} for {}".format(order.type, ticker_id))
 
 
-    def replace_sell_order(self, ticker_id, price, size, buy_price, sig_id):
+    def replace_sell_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        buy_price = msg.buy_price
+        size = msg.size
+        sig_id = msg.sig_id
         if ticker_id not in self.open_orders.keys():
             return
 
@@ -286,9 +295,9 @@ class OrderHandler(object):
         del self.open_orders[ticker_id]
 
         if order.type == Message.MSG_STOP_LOSS_SELL:
-            self.place_sell_stop_loss_order(ticker_id, price, size, buy_price, sig_id)
+            self.place_sell_stop_loss_order(msg)
         elif order.type == Message.MSG_LIMIT_SELL:
-            self.place_sell_limit_order(ticker_id, price, size, buy_price, sig_id)
+            self.place_sell_limit_order(msg)
         else:
             self.logger.warn("unknown order type {} for {}".format(order.type, ticker_id))
 
@@ -321,7 +330,11 @@ class OrderHandler(object):
         del self.open_orders[ticker_id]
 
 
-    def place_buy_limit_order(self, ticker_id, price, size, sig_id):
+    def place_buy_limit_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        size = msg.size
+        sig_id = msg.sig_id
         if ticker_id in self.open_orders.keys():
             return
 
@@ -334,7 +347,12 @@ class OrderHandler(object):
         self.logger.info("place_buy_limit({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
-    def place_sell_limit_order(self, ticker_id, price, size, buy_price, sig_id):
+    def place_sell_limit_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        buy_price = msg.buy_price
+        size = msg.size
+        sig_id = msg.sig_id
         if ticker_id in self.open_orders.keys():
             return
 
@@ -347,7 +365,11 @@ class OrderHandler(object):
         self.logger.info("place_sell_limit({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
-    def place_buy_stop_loss_order(self, ticker_id, price, size, sig_id):
+    def place_buy_stop_loss_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        size = msg.size
+        sig_id = msg.sig_id
         if ticker_id in self.open_orders.keys():
             return
 
@@ -360,7 +382,12 @@ class OrderHandler(object):
         self.logger.info("place_buy_stop({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
-    def place_sell_stop_loss_order(self, ticker_id, price, size, buy_price, sig_id):
+    def place_sell_stop_loss_order(self, msg):
+        ticker_id = msg.src_id
+        price = msg.price
+        buy_price = msg.buy_price
+        size = msg.size
+        sig_id = msg.sig_id
         if ticker_id in self.open_orders.keys():
             return
 
