@@ -470,15 +470,23 @@ class AccountBinance(AccountBase):
         return result
 
     def get_asset_balance(self, asset):
-        if asset in self.balances.keys():
-            return self.balances[asset]
-        return {'balance': 0.0, 'available': 0.0}
+        try:
+            result = self.balances[asset]
+        except KeyError:
+            result = {'balance': 0.0, 'available': 0.0}
+        return result
 
     def get_asset_balance_tuple(self, asset):
         result = self.get_asset_balance(asset)
+        try:
+            balance = float(result['balance'])
+            available = float(result['available'])
+        except KeyError:
+            balance = 0.0
+            available = 0.0
         if 'balance' not in result or 'available' not in result:
             return 0.0, 0.0
-        return float(result['balance']), float(result['available'])
+        return balance, available
 
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
@@ -656,11 +664,12 @@ class AccountBinance(AccountBase):
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = self.round_quote_symbol(ticker_id, float(price) * float(size)) #self.round_quote(price * size)
-            if usd_value > cavailable: return False
-            #print("buy_market({}, {}, {}".format(size, price, ticker_id))
+            amount = self.round_quote_symbol(ticker_id, float(price) * float(size))
+            if amount > cavailable:
+                return False
+
             self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
-            self.update_asset_balance(currency, cbalance - usd_value, cavailable - usd_value)
+            self.update_asset_balance(currency, cbalance - amount, cavailable - amount)
             return True
         else:
             self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
@@ -679,10 +688,10 @@ class AccountBinance(AccountBase):
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
 
             if float(size) > bavailable: return False
-            #print("sell_market({}, {}, {}".format(size, price, ticker_id))
-            usd_value = self.round_quote_symbol(ticker_id, float(price) * float(size))
+
+            amount = self.round_quote_symbol(ticker_id, float(price) * float(size))
             self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable) - float(size))
-            self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
+            self.update_asset_balance(currency, cbalance + amount, cavailable + amount)
             return True
         else:
             self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))

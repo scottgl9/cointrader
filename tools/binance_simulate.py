@@ -63,8 +63,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
         client = None
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
-    accnt = AccountBinance(client, simulation=True, simulate_db_filename=simulate_db_filename)
-    accnt.update_asset_balance('BTC', 0.06, 0.06)
+    accnt = AccountBinance(client, simulation=True, logger=logger, simulate_db_filename=simulate_db_filename)
+    accnt.update_asset_balance('BTC', 0.2, 0.2)
     #accnt.update_asset_balance('ETH', 4.0, 4.0)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
