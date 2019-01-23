@@ -157,14 +157,30 @@ class OrderHandler(object):
         if ((order.type == Message.MSG_STOP_LOSS_BUY and close > order.price) or
             (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
             bought = False
+
+            order_type = Message.TYPE_NONE
+            if order.type == Message.MSG_STOP_LOSS_BUY:
+                order_type = Message.TYPE_STOP_LOSS
+            elif order.type == Message.MSG_LIMIT_BUY:
+                order_type = Message.TYPE_LIMIT
+
             if self.accnt.simulate:
-                self.msg_handler.buy_complete(ticker_id=kline.symbol, sig_id=order.sig_id, price=order.price, size=order.size)
+                self.msg_handler.buy_complete(ticker_id=kline.symbol,
+                                              sig_id=order.sig_id,
+                                              price=order.price,
+                                              size=order.size,
+                                              order_type=order_type)
                 self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
                 bought = True
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
-                    self.msg_handler.add_message(Message.ID_MULTI, kline.symbol, Message.MSG_BUY_COMPLETE, order.price, order.size)
+                    self.msg_handler.add_message(Message.ID_MULTI,
+                                                 kline.symbol,
+                                                 Message.MSG_BUY_COMPLETE,
+                                                 order.price,
+                                                 order.size,
+                                                 type=order_type)
                     self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
                     bought = True
             if bought:
@@ -173,14 +189,31 @@ class OrderHandler(object):
         elif ((order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
               (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
             sold = False
+
+            order_type = Message.TYPE_NONE
+            if order.type == Message.MSG_STOP_LOSS_SELL:
+                order_type = Message.TYPE_STOP_LOSS
+            elif order.type == Message.MSG_LIMIT_SELL:
+                order_type = Message.TYPE_LIMIT
+
             if self.accnt.simulate:
-                self.msg_handler.sell_complete(ticker_id=kline.symbol, sig_id=order.sig_id, price=order.price, size=order.size, buy_price=order.buy_price)
+                self.msg_handler.sell_complete(ticker_id=kline.symbol,
+                                               sig_id=order.sig_id,
+                                               price=order.price,
+                                               size=order.size,
+                                               buy_price=order.buy_price,
+                                               order_type=order_type)
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
                 sold = True
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
-                    self.msg_handler.add_message(Message.ID_MULTI, kline.symbol, Message.MSG_SELL_COMPLETE, order.price, order.size)
+                    self.msg_handler.add_message(Message.ID_MULTI,
+                                                 kline.symbol,
+                                                 Message.MSG_SELL_COMPLETE,
+                                                 order.price,
+                                                 order.size,
+                                                 order_type=order_type)
                     self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
                     sold = True
 

@@ -4,9 +4,12 @@ from trader.indicator.EMA import EMA
 
 
 class TrendTrack(object):
-    def __init__(self, ema1_win=12, ema2_win=50, ema3_win=200, scale=24, seconds=3600):
+    def __init__(self, ema1_win=12, ema2_win=50, ema3_win=200, scale=24,
+                 seconds=3600, diff_seconds=3600, percent_seconds=3600):
         self.scale=scale
         self.seconds = seconds
+        self.diff_seconds = diff_seconds
+        self.percent_seconds = percent_seconds
         self.ema1_win = ema1_win
         self.ema2_win = ema2_win
         self.ema3_win = ema3_win
@@ -16,12 +19,28 @@ class TrendTrack(object):
         self.ema1_tsv = TimeSegmentValues(seconds=self.seconds)
         self.ema2_tsv = TimeSegmentValues(seconds=self.seconds)
         self.ema3_tsv = TimeSegmentValues(seconds=self.seconds)
-        self.ema1_tspc = TimeSegmentPercentChange(seconds=self.seconds, tsv=self.ema1_tsv)
-        self.ema2_tspc = TimeSegmentPercentChange(seconds=self.seconds, tsv=self.ema2_tsv)
-        self.ema3_tspc = TimeSegmentPercentChange(seconds=self.seconds, tsv=self.ema3_tsv)
-        self.ema12_diff_tsv = TimeSegmentValues(seconds=self.seconds)
-        self.ema23_diff_tsv = TimeSegmentValues(seconds=self.seconds)
-        self.ema13_diff_tsv = TimeSegmentValues(seconds=self.seconds)
+        self.ema1_percent_tsv = TimeSegmentValues(seconds=self.percent_seconds)
+        self.ema2_percent_tsv = TimeSegmentValues(seconds=self.percent_seconds)
+        self.ema3_percent_tsv = TimeSegmentValues(seconds=self.percent_seconds)
+
+        self.ema1_tspc = TimeSegmentPercentChange(seconds=self.seconds,
+                                                  tsv=self.ema1_tsv,
+                                                  track_percent=True,
+                                                  tsv_percent=self.ema1_percent_tsv)
+
+        self.ema2_tspc = TimeSegmentPercentChange(seconds=self.seconds,
+                                                  tsv=self.ema2_tsv,
+                                                  track_percent=True,
+                                                  tsv_percent=self.ema2_percent_tsv)
+
+        self.ema3_tspc = TimeSegmentPercentChange(seconds=self.seconds,
+                                                  tsv=self.ema3_tsv,
+                                                  track_percent=True,
+                                                  tsv_percent=self.ema2_percent_tsv)
+
+        self.ema12_diff_tsv = TimeSegmentValues(seconds=self.diff_seconds)
+        self.ema23_diff_tsv = TimeSegmentValues(seconds=self.diff_seconds)
+        self.ema13_diff_tsv = TimeSegmentValues(seconds=self.diff_seconds)
 
     def update(self, value, ts):
         self.ema1.update(value, ts)
