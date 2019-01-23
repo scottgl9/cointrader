@@ -427,6 +427,7 @@ class OrderHandler(object):
             self.logger.info(message)
             if self.store_trades:
                 self.store_trade_json(ticker_id, price, size, 'buy', trade_type=msg.buy_type)
+            self.msg_handler.buy_complete(ticker_id, price, size, sig_id)
         else:
             order = self.accnt.parse_order_result(result, symbol=ticker_id)
             if isinstance(order, type(None)):
@@ -535,6 +536,8 @@ class OrderHandler(object):
                 self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
+            else:
+                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id)
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             return
