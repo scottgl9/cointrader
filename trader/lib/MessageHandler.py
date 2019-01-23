@@ -164,6 +164,25 @@ class MessageHandler(object):
                          buy_price=buy_price,
                          order_type=order_type)
 
+    def buy_cancel(self, ticker_id, price, size, sig_id, order_type=Message.TYPE_LIMIT):
+        self.add_message(src_id=Message.ID_MULTI,
+                         dst_id=ticker_id,
+                         cmd=Message.MSG_BUY_CANCEL,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         order_type=order_type)
+
+    def sell_cancel(self, ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_LIMIT):
+        self.add_message(src_id=Message.ID_MULTI,
+                         dst_id=ticker_id,
+                         cmd=Message.MSG_SELL_CANCEL,
+                         sig_id=sig_id,
+                         price=price,
+                         size=size,
+                         buy_price=buy_price,
+                         order_type=order_type)
+
     def buy_failed(self, ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET):
         self.add_message(src_id=Message.ID_MULTI,
                          dst_id=ticker_id,

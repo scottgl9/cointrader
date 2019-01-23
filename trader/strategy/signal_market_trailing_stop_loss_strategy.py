@@ -190,13 +190,14 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     signal.buy_price_high = signal.buy_price
                     msg.mark_read()
                     completed = True
-
+                    #if msg.order_type == Message.TYPE_MARKET:
+                    #    # Also place trailing stop loss
+                    #    self.set_sell_stop_loss(signal, close)
                 elif msg.cmd == Message.MSG_SELL_COMPLETE:
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
                     msg.mark_read()
                     completed = True
-
                 elif msg.cmd == Message.MSG_BUY_FAILED:
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     if not self.accnt.simulate:
@@ -299,12 +300,12 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             self.sell_market(signal, price)
 
 
-    def set_buy_stop_loss(self, signal, price):
-        pass
-
-
     def set_sell_stop_loss(self, signal, price):
-        pass
+        stop_loss_price = signal.buy_price * 0.095
+        self.msg_handler.sell_stop_loss(self.ticker_id, stop_loss_price, signal.size, signal.buy_price, signal.id)
+
+    #def set_sell_stop_loss(self, signal, price):
+    #    pass
 
 
     def buy_market(self, signal, price):

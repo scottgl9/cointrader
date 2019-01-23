@@ -103,6 +103,14 @@ class OrderHandler(object):
                     self.place_sell_market_order(msg)
                     msg.mark_read()
                     received = True
+                elif msg.cmd == Message.MSG_BUY_CANCEL:
+                    self.place_cancel_buy_order(msg)
+                    msg.mark_read()
+                    received = True
+                elif msg.cmd == Message.MSG_SELL_CANCEL:
+                    self.place_cancel_sell_order(msg)
+                    msg.mark_read()
+                    received = True
                 elif msg.cmd == Message.MSG_LIMIT_BUY:
                     self.place_buy_limit_order(msg.src_id, msg.price, msg.size, msg.sig_id)
                     msg.mark_read()
@@ -180,7 +188,7 @@ class OrderHandler(object):
                                                  Message.MSG_BUY_COMPLETE,
                                                  order.price,
                                                  order.size,
-                                                 type=order_type)
+                                                 order_type=order_type)
                     self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
                     bought = True
             if bought:
@@ -283,6 +291,34 @@ class OrderHandler(object):
             self.place_sell_limit_order(ticker_id, price, size, buy_price, sig_id)
         else:
             self.logger.warn("unknown order type {} for {}".format(order.type, ticker_id))
+
+
+    def place_cancel_buy_order(self, msg):
+        ticker_id = msg.src_id
+        if ticker_id not in self.open_orders.keys():
+            return
+
+        order = self.open_orders[ticker_id]
+        if not self.accnt.simulate:
+            result = self.accnt.cancel_order(orderid=order.orderid)
+            self.logger.info(result)
+
+        self.logger.info("cancel_buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
+        del self.open_orders[ticker_id]
+
+
+    def place_cancel_sell_order(self, msg):
+        ticker_id = msg.src_id
+        if ticker_id not in self.open_orders.keys():
+            return
+
+        order = self.open_orders[ticker_id]
+        if not self.accnt.simulate:
+            result = self.accnt.cancel_order(orderid=order.orderid)
+            self.logger.info(result)
+
+        self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        del self.open_orders[ticker_id]
 
 
     def place_buy_limit_order(self, ticker_id, price, size, sig_id):
