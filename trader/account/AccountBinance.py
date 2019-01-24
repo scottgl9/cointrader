@@ -83,13 +83,17 @@ class AccountBinance(AccountBase):
 
     def round_base(self, price, base_min_size=0):
         if base_min_size != 0.0:
-            return round(price, '{:.9f}'.format(float(base_min_size)).index('1') - 1)
+            return round(float(price), '{:.9f}'.format(float(base_min_size)).index('1') - 1)
         return price
 
     def round_quote(self, price, quote_increment=0):
         if quote_increment != 0.0:
-            return round(price, '{:.9f}'.format(float(quote_increment)).index('1') - 1)
+            return round(float(price), '{:.9f}'.format(float(quote_increment)).index('1') - 1)
         return price
+
+    def round_base_symbol(self, symbol, price):
+        base_increment = self.get_asset_info_dict(symbol=symbol, field='stepSize')
+        return self.round_base(price, base_increment)
 
     def round_quote_symbol(self, symbol, price):
         quote_increment = self.get_asset_info_dict(symbol=symbol, field='tickSize')
@@ -661,6 +665,7 @@ class AccountBinance(AccountBase):
 
     def buy_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
+            size = self.round_base_symbol(ticker_id, size)
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
