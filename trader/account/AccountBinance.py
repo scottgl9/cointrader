@@ -241,6 +241,9 @@ class AccountBinance(AccountBase):
             return None
 
         min_qty=info['minQty']
+        min_notional=info['minNotional']
+        if float(min_qty) < float(min_notional):
+            min_qty = min_notional
         min_price=info['minPrice']
         base_step_size=info['stepSize']
         currency_step_size=info['tickSize']

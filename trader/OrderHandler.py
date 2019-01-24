@@ -63,7 +63,6 @@ class OrderHandler(object):
         self.logger.info("Resetting initial BTC...")
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            self.initial_btc = self.accnt.get_total_btc_value()
 
         self.initial_btc = self.accnt.get_total_btc_value()
 
@@ -74,9 +73,6 @@ class OrderHandler(object):
 
     def get_total_percent_profit(self):
         result = self.tpprofit
-        #if self.accnt.simulate and self.tpprofit < -0.015:
-        #    self.tpprofit = 0
-        #    self.update_initial_btc()
         return result
 
 
@@ -414,7 +410,6 @@ class OrderHandler(object):
             return
 
         if self.accnt.simulate:
-            self.buy_order_id = None
             message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
             self.logger.info(message)
             if self.store_trades:
@@ -437,7 +432,6 @@ class OrderHandler(object):
                     self.logger.info("update_buy_price({}, {} -> {})".format(ticker_id, price, order.price))
                     price = float(order.price)
 
-                self.buy_order_id = order.orderid
                 message = "buy({}, {}, {}) @ {}".format(sig_id, ticker_id, size, price)
                 self.logger.info(message)
                 self.accnt.get_account_balances()
