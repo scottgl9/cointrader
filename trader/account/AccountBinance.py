@@ -32,8 +32,19 @@ class AccountBinance(AccountBase):
 
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
+        self._tickers = {}
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
+
+    def update_ticker(self, symbol, price):
+        self._tickers[symbol] = price
+
+    def update_tickers(self, tickers):
+        for symbol, price in tickers.items():
+            self._tickers[symbol] = float(price)
+
+    def get_tickers(self):
+        return self._tickers
 
     def set_market_price(self, price):
         pass
@@ -413,7 +424,9 @@ class AccountBinance(AccountBase):
 
         return total_balance_usd, total_balance_btc
 
-    def total_btc_available(self, tickers):
+    def total_btc_available(self, tickers=None):
+        if not tickers:
+            tickers = self._tickers
         for symbol, price in self.balances.items():
             if symbol != 'BTC':
                 ticker_id = "{}BTC".format(symbol)
@@ -425,9 +438,7 @@ class AccountBinance(AccountBase):
         total_balance_btc = 0.0
 
         if not tickers:
-            tickers = {}
-            for entry in self.client.get_orderbook_tickers():
-                tickers[entry["symbol"]] = float(entry["bidPrice"])
+            tickers = self._tickers
 
         for symbol, size in self.balances.items():
             size_btc = 0.0
@@ -495,14 +506,17 @@ class AccountBinance(AccountBase):
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
 
-    def get_all_tickers(self):
+    def get_all_ticker_symbols(self):
         result = []
-        for ticker in self.client.get_all_tickers():
-            result.append(ticker['symbol'])
+        if not self.simulate:
+            for ticker in self.client.get_all_tickers():
+                result.append(ticker['symbol'])
+        else:
+            result = self.info_all_assets.keys()
         return result
 
     def get_all_my_trades(self, limit=100):
-        tickers = self.get_all_tickers()
+        tickers = self.get_all_ticker_symbols()
         balances = self.get_account_balances()
         result = {}
 
@@ -541,7 +555,7 @@ class AccountBinance(AccountBase):
 
     # get all fills by using account balances to backtrack
     def get_all_fills(self, limit=100):
-        tickers = self.get_all_tickers()
+        tickers = self.get_all_ticker_symbols()
         balances = self.get_account_balances()
         result = {}
 

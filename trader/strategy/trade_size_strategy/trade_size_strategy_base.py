@@ -30,6 +30,3 @@ class trade_size_strategy_base(object):
             return "{}".format(float(value))
         else:
             return "{:.9f}".format(float(value))
-
-    def update_tickers(self, tickers):
-        self.tickers = tickers

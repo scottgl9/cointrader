@@ -81,8 +81,6 @@ def simulate(conn, client, strategy, signal_name, logger):
                 total_usd = float(msg['o']) * total_btc
                 print("Initial BTC={}".format(total_btc))
 
-        multitrader.update_tickers(tickers)
-
         kline = Kline(symbol=msg['s'],
                       open=float(msg['o']),
                       close=float(msg['c']),

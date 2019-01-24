@@ -91,14 +91,12 @@ class BinanceTrader:
         #self.process_websocket_message(msg)
 
         if not self.found and 'BTCUSDT' in self.tickers.keys():
-            if self.multitrader.accnt.total_btc_available(self.tickers.keys()):
+            if self.multitrader.accnt.total_btc_available():
                 self.found = True
                 #total_btc = multitrader.accnt.balances['BTC']['balance']
-                total_btc = self.multitrader.accnt.get_total_btc_value(self.tickers.keys())
+                total_btc = self.multitrader.accnt.get_total_btc_value()
                 self.multitrader.initial_btc_total = total_btc
                 print("Initial BTC={}".format(total_btc))
-
-        self.multitrader.update_tickers(self.tickers)
 
         if not isinstance(msg, list):
             if 's' not in msg.keys(): return

@@ -80,8 +80,6 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
     print(multitrader.accnt.balances)
 
-    tickers = {}
-
     found = False
 
     initial_btc_total = 0.0
@@ -105,16 +103,16 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
                'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
-        tickers[msg['s']] = float(msg['c'])
+
         if not first_ts:
             first_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
         else:
             last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
 
         if not found:
-            if multitrader.accnt.total_btc_available(tickers):
+            if multitrader.accnt.total_btc_available():
                 found = True
-                total_btc = multitrader.accnt.get_total_btc_value(tickers)
+                total_btc = multitrader.accnt.get_total_btc_value()
                 initial_btc_total = total_btc
                 multitrader.update_initial_btc()
                 #logger.info("Initial BTC={}".format(total_btc))
@@ -125,8 +123,6 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
             balance = accnt.get_asset_balance("USDT")["balance"]
             if balance < minqty:
                 continue
-
-        multitrader.update_tickers(tickers)
 
         if not kline:
             kline = Kline(symbol=msg['s'],
@@ -153,7 +149,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
     print(multitrader.accnt.balances)
     logger.info("\nTrade Symbol Profits:")
-    final_btc_total = multitrader.accnt.get_total_btc_value(tickers=tickers)
+    final_btc_total = multitrader.accnt.get_total_btc_value()
     total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
     for pair in multitrader.trade_pairs.values():
         for signal in pair.strategy.get_signals():

@@ -127,11 +127,6 @@ class StrategyBase(object):
     def run_update_orderbook(self, msg):
         pass
 
-    def update_tickers(self, tickers):
-        self.tickers = tickers
-        if self.trade_size_handler:
-            self.trade_size_handler.update_tickers(tickers)
-
     def update_total_percent_profit(self, tpprofit):
         self.last_tpprofit = self.tpprofit
         self.tpprofit = tpprofit

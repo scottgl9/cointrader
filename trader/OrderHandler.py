@@ -15,7 +15,6 @@ class OrderHandler(object):
         self.logger = logger
         self.open_orders = {}
         self.trader_db = None
-        self.tickers = None
         self.store_trades = store_trades
         self.trades = {}
         self.counters = {}
@@ -64,12 +63,9 @@ class OrderHandler(object):
         self.logger.info("Resetting initial BTC...")
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            self.initial_btc = self.accnt.get_total_btc_value(self.tickers)
-        else:
-            if not self.tickers:
-                self.initial_btc = self.accnt.get_asset_balance(asset='BTC')['balance']
-            else:
-                self.initial_btc = self.accnt.get_total_btc_value(self.tickers)
+            self.initial_btc = self.accnt.get_total_btc_value()
+
+        self.initial_btc = self.accnt.get_total_btc_value()
 
 
     def get_stored_trades(self):
@@ -82,10 +78,6 @@ class OrderHandler(object):
         #    self.tpprofit = 0
         #    self.update_initial_btc()
         return result
-
-
-    def update_tickers(self, tickers):
-        self.tickers = tickers
 
 
     def process_order_messages(self):
@@ -230,8 +222,8 @@ class OrderHandler(object):
 
             pprofit = 100.0 * (order.price - order.buy_price) / order.buy_price
 
-            if self.tickers and self.initial_btc != 0:
-                current_btc = self.accnt.get_total_btc_value(self.tickers)
+            if self.accnt.total_btc_available() and self.initial_btc:
+                current_btc = self.accnt.get_total_btc_value()
                 tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
                 message = "sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(order.symbol,
                                                                          order.size,
@@ -507,8 +499,8 @@ class OrderHandler(object):
                 price = float(order.price)
 
             pprofit = 100.0 * (price - buy_price) / buy_price
-            if self.tickers and self.initial_btc != 0:
-                current_btc = self.accnt.get_total_btc_value(self.tickers)
+            if self.accnt.total_btc_available() and self.initial_btc:
+                current_btc = self.accnt.get_total_btc_value()
                 self.tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
                 message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sig_id,
                                                                          ticker_id,

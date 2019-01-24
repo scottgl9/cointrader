@@ -140,10 +140,6 @@ class TradePair(threading.Thread):
     #    #print("run_update_price({}, {}, {}".format(self.base_name, self.currency, price))
     #    return self.strategy.run_update_price(price)
 
-    def update_tickers(self, tickers):
-        self.tickers = tickers
-        self.strategy.update_tickers(tickers)
-
     def update_total_percent_profit(self, tpprofit):
         if tpprofit == 0:
             return

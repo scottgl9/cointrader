@@ -92,8 +92,6 @@ def simulate_trade_cache(conn, strategy, signal_name, trade_cache, logger):
                 multitrader.update_initial_btc()
                 print("Initial BTC={}".format(total_btc))
 
-        multitrader.update_tickers(tickers)
-
         if msg['s'] not in trade_cache.keys():
             continue
 
