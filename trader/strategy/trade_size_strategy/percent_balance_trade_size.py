@@ -35,12 +35,12 @@ class percent_balance_trade_size(trade_size_strategy_base):
         trade_size = 0
         if not self.amount:
             self.available = float(self.accnt.get_asset_balance(self.currency)['available'])
-            if self.available * self._fraction > self.asset_info.min_qty:
+            if self.available * self._fraction > float(self.asset_info.min_qty):
                 self.amount = self.available * self._fraction
             else:
                 return trade_size
         else:
-            trade_size = self.round_base(self.amount / price)
+            trade_size = self.round_base(self.amount / float(price))
 
         if self.accnt.is_currency_pair(base=self.base, currency=self.currency):
             trade_size = trade_size * self.multiplier
