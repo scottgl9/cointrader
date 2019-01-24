@@ -9,7 +9,7 @@ class static_trade_size(trade_size_strategy_base):
         self.eth_trade_size = 0
         self.bnb_trade_size = 0
 
-    def check_buy_trade_size(self, size):
+    def check_buy_trade_size(self, price, size):
         if self.currency == 'BTC' and size < self.btc_trade_size:
             return False
         elif self.currency == 'ETH' and size < self.eth_trade_size:

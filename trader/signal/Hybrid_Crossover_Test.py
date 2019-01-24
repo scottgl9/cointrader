@@ -101,9 +101,9 @@ class Hybrid_Crossover_Test(SignalBase):
     def pre_update(self, close, volume, ts, cache_db=None):
         if self.timestamp == 0:
             self.timestamp = ts
-            if self.is_currency_pair:
-                self.disabled = True
-                self.disabled_end_ts = self.timestamp + 1000 * 3600
+            #if self.is_currency_pair:
+            self.disabled = True
+            self.disabled_end_ts = self.timestamp + 1000 * 3600
         else:
             self.last_timestamp = self.timestamp
             self.timestamp = ts

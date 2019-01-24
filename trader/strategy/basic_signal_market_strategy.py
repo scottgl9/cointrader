@@ -64,7 +64,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                    bnb=3,
                                                    pax=10.0,
                                                    usdt=10.0,
-                                                   multiplier=2.0)
+                                                   multiplier=4.0)
 
         # for more accurate simulation
         self.delayed_buy_msg = None
@@ -89,19 +89,9 @@ class basic_signal_market_strategy(StrategyBase):
             #    signal.sell_marked = False
             return False
 
-        # if we have insufficient funds to buy
-        if self.accnt.simulate:
-            balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
-            size = self.round_base(float(balance_available) / float(price))
-        else:
-            size=self.accnt.get_asset_balance(self.currency)['available']
-
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
 
-        if not self.trade_size_handler.check_buy_trade_size(size):
-            return False
-
-        if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
+        if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):
             return False
 
         if self.last_close == 0:

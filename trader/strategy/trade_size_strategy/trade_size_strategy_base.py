@@ -12,7 +12,7 @@ class trade_size_strategy_base(object):
     def compute_trade_size(self, price):
         pass
 
-    def check_buy_trade_size(self, size):
+    def check_buy_trade_size(self, price, size):
         pass
 
     def round_base(self, price):
