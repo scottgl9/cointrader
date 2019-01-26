@@ -1,69 +1,13 @@
 Running simulate with cryptocurrency_database.miniticker_collection_04032018.db signal Hybrid_Crossover_Test
 Resetting initial BTC...
-Initial BTC value = 0.06
+Initial BTC value = 0.2
 Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
 Resetting initial BTC...
-buy(1, XLMBTC, 130.0) @ 3.1e-05
-buy(1, QLCBTC, 200.0) @ 1.988e-05
-buy(1, TRXBTC, 850.0) @ 4.68e-06
-buy(1, XVGBTC, 440.0) @ 9.06e-06
-buy(1, IOSTBTC, 1140.0) @ 3.5e-06
-buy(1, ZILBTC, 660.0) @ 6.03e-06
-buy(1, ADABTC, 180.0) @ 2.213e-05
-buy(1, XRPBTC, 60.0) @ 7.161e-05
-buy(1, DNTBTC, 520.0) @ 7.76e-06
-buy(1, TNBBTC, 1020.0) @ 3.93e-06
-buy(1, XEMBTC, 120.0) @ 3.311e-05
-buy(1, NCASHBTC, 1070.0) @ 3.72e-06
-buy(1, ENJBTC, 290.0) @ 1.386e-05
-buy(1, TNTBTC, 390.0) @ 1.018e-05
-sell(1, XVGBTC, 440.0) @ 9.99e-06 (bought @ 9.06e-06, 10.26%)	0.38%
-buy(1, RCNBTC, 330.0) @ 1.204e-05
-buy(1, POEBTC, 1060.0) @ 3.78e-06
-sell(1, ADABTC, 180.0) @ 2.236e-05 (bought @ 2.213e-05, 1.04%)	0.99%
-buy(1, STORMBTC, 930.0) @ 4.26e-06
-sell(1, STORMBTC, 930.0) @ 4.31e-06 (bought @ 4.26e-06, 1.17%)	1.09%
-buy(1, XVGBTC, 410.0) @ 9.73e-06
-sell(1, TRXBTC, 850.0) @ 4.71e-06 (bought @ 4.68e-06, 0.64%)	1.31%
-buy(1, SNTBTC, 290.0) @ 1.375e-05
-sell(1, SNTBTC, 290.0) @ 1.389e-05 (bought @ 1.375e-05, 1.02%)	1.31%
-buy(1, LINKBTC, 100.0) @ 4.003e-05
-sell(1, XRPBTC, 60.0) @ 7.4e-05 (bought @ 7.161e-05, 3.34%)	0.68%
-sell(1, XVGBTC, 410.0) @ 8.73e-06 (bought @ 9.73e-06, -10.28%)	0.61%
-buy(1, POWRBTC, 80.0) @ 4.774e-05
-buy(1, ADABTC, 170.0) @ 2.354e-05
-sell(1, POWRBTC, 80.0) @ 4.845e-05 (bought @ 4.774e-05, 1.49%)	0.91%
-buy(1, TRXBTC, 850.0) @ 4.68e-06
-sell(1, XLMBTC, 130.0) @ 3.134e-05 (bought @ 3.1e-05, 1.1%)	0.25%
-buy(1, BTSBTC, 200.0) @ 2.032e-05
-sell(1, NCASHBTC, 1070.0) @ 3.78e-06 (bought @ 3.72e-06, 1.61%)	-0.8%
-sell(1, ZILBTC, 660.0) @ 6.07e-06 (bought @ 6.03e-06, 0.66%)	-0.57%
-buy(1, POWRBTC, 90.0) @ 4.7e-05
-sell(1, POWRBTC, 90.0) @ 4.721e-05 (bought @ 4.7e-05, 0.45%)	-0.43%
-sell(1, IOSTBTC, 1140.0) @ 3.57e-06 (bought @ 3.5e-06, 2.0%)	-0.26%
-buy(1, XLMBTC, 130.0) @ 3.146e-05
-sell(1, ENJBTC, 290.0) @ 1.398e-05 (bought @ 1.386e-05, 0.87%)	-0.49%
-buy(1, ZILBTC, 660.0) @ 6.08e-06
-buy(1, XRPBTC, 60.0) @ 7.256e-05
 
 Trade Symbol Profits:
-ADABTC (1): -2.59%
-RCNBTC (1): 0.17%
-TRXBTC (1): -2.14%
-XEMBTC (1): 1.45%
-ZILBTC (1): 0.0%
-DNTBTC (1): -3.35%
-QLCBTC (1): -4.07%
-BTSBTC (1): -2.81%
-XLMBTC (1): -0.13%
-LINKBTC (1): 0.07%
-TNTBTC (1): -2.85%
-XRPBTC (1): 0.22%
-TNBBTC (1): -1.27%
-POEBTC (1): -1.59%
 
 Results:
 Total Capture Time:	10.38 hours
-Initial BTC total:	0.06
-Final BTC total:	0.0598657
-Percent Profit: 	-0.22%
+Initial BTC total:	0.2
+Final BTC total:	0.2
+Percent Profit: 	0.0%

@@ -1,83 +1,151 @@
 Running simulate with cryptocurrency_database.miniticker_collection_04092018.db signal Hybrid_Crossover_Test
 Resetting initial BTC...
-Initial BTC value = 0.06
+Initial BTC value = 0.2
 Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
 Resetting initial BTC...
-buy(1, TRXBTC, 760.0) @ 5.26e-06
-buy(1, EOSBTC, 4.66) @ 0.00085918
-buy(1, ELFBTC, 40.0) @ 9.135e-05
-buy(1, POABTC, 70.0) @ 6.058e-05
-buy(1, ETCBTC, 2.0) @ 0.001998
-buy(1, XLMBTC, 140.0) @ 2.911e-05
-buy(1, XEMBTC, 120.0) @ 3.362e-05
-buy(1, NEBLBTC, 3.63) @ 0.0011016
-buy(1, DASHBTC, 0.090000000) @ 0.044397
+buy(1, NEBLBTC, 3.62) @ 0.0011
+buy(1, ETCBTC, 2.0) @ 0.001997
 buy(1, GVTBTC, 1.63) @ 0.0024521
 buy(1, WAVESBTC, 7.78) @ 0.0005142
-buy(1, VENBTC, 10.0) @ 0.00038796
-buy(1, ETHBTC, 0.134) @ 0.05928
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.134 new_size=0.134
-buy(1, ELFETH, 60.0) @ 0.00154513
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.134 new_size=0.0412922
-buy(1, XVGBTC, 330.0) @ 1.225e-05
-sell(1, XVGBTC, 330.0) @ 1.239e-05 (bought @ 1.225e-05, 1.14%)	0.06%
-buy(1, DNTBTC, 440.0) @ 9.07e-06
-sell(1, DNTBTC, 440.0) @ 9.17e-06 (bought @ 9.07e-06, 1.1%)	-0.17%
-buy(1, POWRBTC, 90.0) @ 4.375e-05
-sell(1, TRXBTC, 760.0) @ 5.38e-06 (bought @ 5.26e-06, 2.28%)	0.86%
-buy(1, MTLBTC, 8.52) @ 0.0004695
-sell(1, ELFBTC, 40.0) @ 0.00010298 (bought @ 9.135e-05, 12.73%)	2.29%
-buy(1, IOSTBTC, 920.0) @ 4.34e-06
-sell(1, VENBTC, 10.0) @ 0.00039248 (bought @ 0.00038796, 1.17%)	3.7%
-buy(1, NEOBTC, 0.54) @ 0.007459
-sell(1, XLMBTC, 140.0) @ 2.941e-05 (bought @ 2.911e-05, 1.03%)	3.74%
-buy(1, ICXBTC, 13.49) @ 0.0002965
-sell(1, EOSBTC, 4.66) @ 0.00086637 (bought @ 0.00085918, 0.84%)	3.54%
-buy(1, LINKBTC, 80.0) @ 4.804e-05
-sell(1, ELFETH, 60.0) @ 0.001952 (bought @ 0.00154513, 26.33%)	3.96%
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0412922 new_size=0.1584122
-buy(1, XRPETH, 80.0) @ 0.00121865
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1584122 new_size=0.0609202
-sell(1, ICXBTC, 13.49) @ 0.0003018 (bought @ 0.0002965, 1.79%)	4.64%
-buy(1, XVGBTC, 330.0) @ 1.208e-05
-sell(1, MTLBTC, 8.52) @ 0.0004742 (bought @ 0.0004695, 1.0%)	4.72%
-buy(1, WANBTC, 6.69) @ 0.00059613
-sell(1, NEBLBTC, 3.63) @ 0.0011129 (bought @ 0.0011016, 1.03%)	5.23%
-buy(1, BLZBTC, 80.0) @ 4.805e-05
-sell(1, WANBTC, 6.69) @ 0.00061156 (bought @ 0.00059613, 2.59%)	5.22%
-buy(1, ONTBTC, 6.42) @ 0.00062266
-sell(1, POABTC, 70.0) @ 6.329e-05 (bought @ 6.058e-05, 4.47%)	5.75%
-buy(1, GTOBTC, 150.0) @ 2.59e-05
-sell(1, XVGBTC, 330.0) @ 1.298e-05 (bought @ 1.208e-05, 7.45%)	5.86%
-buy(1, QTUMBTC, 2.04) @ 0.001956
-sell(1, ONTBTC, 6.42) @ 0.00063999 (bought @ 0.00062266, 2.78%)	5.91%
-buy(1, ELFBTC, 30.0) @ 0.000119
-sell(1, BLZBTC, 80.0) @ 5.248e-05 (bought @ 4.805e-05, 9.22%)	6.25%
-buy(1, VIBBTC, 210.0) @ 1.944e-05
-sell(1, ELFBTC, 30.0) @ 0.0001232 (bought @ 0.000119, 3.53%)	6.62%
-buy(1, TRXBTC, 740.0) @ 5.37e-06
-sell(1, NEOBTC, 0.54) @ 0.00767 (bought @ 0.007459, 2.83%)	6.66%
-buy(1, DNTBTC, 440.0) @ 9.1e-06
+buy(1, ETHBTC, 0.268) @ 0.05928
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.268 new_size=0.268
+buy(1, STRATBTC, 7.56) @ 0.0005282
+buy(1, STEEMBTC, 15.22) @ 0.0002628
+buy(1, ONTBTC, 7.22) @ 0.00055395
+buy(1, EOSETH, 6.91) @ 0.014475
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.268 new_size=0.167978
+buy(1, XMRETH, 0.241) @ 0.41374
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.167978 new_size=0.068268
+buy(1, XMRBTC, 0.165) @ 0.024511
+buy(1, WTCBTC, 3.23) @ 0.0012382
+buy(1, EOSBTC, 4.65) @ 0.00086156
+buy(1, LTCBTC, 0.24) @ 0.01688
+buy(1, HSRBTC, 5.16) @ 0.000777
+buy(1, NEOBTC, 0.54) @ 0.007472
+buy(1, PIVXBTC, 7.09) @ 0.000564
+buy(1, GASBTC, 1.78) @ 0.002238
+buy(1, WANBTC, 7.24) @ 0.00055255
+buy(1, MTLBTC, 8.5) @ 0.0004705
+buy(1, BNBBTC, 8.92) @ 0.0017929
+ORDER_SIZE_UPDATE for BNBBTC orig_size=8.92 new_size=8.92
+buy(1, LTCBNB, 0.32086) @ 9.35
+ORDER_SIZE_UPDATE for BNBBTC orig_size=8.92 new_size=5.92
+buy(1, VENBNB, 13.69) @ 0.2192
+ORDER_SIZE_UPDATE for BNBBTC orig_size=5.92 new_size=2.9192
+buy(1, DGDBTC, 0.131) @ 0.030625
+buy(1, QTUMBTC, 2.05) @ 0.001948
+buy(1, BCCBTC, 0.043000000) @ 0.094038
+sell(1, NEBLBTC, 3.62) @ 0.0011067 (bought @ 0.0011, 0.61%)	0.21%
+buy(1, NANOBTC, 5.66) @ 0.0007072
+sell(1, ONTBTC, 7.22) @ 0.00058449 (bought @ 0.00055395, 5.51%)	0.31%
+buy(1, NEBLBTC, 3.61) @ 0.0011082
+sell(1, EOSETH, 6.91) @ 0.014651 (bought @ 0.014475, 1.22%)	0.32%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.068268 new_size=0.169506
+buy(1, DGDETH, 0.194) @ 0.51279
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.169506 new_size=0.070026
+buy(1, MCOBTC, 5.31) @ 0.000753
+buy(1, DASHBTC, 0.090000000) @ 0.044394
+buy(1, BTGBTC, 0.67) @ 0.005957
+sell(1, DGDETH, 0.194) @ 0.51797 (bought @ 0.51279, 1.01%)	0.23%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.070026 new_size=0.170516
+buy(1, NEBLETH, 5.32) @ 0.018813
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.170516 new_size=0.070431
+buy(1, ONTBTC, 6.81) @ 0.00058893
+sell(1, STEEMBTC, 15.22) @ 0.0002668 (bought @ 0.0002628, 1.52%)	0.18%
+sell(1, WANBTC, 7.24) @ 0.00058505 (bought @ 0.00055255, 5.88%)	0.22%
+sell(1, NANOBTC, 5.66) @ 0.0007127 (bought @ 0.0007072, 0.78%)	0.27%
+buy(1, OMGBTC, 3.02) @ 0.001326
+buy(1, BCDBTC, 1.409) @ 0.002843
+buy(1, WANBTC, 6.79) @ 0.0005887
+buy(1, NANOBTC, 5.62) @ 0.0007121
+sell(1, EOSBTC, 4.65) @ 0.00087921 (bought @ 0.00086156, 2.05%)	0.44%
+sell(1, WANBTC, 6.79) @ 0.00059498 (bought @ 0.0005887, 1.07%)	0.56%
+sell(1, ONTBTC, 6.81) @ 0.000612 (bought @ 0.00058893, 3.92%)	0.55%
+buy(1, LUNBTC, 3.45) @ 0.0011638
+buy(1, PPTBTC, 2.36) @ 0.0016969
+buy(1, LSKBTC, 3.19) @ 0.0012528
+buy(1, EOSBTC, 4.53) @ 0.00088222
+sell(1, MCOBTC, 5.31) @ 0.00076 (bought @ 0.000753, 0.93%)	0.61%
+sell(1, WTCBTC, 3.23) @ 0.0012563 (bought @ 0.0012382, 1.46%)	0.68%
+buy(1, WANBTC, 6.59) @ 0.00060729
+buy(1, ZECBTC, 0.152) @ 0.026215
+sell(1, NEBLBTC, 3.61) @ 0.0011129 (bought @ 0.0011082, 0.42%)	0.75%
+buy(1, ONTBTC, 6.44) @ 0.00062118
+buy(1, XZCBTC, 0.96) @ 0.004148
+sell(1, ONTBTC, 6.44) @ 0.00063 (bought @ 0.00062118, 1.42%)	0.72%
+sell(1, PPTBTC, 2.36) @ 0.0017397 (bought @ 0.0016969, 2.52%)	0.71%
+sell(1, WAVESBTC, 7.78) @ 0.0005254 (bought @ 0.0005142, 2.18%)	0.6%
+buy(1, MCOBTC, 5.17) @ 0.000773
+sell(1, WANBTC, 6.59) @ 0.000615 (bought @ 0.00060729, 1.27%)	0.64%
+sell(1, NEOBTC, 0.54) @ 0.007554 (bought @ 0.007472, 1.1%)	0.65%
+buy(1, ONTBTC, 6.36) @ 0.00062869
+buy(1, WTCBTC, 3.15) @ 0.0012689
+sell(1, ONTBTC, 6.36) @ 0.00063999 (bought @ 0.00062869, 1.8%)	0.76%
+buy(1, NEBLBTC, 3.59) @ 0.001114
+buy(1, WANBTC, 6.54) @ 0.00061
+buy(1, NEOBTC, 0.53) @ 0.007565
+sell(1, GASBTC, 1.78) @ 0.002254 (bought @ 0.002238, 0.71%)	0.86%
+sell(1, NEOBTC, 0.53) @ 0.007649 (bought @ 0.007565, 1.11%)	0.96%
+sell(1, OMGBTC, 3.02) @ 0.001348 (bought @ 0.001326, 1.66%)	0.92%
+buy(1, ONTBTC, 6.37) @ 0.000628
+sell(1, ONTBTC, 6.37) @ 0.00063439 (bought @ 0.000628, 1.02%)	1.02%
+sell(1, LUNBTC, 3.45) @ 0.0011914 (bought @ 0.0011638, 2.37%)	1.0%
+buy(1, GASBTC, 1.78) @ 0.00225
+sell(1, BCCBTC, 0.043000000) @ 0.095046 (bought @ 0.094038, 1.07%)	0.96%
+sell(1, NEBLETH, 5.32) @ 0.019339 (bought @ 0.018813, 2.8%)	1.05%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.070431 new_size=0.173314
+sell(1, GVTBTC, 1.63) @ 0.0024899 (bought @ 0.0024521, 1.54%)	1.13%
+buy(1, ONTBTC, 6.24) @ 0.00063999
+buy(1, BCCBTC, 0.042000000) @ 0.095389
+buy(1, GVTBTC, 1.62) @ 0.002474
+sell(1, NEBLBTC, 3.59) @ 0.0011556 (bought @ 0.001114, 3.73%)	1.13%
+sell(1, MCOBTC, 5.17) @ 0.000783 (bought @ 0.000773, 1.29%)	1.16%
+sell(1, PIVXBTC, 7.09) @ 0.0005697 (bought @ 0.000564, 1.01%)	1.13%
+buy(1, LUNBTC, 3.34) @ 0.0011913
+buy(1, NEOBTC, 0.52) @ 0.007643
+sell(1, STRATBTC, 7.56) @ 0.0005533 (bought @ 0.0005282, 4.75%)	1.33%
+buy(1, NEOETH, 0.78) @ 0.127481
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.173314 new_size=0.073879
+buy(1, PIVXBTC, 7.03) @ 0.000569
+sell(1, ONTBTC, 6.24) @ 0.00065898 (bought @ 0.00063999, 2.97%)	1.26%
+buy(1, PPTBTC, 2.32) @ 0.001724
+sell(1, MTLBTC, 8.5) @ 0.0004757 (bought @ 0.0004705, 1.11%)	1.28%
+buy(1, MCOBTC, 5.02) @ 0.000796
+sell(1, WANBTC, 6.54) @ 0.00063478 (bought @ 0.00061, 4.06%)	1.26%
 
 Trade Symbol Profits:
-DASHBTC (1): -2.05%
-POWRBTC (1): 4.07%
-IOSTBTC (1): -0.69%
-GTOBTC (1): 1.16%
-XEMBTC (1): 0.68%
-QTUMBTC (1): 0.61%
-WAVESBTC (1): 3.48%
-GVTBTC (1): 0.82%
-DNTBTC (1): -2.2%
-LINKBTC (1): 7.54%
+NEOBTC (1): 0.33%
+DASHBTC (1): -2.04%
+NEOETH (1): -0.51%
+MCOBTC (1): -0.13%
+HSRBTC (1): -0.9%
+VENBNB (1): 2.97%
+LSKBTC (1): -0.26%
+XMRETH (1): -3.35%
+BCCBTC (1): -0.3%
+LTCBTC (1): -1.17%
+BTGBTC (1): -0.64%
+LUNBTC (1): -0.12%
+WTCBTC (1): 0.2%
+QTUMBTC (1): 1.03%
+NANOBTC (1): -0.13%
+BNBBTC (1): -2.01%
+XMRBTC (1): -1.71%
+GVTBTC (1): -0.07%
+PIVXBTC (1): -0.26%
 ETHBTC (1): 1.9%
-XRPETH (1): -2.54%
-TRXBTC (1): 0.56%
-VIBBTC (1): -0.67%
-ETCBTC (1): 0.35%
+EOSBTC (1): -0.2%
+BCDBTC (1): -0.11%
+ZECBTC (1): -0.27%
+GASBTC (1): -0.44%
+PPTBTC (1): 0.0%
+XZCBTC (1): 0.36%
+ETCBTC (1): 0.4%
+LTCBNB (1): 1.5%
+DGDBTC (1): -0.24%
 
 Results:
 Total Capture Time:	16.87 hours
-Initial BTC total:	0.06
-Final BTC total:	0.0642214977608
-Percent Profit: 	7.04%
+Initial BTC total:	0.2
+Final BTC total:	0.202508603616
+Percent Profit: 	1.25%

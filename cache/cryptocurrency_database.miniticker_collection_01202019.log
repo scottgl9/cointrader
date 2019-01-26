@@ -1,0 +1,194 @@
+Running simulate with cryptocurrency_database.miniticker_collection_01202019.db signal Hybrid_Crossover_Test
+Resetting initial BTC...
+Initial BTC value = 0.2
+Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
+Resetting initial BTC...
+buy(1, REPBTC, 0.831) @ 0.004805
+buy(1, BCHSVBTC, 0.19) @ 0.021053
+buy(1, XMRBTC, 0.325) @ 0.012306
+buy(1, SKYBTC, 14.286) @ 0.00028
+buy(1, ETHBTC, 0.488) @ 0.03269
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.488 new_size=0.488
+buy(1, BNBBTC, 8.84) @ 0.0018069
+ORDER_SIZE_UPDATE for BNBBTC orig_size=8.84 new_size=8.84
+buy(1, HCBTC, 12.87) @ 0.0003106
+buy(1, EOSBTC, 6.07) @ 0.0006578
+buy(1, ETCBTC, 3.32) @ 0.001205
+buy(1, LTCBTC, 0.46) @ 0.008691
+buy(1, ZECBTC, 0.274) @ 0.014597
+buy(1, LSKBTC, 11.42) @ 0.0003505
+buy(1, NEOBTC, 1.9) @ 0.002107
+buy(1, OMGBTC, 11.4) @ 0.000352
+buy(1, WAVESBTC, 5.69) @ 0.0007024
+buy(1, BTGBTC, 1.28) @ 0.003129
+buy(1, LUNBTC, 8.98) @ 0.0004453
+buy(1, XZCBTC, 2.75) @ 0.001452
+buy(1, DCRBTC, 0.858) @ 0.004674
+sell(1, SKYBTC, 14.286) @ 0.000282 (bought @ 0.00028, 0.71%)	0.04%
+buy(1, WAVESETH, 4.66) @ 0.021443
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.488 new_size=0.388076
+buy(1, DASHBTC, 0.208) @ 0.019246
+buy(1, EOSETH, 4.98) @ 0.020076
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.388076 new_size=0.288098
+buy(1, REPETH, 0.687) @ 0.14555
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.288098 new_size=0.188108
+buy(1, ZENBTC, 2.892) @ 0.001382
+buy(1, BCHABCBTC, 0.117) @ 0.034319
+buy(1, QTUMBTC, 6.99) @ 0.000572
+buy(1, MCOBTC, 6.39) @ 0.000626
+sell(1, BNBBTC, 8.84) @ 0.0018222 (bought @ 0.0018069, 0.85%)	0.06%
+buy(1, DGDBTC, 0.81) @ 0.00494
+buy(1, LTCETH, 0.378) @ 0.26411
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.188108 new_size=0.088278
+sell(1, DGDBTC, 0.81) @ 0.00496 (bought @ 0.00494, 0.4%)	0.03%
+buy(1, GVTBTC, 4.07) @ 0.0009829
+buy(1, BCDBTC, 17.857) @ 0.000224
+sell(1, WAVESBTC, 5.69) @ 0.0007095 (bought @ 0.0007024, 1.01%)	0.16%
+sell(1, DASHBTC, 0.208) @ 0.019467 (bought @ 0.019246, 1.15%)	0.24%
+sell(1, EOSBTC, 6.07) @ 0.0006664 (bought @ 0.0006578, 1.31%)	0.32%
+buy(1, BNBBTC, 8.76) @ 0.0018258
+ORDER_SIZE_UPDATE for BNBBTC orig_size=8.76 new_size=8.76
+buy(1, DGDBTC, 0.8) @ 0.005001
+sell(1, LUNBTC, 8.98) @ 0.0004507 (bought @ 0.0004453, 1.21%)	0.22%
+buy(1, GASBTC, 6.69) @ 0.000601
+buy(1, SKYBTC, 14.286) @ 0.00028
+buy(1, WAVESBTC, 5.66) @ 0.0007069
+sell(1, XMRBTC, 0.325) @ 0.012443 (bought @ 0.012306, 1.11%)	0.06%
+buy(1, DASHBTC, 0.204) @ 0.019592
+sell(1, DGDBTC, 0.8) @ 0.005052 (bought @ 0.005001, 1.02%)	0.13%
+buy(1, XMRBTC, 0.322) @ 0.012416
+sell(1, BCHSVBTC, 0.19) @ 0.021353 (bought @ 0.021053, 1.42%)	0.07%
+buy(1, EOSBTC, 6.07) @ 0.0006589
+buy(1, BCHSVBTC, 0.188) @ 0.021259
+sell(1, HCBTC, 12.87) @ 0.0003128 (bought @ 0.0003106, 0.71%)	0.27%
+sell(1, XZCBTC, 2.75) @ 0.001468 (bought @ 0.001452, 1.1%)	0.22%
+buy(1, LUNBTC, 7.29) @ 0.0005489
+sell(1, OMGBTC, 11.4) @ 0.000357 (bought @ 0.000352, 1.42%)	0.14%
+sell(1, LUNBTC, 7.29) @ 0.0005565 (bought @ 0.0005489, 1.38%)	0.14%
+sell(1, XMRBTC, 0.322) @ 0.012475 (bought @ 0.012416, 0.48%)	0.28%
+buy(1, LUNBTC, 7.19) @ 0.0005555
+buy(1, LTCBNB, 0.62762) @ 4.78
+ORDER_SIZE_UPDATE for BNBBTC orig_size=8.76 new_size=5.76
+buy(1, XMRBTC, 0.319) @ 0.012534
+sell(1, LUNBTC, 7.19) @ 0.0005559 (bought @ 0.0005555, 0.07%)	0.2%
+sell(1, XMRBTC, 0.319) @ 0.012669 (bought @ 0.012534, 1.08%)	0.21%
+sell(1, DCRBTC, 0.858) @ 0.004764 (bought @ 0.004674, 1.93%)	0.24%
+buy(1, XMRBTC, 0.318) @ 0.012581
+buy(1, DCRBTC, 0.833) @ 0.0048
+buy(1, LUNBTC, 7.6) @ 0.0005267
+sell(1, REPBTC, 0.831) @ 0.004293 (bought @ 0.004805, -10.66%)	-0.36%
+sell(1, REPETH, 0.687) @ 0.13 (bought @ 0.14555, -10.68%)	-0.37%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.088278 new_size=0.177588
+buy(1, DASHETH, 0.168) @ 0.59386
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.177588 new_size=0.077818
+BUY_FAILED for ETCETH price=0.036331 size=2.75
+buy(1, WAVESBNB, 7.78) @ 0.3855
+ORDER_SIZE_UPDATE for BNBBTC orig_size=5.76 new_size=2.7608
+sell(1, LUNBTC, 7.6) @ 0.0005319 (bought @ 0.0005267, 0.99%)	-0.36%
+buy(1, LUNBTC, 7.44) @ 0.0005379
+buy(1, XZCBTC, 2.79) @ 0.001437
+sell(1, WAVESETH, 4.66) @ 0.021579 (bought @ 0.021443, 0.63%)	-0.6%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.077818 new_size=0.178376
+buy(1, ETCETH, 2.7) @ 0.037
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.178376 new_size=0.078476
+BUY_FAILED for SKYETH price=0.0085 size=11.682
+sell(1, LTCETH, 0.378) @ 0.2665 (bought @ 0.26411, 0.9%)	-0.55%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.078476 new_size=0.179216
+buy(1, NEOETH, 1.56) @ 0.064075
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.179216 new_size=0.079259
+sell(1, XMRBTC, 0.318) @ 0.012733 (bought @ 0.012581, 1.21%)	-0.48%
+buy(1, DGDBTC, 0.793) @ 0.005044
+sell(1, EOSETH, 4.98) @ 0.020257 (bought @ 0.020076, 0.9%)	-0.12%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.079259 new_size=0.180139
+buy(1, LUNETH, 5.83) @ 0.017168
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.180139 new_size=0.08005
+sell(1, LUNBTC, 7.44) @ 0.0005758 (bought @ 0.0005379, 7.05%)	-0.07%
+SELL_FAILED for LUNETH price=0.017608 buy_price=0.017168 size=5.83
+buy(1, LUNBTC, 6.96) @ 0.0005751
+sell(1, XZCBTC, 2.79) @ 0.001454 (bought @ 0.001437, 1.18%)	0.3%
+sell(1, LUNBTC, 6.96) @ 0.0006078 (bought @ 0.0005751, 5.69%)	0.46%
+sell(1, EOSBTC, 6.07) @ 0.0006678 (bought @ 0.0006589, 1.35%)	0.39%
+sell(1, DASHBTC, 0.204) @ 0.019803 (bought @ 0.019592, 1.08%)	0.54%
+buy(1, XZCBTC, 2.71) @ 0.001477
+sell(1, LTCBTC, 0.46) @ 0.008782 (bought @ 0.008691, 1.05%)	0.47%
+buy(1, REPBTC, 0.936) @ 0.004273
+sell(1, NEOBTC, 1.9) @ 0.00213 (bought @ 0.002107, 1.09%)	0.5%
+buy(1, EOSBTC, 5.98) @ 0.0006681
+buy(1, DASHBTC, 0.201) @ 0.019928
+buy(1, LTCBTC, 0.45) @ 0.008814
+sell(1, WAVESBTC, 5.66) @ 0.000729 (bought @ 0.0007069, 3.13%)	0.75%
+buy(1, LUNBTC, 6.57) @ 0.0006099
+sell(1, NEOETH, 1.56) @ 0.064852 (bought @ 0.064075, 1.21%)	0.77%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.08005 new_size=0.181219
+buy(1, LTCETH, 0.373) @ 0.26819
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.181219 new_size=0.081189
+buy(1, NEOBTC, 1.88) @ 0.002136
+buy(1, WAVESBTC, 5.41) @ 0.0007398
+sell(1, BCHABCBTC, 0.117) @ 0.035953 (bought @ 0.034319, 4.76%)	0.72%
+sell(1, QTUMBTC, 6.99) @ 0.000578 (bought @ 0.000572, 1.05%)	0.76%
+buy(1, BCHABCBTC, 0.111) @ 0.035931
+buy(1, QTUMBTC, 6.91) @ 0.000578
+sell(1, EOSBTC, 5.98) @ 0.000687 (bought @ 0.0006681, 2.83%)	0.88%
+sell(1, WAVESBTC, 5.41) @ 0.0007515 (bought @ 0.0007398, 1.58%)	0.93%
+sell(1, LUNBTC, 6.57) @ 0.0006211 (bought @ 0.0006099, 1.84%)	1.05%
+buy(1, WAVESBTC, 5.18) @ 0.0007731
+buy(1, EOSBTC, 5.81) @ 0.0006874
+sell(1, WAVESBTC, 5.18) @ 0.0007815 (bought @ 0.0007731, 1.09%)	0.97%
+buy(1, LUNBTC, 6.2) @ 0.0006433
+buy(1, XMRBTC, 0.314) @ 0.012756
+buy(1, WAVESBTC, 5.17) @ 0.0007733
+sell(1, DASHETH, 0.168) @ 0.60049 (bought @ 0.59386, 1.12%)	1.01%
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.081189 new_size=0.182069
+buy(1, NEOETH, 1.55) @ 0.064502
+ORDER_SIZE_UPDATE for ETHBTC orig_size=0.182069 new_size=0.082091
+BUY_FAILED for WAVESETH price=0.023439 size=4.26
+sell(1, GASBTC, 6.69) @ 0.000608 (bought @ 0.000601, 1.16%)	1.26%
+sell(1, LUNBTC, 6.2) @ 0.000675 (bought @ 0.0006433, 4.93%)	1.24%
+sell(1, SKYBTC, 14.286) @ 0.000283 (bought @ 0.00028, 1.07%)	1.74%
+sell(1, WAVESBTC, 5.17) @ 0.000823 (bought @ 0.0007733, 6.43%)	1.74%
+buy(1, LUNBTC, 5.32) @ 0.0007533
+sell(1, BCHABCBTC, 0.111) @ 0.0363 (bought @ 0.035931, 1.03%)	1.79%
+buy(1, GASBTC, 6.56) @ 0.000611
+buy(1, SKYBTC, 14.235) @ 0.00028
+sell(1, SKYBTC, 14.235) @ 0.000285 (bought @ 0.00028, 1.79%)	1.72%
+buy(1, WAVESBTC, 4.79) @ 0.0008347
+buy(1, SKYBTC, 14.134) @ 0.000284
+sell(1, LUNBTC, 5.32) @ 0.0007812 (bought @ 0.0007533, 3.7%)	1.79%
+
+Trade Symbol Profits:
+NEOBTC (1): -1.45%
+LSKBTC (1): -1.4%
+ZENBTC (1): -6.8%
+LTCBTC (1): 0.07%
+WAVESBNB (1): 13.88%
+DCRBTC (1): 0.42%
+QTUMBTC (1): 0.0%
+EOSBTC (1): -1.27%
+DASHBTC (1): 0.25%
+GVTBTC (1): 0.22%
+LTCETH (1): -0.35%
+XZCBTC (1): -0.54%
+BNBBTC (1): -0.54%
+WAVESBTC (1): -4.29%
+BCDBTC (1): -1.79%
+GASBTC (1): 0.98%
+BCHSVBTC (1): -1.37%
+LTCBNB (1): 2.09%
+MCOBTC (1): -0.48%
+BTGBTC (1): -1.47%
+ETHBTC (1): 1.11%
+SKYBTC (1): -0.35%
+ETCETH (1): -1.55%
+NEOETH (1): -1.24%
+LUNETH (1): 33.38%
+XMRBTC (1): -1.08%
+REPBTC (1): -2.46%
+ZECBTC (1): 0.05%
+ETCBTC (1): -0.08%
+DGDBTC (1): -0.18%
+
+Results:
+Total Capture Time:	49.12 hours
+Initial BTC total:	0.2
+Final BTC total:	0.203512550852
+Percent Profit: 	1.76%
