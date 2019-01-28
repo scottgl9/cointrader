@@ -1,14 +1,14 @@
 # Rate of change for TimeSegmentPercentChange
-from trader.lib.TimeSegmentPercentChange import TimeSegmentPercentChange
-from trader.lib.TimeSegmentValues import TimeSegmentValues
+from trader.lib.MovingTimeSegment.MTSPercentChange import MTSPercentChange
+from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 
 
-class TimeSegmentPercentChangeROC(object):
+class MTSPercentChangeROC(object):
     def __init__(self, tspc_seconds, roc_seconds, smoother=None):
         self.tspc_seconds = tspc_seconds
         self.roc_seconds = roc_seconds
-        self.tspc = TimeSegmentPercentChange(seconds=tspc_seconds, smoother=smoother)
-        self.tsv_roc = TimeSegmentValues(seconds=roc_seconds)
+        self.tspc = MTSPercentChange(seconds=tspc_seconds, smoother=smoother)
+        self.tsv_roc = MovingTimeSegment(seconds=roc_seconds)
         self.result = 0
 
     def update(self, value, ts):

@@ -11,8 +11,8 @@ from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TimePeakValley import TimePeakValley
-from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
-from trader.lib.TimeSegmentPercentChangeROC import TimeSegmentPercentChangeROC
+from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
+from trader.lib.MovingTimeSegment.MTSPercentChangeROC import MTSPercentChangeROC
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -27,7 +27,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.last_close = 0
 
         self.detector = PeakValleyDetect()
-        self.tspc = TimeSegmentPriceChannel(minutes=60)
+        self.tspc = MTSPriceChannel(minutes=60)
         self.obv = OBV()
         self.EMA = EMA
 
@@ -46,7 +46,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema26 = EMA(26, scale=24, lag_window=5)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
 
-        self.tspc_roc = TimeSegmentPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
+        self.tspc_roc = MTSPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
 
         ctimeout = 1000 * 3600
         self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)

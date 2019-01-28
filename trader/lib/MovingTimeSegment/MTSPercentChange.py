@@ -1,8 +1,8 @@
 # TimeSegmentPercentChange: Track percent change of values for a given time interval
-from trader.lib.TimeSegmentValues import TimeSegmentValues
+from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 
 
-class TimeSegmentPercentChange(object):
+class MTSPercentChange(object):
     def __init__(self, seconds=0, minutes=0, tsv=None, smoother=None, disable_fmm=True,
                  track_percent=False, tsv_percent=None):
         self.seconds = seconds
@@ -13,7 +13,7 @@ class TimeSegmentPercentChange(object):
         if tsv:
             self.tsv = tsv
         else:
-            self.tsv = TimeSegmentValues(seconds, disable_fmm=disable_fmm)
+            self.tsv = MovingTimeSegment(seconds, disable_fmm=disable_fmm)
         self.smoother = smoother
         self.track_percent = track_percent
         self.tsv_percent = None
@@ -21,7 +21,7 @@ class TimeSegmentPercentChange(object):
             if tsv_percent:
                 self.tsv_percent = tsv_percent
             else:
-                self.tsv_percent = TimeSegmentValues(seconds, disable_fmm=disable_fmm)
+                self.tsv_percent = MovingTimeSegment(seconds, disable_fmm=disable_fmm)
 
     def ready(self):
         return self.tsv.ready()

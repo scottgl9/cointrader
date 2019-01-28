@@ -14,8 +14,10 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.TimeSegmentValues import TimeSegmentValues
-from trader.lib.TimeSegmentPercentChange import TimeSegmentPercentChange
+from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
+from trader.lib.MovingTimeSegment.MTSPercentChange import MTSPercentChange
+from trader.lib.MovingTimeSegment.MTSPercentChangeROC import MTSPercentChangeROC
+
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.EMA import EMA
 from trader.indicator.DTWMA_EMA import DTWMA_EMA
@@ -47,21 +49,25 @@ def simulate(conn, client, base, currency, type="channel"):
     #tspc12_values = []
     #tspc12_x_values = []
 
-    tspc1 = TimeSegmentPercentChange(seconds=3600, smoother=DTWMA_EMA(30, 200, scale=24))
+    tspc1 = MTSPercentChange(seconds=3600, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc1_values = []
     tspc1_x_values = []
 
-    tspc4 = TimeSegmentPercentChange(seconds=3600*4, smoother=DTWMA_EMA(30, 200, scale=24))
+    tspc4 = MTSPercentChange(seconds=3600*4, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc4_values = []
     tspc4_x_values = []
 
-    tspc12 = TimeSegmentPercentChange(seconds=3600*12, smoother=DTWMA_EMA(30, 200, scale=24))
+    tspc12 = MTSPercentChange(seconds=3600*12, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc12_values = []
     tspc12_x_values = []
 
-    tspc30 = TimeSegmentPercentChange(seconds=1800, smoother=DTWMA_EMA(30, 200, scale=24))
+    tspc30 = MTSPercentChange(seconds=1800, smoother=DTWMA_EMA(30, 200, scale=24))
     tspc30_values = []
     tspc30_x_values = []
+
+    tspc_roc = MTSPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
+    tspc_roc_values = []
+    tspc_roc_x_values = []
 
     ema12_values = []
     ema26_values = []
@@ -111,6 +117,10 @@ def simulate(conn, client, base, currency, type="channel"):
         tspc30_values.append(percent)
         tspc30_x_values.append(i)
 
+        tspc_roc.update(close, ts)
+        tspc_roc_values.append(tspc_roc.result)
+        tspc_roc_x_values.append(i)
+
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -118,23 +128,22 @@ def simulate(conn, client, base, currency, type="channel"):
         #lstsqs_x_values.append(i)
         i += 1
 
-    plt.subplot(211)
+    plt.subplot(311)
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    plt.subplot(212)
+    plt.subplot(312)
     #fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
     fig21, = plt.plot(tspc1_x_values, tspc1_values, label='TSPC1')
     fig22, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
     fig23, = plt.plot(tspc4_x_values, tspc4_values, label='TSPC4')
     fig24, = plt.plot(tspc30_x_values, tspc30_values, label='TSPC30')
-
-
     plt.legend(handles=[fig21, fig22, fig23, fig24])
-
+    plt.subplot(313)
+    plt.plot(tspc_roc_x_values, tspc_roc_values)
     plt.show()
 
 if __name__ == '__main__':

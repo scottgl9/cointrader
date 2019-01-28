@@ -2,7 +2,7 @@
 from trader.lib.FastMinMax import FastMinMax
 
 
-class TimeSegmentValues(object):
+class MovingTimeSegment(object):
     def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None, disable_fmm=False):
         self.seconds = seconds
         if minutes != 0:

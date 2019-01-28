@@ -1,11 +1,11 @@
 from trader.indicator.EMA import EMA
-from trader.lib.TimeSegmentValues import TimeSegmentValues
+from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 from trader.lib.ValueLag import ValueLag
 
 
-class TimeSegmentPriceChannel(object):
+class MTSPriceChannel(object):
     def __init__(self, seconds=0, minutes=0, lag_window=3, min_smoother=None, max_smoother=None):
-        self.tsv = TimeSegmentValues(seconds, minutes)
+        self.tsv = MovingTimeSegment(seconds, minutes)
 
         if min_smoother:
             self.min_smoother = min_smoother

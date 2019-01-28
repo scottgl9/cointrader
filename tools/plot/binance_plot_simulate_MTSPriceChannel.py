@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import os
 try:
     import trader
 except ImportError:
@@ -8,18 +9,13 @@ except ImportError:
     import trader
 
 import sqlite3
-import sys
-import os
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.TimeSegmentValues import TimeSegmentValues
-from trader.lib.TimeSegmentPercentChange import TimeSegmentPercentChange
-from trader.lib.TimeSegmentPercentChangeROC import TimeSegmentPercentChangeROC
 from trader.indicator.DTWMA import DTWMA
-from trader.indicator.EMA import EMA
-from trader.indicator.DTWMA_EMA import DTWMA_EMA
+from trader.indicator.ZLEMA import *
+from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 
 
 def get_rows_as_msgs(c):
@@ -39,34 +35,17 @@ def simulate(conn, client, base, currency, type="channel"):
 
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
-    ema50 = EMA(100, scale=24)
-    ema200 = EMA(200, scale=24)
+    ema50 = EMA(100, scale=24, lag_window=5)
+    ema200 = EMA(200, scale=24, lag_window=5)
 
     dtwma = DTWMA(window=30)
-
-    #tspc12 = TimeSegmentPercentChange(seconds=3600)
-    #tspc12_values = []
-    #tspc12_x_values = []
-
-    tspc1 = TimeSegmentPercentChange(seconds=3600, smoother=DTWMA_EMA(30, 200, scale=24))
-    tspc1_values = []
-    tspc1_x_values = []
-
-    tspc4 = TimeSegmentPercentChange(seconds=3600*4, smoother=DTWMA_EMA(30, 200, scale=24))
-    tspc4_values = []
-    tspc4_x_values = []
-
-    tspc12 = TimeSegmentPercentChange(seconds=3600*12, smoother=DTWMA_EMA(30, 200, scale=24))
-    tspc12_values = []
-    tspc12_x_values = []
-
-    tspc30 = TimeSegmentPercentChange(seconds=1800, smoother=DTWMA_EMA(30, 200, scale=24))
-    tspc30_values = []
-    tspc30_x_values = []
-
-    tspc_roc = TimeSegmentPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
-    tspc_roc_values = []
-    tspc_roc_x_values = []
+    tspc = MTSPriceChannel(seconds=3600)
+    tspc_min_values = []
+    tspc_min_x_values = []
+    tspc_max_values = []
+    tspc_max_x_values = []
+    tspc_mid_values = []
+    tspc_mid_x_values = []
 
     ema12_values = []
     ema26_values = []
@@ -96,29 +75,16 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        tspc1.update(close, ts)
-        percent = tspc1.get_percent_change()
-        tspc1_values.append(percent)
-        tspc1_x_values.append(i)
-
-        tspc12.update(close, ts)
-        percent = tspc12.get_percent_change()
-        tspc12_values.append(percent)
-        tspc12_x_values.append(i)
-
-        tspc4.update(close, ts)
-        percent = tspc4.get_percent_change()
-        tspc4_values.append(percent)
-        tspc4_x_values.append(i)
-
-        tspc30.update(close, ts)
-        percent = tspc30.get_percent_change()
-        tspc30_values.append(percent)
-        tspc30_x_values.append(i)
-
-        tspc_roc.update(close, ts)
-        tspc_roc_values.append(tspc_roc.result)
-        tspc_roc_x_values.append(i)
+        tspc.update(close, ts)
+        if tspc.min() != 0:
+            tspc_min_values.append(tspc.min())
+            tspc_min_x_values.append(i)
+        if tspc.max() != 0:
+            tspc_max_values.append(tspc.max())
+            tspc_max_x_values.append(i)
+        if tspc.median() != 0:
+            tspc_mid_values.append(tspc.median())
+            tspc_mid_x_values.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -127,22 +93,22 @@ def simulate(conn, client, base, currency, type="channel"):
         #lstsqs_x_values.append(i)
         i += 1
 
-    plt.subplot(311)
+    plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
-    fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
-    fig4, = plt.plot(ema200_values, label='EMA200')
+    fig1, = plt.plot(ema12_values, label="EMA12")
+    fig2, = plt.plot(tspc_min_x_values, tspc_min_values, label="MIN")
+    fig3, = plt.plot(tspc_max_x_values, tspc_max_values, label="MAX")
+    fig4, = plt.plot(tspc_mid_x_values, tspc_mid_values, label="TSPC")
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    plt.subplot(312)
-    #fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
-    fig21, = plt.plot(tspc1_x_values, tspc1_values, label='TSPC1')
-    fig22, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
-    fig23, = plt.plot(tspc4_x_values, tspc4_values, label='TSPC4')
-    fig24, = plt.plot(tspc30_x_values, tspc30_values, label='TSPC30')
-    plt.legend(handles=[fig21, fig22, fig23, fig24])
-    plt.subplot(313)
-    plt.plot(tspc_roc_x_values, tspc_roc_values)
+    #plt.subplot(312)
+    #fig21, = plt.plot(tsv_x_values, tsv_values, label='TSV_PERCENT')
+    #fig22, = plt.plot(tsv2_x_values, tsv2_values, label='TSV2_PERCENT')
+    #plt.legend(handles=[fig21, fig22])
+    #plt.subplot(313)
+    #fig31, = plt.plot(tsv_x_values, tsv_counts, label='TSV_COUNTS')
+    #fig32, = plt.plot(tsv2_x_values, tsv2_counts, label='TSV2_COUNTS')
+    #plt.legend(handles=[fig31, fig32])
+
     plt.show()
 
 if __name__ == '__main__':
