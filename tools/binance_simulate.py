@@ -238,12 +238,18 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(message)s")
     logger = logging.getLogger()
 
-    trade_log_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.log'))
-    # remove old trade log before re-running
-    if os.path.exists(trade_log_filename):
-        os.remove(trade_log_filename)
+    trade_cache = {}
 
-    fileHandler = logging.FileHandler(trade_log_filename)
+    trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
+
+    trade_log_filename = results.filename.replace(".db", "_{}.log".format(trade_cache_name))
+    trade_log_filepath = os.path.join(results.cache_dir, trade_log_filename)
+
+    # remove old trade log before re-running
+    if os.path.exists(trade_log_filepath):
+        os.remove(trade_log_filepath)
+
+    fileHandler = logging.FileHandler(trade_log_filepath)
     fileHandler.setFormatter(logFormatter)
     logger.addHandler(fileHandler)
 
@@ -258,10 +264,6 @@ if __name__ == '__main__':
     #thread = threading.Thread(target=WebThread, args=(strategy,))
     #thread.daemon = True
     #thread.start()
-
-    trade_cache = {}
-
-    trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
 
     # if we already ran simulation, load the results
     trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))

@@ -4,4 +4,5 @@ python tools/binance_simulate.py -f cryptocurrency_database.miniticker_collectio
 python tools/binance_simulate.py -f cryptocurrency_database.miniticker_collection_05312018.db
 python tools/binance_simulate.py -f cryptocurrency_database.miniticker_collection_11202018.db
 python tools/binance_simulate.py -f cryptocurrency_database.miniticker_collection_11232018.db
-
+python tools/binance_simulate.py -f cryptocurrency_database.miniticker_collection_01192019.db
+python tools/binance_simulate.py -f cryptocurrency_database.miniticker_collection_01202019.db
