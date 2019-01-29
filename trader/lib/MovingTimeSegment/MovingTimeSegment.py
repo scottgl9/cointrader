@@ -19,6 +19,9 @@ class MovingTimeSegment(object):
         self.min_value_index = -1
         self.max_value = 0
         self.max_value_index = -1
+        # track moving sum of time segment values
+        self._sum = 0
+        self._sum_count = 0
 
     def empty(self):
         if len(self.values) == 0:
@@ -38,6 +41,9 @@ class MovingTimeSegment(object):
             self.values.append(svalue)
             self.timestamps.append(ts)
 
+            self._sum += svalue
+            self._sum_count += 1
+
         cnt = 0
         while (ts - self.timestamps[cnt]) > self.seconds_ts:
             cnt += 1
@@ -48,6 +54,11 @@ class MovingTimeSegment(object):
         if cnt != 0:
             if not self.disable_fmm:
                 self.fmm.remove(cnt)
+
+            for i in range(0, cnt):
+                self._sum -= self.values[i]
+                self._sum_count -= 1
+
             self.timestamps = self.timestamps[cnt:]
             self.values = self.values[cnt:]
             if not self.full:
@@ -56,6 +67,12 @@ class MovingTimeSegment(object):
         if not self.disable_fmm:
             self.min_value = self.fmm.min()
             self.max_value = self.fmm.max()
+
+    def get_sum(self):
+        return float(self._sum)
+
+    def get_sum_count(self):
+        return self._sum_count
 
     def min(self):
         if not self.ready():

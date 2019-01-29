@@ -36,6 +36,12 @@ class AccountBinance(AccountBase):
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
+    def timestamp_to_seconds(self, ts):
+        return float(ts / 1000.0)
+
+    def seconds_to_timestamp(self, seconds):
+        return float(seconds * 1000.0)
+
     def update_ticker(self, symbol, price):
         self._tickers[symbol] = price
 
