@@ -24,7 +24,7 @@ from trader.indicator.DTWMA import DTWMA
 from trader.indicator.OBV import OBV
 from trader.lib.Kline import Kline
 from trader.lib.MAAvg import MAAvg
-from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
+from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
@@ -150,7 +150,7 @@ class mainWindow(QtGui.QTabWidget):
             data = []
             c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
             for row in c:
-                msg = {'E': row[0], 'c': row[1], 'q': row[5], 'v': row[7]}
+                msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3], 'q': row[5], 'v': row[7]}
                 data.append(msg)
             self.create_tab(s)
             self.plot_tab(s, data, trades[s])
@@ -168,6 +168,8 @@ class mainWindow(QtGui.QTabWidget):
 
     def plot_tab(self, name, data=None, trades=None):
         prices = []
+        high_values = []
+        low_values = []
         ema12 = EMA(12, scale=24)
         ema26 = EMA(26, scale=24)
         ema50 = EMA(50, scale=24)
@@ -195,7 +197,7 @@ class mainWindow(QtGui.QTabWidget):
         obv_ema12_values = []
         obv_ema26_values = []
         obv_ema50_values = []
-        tspc = TimeSegmentPriceChannel(minutes=60)
+        tspc = MTSPriceChannel(minutes=60)
         tspc_values = []
         tspc_x_values = []
 
@@ -206,6 +208,10 @@ class mainWindow(QtGui.QTabWidget):
         i=0
         for msg in data:
             price = float(msg['c'])
+            high = float(msg['h'])
+            high_values.append(high)
+            low = float(msg['l'])
+            low_values.append(low)
             ts = msg['E']
             volume = msg['v']
             volumes.append(volume)
@@ -265,7 +271,9 @@ class mainWindow(QtGui.QTabWidget):
         fig5, = ax.plot(ema50_values, label="EMA50")
         fig6, = ax.plot(maavg_x_values, maavg_values, label="MAAVG")
         fig7, = ax.plot(ema200_values, label="EMA200")
-        for f in [fig1, fig2, fig3, fig4, fig5, fig6, fig7]:
+        fig8, = ax.plot(low_values, label="low")
+        fig9, = ax.plot(high_values, label="high")
+        for f in [fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8, fig9]:
             handles.append(f)
         ax.legend(handles=handles)
         #ax2 = self.tabs[name].figure.add_subplot(312)
