@@ -9,6 +9,7 @@ except ImportError:
 
 import sqlite3
 import sys
+import os
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
@@ -109,11 +110,10 @@ def simulate(conn, client, base, currency, type="channel"):
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
-
-    #fig2, = plt.plot(ema300_values, label='EMA300')
-    #fig3, = plt.plot(ema500_values, label='EMA500')
-    #fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3])
+    fig4, = plt.plot(ema200_values, label='EMA200')
+    plt.plot(low_prices)
+    plt.plot(high_prices)
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')
