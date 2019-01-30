@@ -191,12 +191,12 @@ class mainWindow(QtGui.QTabWidget):
         obv = OBV()
         volumes = []
         obv_values = []
-        obv_ema12 = EMA(12, scale=24)
-        obv_ema26 = EMA(26, scale=24)
-        obv_ema50 = EMA(50, scale=24)
+        obv_ema12 = EMA(12)
+        obv_ema26 = EMA(26)
+        obv_ema100 = EMA(500)
         obv_ema12_values = []
         obv_ema26_values = []
-        obv_ema50_values = []
+        obv_ema100_values = []
         tspc = MTSPriceChannel(minutes=60)
         tspc_values = []
         tspc_x_values = []
@@ -223,8 +223,8 @@ class mainWindow(QtGui.QTabWidget):
             obv_ema12_values.append(obv_ema12.result)
             obv_ema26.update(obv.result)
             obv_ema26_values.append(obv_ema26.result)
-            obv_ema50.update(obv.result)
-            obv_ema50_values.append(obv_ema50.result)
+            obv_ema100.update(obv.result)
+            obv_ema100_values.append(obv_ema100.result)
 
             tspc.update(price, ts)
             if tspc.ready():
@@ -271,19 +271,19 @@ class mainWindow(QtGui.QTabWidget):
         fig5, = ax.plot(ema50_values, label="EMA50")
         fig6, = ax.plot(maavg_x_values, maavg_values, label="MAAVG")
         fig7, = ax.plot(ema200_values, label="EMA200")
-        fig8, = ax.plot(low_values, label="low")
-        fig9, = ax.plot(high_values, label="high")
-        for f in [fig1, fig2, fig3, fig4, fig5, fig6, fig7, fig8, fig9]:
+        #fig8, = ax.plot(low_values, label="low")
+        #fig9, = ax.plot(high_values, label="high")
+        for f in [fig1, fig2, fig3, fig4, fig5, fig6, fig7]:
             handles.append(f)
         ax.legend(handles=handles)
         #ax2 = self.tabs[name].figure.add_subplot(312)
         #ax2.plot(macd_diff_values)
         #ax2.plot(macd_signal_values)
         ax3 = self.tabs[name].figure.add_subplot(212)
-        ax3.plot(obv_values)
-        #ax3.plot(obv_ema12_values)
+        #ax3.plot(obv_values)
+        ax3.plot(obv_ema12_values)
         #ax3.plot(obv_ema26_values)
-        #ax3.plot(obv_ema50_values)
+        ax3.plot(obv_ema100_values)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':

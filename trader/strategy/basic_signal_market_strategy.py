@@ -59,12 +59,12 @@ class basic_signal_market_strategy(StrategyBase):
         self.asset_info = asset_info
         self.trade_size_handler = fixed_trade_size(self.accnt,
                                                    asset_info,
-                                                   btc=0.004,
+                                                   btc=0.002,
                                                    eth=0.1,
                                                    bnb=3,
                                                    pax=10.0,
                                                    usdt=10.0,
-                                                   multiplier=4.0)
+                                                   multiplier=2.0)
         #self.trade_size_handler = percent_balance_trade_size(self.accnt,
         #                                                     asset_info,
         #                                                     percent=10.0,

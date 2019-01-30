@@ -310,7 +310,7 @@ class MACross(object):
         if self.cross_up_ts == 0 or self.cross_down_ts > self.cross_up_ts:
             return False
 
-        if abs((self.cross_up_value - self.post_cross_up_max_value) / self.cross_up_value) < cutoff:
+        if cutoff and abs((self.cross_up_value - self.post_cross_up_max_value) / self.cross_up_value) < cutoff:
             return False
 
         if (self.last_ts - self.post_cross_up_max_ts) < seconds * 1000:

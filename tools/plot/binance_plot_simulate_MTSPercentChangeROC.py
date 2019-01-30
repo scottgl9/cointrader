@@ -65,7 +65,7 @@ def simulate(conn, client, base, currency, type="channel"):
     tspc30_values = []
     tspc30_x_values = []
 
-    tspc_roc = MTSPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
+    tspc_roc = MTSPercentChangeROC(tspc_seconds=500, roc_seconds=500, smoother=EMA(12))
     tspc_roc_values = []
     tspc_roc_x_values = []
 
