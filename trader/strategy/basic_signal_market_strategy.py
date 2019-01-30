@@ -1,8 +1,8 @@
 from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
-from trader.strategy.trade_size_strategy.trade_size_strategy_base import trade_size_strategy_base
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
+from trader.strategy.trade_size_strategy.percent_balance_trade_size import percent_balance_trade_size
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
 from trader.indicator.OBV import OBV
@@ -65,6 +65,10 @@ class basic_signal_market_strategy(StrategyBase):
                                                    pax=10.0,
                                                    usdt=10.0,
                                                    multiplier=4.0)
+        #self.trade_size_handler = percent_balance_trade_size(self.accnt,
+        #                                                     asset_info,
+        #                                                     percent=10.0,
+        #                                                     multiplier=5)
 
         # for more accurate simulation
         self.delayed_buy_msg = None
