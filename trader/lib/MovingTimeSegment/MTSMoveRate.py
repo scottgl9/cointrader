@@ -19,5 +19,6 @@ class MTSMoveRate(object):
         self.large_mts.update(self.small_mts_sma.result, ts)
         self.large_mts_first_value = self.large_mts.first_value()
         self.large_mts_last_value = self.large_mts.last_value()
-        self.result = self.large_mts_last_value - self.large_mts_first_value
+        if self.large_mts_first_value != 0:
+            self.result = 100.0 * (self.large_mts_last_value - self.large_mts_first_value) / self.large_mts_first_value
         return self.result
