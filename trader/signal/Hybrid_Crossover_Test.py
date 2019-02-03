@@ -14,6 +14,7 @@ from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TimePeakValley import TimePeakValley
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 from trader.lib.MovingTimeSegment.MTSPercentChangeROC import MTSPercentChangeROC
+from trader.lib.MovingTimeSegment.MTSMoveRate import MTSMoveRate
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -30,6 +31,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.detector = PeakValleyDetect()
         self.tspc = MTSPriceChannel(minutes=60)
         self.tspc_roc = MTSPercentChangeROC(tspc_seconds=500, roc_seconds=500, smoother=EMA(12))
+        self.mts_moverate = MTSMoveRate(small_seg_seconds=180, large_seg_seconds=3600)
         self.obv = OBV()
         self.obv_ema12 = EMA(12)
         self.obv_ema500 = EMA(50)
@@ -40,6 +42,8 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema200 = EMA(200, scale=24)
 
         self.macompare = MACompare()
+
+        self.mts_moverate_cross_zero = Crossover2(window=10)
 
         ctimeout = 1000 * 3600
         self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
@@ -60,9 +64,9 @@ class Hybrid_Crossover_Test(SignalBase):
             if self.is_currency_pair:
                 self.disabled = True
                 self.disabled_end_ts = self.timestamp + 1000 * 3600
-            else:
-                self.disabled = True
-                self.disabled_end_ts = self.timestamp + 1000 * 1800
+            #else:
+            #    self.disabled = True
+            #    self.disabled_end_ts = self.timestamp + 1000 * 1800
         else:
             self.last_timestamp = self.timestamp
             self.timestamp = ts
@@ -81,12 +85,15 @@ class Hybrid_Crossover_Test(SignalBase):
         self.macompare.update([ema12_result, ema26_result, ema50_result, ema200_result])
 
         tspc_result = self.tspc.update(close, ts)
-        tspc_roc_result = self.tspc_roc.update(close, ts)
+        #tspc_roc_result = self.tspc_roc.update(close, ts)
+
+        self.mts_moverate.update(close, ts)
+        self.mts_moverate_cross_zero.update(self.mts_moverate.result, 0)
 
         self.ema_cross_12_50.update(close, ts, ma1_result=ema12_result, ma2_result=ema50_result)
         self.obv_ema_cross_12_500.update(close, ts, ma1_result=self.obv_ema12.result, ma2_result=self.obv_ema500.result)
         self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema26_result, ma2_result=tspc_result)
-        self.tspc_roc_cross_zero.update(close, ts, ma1_result=tspc_roc_result, ma2_result=0)
+        #self.tspc_roc_cross_zero.update(close, ts, ma1_result=tspc_roc_result, ma2_result=0)
 
     def buy_signal(self):
         if self.disabled:
@@ -109,8 +116,12 @@ class Hybrid_Crossover_Test(SignalBase):
             self.buy_type = 'TPSC12'
             return True
 
-        if self.tspc_roc_cross_zero.cross_up:
-            self.buy_type = 'TSPC_ROC'
+        #if self.tspc_roc_cross_zero.cross_up:
+        #    self.buy_type = 'TSPC_ROC'
+        #    return True
+
+        if self.mts_moverate_cross_zero.crossup_detected():
+            self.buy_type = 'MTS_MOVERATE'
             return True
 
         return False
@@ -123,12 +134,16 @@ class Hybrid_Crossover_Test(SignalBase):
             self.sell_type = 'TPSC12'
             return True
 
-        if self.tspc_roc_cross_zero.cross_down:
-            self.sell_type='TSPC_ROC'
-            return True
+        #if self.tspc_roc_cross_zero.cross_down:
+        #    self.sell_type='TSPC_ROC'
+        #    return True
 
         if self.ema_12_cross_tpsc.is_past_current_max(seconds=600, percent=1.0, cutoff=0.03):
             self.sell_type='TPSC12_MAX'
+            return True
+
+        if self.mts_moverate_cross_zero.crossdown_detected():
+            self.sell_type = 'MTS_MOVERATE'
             return True
 
         #if self.obv_ema_cross_12_500.cross_down:
