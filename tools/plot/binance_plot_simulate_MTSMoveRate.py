@@ -43,7 +43,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
     dtwma = DTWMA(window=30)
 
-    mts_moverate = MTSMoveRate(small_seg_seconds=60, large_seg_seconds=1800)
+    mts_moverate = MTSMoveRate(small_seg_seconds=180, large_seg_seconds=900)
     mts_moverate_values = []
 
     ema12_values = []
