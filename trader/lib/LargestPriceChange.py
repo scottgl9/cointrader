@@ -1,5 +1,12 @@
 class LargestPriceChange(object):
     def __init__(self, prices=None, timestamps=None):
+        self.prices = None
+        self.timestamps = None
+        self.root = None
+        self._price_segment_percents = None
+        self.reset(prices, timestamps)
+
+    def reset(self, prices, timestamps):
         self.prices = prices
         self.timestamps = timestamps
         self.root = PriceSegment(self.prices, self.timestamps)
@@ -32,7 +39,12 @@ class LargestPriceChange(object):
         self.price_segment_percents(node=self.root)
         # sort by percent
         self._price_segment_percents.sort(key=lambda x: x[0])
-        return [self._price_segment_percents[0], self._price_segment_percents[-1]]
+        return self._price_segment_percents
+
+    # return largest negative price change, and largest positive price change
+    def get_largest_price_segment_percents(self):
+        price_segment_percents = self.get_price_segment_percents()
+        return [price_segment_percents[0], price_segment_percents[-1]]
 
     def price_segment_percents(self, node=None, n=1):
         if not node:

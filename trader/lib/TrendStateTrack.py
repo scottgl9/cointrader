@@ -1,10 +1,12 @@
 # Analyze market data, and track trend(s) using a state representation
+from trader.lib.LargestPriceChange import LargestPriceChange
 
 
 class TrendStateTrack(object):
     def __init__(self):
         self.state = None
         self.state_prev_list = []
+        self.lpc = LargestPriceChange()
 
     def update(self, close, ts, volume=0, low=0, high=0):
         # init of state

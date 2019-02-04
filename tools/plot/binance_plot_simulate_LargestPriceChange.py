@@ -89,7 +89,7 @@ def simulate(conn, client, base, currency, type="channel"):
     lpc.divide_price_segments()
     #ts_segments = lpc.get_timestamp_segments()
     #print(ts_segments)
-    psp = lpc.get_price_segment_percents()
+    psp = lpc.get_largest_price_segment_percents()
     print(psp[0])
     print(psp[1])
     psp_down_percent = psp[0][0]
