@@ -16,6 +16,8 @@ class TrendStateTrack(object):
         self.check_state_seconds = check_state_seconds
         self.trend_state = None
         self.trend_state_prev_list = []
+        self.seg_down_list = []
+        self.seg_up_list = []
         self.lpc = LargestPriceChange(use_dict=True)
         self.mts = MovingTimeSegment(seconds=self.max_state_seconds)
         self.start_ts = 0
@@ -49,13 +51,43 @@ class TrendStateTrack(object):
         if self.check_start_ts and (ts - self.check_start_ts) < self.check_state_seconds * 1000:
             return
 
+        self.process_trend_state(ts)
+        self.check_start_ts = ts
+
+    # process market data received from update(), and re-determine state
+    def process_trend_state(self, ts):
         values = self.mts.get_values()
         timestamps = self.mts.get_timestamps()
         self.lpc.reset(values, timestamps)
         self.lpc.divide_price_segments()
-        seglow, seghigh = self.lpc.get_largest_price_segment_percents()
-        print(seglow, seghigh)
-        self.check_start_ts = ts
+        seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
+        self.process_segment_state(seg_down, seg_up, ts)
+
+    def process_segment_state(self, seg_down, seg_up, ts):
+        self.seg_down_list.append(seg_down)
+        self.seg_up_list.append(seg_up)
+
+        #seg_down_start_ts = seg_down['start_ts']
+        #seg_down_end_ts = seg_down['end_ts']
+        #seg_down_percent = seg_down['percent']
+        #seg_up_start_ts = seg_up['start_ts']
+        #seg_up_end_ts = seg_up['end_ts']
+        #seg_up_percent = seg_up['percent']
+
+        if seg_down['percent'] == seg_up['percent']:
+            self.trend_state.set_state(TrendState.STATE_NON_TREND_NO_DIRECTION)
+        elif self.trend_state.is_state(TrendState.STATE_NON_TREND_NO_DIRECTION):
+            if abs(seg_down['percent']) > seg_up['percent']:
+                if abs(seg_down['percent']) < 2.0:
+                    self.trend_state.set_state(TrendState.STATE_NON_TREND_DOWN_SLOW)
+
+            elif abs(seg_down['percent']) < seg_up['percent']:
+                if seg_up['percent'] < 2.0:
+                    self.trend_state.set_state(TrendState.STATE_NON_TREND_UP_SLOW)
+        elif self.trend_state.is_state(TrendState.STATE_NON_TREND_DOWN_SLOW):
+            pass
+        elif self.trend_state.is_state(TrendState.STATE_NON_TREND_UP_SLOW):
+            pass
 
 
 class TrendState(object):
@@ -64,12 +96,14 @@ class TrendState(object):
     STATE_NON_TREND_NO_DIRECTION = 2
     STATE_NON_TREND_UP_SLOW = 3
     STATE_NON_TREND_DOWN_SLOW = 4
-    STATE_TRENDING_UP_SLOW = 5
-    STATE_TRENDING_DOWN_SLOW = 6
-    STATE_TRENDING_UP_FAST = 7
-    STATE_TRENDING_DOWN_FAST = 8
-    STATE_LOCAL_PEAK = 9
-    STATE_LOCAL_VALLEY = 10
+    STATE_NON_TREND_UP_FAST = 5
+    STATE_NON_TREND_DOWN_FAST = 6
+    STATE_TRENDING_UP_SLOW = 7
+    STATE_TRENDING_DOWN_SLOW = 8
+    STATE_TRENDING_UP_FAST = 9
+    STATE_TRENDING_DOWN_FAST = 10
+    STATE_LOCAL_PEAK = 11
+    STATE_LOCAL_VALLEY = 12
 
     def __init__(self, state):
         self.state = state
@@ -84,6 +118,9 @@ class TrendState(object):
         self.cur_volume = 0
         self.end_volume = 0
         self.child_state_list = None
+
+    def is_state(self, state):
+        return self.state == state
 
     def set_state(self, state):
         self.prev_state = self.state
