@@ -1,10 +1,12 @@
 class LargestPriceChange(object):
-    def __init__(self, prices=None, timestamps=None):
+    def __init__(self, prices=None, timestamps=None, use_dict=False):
+        self.use_dict = use_dict
         self.prices = None
         self.timestamps = None
         self.root = None
         self._price_segment_percents = None
-        self.reset(prices, timestamps)
+        if prices and timestamps:
+            self.reset(prices, timestamps)
 
     def reset(self, prices, timestamps):
         self.prices = prices
@@ -38,7 +40,10 @@ class LargestPriceChange(object):
         self._price_segment_percents = []
         self.price_segment_percents(node=self.root)
         # sort by percent
-        self._price_segment_percents.sort(key=lambda x: x[0])
+        if self.use_dict:
+            self._price_segment_percents.sort(key=lambda x: x['percent'])
+        else:
+            self._price_segment_percents.sort(key=lambda x: x[0])
         return self._price_segment_percents
 
     # return largest negative price change, and largest positive price change
@@ -50,7 +55,12 @@ class LargestPriceChange(object):
         if not node:
             node = self.root
 
-        self._price_segment_percents.append([node.percent, node.start_ts, node.end_ts])
+        if self.use_dict:
+            self._price_segment_percents.append({'percent': node.percent,
+                                                 'start_ts': node.start_ts,
+                                                 'end_ts': node.end_ts})
+        else:
+            self._price_segment_percents.append([node.percent, node.start_ts, node.end_ts])
 
         if not node.child:
             return
@@ -175,7 +185,7 @@ class PriceSegment(object):
         self.end_ts = self.ts_values[-1]
 
         # percent change of price segment
-        self.percent = 100.0 * (self.end_price - self.start_price) / self.start_price
+        self.percent = round(100.0 * (self.end_price - self.start_price) / self.start_price, 2)
 
         # child SplitPriceSegment class
         self.child = None
