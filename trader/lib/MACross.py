@@ -4,7 +4,7 @@ from trader.lib.ValueLag import ValueLag
 
 class MACross(object):
     def __init__(self, ema_win1=0, ema_win2=0, scale=0, cross_window=10, cross_timeout=0,
-                 lag_window=3, indicator=None):
+                 lag_window=3, indicator=None, use_ma1_value=False):
         #if not indicator:
         #    self.indicator = EMA
         #else:
@@ -14,6 +14,8 @@ class MACross(object):
         self.ema_win1 = ema_win1
         self.ema_win2 = ema_win2
         self.lag_window = lag_window
+        # use ma1_result for value tracking instead of raw price
+        self.use_ma1_value = use_ma1_value
 
         # cross_timeout is how long after a cross that we reset the cross to false (0 means no timeout)
         self.cross_timeout = cross_timeout
@@ -140,9 +142,10 @@ class MACross(object):
         if ma1_result != 0 and ma2_result != 0:
             self.cross.update(ma1_result, ma2_result)
 
-        #if ma1_result != 0:
-        #    self.update_min_max_values(ma1_result, ts) #(value, ts)
-        #else:
+        # use ma1_result for tracking instead of value (raw unfiltered price)
+        if self.use_ma1_value:
+            value = self.ma1_result
+
         self.update_min_max_values(value, ts)
 
         if self.cross.crossup_detected():

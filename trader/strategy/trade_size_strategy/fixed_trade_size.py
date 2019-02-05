@@ -20,7 +20,7 @@ class fixed_trade_size(trade_size_strategy_base):
         available = float(self.accnt.get_asset_balance(self.currency)['available'])
 
         # take into account price may increase during market buy
-        price = float(price) + self.base_step_size
+        #price = float(price) + self.base_step_size
 
         amount = self.round_quote(float(price) * float(size))
 

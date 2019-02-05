@@ -30,8 +30,8 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.detector = PeakValleyDetect()
         self.tspc = MTSPriceChannel(minutes=60)
-        self.tspc_roc = MTSPercentChangeROC(tspc_seconds=500, roc_seconds=500, smoother=EMA(12))
-        self.mts_moverate = MTSMoveRate(small_seg_seconds=180, large_seg_seconds=3600)
+        #self.tspc_roc = MTSPercentChangeROC(tspc_seconds=500, roc_seconds=500, smoother=EMA(12))
+        self.mts_moverate = MTSMoveRate(small_seg_seconds=120, large_seg_seconds=1800)
         self.obv = OBV()
         self.obv_ema12 = EMA(12)
         self.obv_ema500 = EMA(50)
@@ -45,12 +45,11 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.mts_moverate_cross_zero = Crossover2(window=10)
 
-        ctimeout = 1000 * 3600
+        ctimeout = 1000 * 300
         self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
-        self.obv_ema_cross_12_500 = MACross(cross_timeout=ctimeout)
-        self.ema_cross_12_50 = MACross(cross_timeout=ctimeout)
-        self.tspc_roc_cross_zero = MACross(cross_timeout=ctimeout)
-        #self.diff_ema_12_200 = MADiff()
+        #self.obv_ema_cross_12_500 = MACross(cross_timeout=ctimeout)
+        self.ema_cross_12_200 = MACross(cross_timeout=ctimeout)
+        #self.tspc_roc_cross_zero = MACross(cross_timeout=ctimeout)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -64,9 +63,9 @@ class Hybrid_Crossover_Test(SignalBase):
             if self.is_currency_pair:
                 self.disabled = True
                 self.disabled_end_ts = self.timestamp + 1000 * 3600
-            #else:
-            #    self.disabled = True
-            #    self.disabled_end_ts = self.timestamp + 1000 * 1800
+            else:
+                self.disabled = True
+                self.disabled_end_ts = self.timestamp + 1000 * 500
         else:
             self.last_timestamp = self.timestamp
             self.timestamp = ts
@@ -85,15 +84,10 @@ class Hybrid_Crossover_Test(SignalBase):
         self.macompare.update([ema12_result, ema26_result, ema50_result, ema200_result])
 
         tspc_result = self.tspc.update(close, ts)
-        #tspc_roc_result = self.tspc_roc.update(close, ts)
 
-        self.mts_moverate.update(close, ts)
-        self.mts_moverate_cross_zero.update(self.mts_moverate.result, 0)
-
-        self.ema_cross_12_50.update(close, ts, ma1_result=ema12_result, ma2_result=ema50_result)
-        self.obv_ema_cross_12_500.update(close, ts, ma1_result=self.obv_ema12.result, ma2_result=self.obv_ema500.result)
+        #self.mts_moverate.update(close, ts)
+        self.ema_cross_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
         self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema26_result, ma2_result=tspc_result)
-        #self.tspc_roc_cross_zero.update(close, ts, ma1_result=tspc_roc_result, ma2_result=0)
 
     def buy_signal(self):
         if self.disabled:
@@ -107,22 +101,19 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        #if self.ema_12_cross_tpsc.ma2_trend_down():
-        #    return False
+        if self.ema_cross_12_200.ma2_trend_down():
+            return False
 
-        if self.ema_12_cross_tpsc.cross_up:# and not self.obv_ema_cross_12_500.cross_down:
-            #if self.macompare.ma_proximity_test(percent=0.1):
-            #    return False
+        if self.ema_cross_12_200.cross_up and self.ema_cross_12_200.ma2_trend_up():
+            self.buy_type = 'EMA12_200'
+
+        if self.ema_12_cross_tpsc.cross_up:
             self.buy_type = 'TPSC12'
             return True
 
-        #if self.tspc_roc_cross_zero.cross_up:
-        #    self.buy_type = 'TSPC_ROC'
+        #if self.mts_moverate_cross_zero.crossup_detected():
+        #    self.buy_type = 'MTS_MOVERATE'
         #    return True
-
-        if self.mts_moverate_cross_zero.crossup_detected():
-            self.buy_type = 'MTS_MOVERATE'
-            return True
 
         return False
 
@@ -130,6 +121,9 @@ class Hybrid_Crossover_Test(SignalBase):
         return False
 
     def sell_signal(self):
+        if self.ema_cross_12_200.cross_down:
+            self.buy_type = 'EMA12_200'
+
         if self.ema_12_cross_tpsc.cross_down:
             self.sell_type = 'TPSC12'
             return True
@@ -142,15 +136,8 @@ class Hybrid_Crossover_Test(SignalBase):
             self.sell_type='TPSC12_MAX'
             return True
 
-        if self.mts_moverate_cross_zero.crossdown_detected():
-            self.sell_type = 'MTS_MOVERATE'
-            return True
-
-        #if self.obv_ema_cross_12_500.cross_down:
-        #    self.sell_type='OBVEMA_12_500'
-        #    return True
-        #if self.obv_ema_cross_12_500.is_past_current_max(seconds=300, percent=1.0, cutoff=0):
-        #    self.sell_type='OBVEMA_12_500_MAX'
+        #if self.mts_moverate_cross_zero.crossdown_detected():
+        #    self.sell_type = 'MTS_MOVERATE'
         #    return True
 
         return False

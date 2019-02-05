@@ -64,7 +64,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                    bnb=3,
                                                    pax=10.0,
                                                    usdt=10.0,
-                                                   multiplier=2.0)
+                                                   multiplier=5.0)
         #self.trade_size_handler = percent_balance_trade_size(self.accnt,
         #                                                     asset_info,
         #                                                     percent=10.0,
