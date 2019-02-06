@@ -57,6 +57,8 @@ def simulate(conn, client, base, currency, type="channel"):
     high_prices = []
     volumes = []
 
+    last_trend_string = ''
+
     i=0
     for msg in get_rows_as_msgs(c):
         close = float(msg['c'])
@@ -76,6 +78,9 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_values.append(ema200_value)
 
         tst.update(close=close, ts=ts)
+        if tst.get_trend_string() != last_trend_string:
+            print(tst.get_trend_string())
+            last_trend_string = tst.get_trend_string()
 
         mts_moverate.update(close, ts)
         mts_moverate_values.append(mts_moverate.result)
