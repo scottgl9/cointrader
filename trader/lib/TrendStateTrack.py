@@ -225,6 +225,34 @@ class TrendState(object):
         self.end_volume = 0
         self.child_state_list = None
 
+    def get_trend_string(self, state):
+        if state == TrendState.STATE_UNKNOWN:
+                return "STATE_UNKNOWN"
+        elif state == TrendState.STATE_INIT:
+                return "STATE_INIT"
+        elif state == TrendState.STATE_NON_TREND_NO_DIRECTION:
+                return "STATE_NON_TREND_NO_DIRECTION"
+        elif state == TrendState.STATE_NON_TREND_UP_SLOW:
+                return "STATE_NON_TREND_UP_SLOW"
+        elif state == TrendState.STATE_NON_TREND_DOWN_SLOW:
+                return "STATE_NON_TREND_DOWN_SLOW"
+        elif state == TrendState.STATE_NON_TREND_UP_FAST:
+                return "STATE_NON_TREND_UP_FAST"
+        elif state == TrendState.STATE_NON_TREND_DOWN_FAST:
+                return "STATE_NON_TREND_DOWN_FAST"
+        elif state == TrendState.STATE_TRENDING_UP_SLOW:
+                return "STATE_TRENDING_UP_SLOW"
+        elif state == TrendState.STATE_TRENDING_DOWN_SLOW:
+                return "STATE_TRENDING_DOWN_SLOW"
+        elif state == TrendState.STATE_TRENDING_UP_FAST:
+                return "STATE_TRENDING_UP_FAST"
+        elif state == TrendState.STATE_TRENDING_DOWN_FAST:
+                return "STATE_TRENDING_DOWN_FAST"
+        elif state == TrendState.STATE_REVERSAL_UP:
+                return "STATE_REVERSAL_UP"
+        elif state == TrendState.STATE_REVERSAL_DOWN:
+                return "STATE_REVERSAL_DOWN"
+
     def is_state(self, state):
         return self.state == state
 
