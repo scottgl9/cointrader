@@ -42,7 +42,7 @@ def simulate(conn, client, base, currency, type="channel"):
     ema50 = EMA(100, scale=24)
     ema200 = EMA(200, scale=24)
 
-    tst = TrendStateTrack()
+    tst = TrendStateTrack(smoother=EMA(12, scale=24))
 
     mts_moverate = MTSMoveRate(small_seg_seconds=180, large_seg_seconds=900)
     mts_moverate_values = []
@@ -58,6 +58,8 @@ def simulate(conn, client, base, currency, type="channel"):
     volumes = []
 
     last_trend_string = ''
+    state_indices = []
+
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -79,8 +81,12 @@ def simulate(conn, client, base, currency, type="channel"):
 
         tst.update(close=close, ts=ts)
         if tst.get_trend_string() != last_trend_string:
+            state_indices.append((i, tst.get_trend_direction()))
             print(tst.get_trend_string())
             last_trend_string = tst.get_trend_string()
+
+        if tst.reversed_direction():
+            print("REVERSED_DIRECTION")
 
         mts_moverate.update(close, ts)
         mts_moverate_values.append(mts_moverate.result)
@@ -92,6 +98,11 @@ def simulate(conn, client, base, currency, type="channel"):
         i += 1
 
     plt.subplot(211)
+    for (i, dir) in state_indices:
+        if dir == 1:
+            plt.axvline(x=i, color='green')
+        elif dir == -1:
+            plt.axvline(x=i, color='red')
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
