@@ -58,6 +58,7 @@ def simulate(conn, client, base, currency, type="channel"):
     volumes = []
 
     last_trend_string = ''
+    last_short_trend_string = ''
     state_indices = []
 
 
@@ -82,8 +83,14 @@ def simulate(conn, client, base, currency, type="channel"):
         tst.update(close=close, ts=ts)
         if tst.get_trend_string() != last_trend_string:
             state_indices.append((i, tst.get_trend_direction()))
-            print(tst.get_trend_string())
+            print("LONG:" + tst.get_trend_string())
             last_trend_string = tst.get_trend_string()
+
+        if tst.get_short_trend_string() != last_short_trend_string:
+            state_indices.append((i, tst.get_short_trend_direction()))
+            print("SHORT:" + tst.get_short_trend_string())
+            last_short_trend_string = tst.get_short_trend_string()
+
 
         if tst.reversed_direction():
             print("REVERSED_DIRECTION")
