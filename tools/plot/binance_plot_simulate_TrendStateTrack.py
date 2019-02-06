@@ -87,7 +87,7 @@ def simulate(conn, client, base, currency, type="channel"):
             last_trend_string = tst.get_trend_string()
 
         if tst.get_short_trend_string() != last_short_trend_string:
-            state_indices.append((i, tst.get_short_trend_direction()))
+            #state_indices.append((i, tst.get_short_trend_direction()))
             print("SHORT:" + tst.get_short_trend_string())
             last_short_trend_string = tst.get_short_trend_string()
 

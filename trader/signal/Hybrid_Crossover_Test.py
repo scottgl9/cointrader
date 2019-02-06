@@ -15,6 +15,7 @@ from trader.lib.TimePeakValley import TimePeakValley
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 from trader.lib.MovingTimeSegment.MTSPercentChangeROC import MTSPercentChangeROC
 from trader.lib.MovingTimeSegment.MTSMoveRate import MTSMoveRate
+from trader.lib.TrendStateTrack import TrendStateTrack, TrendState
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -28,7 +29,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.start_timestamp = 0
         self.last_close = 0
 
-        self.detector = PeakValleyDetect()
+        self.tst = TrendStateTrack(smoother=EMA(12, scale=24))
         self.tspc = MTSPriceChannel(minutes=60)
         #self.tspc_roc = MTSPercentChangeROC(tspc_seconds=500, roc_seconds=500, smoother=EMA(12))
         self.mts_moverate = MTSMoveRate(small_seg_seconds=120, large_seg_seconds=1800)
@@ -81,7 +82,9 @@ class Hybrid_Crossover_Test(SignalBase):
         ema50_result = self.ema50.update(close)
         ema200_result = self.ema200.update(close)
 
-        self.macompare.update([ema12_result, ema26_result, ema50_result, ema200_result])
+        self.tst.update(close, ts=ts)
+
+        #self.macompare.update([ema12_result, ema26_result, ema50_result, ema200_result])
 
         tspc_result = self.tspc.update(close, ts)
 
@@ -101,7 +104,8 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        if self.ema_cross_12_200.ma2_trend_down():
+        state = self.tst.get_trend_state()
+        if state != TrendState.STATE_TRENDING_UP_SLOW and state != TrendState.STATE_TRENDING_UP_FAST:
             return False
 
         if self.ema_cross_12_200.cross_up and self.ema_cross_12_200.ma2_trend_up():
