@@ -29,7 +29,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.start_timestamp = 0
         self.last_close = 0
 
-        self.tst = TrendStateTrack(smoother=EMA(12, scale=24))
+        self.tst = TrendStateTrack(smoother=EMA(26, scale=24))
         self.tspc = MTSPriceChannel(minutes=60)
         #self.tspc_roc = MTSPercentChangeROC(tspc_seconds=500, roc_seconds=500, smoother=EMA(12))
         self.mts_moverate = MTSMoveRate(small_seg_seconds=120, large_seg_seconds=1800)
@@ -105,10 +105,11 @@ class Hybrid_Crossover_Test(SignalBase):
             return False
 
         state = self.tst.get_trend_state()
-        if (state != TrendState.STATE_TRENDING_UP_SLOW
-            and state != TrendState.STATE_TRENDING_UP_FAST
-            and state != TrendState.STATE_NON_TREND_UP_SLOW
-            and state != TrendState.STATE_NON_TREND_UP_FAST):
+        if (state == TrendState.STATE_INIT or
+            state == TrendState.STATE_TRENDING_DOWN_SLOW or
+            state == TrendState.STATE_TRENDING_DOWN_FAST or
+            state == TrendState.STATE_NON_TREND_DOWN_SLOW or
+            state == TrendState.STATE_NON_TREND_DOWN_FAST):
             return False
 
         if self.ema_cross_12_200.cross_up and self.ema_cross_12_200.ma2_trend_up():
@@ -116,6 +117,10 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_12_cross_tpsc.cross_up:
             self.buy_type = 'TPSC12'
+            return True
+
+        if state == TrendState.STATE_TRENDING_UP_FAST:
+            self.buy_type = "TrendState"
             return True
 
         #if self.mts_moverate_cross_zero.crossup_detected():
@@ -128,8 +133,8 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.buy_price == 0 or self.last_buy_ts == 0:
             return False
         # don't do sell long unless price has fallen at least 5%
-        if (self.last_close - self.buy_price) / self.buy_price >= -0.05:
-            return False
+        #if (self.last_close - self.buy_price) / self.buy_price >= -0.05:
+        #    return False
         state = self.tst.get_trend_state()
         if state == TrendState.STATE_TRENDING_DOWN_FAST or state == TrendState.STATE_TRENDING_DOWN_SLOW:
             return True
@@ -149,6 +154,11 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if self.ema_12_cross_tpsc.is_past_current_max(seconds=600, percent=1.0, cutoff=0.03):
             self.sell_type='TPSC12_MAX'
+            return True
+
+        state = self.tst.get_trend_state()
+        if (state == TrendState.STATE_TRENDING_DOWN_SLOW or
+            state == TrendState.STATE_TRENDING_DOWN_FAST):
             return True
 
         #if self.mts_moverate_cross_zero.crossdown_detected():
