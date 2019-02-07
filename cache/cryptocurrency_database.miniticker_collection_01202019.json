@@ -1,749 +1,1893 @@
 {
     "basic_signal_market_strategy-Hybrid_Crossover_Test": {
         "trades": {
-            "XMRBTC": [
+            "POLYBTC": [
                 {
-                    "index": 232, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XMRBTC", 
-                    "type": "buy", 
-                    "price": 0.012306, 
-                    "size": "0.244"
-                }, 
-                {
-                    "index": 1869, 
+                    "index": 1233, 
                     "trade_type": "TPSC12", 
-                    "symbol": "XMRBTC", 
-                    "buy_price": 0.012306, 
-                    "type": "sell", 
-                    "price": 0.012432, 
-                    "size": "0.244"
+                    "symbol": "POLYBTC", 
+                    "type": "buy", 
+                    "price": 3.389e-05, 
+                    "size": "120.0"
                 }, 
                 {
-                    "index": 2169, 
+                    "index": 4605, 
                     "trade_type": "TPSC12", 
-                    "symbol": "XMRBTC", 
-                    "type": "buy", 
-                    "price": 0.012421, 
-                    "size": "0.241"
+                    "symbol": "POLYBTC", 
+                    "buy_price": 3.389e-05, 
+                    "type": "sell", 
+                    "price": 3.426e-05, 
+                    "size": "120.0"
                 }, 
                 {
-                    "index": 5662, 
+                    "index": 7342, 
                     "trade_type": "TPSC12", 
-                    "symbol": "XMRBTC", 
-                    "buy_price": 0.012421, 
-                    "type": "sell", 
-                    "price": 0.012475, 
-                    "size": "0.241"
-                }, 
-                {
-                    "index": 6150, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "XMRBTC", 
+                    "symbol": "POLYBTC", 
                     "type": "buy", 
-                    "price": 0.012534, 
-                    "size": "0.239"
-                }, 
-                {
-                    "index": 6556, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XMRBTC", 
-                    "buy_price": 0.012534, 
-                    "type": "sell", 
-                    "price": 0.01275, 
-                    "size": "0.239"
-                }, 
-                {
-                    "index": 7571, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XMRBTC", 
-                    "type": "buy", 
-                    "price": 0.012607, 
-                    "size": "0.238"
-                }, 
-                {
-                    "index": 10822, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XMRBTC", 
-                    "buy_price": 0.012607, 
-                    "type": "sell", 
-                    "price": 0.012735, 
-                    "size": "0.238"
-                }, 
-                {
-                    "index": 11495, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XMRBTC", 
-                    "type": "buy", 
-                    "price": 0.012757, 
-                    "size": "0.235"
-                }, 
-                {
-                    "index": 13587, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "XMRBTC", 
-                    "buy_price": 0.012757, 
-                    "type": "sell", 
-                    "price": 0.012831, 
-                    "size": "0.235"
-                }, 
-                {
-                    "index": 14186, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XMRBTC", 
-                    "type": "buy", 
-                    "price": 0.01277, 
-                    "size": "0.235"
+                    "price": 3.49e-05, 
+                    "size": "110.0"
                 }
             ], 
             "NEOBTC": [
                 {
-                    "index": 576, 
-                    "trade_type": "MTS_MOVERATE", 
+                    "index": 1560, 
+                    "trade_type": "TPSC12", 
                     "symbol": "NEOBTC", 
                     "type": "buy", 
                     "price": 0.002108, 
-                    "size": "1.42"
+                    "size": "1.9"
                 }, 
                 {
-                    "index": 9575, 
-                    "trade_type": "MTS_MOVERATE", 
+                    "index": 11210, 
+                    "trade_type": "TPSC12", 
                     "symbol": "NEOBTC", 
                     "buy_price": 0.002108, 
                     "type": "sell", 
-                    "price": 0.002132, 
-                    "size": "1.42"
-                }, 
-                {
-                    "index": 10523, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NEOBTC", 
-                    "type": "buy", 
-                    "price": 0.002126, 
-                    "size": "1.41"
-                }, 
-                {
-                    "index": 10628, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NEOBTC", 
-                    "buy_price": 0.002126, 
-                    "type": "sell", 
-                    "price": 0.002143, 
-                    "size": "1.41"
-                }, 
-                {
-                    "index": 11136, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NEOBTC", 
-                    "type": "buy", 
-                    "price": 0.002131, 
-                    "size": "1.41"
+                    "price": 0.002129, 
+                    "size": "1.9"
                 }
             ], 
             "DASHBTC": [
                 {
-                    "index": 166, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DASHBTC", 
-                    "type": "buy", 
-                    "price": 0.019303, 
-                    "size": "0.155"
-                }, 
-                {
-                    "index": 988, 
+                    "index": 1872, 
                     "trade_type": "TPSC12", 
                     "symbol": "DASHBTC", 
-                    "buy_price": 0.019303, 
-                    "type": "sell", 
-                    "price": 0.019462, 
-                    "size": "0.155"
+                    "type": "buy", 
+                    "price": 0.019417, 
+                    "size": "0.206"
                 }, 
                 {
-                    "index": 1366, 
-                    "trade_type": "MTS_MOVERATE", 
+                    "index": 7114, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "DASHBTC", 
+                    "buy_price": 0.019417, 
+                    "type": "sell", 
+                    "price": 0.019799, 
+                    "size": "0.206"
+                }, 
+                {
+                    "index": 8432, 
+                    "trade_type": "TPSC12", 
                     "symbol": "DASHBTC", 
                     "type": "buy", 
-                    "price": 0.0195, 
-                    "size": "0.154"
-                }, 
-                {
-                    "index": 6092, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DASHBTC", 
-                    "buy_price": 0.0195, 
-                    "type": "sell", 
-                    "price": 0.0197, 
-                    "size": "0.154"
-                }, 
-                {
-                    "index": 6664, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DASHBTC", 
-                    "type": "buy", 
-                    "price": 0.019834, 
-                    "size": "0.151"
+                    "price": 0.01985, 
+                    "size": "0.201"
                 }
             ], 
             "OMGBTC": [
                 {
-                    "index": 77, 
+                    "index": 2941, 
                     "trade_type": "TPSC12", 
                     "symbol": "OMGBTC", 
                     "type": "buy", 
-                    "price": 0.000351, 
-                    "size": "8.55"
-                }, 
-                {
-                    "index": 176, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "OMGBTC", 
-                    "buy_price": 0.000351, 
-                    "type": "sell", 
-                    "price": 0.000355, 
-                    "size": "8.55"
-                }, 
-                {
-                    "index": 310, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "type": "buy", 
-                    "price": 0.000352, 
-                    "size": "8.52"
-                }, 
-                {
-                    "index": 554, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "buy_price": 0.000352, 
-                    "type": "sell", 
-                    "price": 0.000356, 
-                    "size": "8.52"
-                }, 
-                {
-                    "index": 749, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "type": "buy", 
-                    "price": 0.000357, 
-                    "size": "8.4"
-                }, 
-                {
-                    "index": 1897, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "buy_price": 0.000357, 
-                    "type": "sell", 
-                    "price": 0.000361, 
-                    "size": "8.4"
-                }, 
-                {
-                    "index": 2084, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "OMGBTC", 
-                    "type": "buy", 
-                    "price": 0.000362, 
-                    "size": "8.29"
-                }, 
-                {
-                    "index": 2234, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "OMGBTC", 
-                    "buy_price": 0.000362, 
-                    "type": "sell", 
-                    "price": 0.000364, 
-                    "size": "8.29"
-                }, 
-                {
-                    "index": 2375, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "type": "buy", 
-                    "price": 0.000362, 
-                    "size": "8.29"
-                }, 
-                {
-                    "index": 2569, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "buy_price": 0.000362, 
-                    "type": "sell", 
-                    "price": 0.000365, 
-                    "size": "8.29"
-                }, 
-                {
-                    "index": 2761, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "type": "buy", 
-                    "price": 0.000359, 
-                    "size": "8.33"
-                }, 
-                {
-                    "index": 3065, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "buy_price": 0.000359, 
-                    "type": "sell", 
-                    "price": 0.000363, 
-                    "size": "8.33"
-                }, 
-                {
-                    "index": 3172, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "OMGBTC", 
-                    "type": "buy", 
-                    "price": 0.00036, 
-                    "size": "8.33"
+                    "price": 0.000358, 
+                    "size": "11.17"
                 }
             ], 
-            "REPBTC": [
+            "CMTBTC": [
                 {
-                    "index": 1103, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBTC", 
+                    "index": 1344, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "CMTBTC", 
                     "type": "buy", 
-                    "price": 0.004794, 
-                    "size": "0.626"
+                    "price": 7.68e-06, 
+                    "size": "520.0"
                 }, 
                 {
-                    "index": 4403, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBTC", 
-                    "buy_price": 0.004794, 
+                    "index": 2431, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "CMTBTC", 
+                    "buy_price": 7.68e-06, 
                     "type": "sell", 
-                    "price": 0.00484, 
-                    "size": "0.626"
+                    "price": 7.8e-06, 
+                    "size": "520.0"
                 }, 
                 {
-                    "index": 4997, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBTC", 
+                    "index": 3365, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "CMTBTC", 
                     "type": "buy", 
-                    "price": 0.004766, 
-                    "size": "0.63"
+                    "price": 7.86e-06, 
+                    "size": "510.0"
                 }, 
                 {
-                    "index": 6352, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBTC", 
-                    "buy_price": 0.004766, 
+                    "index": 5783, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "CMTBTC", 
+                    "buy_price": 7.86e-06, 
                     "type": "sell", 
-                    "price": 0.004814, 
-                    "size": "0.63"
+                    "price": 8.11e-06, 
+                    "size": "510.0"
                 }, 
                 {
-                    "index": 6855, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBTC", 
+                    "index": 8984, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "CMTBTC", 
                     "type": "buy", 
-                    "price": 0.004745, 
-                    "size": "0.632"
+                    "price": 8.36e-06, 
+                    "size": "480.0"
                 }, 
                 {
-                    "index": 10061, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBTC", 
-                    "buy_price": 0.004745, 
+                    "index": 13549, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "CMTBTC", 
+                    "buy_price": 8.36e-06, 
                     "type": "sell", 
-                    "price": 0.004782, 
-                    "size": "0.632"
-                }, 
-                {
-                    "index": 10966, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBTC", 
-                    "type": "buy", 
-                    "price": 0.004755, 
-                    "size": "0.63"
+                    "price": 7.96e-06, 
+                    "size": "480.0"
                 }
             ], 
-            "GVTBTC": [
+            "STORMBTC": [
                 {
-                    "index": 269, 
+                    "index": 923, 
                     "trade_type": "TPSC12", 
-                    "symbol": "GVTBTC", 
+                    "symbol": "STORMBTC", 
                     "type": "buy", 
-                    "price": 0.0009784, 
-                    "size": "3.07"
+                    "price": 8.1e-07, 
+                    "size": "4940.0"
+                }
+            ], 
+            "MODBTC": [
+                {
+                    "index": 671, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MODBTC", 
+                    "type": "buy", 
+                    "price": 9.48e-05, 
+                    "size": "42.19"
                 }, 
+                {
+                    "index": 2786, 
+                    "trade_type": 0, 
+                    "symbol": "MODBTC", 
+                    "buy_price": 9.48e-05, 
+                    "type": "sell", 
+                    "price": 8.89e-05, 
+                    "size": "42.19"
+                }
+            ], 
+            "LUNETH": [
+                {
+                    "index": 1970, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LUNETH", 
+                    "type": "buy", 
+                    "price": 0.016943, 
+                    "size": "5.95"
+                }
+            ], 
+            "AMBBTC": [
+                {
+                    "index": 1165, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "AMBBTC", 
+                    "type": "buy", 
+                    "price": 1.863e-05, 
+                    "size": "220.0"
+                }, 
+                {
+                    "index": 4368, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "AMBBTC", 
+                    "buy_price": 1.863e-05, 
+                    "type": "sell", 
+                    "price": 1.888e-05, 
+                    "size": "220.0"
+                }, 
+                {
+                    "index": 6492, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "AMBBTC", 
+                    "type": "buy", 
+                    "price": 1.89e-05, 
+                    "size": "210.0"
+                }
+            ], 
+            "TRXBNB": [
+                {
+                    "index": 1662, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBNB", 
+                    "type": "buy", 
+                    "price": 0.003935, 
+                    "size": "760.0"
+                }, 
+                {
+                    "index": 2422, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBNB", 
+                    "buy_price": 0.003935, 
+                    "type": "sell", 
+                    "price": 0.004008, 
+                    "size": "760.0"
+                }, 
+                {
+                    "index": 3135, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBNB", 
+                    "type": "buy", 
+                    "price": 0.003977, 
+                    "size": "750.0"
+                }, 
+                {
+                    "index": 4128, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBNB", 
+                    "buy_price": 0.003977, 
+                    "type": "sell", 
+                    "price": 0.004097, 
+                    "size": "750.0"
+                }, 
+                {
+                    "index": 4657, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBNB", 
+                    "type": "buy", 
+                    "price": 0.004092, 
+                    "size": "730.0"
+                }
+            ], 
+            "ADXBTC": [
+                {
+                    "index": 5749, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ADXBTC", 
+                    "type": "buy", 
+                    "price": 2.976e-05, 
+                    "size": "130.0"
+                }, 
+                {
+                    "index": 6379, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ADXBTC", 
+                    "buy_price": 2.976e-05, 
+                    "type": "sell", 
+                    "price": 3.014e-05, 
+                    "size": "130.0"
+                }
+            ], 
+            "BRDBTC": [
+                {
+                    "index": 713, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BRDBTC", 
+                    "type": "buy", 
+                    "price": 5.91e-05, 
+                    "size": "70.0"
+                }, 
+                {
+                    "index": 2141, 
+                    "trade_type": 0, 
+                    "symbol": "BRDBTC", 
+                    "buy_price": 5.91e-05, 
+                    "type": "sell", 
+                    "price": 5.61e-05, 
+                    "size": "70.0"
+                }
+            ], 
+            "ENGBTC": [
+                {
+                    "index": 1015, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ENGBTC", 
+                    "type": "buy", 
+                    "price": 7.758e-05, 
+                    "size": "50.0"
+                }, 
+                {
+                    "index": 2047, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ENGBTC", 
+                    "buy_price": 7.758e-05, 
+                    "type": "sell", 
+                    "price": 7.916e-05, 
+                    "size": "50.0"
+                }
+            ], 
+            "ARNETH": [
                 {
                     "index": 1012, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GVTBTC", 
-                    "buy_price": 0.0009784, 
-                    "type": "sell", 
-                    "price": 0.0009892, 
-                    "size": "3.07"
-                }, 
-                {
-                    "index": 1071, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GVTBTC", 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ARNETH", 
                     "type": "buy", 
-                    "price": 0.0009794, 
-                    "size": "3.06"
+                    "price": 0.00253093, 
+                    "size": "40.0"
                 }, 
                 {
-                    "index": 1152, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GVTBTC", 
-                    "buy_price": 0.0009794, 
+                    "index": 2615, 
+                    "trade_type": 0, 
+                    "symbol": "ARNETH", 
+                    "buy_price": 0.00253093, 
                     "type": "sell", 
-                    "price": 0.0009883, 
-                    "size": "3.06"
-                }, 
-                {
-                    "index": 1266, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GVTBTC", 
-                    "type": "buy", 
-                    "price": 0.0009874, 
-                    "size": "3.04"
+                    "price": 0.00241609, 
+                    "size": "40.0"
                 }
             ], 
-            "NEBLBTC": [
+            "WANBTC": [
                 {
-                    "index": 61, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NEBLBTC", 
+                    "index": 8525, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WANBTC", 
                     "type": "buy", 
-                    "price": 0.0003136, 
-                    "size": "9.57"
-                }, 
-                {
-                    "index": 236, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NEBLBTC", 
-                    "buy_price": 0.0003136, 
-                    "type": "sell", 
-                    "price": 0.000315, 
-                    "size": "9.57"
-                }, 
-                {
-                    "index": 366, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NEBLBTC", 
-                    "type": "buy", 
-                    "price": 0.0003183, 
-                    "size": "9.41"
+                    "price": 9.25e-05, 
+                    "size": "43.24"
                 }
             ], 
-            "WTCBTC": [
+            "POWRBTC": [
                 {
-                    "index": 142, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WTCBTC", 
+                    "index": 7437, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "POWRBTC", 
                     "type": "buy", 
-                    "price": 0.0003204, 
-                    "size": "9.38"
+                    "price": 2.822e-05, 
+                    "size": "140.0"
+                }
+            ], 
+            "BLZBTC": [
+                {
+                    "index": 3732, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BLZBTC", 
+                    "type": "buy", 
+                    "price": 1.357e-05, 
+                    "size": "290.0"
+                }, 
+                {
+                    "index": 5696, 
+                    "trade_type": 0, 
+                    "symbol": "BLZBTC", 
+                    "buy_price": 1.357e-05, 
+                    "type": "sell", 
+                    "price": 1.19e-05, 
+                    "size": "290.0"
+                }
+            ], 
+            "PHXBTC": [
+                {
+                    "index": 584, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "PHXBTC", 
+                    "type": "buy", 
+                    "price": 2.27e-06, 
+                    "size": "1750.0"
+                }, 
+                {
+                    "index": 1470, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "PHXBTC", 
+                    "buy_price": 2.27e-06, 
+                    "type": "sell", 
+                    "price": 2.31e-06, 
+                    "size": "1750.0"
+                }, 
+                {
+                    "index": 3331, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "PHXBTC", 
+                    "type": "buy", 
+                    "price": 2.36e-06, 
+                    "size": "1700.0"
+                }
+            ], 
+            "ARNBTC": [
+                {
+                    "index": 2408, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ARNBTC", 
+                    "type": "buy", 
+                    "price": 8.649e-05, 
+                    "size": "50.0"
+                }, 
+                {
+                    "index": 5827, 
+                    "trade_type": 0, 
+                    "symbol": "ARNBTC", 
+                    "buy_price": 8.649e-05, 
+                    "type": "sell", 
+                    "price": 8.211e-05, 
+                    "size": "50.0"
+                }
+            ], 
+            "IOSTBTC": [
+                {
+                    "index": 2801, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "IOSTBTC", 
+                    "type": "buy", 
+                    "price": 1.83e-06, 
+                    "size": "2190.0"
+                }, 
+                {
+                    "index": 3139, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "IOSTBTC", 
+                    "buy_price": 1.83e-06, 
+                    "type": "sell", 
+                    "price": 1.84e-06, 
+                    "size": "2190.0"
+                }
+            ], 
+            "GXSBTC": [
+                {
+                    "index": 702, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "GXSBTC", 
+                    "type": "buy", 
+                    "price": 0.0001618, 
+                    "size": "24.72"
+                }, 
+                {
+                    "index": 2907, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "GXSBTC", 
+                    "buy_price": 0.0001618, 
+                    "type": "sell", 
+                    "price": 0.0001686, 
+                    "size": "24.72"
+                }, 
+                {
+                    "index": 5880, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "GXSBTC", 
+                    "type": "buy", 
+                    "price": 0.0001621, 
+                    "size": "24.68"
+                }
+            ], 
+            "STEEMBTC": [
+                {
+                    "index": 11935, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "STEEMBTC", 
+                    "type": "buy", 
+                    "price": 0.000114, 
+                    "size": "35.0"
+                }, 
+                {
+                    "index": 15350, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "STEEMBTC", 
+                    "buy_price": 0.000114, 
+                    "type": "sell", 
+                    "price": 0.0001208, 
+                    "size": "35.0"
+                }, 
+                {
+                    "index": 16530, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "STEEMBTC", 
+                    "type": "buy", 
+                    "price": 0.0001182, 
+                    "size": "33.84"
+                }
+            ], 
+            "WABIBTC": [
+                {
+                    "index": 1195, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WABIBTC", 
+                    "type": "buy", 
+                    "price": 3.818e-05, 
+                    "size": "100.0"
+                }, 
+                {
+                    "index": 2620, 
+                    "trade_type": 0, 
+                    "symbol": "WABIBTC", 
+                    "buy_price": 3.818e-05, 
+                    "type": "sell", 
+                    "price": 3.621e-05, 
+                    "size": "100.0"
+                }
+            ], 
+            "XVGBTC": [
+                {
+                    "index": 1102, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "XVGBTC", 
+                    "type": "buy", 
+                    "price": 1.85e-06, 
+                    "size": "2160.0"
+                }
+            ], 
+            "YOYOETH": [
+                {
+                    "index": 1704, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "YOYOETH", 
+                    "type": "buy", 
+                    "price": 0.00015403, 
+                    "size": "650.0"
+                }
+            ], 
+            "LINKETH": [
+                {
+                    "index": 591, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LINKETH", 
+                    "type": "buy", 
+                    "price": 0.00412004, 
+                    "size": "20.0"
+                }, 
+                {
+                    "index": 1765, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LINKETH", 
+                    "buy_price": 0.00412004, 
+                    "type": "sell", 
+                    "price": 0.00443474, 
+                    "size": "20.0"
+                }
+            ], 
+            "TUSDBTC": [
+                {
+                    "index": 9072, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TUSDBTC", 
+                    "type": "buy", 
+                    "price": 0.00028294, 
+                    "size": "10.0"
+                }
+            ], 
+            "TRXETH": [
+                {
+                    "index": 3653, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXETH", 
+                    "type": "buy", 
+                    "price": 0.00021315, 
+                    "size": "470.0"
+                }, 
+                {
+                    "index": 6212, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXETH", 
+                    "buy_price": 0.00021315, 
+                    "type": "sell", 
+                    "price": 0.00021595, 
+                    "size": "470.0"
+                }, 
+                {
+                    "index": 9480, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXETH", 
+                    "type": "buy", 
+                    "price": 0.00022407, 
+                    "size": "450.0"
                 }
             ], 
             "LTCBTC": [
                 {
-                    "index": 617, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LTCBTC", 
-                    "type": "buy", 
-                    "price": 0.008687, 
-                    "size": "0.35"
-                }, 
-                {
-                    "index": 3038, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LTCBTC", 
-                    "buy_price": 0.008687, 
-                    "type": "sell", 
-                    "price": 0.008763, 
-                    "size": "0.35"
-                }, 
-                {
-                    "index": 3572, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LTCBTC", 
-                    "type": "buy", 
-                    "price": 0.008739, 
-                    "size": "0.34"
-                }, 
-                {
-                    "index": 14262, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LTCBTC", 
-                    "buy_price": 0.008739, 
-                    "type": "sell", 
-                    "price": 0.008821, 
-                    "size": "0.34"
-                }, 
-                {
-                    "index": 15255, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LTCBTC", 
-                    "type": "buy", 
-                    "price": 0.008775, 
-                    "size": "0.34"
-                }, 
-                {
-                    "index": 16818, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LTCBTC", 
-                    "buy_price": 0.008775, 
-                    "type": "sell", 
-                    "price": 0.008858, 
-                    "size": "0.34"
-                }, 
-                {
-                    "index": 17463, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LTCBTC", 
-                    "type": "buy", 
-                    "price": 0.008866, 
-                    "size": "0.34"
-                }
-            ], 
-            "ZECBTC": [
-                {
-                    "index": 254, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "ZECBTC", 
-                    "type": "buy", 
-                    "price": 0.014595, 
-                    "size": "0.206"
-                }
-            ], 
-            "GASBTC": [
-                {
-                    "index": 44, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "type": "buy", 
-                    "price": 0.000595, 
-                    "size": "5.05"
-                }, 
-                {
-                    "index": 246, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "buy_price": 0.000595, 
-                    "type": "sell", 
-                    "price": 0.000598, 
-                    "size": "5.05"
-                }, 
-                {
-                    "index": 293, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "type": "buy", 
-                    "price": 0.000598, 
-                    "size": "5.01"
-                }, 
-                {
-                    "index": 1242, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "buy_price": 0.000598, 
-                    "type": "sell", 
-                    "price": 0.000603, 
-                    "size": "5.01"
-                }, 
-                {
-                    "index": 1427, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "type": "buy", 
-                    "price": 0.000601, 
-                    "size": "4.98"
-                }, 
-                {
-                    "index": 1623, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "buy_price": 0.000601, 
-                    "type": "sell", 
-                    "price": 0.000604, 
-                    "size": "4.98"
-                }, 
-                {
-                    "index": 1868, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "type": "buy", 
-                    "price": 0.000612, 
-                    "size": "4.9"
-                }, 
-                {
-                    "index": 2027, 
+                    "index": 16291, 
                     "trade_type": "TPSC12", 
-                    "symbol": "GASBTC", 
-                    "buy_price": 0.000612, 
-                    "type": "sell", 
-                    "price": 0.000617, 
-                    "size": "4.9"
-                }, 
-                {
-                    "index": 2106, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
+                    "symbol": "LTCBTC", 
                     "type": "buy", 
-                    "price": 0.000611, 
-                    "size": "4.91"
-                }, 
+                    "price": 0.00881, 
+                    "size": "0.45"
+                }
+            ], 
+            "QLCBTC": [
                 {
-                    "index": 2397, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
-                    "buy_price": 0.000611, 
-                    "type": "sell", 
-                    "price": 0.000619, 
-                    "size": "4.91"
-                }, 
-                {
-                    "index": 2883, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "GASBTC", 
+                    "index": 993, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "QLCBTC", 
                     "type": "buy", 
-                    "price": 0.000623, 
-                    "size": "4.84"
+                    "price": 7.35e-06, 
+                    "size": "540.0"
+                }
+            ], 
+            "GTOBTC": [
+                {
+                    "index": 7960, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "GTOBTC", 
+                    "type": "buy", 
+                    "price": 8.05e-06, 
+                    "size": "500.0"
+                }
+            ], 
+            "BATBTC": [
+                {
+                    "index": 2052, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BATBTC", 
+                    "type": "buy", 
+                    "price": 3.407e-05, 
+                    "size": "120.0"
+                }, 
+                {
+                    "index": 7087, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BATBTC", 
+                    "buy_price": 3.407e-05, 
+                    "type": "sell", 
+                    "price": 3.441e-05, 
+                    "size": "120.0"
+                }, 
+                {
+                    "index": 8328, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BATBTC", 
+                    "type": "buy", 
+                    "price": 3.452e-05, 
+                    "size": "120.0"
+                }
+            ], 
+            "ASTETH": [
+                {
+                    "index": 782, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTETH", 
+                    "type": "buy", 
+                    "price": 0.0002627, 
+                    "size": "380.0"
+                }, 
+                {
+                    "index": 1432, 
+                    "trade_type": 0, 
+                    "symbol": "ASTETH", 
+                    "buy_price": 0.0002627, 
+                    "type": "sell", 
+                    "price": 0.0002495, 
+                    "size": "380.0"
+                }
+            ], 
+            "LUNBTC": [
+                {
+                    "index": 1699, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LUNBTC", 
+                    "type": "buy", 
+                    "price": 0.0004619, 
+                    "size": "8.66"
+                }, 
+                {
+                    "index": 3355, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LUNBTC", 
+                    "buy_price": 0.0004619, 
+                    "type": "sell", 
+                    "price": 0.0004877, 
+                    "size": "8.66"
+                }, 
+                {
+                    "index": 9831, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LUNBTC", 
+                    "type": "buy", 
+                    "price": 0.0005516, 
+                    "size": "7.25"
+                }, 
+                {
+                    "index": 15548, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LUNBTC", 
+                    "buy_price": 0.0005516, 
+                    "type": "sell", 
+                    "price": 0.0005239, 
+                    "size": "7.25"
+                }, 
+                {
+                    "index": 34475, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LUNBTC", 
+                    "type": "buy", 
+                    "price": 0.0006442, 
+                    "size": "6.2"
+                }, 
+                {
+                    "index": 39080, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LUNBTC", 
+                    "buy_price": 0.0006442, 
+                    "type": "sell", 
+                    "price": 0.0007281, 
+                    "size": "6.2"
+                }
+            ], 
+            "NAVBTC": [
+                {
+                    "index": 2676, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "NAVBTC", 
+                    "type": "buy", 
+                    "price": 4.85e-05, 
+                    "size": "82.3"
+                }, 
+                {
+                    "index": 3588, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "NAVBTC", 
+                    "buy_price": 4.85e-05, 
+                    "type": "sell", 
+                    "price": 4.91e-05, 
+                    "size": "82.3"
+                }
+            ], 
+            "NEBLBTC": [
+                {
+                    "index": 715, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "NEBLBTC", 
+                    "type": "buy", 
+                    "price": 0.0003149, 
+                    "size": "12.7"
+                }
+            ], 
+            "MANABTC": [
+                {
+                    "index": 3597, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MANABTC", 
+                    "type": "buy", 
+                    "price": 1.09e-05, 
+                    "size": "370.0"
+                }, 
+                {
+                    "index": 4304, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MANABTC", 
+                    "buy_price": 1.09e-05, 
+                    "type": "sell", 
+                    "price": 1.113e-05, 
+                    "size": "370.0"
+                }
+            ], 
+            "CNDBTC": [
+                {
+                    "index": 1866, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "CNDBTC", 
+                    "type": "buy", 
+                    "price": 3.12e-06, 
+                    "size": "1280.0"
+                }
+            ], 
+            "QKCBTC": [
+                {
+                    "index": 1841, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "QKCBTC", 
+                    "type": "buy", 
+                    "price": 9.61e-06, 
+                    "size": "420.0"
+                }, 
+                {
+                    "index": 4455, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "QKCBTC", 
+                    "buy_price": 9.61e-06, 
+                    "type": "sell", 
+                    "price": 9.72e-06, 
+                    "size": "420.0"
+                }
+            ], 
+            "BNBBTC": [
+                {
+                    "index": 4122, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BNBBTC", 
+                    "type": "buy", 
+                    "price": 0.0018258, 
+                    "size": "10.95"
+                }
+            ], 
+            "GOBTC": [
+                {
+                    "index": 1070, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "GOBTC", 
+                    "type": "buy", 
+                    "price": 6.13e-06, 
+                    "size": "650.0"
+                }
+            ], 
+            "NASBTC": [
+                {
+                    "index": 2532, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "NASBTC", 
+                    "type": "buy", 
+                    "price": 0.0001567, 
+                    "size": "25.54"
+                }, 
+                {
+                    "index": 2949, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "NASBTC", 
+                    "buy_price": 0.0001567, 
+                    "type": "sell", 
+                    "price": 0.0001588, 
+                    "size": "25.54"
+                }
+            ], 
+            "ASTBTC": [
+                {
+                    "index": 478, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTBTC", 
+                    "type": "buy", 
+                    "price": 8.15e-06, 
+                    "size": "490.0"
+                }, 
+                {
+                    "index": 2024, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTBTC", 
+                    "buy_price": 8.15e-06, 
+                    "type": "sell", 
+                    "price": 8.52e-06, 
+                    "size": "490.0"
+                }, 
+                {
+                    "index": 2789, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTBTC", 
+                    "type": "buy", 
+                    "price": 8.26e-06, 
+                    "size": "480.0"
+                }, 
+                {
+                    "index": 3127, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTBTC", 
+                    "buy_price": 8.26e-06, 
+                    "type": "sell", 
+                    "price": 8.28e-06, 
+                    "size": "480.0"
+                }, 
+                {
+                    "index": 6139, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTBTC", 
+                    "type": "buy", 
+                    "price": 8.51e-06, 
+                    "size": "470.0"
+                }, 
+                {
+                    "index": 8993, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTBTC", 
+                    "buy_price": 8.51e-06, 
+                    "type": "sell", 
+                    "price": 8.07e-06, 
+                    "size": "470.0"
+                }, 
+                {
+                    "index": 11373, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ASTBTC", 
+                    "type": "buy", 
+                    "price": 8.41e-06, 
+                    "size": "470.0"
+                }
+            ], 
+            "MTHBTC": [
+                {
+                    "index": 1027, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MTHBTC", 
+                    "type": "buy", 
+                    "price": 5.42e-06, 
+                    "size": "740.0"
+                }, 
+                {
+                    "index": 3476, 
+                    "trade_type": 0, 
+                    "symbol": "MTHBTC", 
+                    "buy_price": 5.42e-06, 
+                    "type": "sell", 
+                    "price": 5.07e-06, 
+                    "size": "740.0"
+                }
+            ], 
+            "QSPBTC": [
+                {
+                    "index": 555, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "QSPBTC", 
+                    "type": "buy", 
+                    "price": 5.09e-06, 
+                    "size": "790.0"
+                }, 
+                {
+                    "index": 3546, 
+                    "trade_type": 0, 
+                    "symbol": "QSPBTC", 
+                    "buy_price": 5.09e-06, 
+                    "type": "sell", 
+                    "price": 4.68e-06, 
+                    "size": "790.0"
+                }
+            ], 
+            "EVXBTC": [
+                {
+                    "index": 1763, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EVXBTC", 
+                    "type": "buy", 
+                    "price": 7.261e-05, 
+                    "size": "50.0"
+                }, 
+                {
+                    "index": 2380, 
+                    "trade_type": "TPSC12_MAX", 
+                    "symbol": "EVXBTC", 
+                    "buy_price": 7.261e-05, 
+                    "type": "sell", 
+                    "price": 8.678e-05, 
+                    "size": "50.0"
+                }, 
+                {
+                    "index": 7598, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EVXBTC", 
+                    "type": "buy", 
+                    "price": 7.025e-05, 
+                    "size": "60.0"
+                }, 
+                {
+                    "index": 8311, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EVXBTC", 
+                    "buy_price": 7.025e-05, 
+                    "type": "sell", 
+                    "price": 7.106e-05, 
+                    "size": "60.0"
+                }, 
+                {
+                    "index": 11779, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EVXBTC", 
+                    "type": "buy", 
+                    "price": 7.166e-05, 
+                    "size": "60.0"
+                }, 
+                {
+                    "index": 12866, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EVXBTC", 
+                    "buy_price": 7.166e-05, 
+                    "type": "sell", 
+                    "price": 7.255e-05, 
+                    "size": "60.0"
+                }
+            ], 
+            "SNMBTC": [
+                {
+                    "index": 2542, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "SNMBTC", 
+                    "type": "buy", 
+                    "price": 5.96e-06, 
+                    "size": "670.0"
+                }
+            ], 
+            "NANOBTC": [
+                {
+                    "index": 2051, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "NANOBTC", 
+                    "type": "buy", 
+                    "price": 0.0002528, 
+                    "size": "15.84"
+                }, 
+                {
+                    "index": 13288, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "NANOBTC", 
+                    "buy_price": 0.0002528, 
+                    "type": "sell", 
+                    "price": 0.0002627, 
+                    "size": "15.84"
+                }
+            ], 
+            "IOTXBTC": [
+                {
+                    "index": 2588, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "IOTXBTC", 
+                    "type": "buy", 
+                    "price": 2.22e-06, 
+                    "size": "1800.0"
+                }, 
+                {
+                    "index": 4307, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "IOTXBTC", 
+                    "buy_price": 2.22e-06, 
+                    "type": "sell", 
+                    "price": 2.24e-06, 
+                    "size": "1800.0"
+                }
+            ], 
+            "STRATBTC": [
+                {
+                    "index": 1949, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "STRATBTC", 
+                    "type": "buy", 
+                    "price": 0.0002743, 
+                    "size": "14.56"
+                }, 
+                {
+                    "index": 7984, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "STRATBTC", 
+                    "buy_price": 0.0002743, 
+                    "type": "sell", 
+                    "price": 0.0002795, 
+                    "size": "14.56"
+                }
+            ], 
+            "GTOBNB": [
+                {
+                    "index": 1960, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "GTOBNB", 
+                    "type": "buy", 
+                    "price": 0.00428, 
+                    "size": "702.6"
+                }, 
+                {
+                    "index": 3492, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "GTOBNB", 
+                    "buy_price": 0.00428, 
+                    "type": "sell", 
+                    "price": 0.00439, 
+                    "size": "702.6"
+                }
+            ], 
+            "WAVESBTC": [
+                {
+                    "index": 5431, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WAVESBTC", 
+                    "type": "buy", 
+                    "price": 0.0007068, 
+                    "size": "5.66"
+                }, 
+                {
+                    "index": 20432, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WAVESBTC", 
+                    "buy_price": 0.0007068, 
+                    "type": "sell", 
+                    "price": 0.000723, 
+                    "size": "5.66"
+                }, 
+                {
+                    "index": 35064, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WAVESBTC", 
+                    "type": "buy", 
+                    "price": 0.0007688, 
+                    "size": "5.2"
+                }, 
+                {
+                    "index": 40844, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WAVESBTC", 
+                    "buy_price": 0.0007688, 
+                    "type": "sell", 
+                    "price": 0.000821, 
+                    "size": "5.2"
+                }
+            ], 
+            "QTUMBTC": [
+                {
+                    "index": 3629, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "QTUMBTC", 
+                    "type": "buy", 
+                    "price": 0.000575, 
+                    "size": "6.96"
+                }
+            ], 
+            "XMRBTC": [
+                {
+                    "index": 9597, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "XMRBTC", 
+                    "type": "buy", 
+                    "price": 0.01261, 
+                    "size": "0.317"
+                }, 
+                {
+                    "index": 13502, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "XMRBTC", 
+                    "buy_price": 0.01261, 
+                    "type": "sell", 
+                    "price": 0.0128, 
+                    "size": "0.317"
+                }
+            ], 
+            "OAXBTC": [
+                {
+                    "index": 814, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "OAXBTC", 
+                    "type": "buy", 
+                    "price": 6.04e-05, 
+                    "size": "70.0"
+                }, 
+                {
+                    "index": 8556, 
+                    "trade_type": 0, 
+                    "symbol": "OAXBTC", 
+                    "buy_price": 6.04e-05, 
+                    "type": "sell", 
+                    "price": 5.06e-05, 
+                    "size": "70.0"
+                }
+            ], 
+            "ADABTC": [
+                {
+                    "index": 2900, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ADABTC", 
+                    "type": "buy", 
+                    "price": 1.218e-05, 
+                    "size": "330.0"
+                }
+            ], 
+            "REPBTC": [
+                {
+                    "index": 5755, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "REPBTC", 
+                    "type": "buy", 
+                    "price": 0.004706, 
+                    "size": "0.85"
+                }, 
+                {
+                    "index": 10769, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "REPBTC", 
+                    "buy_price": 0.004706, 
+                    "type": "sell", 
+                    "price": 0.004756, 
+                    "size": "0.85"
+                }
+            ], 
+            "DNTBTC": [
+                {
+                    "index": 3311, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "DNTBTC", 
+                    "type": "buy", 
+                    "price": 3.4e-06, 
+                    "size": "1170.0"
+                }, 
+                {
+                    "index": 3463, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "DNTBTC", 
+                    "buy_price": 3.4e-06, 
+                    "type": "sell", 
+                    "price": 3.44e-06, 
+                    "size": "1170.0"
+                }
+            ], 
+            "EDOBTC": [
+                {
+                    "index": 1478, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EDOBTC", 
+                    "type": "buy", 
+                    "price": 0.0002372, 
+                    "size": "16.86"
+                }, 
+                {
+                    "index": 2265, 
+                    "trade_type": 0, 
+                    "symbol": "EDOBTC", 
+                    "buy_price": 0.0002372, 
+                    "type": "sell", 
+                    "price": 0.0002253, 
+                    "size": "16.86"
+                }
+            ], 
+            "ONTBTC": [
+                {
+                    "index": 1143, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ONTBTC", 
+                    "type": "buy", 
+                    "price": 0.0001661, 
+                    "size": "24.08"
+                }, 
+                {
+                    "index": 6841, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ONTBTC", 
+                    "buy_price": 0.0001661, 
+                    "type": "sell", 
+                    "price": 0.0001676, 
+                    "size": "24.08"
+                }
+            ], 
+            "FUNETH": [
+                {
+                    "index": 1570, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "FUNETH", 
+                    "type": "buy", 
+                    "price": 4.3e-05, 
+                    "size": "2330.0"
+                }, 
+                {
+                    "index": 2705, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "FUNETH", 
+                    "buy_price": 4.3e-05, 
+                    "type": "sell", 
+                    "price": 4.758e-05, 
+                    "size": "2330.0"
+                }
+            ], 
+            "LINKBTC": [
+                {
+                    "index": 2415, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LINKBTC", 
+                    "type": "buy", 
+                    "price": 0.00013655, 
+                    "size": "30.0"
+                }, 
+                {
+                    "index": 8958, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LINKBTC", 
+                    "buy_price": 0.00013655, 
+                    "type": "sell", 
+                    "price": 0.00014378, 
+                    "size": "30.0"
+                }, 
+                {
+                    "index": 20519, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LINKBTC", 
+                    "type": "buy", 
+                    "price": 0.00014943, 
+                    "size": "30.0"
+                }, 
+                {
+                    "index": 23811, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LINKBTC", 
+                    "buy_price": 0.00014943, 
+                    "type": "sell", 
+                    "price": 0.00015099, 
+                    "size": "30.0"
+                }, 
+                {
+                    "index": 30979, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LINKBTC", 
+                    "type": "buy", 
+                    "price": 0.00015014, 
+                    "size": "30.0"
+                }
+            ], 
+            "BCHABCBTC": [
+                {
+                    "index": 4445, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BCHABCBTC", 
+                    "type": "buy", 
+                    "price": 0.034403, 
+                    "size": "0.116"
+                }, 
+                {
+                    "index": 17069, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BCHABCBTC", 
+                    "buy_price": 0.034403, 
+                    "type": "sell", 
+                    "price": 0.035965, 
+                    "size": "0.116"
+                }
+            ], 
+            "THETABTC": [
+                {
+                    "index": 3021, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "THETABTC", 
+                    "type": "buy", 
+                    "price": 1.338e-05, 
+                    "size": "300.0"
+                }, 
+                {
+                    "index": 5817, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "THETABTC", 
+                    "buy_price": 1.338e-05, 
+                    "type": "sell", 
+                    "price": 1.373e-05, 
+                    "size": "300.0"
+                }, 
+                {
+                    "index": 6152, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "THETABTC", 
+                    "type": "buy", 
+                    "price": 1.383e-05, 
+                    "size": "290.0"
+                }
+            ], 
+            "XRPBTC": [
+                {
+                    "index": 17592, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "XRPBTC", 
+                    "type": "buy", 
+                    "price": 8.99e-05, 
+                    "size": "40.0"
+                }
+            ], 
+            "BCPTBTC": [
+                {
+                    "index": 1977, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BCPTBTC", 
+                    "type": "buy", 
+                    "price": 9.29e-06, 
+                    "size": "430.0"
+                }, 
+                {
+                    "index": 4171, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BCPTBTC", 
+                    "buy_price": 9.29e-06, 
+                    "type": "sell", 
+                    "price": 9.38e-06, 
+                    "size": "430.0"
+                }
+            ], 
+            "DLTBTC": [
+                {
+                    "index": 13999, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "DLTBTC", 
+                    "type": "buy", 
+                    "price": 3.407e-05, 
+                    "size": "120.0"
+                }, 
+                {
+                    "index": 14958, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "DLTBTC", 
+                    "buy_price": 3.407e-05, 
+                    "type": "sell", 
+                    "price": 3.46e-05, 
+                    "size": "120.0"
+                }
+            ], 
+            "MITHBTC": [
+                {
+                    "index": 4842, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MITHBTC", 
+                    "type": "buy", 
+                    "price": 1.446e-05, 
+                    "size": "280.0"
+                }
+            ], 
+            "LRCBTC": [
+                {
+                    "index": 19697, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LRCBTC", 
+                    "type": "buy", 
+                    "price": 2.795e-05, 
+                    "size": "140.0"
+                }, 
+                {
+                    "index": 24301, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "LRCBTC", 
+                    "buy_price": 2.795e-05, 
+                    "type": "sell", 
+                    "price": 2.825e-05, 
+                    "size": "140.0"
+                }
+            ], 
+            "REPETH": [
+                {
+                    "index": 4314, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "REPETH", 
+                    "type": "buy", 
+                    "price": 0.14455, 
+                    "size": "0.692"
+                }
+            ], 
+            "ETHBTC": [
+                {
+                    "index": 14133, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ETHBTC", 
+                    "type": "buy", 
+                    "price": 0.033053, 
+                    "size": "0.605"
+                }
+            ], 
+            "EOSBTC": [
+                {
+                    "index": 5107, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EOSBTC", 
+                    "type": "buy", 
+                    "price": 0.0006679, 
+                    "size": "5.99"
+                }, 
+                {
+                    "index": 23189, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EOSBTC", 
+                    "buy_price": 0.0006679, 
+                    "type": "sell", 
+                    "price": 0.0006866, 
+                    "size": "5.99"
+                }
+            ], 
+            "ARDRBTC": [
+                {
+                    "index": 6021, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ARDRBTC", 
+                    "type": "buy", 
+                    "price": 1.622e-05, 
+                    "size": "250.0"
+                }
+            ], 
+            "HOTETH": [
+                {
+                    "index": 1080, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "HOTETH", 
+                    "type": "buy", 
+                    "price": 6.2e-06, 
+                    "size": "16130.0"
+                }, 
+                {
+                    "index": 4544, 
+                    "trade_type": 0, 
+                    "symbol": "HOTETH", 
+                    "buy_price": 6.2e-06, 
+                    "type": "sell", 
+                    "price": 5.87e-06, 
+                    "size": "16130.0"
+                }
+            ], 
+            "ZENBTC": [
+                {
+                    "index": 566, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ZENBTC", 
+                    "type": "buy", 
+                    "price": 0.001407, 
+                    "size": "2.843"
+                }, 
+                {
+                    "index": 1677, 
+                    "trade_type": 0, 
+                    "symbol": "ZENBTC", 
+                    "buy_price": 0.001407, 
+                    "type": "sell", 
+                    "price": 0.001322, 
+                    "size": "2.843"
+                }
+            ], 
+            "BCDBTC": [
+                {
+                    "index": 515, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "BCDBTC", 
+                    "type": "buy", 
+                    "price": 0.000224, 
+                    "size": "17.857"
+                }
+            ], 
+            "OAXETH": [
+                {
+                    "index": 610, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "OAXETH", 
+                    "type": "buy", 
+                    "price": 0.0018345, 
+                    "size": "50.0"
+                }, 
+                {
+                    "index": 2492, 
+                    "trade_type": 0, 
+                    "symbol": "OAXETH", 
+                    "buy_price": 0.0018345, 
+                    "type": "sell", 
+                    "price": 0.0015375, 
+                    "size": "50.0"
+                }
+            ], 
+            "AEBTC": [
+                {
+                    "index": 906, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "AEBTC", 
+                    "type": "buy", 
+                    "price": 0.0001177, 
+                    "size": "34.01"
+                }, 
+                {
+                    "index": 2285, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "AEBTC", 
+                    "buy_price": 0.0001177, 
+                    "type": "sell", 
+                    "price": 0.0001193, 
+                    "size": "34.01"
+                }
+            ], 
+            "VETBTC": [
+                {
+                    "index": 2538, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VETBTC", 
+                    "type": "buy", 
+                    "price": 1.17e-06, 
+                    "size": "3450.0"
+                }, 
+                {
+                    "index": 4124, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VETBTC", 
+                    "buy_price": 1.17e-06, 
+                    "type": "sell", 
+                    "price": 1.19e-06, 
+                    "size": "3450.0"
+                }, 
+                {
+                    "index": 7749, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VETBTC", 
+                    "type": "buy", 
+                    "price": 1.25e-06, 
+                    "size": "3200.0"
+                }
+            ], 
+            "WAVESETH": [
+                {
+                    "index": 4677, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WAVESETH", 
+                    "type": "buy", 
+                    "price": 0.02207, 
+                    "size": "4.52"
+                }, 
+                {
+                    "index": 6907, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WAVESETH", 
+                    "buy_price": 0.02207, 
+                    "type": "sell", 
+                    "price": 0.023606, 
+                    "size": "4.52"
+                }, 
+                {
+                    "index": 7067, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WAVESETH", 
+                    "type": "buy", 
+                    "price": 0.023493, 
+                    "size": "4.27"
+                }
+            ], 
+            "ELFBTC": [
+                {
+                    "index": 10729, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ELFBTC", 
+                    "type": "buy", 
+                    "price": 3.033e-05, 
+                    "size": "130.0"
+                }, 
+                {
+                    "index": 12195, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ELFBTC", 
+                    "buy_price": 3.033e-05, 
+                    "type": "sell", 
+                    "price": 3.068e-05, 
+                    "size": "130.0"
+                }, 
+                {
+                    "index": 13704, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ELFBTC", 
+                    "type": "buy", 
+                    "price": 3.06e-05, 
+                    "size": "130.0"
+                }, 
+                {
+                    "index": 15257, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ELFBTC", 
+                    "buy_price": 3.06e-05, 
+                    "type": "sell", 
+                    "price": 3.094e-05, 
+                    "size": "130.0"
+                }
+            ], 
+            "QSPETH": [
+                {
+                    "index": 627, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "QSPETH", 
+                    "type": "buy", 
+                    "price": 0.00014532, 
+                    "size": "690.0"
+                }
+            ], 
+            "RCNBTC": [
+                {
+                    "index": 360, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RCNBTC", 
+                    "type": "buy", 
+                    "price": 3.76e-06, 
+                    "size": "1060.0"
+                }, 
+                {
+                    "index": 1269, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RCNBTC", 
+                    "buy_price": 3.76e-06, 
+                    "type": "sell", 
+                    "price": 3.8e-06, 
+                    "size": "1060.0"
+                }, 
+                {
+                    "index": 2650, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RCNBTC", 
+                    "type": "buy", 
+                    "price": 3.86e-06, 
+                    "size": "1040.0"
+                }, 
+                {
+                    "index": 4837, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RCNBTC", 
+                    "buy_price": 3.86e-06, 
+                    "type": "sell", 
+                    "price": 3.66e-06, 
+                    "size": "1040.0"
+                }
+            ], 
+            "TRXBTC": [
+                {
+                    "index": 9061, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBTC", 
+                    "type": "buy", 
+                    "price": 7.04e-06, 
+                    "size": "570.0"
+                }, 
+                {
+                    "index": 15910, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBTC", 
+                    "buy_price": 7.04e-06, 
+                    "type": "sell", 
+                    "price": 7.12e-06, 
+                    "size": "570.0"
+                }, 
+                {
+                    "index": 38955, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TRXBTC", 
+                    "type": "buy", 
+                    "price": 7.36e-06, 
+                    "size": "540.0"
+                }
+            ], 
+            "MDABTC": [
+                {
+                    "index": 4743, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MDABTC", 
+                    "type": "buy", 
+                    "price": 0.00019788, 
+                    "size": "20.0"
+                }
+            ], 
+            "MTLBTC": [
+                {
+                    "index": 469, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MTLBTC", 
+                    "type": "buy", 
+                    "price": 6.48e-05, 
+                    "size": "61.73"
+                }, 
+                {
+                    "index": 3556, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MTLBTC", 
+                    "buy_price": 6.48e-05, 
+                    "type": "sell", 
+                    "price": 6.61e-05, 
+                    "size": "61.73"
+                }, 
+                {
+                    "index": 4368, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "MTLBTC", 
+                    "type": "buy", 
+                    "price": 6.57e-05, 
+                    "size": "60.88"
+                }
+            ], 
+            "DOCKBTC": [
+                {
+                    "index": 1319, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "DOCKBTC", 
+                    "type": "buy", 
+                    "price": 2.81e-06, 
+                    "size": "1420.0"
+                }, 
+                {
+                    "index": 3177, 
+                    "trade_type": 0, 
+                    "symbol": "DOCKBTC", 
+                    "buy_price": 2.81e-06, 
+                    "type": "sell", 
+                    "price": 2.66e-06, 
+                    "size": "1420.0"
                 }
             ], 
             "PPTBTC": [
                 {
-                    "index": 236, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "type": "buy", 
-                    "price": 0.000362, 
-                    "size": "8.29"
-                }, 
-                {
-                    "index": 418, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "buy_price": 0.000362, 
-                    "type": "sell", 
-                    "price": 0.0003656, 
-                    "size": "8.29"
-                }, 
-                {
-                    "index": 756, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "type": "buy", 
-                    "price": 0.0003747, 
-                    "size": "8.04"
-                }, 
-                {
-                    "index": 1313, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "buy_price": 0.0003747, 
-                    "type": "sell", 
-                    "price": 0.0003779, 
-                    "size": "8.04"
-                }, 
-                {
-                    "index": 1758, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "type": "buy", 
-                    "price": 0.0003783, 
-                    "size": "7.89"
-                }, 
-                {
-                    "index": 1988, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "buy_price": 0.0003783, 
-                    "type": "sell", 
-                    "price": 0.0003821, 
-                    "size": "7.89"
-                }, 
-                {
-                    "index": 2338, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "type": "buy", 
-                    "price": 0.00038, 
-                    "size": "7.93"
-                }, 
-                {
-                    "index": 2608, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "buy_price": 0.00038, 
-                    "type": "sell", 
-                    "price": 0.0003829, 
-                    "size": "7.93"
-                }, 
-                {
-                    "index": 2807, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "PPTBTC", 
-                    "type": "buy", 
-                    "price": 0.000373, 
-                    "size": "8.04"
-                }
-            ], 
-            "BTGBTC": [
-                {
-                    "index": 167, 
+                    "index": 1484, 
                     "trade_type": "TPSC12", 
-                    "symbol": "BTGBTC", 
+                    "symbol": "PPTBTC", 
                     "type": "buy", 
-                    "price": 0.003127, 
-                    "size": "0.96"
+                    "price": 0.0003815, 
+                    "size": "10.49"
+                }, 
+                {
+                    "index": 3127, 
+                    "trade_type": 0, 
+                    "symbol": "PPTBTC", 
+                    "buy_price": 0.0003815, 
+                    "type": "sell", 
+                    "price": 0.0003616, 
+                    "size": "10.49"
                 }
             ], 
             "BCHSVBTC": [
                 {
-                    "index": 970, 
-                    "trade_type": "MTS_MOVERATE", 
+                    "index": 8190, 
+                    "trade_type": "TPSC12", 
                     "symbol": "BCHSVBTC", 
                     "type": "buy", 
-                    "price": 0.021064, 
-                    "size": "0.142"
-                }, 
-                {
-                    "index": 4462, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHSVBTC", 
-                    "buy_price": 0.021064, 
-                    "type": "sell", 
-                    "price": 0.02129, 
-                    "size": "0.142"
-                }, 
-                {
-                    "index": 5448, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHSVBTC", 
-                    "type": "buy", 
-                    "price": 0.02135, 
-                    "size": "0.141"
+                    "price": 0.021018, 
+                    "size": "0.19"
                 }
             ], 
-            "MCOBTC": [
+            "SCBTC": [
                 {
-                    "index": 187, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "MCOBTC", 
+                    "index": 792, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "SCBTC", 
                     "type": "buy", 
-                    "price": 0.000624, 
-                    "size": "4.81"
+                    "price": 7e-07, 
+                    "size": "5710.0"
                 }, 
                 {
-                    "index": 468, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "MCOBTC", 
-                    "buy_price": 0.000624, 
+                    "index": 1896, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "SCBTC", 
+                    "buy_price": 7e-07, 
                     "type": "sell", 
-                    "price": 0.000631, 
-                    "size": "4.81"
+                    "price": 7e-07, 
+                    "size": "5710.0"
                 }, 
                 {
-                    "index": 600, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "MCOBTC", 
+                    "index": 2125, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "SCBTC", 
                     "type": "buy", 
-                    "price": 0.000628, 
-                    "size": "4.78"
+                    "price": 7e-07, 
+                    "size": "5710.0"
+                }, 
+                {
+                    "index": 2570, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "SCBTC", 
+                    "buy_price": 7e-07, 
+                    "type": "sell", 
+                    "price": 7.2e-07, 
+                    "size": "5710.0"
+                }
+            ], 
+            "IOTABTC": [
+                {
+                    "index": 2499, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "IOTABTC", 
+                    "type": "buy", 
+                    "price": 8.54e-05, 
+                    "size": "50.0"
+                }
+            ], 
+            "VIBBTC": [
+                {
+                    "index": 1339, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VIBBTC", 
+                    "type": "buy", 
+                    "price": 6.66e-06, 
+                    "size": "600.0"
+                }, 
+                {
+                    "index": 1685, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VIBBTC", 
+                    "buy_price": 6.66e-06, 
+                    "type": "sell", 
+                    "price": 6.69e-06, 
+                    "size": "600.0"
+                }, 
+                {
+                    "index": 2543, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VIBBTC", 
+                    "type": "buy", 
+                    "price": 7.08e-06, 
+                    "size": "560.0"
+                }, 
+                {
+                    "index": 6663, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VIBBTC", 
+                    "buy_price": 7.08e-06, 
+                    "type": "sell", 
+                    "price": 7.19e-06, 
+                    "size": "560.0"
+                }
+            ], 
+            "XLMBTC": [
+                {
+                    "index": 4503, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "XLMBTC", 
+                    "type": "buy", 
+                    "price": 2.902e-05, 
+                    "size": "140.0"
                 }
             ], 
             "HCBTC": [
@@ -753,1381 +1897,257 @@
                     "symbol": "HCBTC", 
                     "type": "buy", 
                     "price": 0.0003064, 
-                    "size": "9.79"
+                    "size": "13.05"
                 }, 
                 {
-                    "index": 1247, 
-                    "trade_type": "MTS_MOVERATE", 
+                    "index": 2196, 
+                    "trade_type": "TPSC12", 
                     "symbol": "HCBTC", 
                     "buy_price": 0.0003064, 
                     "type": "sell", 
-                    "price": 0.0003105, 
-                    "size": "9.79"
+                    "price": 0.0003119, 
+                    "size": "13.05"
                 }, 
                 {
-                    "index": 1437, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "HCBTC", 
-                    "type": "buy", 
-                    "price": 0.0003062, 
-                    "size": "9.79"
-                }, 
-                {
-                    "index": 1871, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "HCBTC", 
-                    "buy_price": 0.0003062, 
-                    "type": "sell", 
-                    "price": 0.0003093, 
-                    "size": "9.79"
-                }, 
-                {
-                    "index": 2165, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "HCBTC", 
-                    "type": "buy", 
-                    "price": 0.0003118, 
-                    "size": "9.62"
-                }, 
-                {
-                    "index": 2576, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "HCBTC", 
-                    "buy_price": 0.0003118, 
-                    "type": "sell", 
-                    "price": 0.000315, 
-                    "size": "9.62"
-                }, 
-                {
-                    "index": 2886, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "HCBTC", 
-                    "type": "buy", 
-                    "price": 0.0003079, 
-                    "size": "9.74"
-                }, 
-                {
-                    "index": 2914, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "HCBTC", 
-                    "buy_price": 0.0003079, 
-                    "type": "sell", 
-                    "price": 0.0003108, 
-                    "size": "9.74"
-                }, 
-                {
-                    "index": 4152, 
+                    "index": 2477, 
                     "trade_type": "TPSC12", 
                     "symbol": "HCBTC", 
                     "type": "buy", 
-                    "price": 0.0003151, 
-                    "size": "9.52"
+                    "price": 0.0003111, 
+                    "size": "12.86"
                 }
             ], 
-            "LUNBTC": [
+            "RENBTC": [
                 {
-                    "index": 381, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0004448, 
-                    "size": "6.75"
-                }, 
-                {
-                    "index": 870, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0004448, 
-                    "type": "sell", 
-                    "price": 0.0004492, 
-                    "size": "6.75"
-                }, 
-                {
-                    "index": 1242, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0004531, 
-                    "size": "6.6"
-                }, 
-                {
-                    "index": 1625, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0004531, 
-                    "type": "sell", 
-                    "price": 0.0004577, 
-                    "size": "6.6"
-                }, 
-                {
-                    "index": 2152, 
+                    "index": 825, 
                     "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
+                    "symbol": "RENBTC", 
                     "type": "buy", 
-                    "price": 0.0004713, 
-                    "size": "6.37"
+                    "price": 5.42e-06, 
+                    "size": "740.0"
+                }
+            ], 
+            "RVNBTC": [
+                {
+                    "index": 10620, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RVNBTC", 
+                    "type": "buy", 
+                    "price": 3.84e-06, 
+                    "size": "1040.0"
                 }, 
                 {
-                    "index": 2492, 
+                    "index": 11888, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RVNBTC", 
+                    "buy_price": 3.84e-06, 
+                    "type": "sell", 
+                    "price": 3.91e-06, 
+                    "size": "1040.0"
+                }, 
+                {
+                    "index": 13666, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RVNBTC", 
+                    "type": "buy", 
+                    "price": 3.82e-06, 
+                    "size": "1050.0"
+                }
+            ], 
+            "TNTBTC": [
+                {
+                    "index": 687, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TNTBTC", 
+                    "type": "buy", 
+                    "price": 4.5e-06, 
+                    "size": "890.0"
+                }, 
+                {
+                    "index": 1443, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "TNTBTC", 
+                    "buy_price": 4.5e-06, 
+                    "type": "sell", 
+                    "price": 4.54e-06, 
+                    "size": "890.0"
+                }
+            ], 
+            "VIBEBTC": [
+                {
+                    "index": 856, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VIBEBTC", 
+                    "type": "buy", 
+                    "price": 1.118e-05, 
+                    "size": "360.0"
+                }, 
+                {
+                    "index": 2256, 
                     "trade_type": "TPSC12_MAX", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0004713, 
+                    "symbol": "VIBEBTC", 
+                    "buy_price": 1.118e-05, 
                     "type": "sell", 
-                    "price": 0.0004913, 
-                    "size": "6.37"
+                    "price": 1.15e-05, 
+                    "size": "360.0"
                 }, 
                 {
-                    "index": 3357, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0004877, 
-                    "size": "6.15"
-                }, 
-                {
-                    "index": 3379, 
+                    "index": 5500, 
                     "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0004877, 
+                    "symbol": "VIBEBTC", 
+                    "type": "buy", 
+                    "price": 1.133e-05, 
+                    "size": "350.0"
+                }, 
+                {
+                    "index": 6911, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "VIBEBTC", 
+                    "buy_price": 1.133e-05, 
                     "type": "sell", 
-                    "price": 0.0004929, 
-                    "size": "6.15"
-                }, 
+                    "price": 1.146e-05, 
+                    "size": "350.0"
+                }
+            ], 
+            "ENJBTC": [
                 {
-                    "index": 4429, 
+                    "index": 4600, 
                     "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
+                    "symbol": "ENJBTC", 
                     "type": "buy", 
-                    "price": 0.0005106, 
-                    "size": "5.88"
+                    "price": 9.64e-06, 
+                    "size": "410.0"
                 }, 
                 {
-                    "index": 4492, 
+                    "index": 5639, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ENJBTC", 
+                    "buy_price": 9.64e-06, 
+                    "type": "sell", 
+                    "price": 9.86e-06, 
+                    "size": "410.0"
+                }
+            ], 
+            "RDNBTC": [
+                {
+                    "index": 882, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RDNBTC", 
+                    "type": "buy", 
+                    "price": 6.193e-05, 
+                    "size": "60.0"
+                }, 
+                {
+                    "index": 2511, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "RDNBTC", 
+                    "buy_price": 6.193e-05, 
+                    "type": "sell", 
+                    "price": 6.379e-05, 
+                    "size": "60.0"
+                }
+            ], 
+            "APPCBTC": [
+                {
+                    "index": 628, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "APPCBTC", 
+                    "type": "buy", 
+                    "price": 1.351e-05, 
+                    "size": "300.0"
+                }, 
+                {
+                    "index": 2178, 
+                    "trade_type": 0, 
+                    "symbol": "APPCBTC", 
+                    "buy_price": 1.351e-05, 
+                    "type": "sell", 
+                    "price": 1.282e-05, 
+                    "size": "300.0"
+                }
+            ], 
+            "YOYOBTC": [
+                {
+                    "index": 2116, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "YOYOBTC", 
+                    "type": "buy", 
+                    "price": 4.5e-06, 
+                    "size": "890.0"
+                }, 
+                {
+                    "index": 4454, 
                     "trade_type": "TPSC12_MAX", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005106, 
+                    "symbol": "YOYOBTC", 
+                    "buy_price": 4.5e-06, 
                     "type": "sell", 
-                    "price": 0.000516, 
-                    "size": "5.88"
-                }, 
+                    "price": 5.36e-06, 
+                    "size": "890.0"
+                }
+            ], 
+            "POABTC": [
                 {
-                    "index": 6672, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
+                    "index": 980, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "POABTC", 
                     "type": "buy", 
-                    "price": 0.0005764, 
-                    "size": "5.19"
+                    "price": 8.43e-06, 
+                    "size": "470.0"
                 }, 
                 {
-                    "index": 6704, 
+                    "index": 2149, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "POABTC", 
+                    "buy_price": 8.43e-06, 
+                    "type": "sell", 
+                    "price": 8.53e-06, 
+                    "size": "470.0"
+                }
+            ], 
+            "EVXETH": [
+                {
+                    "index": 1409, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "EVXETH", 
+                    "type": "buy", 
+                    "price": 0.0022209, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 1772, 
                     "trade_type": "TPSC12_MAX", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005764, 
+                    "symbol": "EVXETH", 
+                    "buy_price": 0.0022209, 
                     "type": "sell", 
-                    "price": 0.0005828, 
-                    "size": "5.19"
-                }, 
-                {
-                    "index": 9768, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005481, 
-                    "size": "5.47"
-                }, 
-                {
-                    "index": 9873, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005481, 
-                    "type": "sell", 
-                    "price": 0.000554, 
-                    "size": "5.47"
-                }, 
-                {
-                    "index": 10426, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005457, 
-                    "size": "5.49"
-                }, 
-                {
-                    "index": 10768, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005457, 
-                    "type": "sell", 
-                    "price": 0.00055, 
-                    "size": "5.49"
-                }, 
-                {
-                    "index": 11394, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005418, 
-                    "size": "5.54"
-                }, 
-                {
-                    "index": 11544, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005418, 
-                    "type": "sell", 
-                    "price": 0.0005472, 
-                    "size": "5.54"
-                }, 
-                {
-                    "index": 12756, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005476, 
-                    "size": "5.48"
-                }, 
-                {
-                    "index": 12800, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005476, 
-                    "type": "sell", 
-                    "price": 0.0005541, 
-                    "size": "5.48"
-                }, 
-                {
-                    "index": 13533, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005374, 
-                    "size": "5.59"
-                }, 
-                {
-                    "index": 17367, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005374, 
-                    "type": "sell", 
-                    "price": 0.0005433, 
-                    "size": "5.59"
-                }, 
-                {
-                    "index": 18779, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005345, 
-                    "size": "5.62"
-                }, 
-                {
-                    "index": 18999, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005345, 
-                    "type": "sell", 
-                    "price": 0.0005426, 
-                    "size": "5.62"
-                }, 
-                {
-                    "index": 19885, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005387, 
-                    "size": "5.57"
-                }, 
-                {
-                    "index": 20842, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005387, 
-                    "type": "sell", 
-                    "price": 0.0005454, 
-                    "size": "5.57"
-                }, 
-                {
-                    "index": 21999, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005691, 
-                    "size": "5.27"
-                }, 
-                {
-                    "index": 22030, 
-                    "trade_type": "TPSC12_MAX", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005691, 
-                    "type": "sell", 
-                    "price": 0.0005747, 
-                    "size": "5.27"
-                }, 
-                {
-                    "index": 23205, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0005703, 
-                    "size": "5.26"
-                }, 
-                {
-                    "index": 23265, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0005703, 
-                    "type": "sell", 
-                    "price": 0.0005767, 
-                    "size": "5.26"
-                }, 
-                {
-                    "index": 25123, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0006379, 
-                    "size": "4.71"
-                }, 
-                {
-                    "index": 33080, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0006379, 
-                    "type": "sell", 
-                    "price": 0.0006439, 
-                    "size": "4.71"
-                }, 
-                {
-                    "index": 34020, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0006371, 
-                    "size": "4.7"
-                }, 
-                {
-                    "index": 34447, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0006371, 
-                    "type": "sell", 
-                    "price": 0.0006434, 
-                    "size": "4.7"
-                }, 
-                {
-                    "index": 36082, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0007063, 
-                    "size": "4.23"
-                }, 
-                {
-                    "index": 36299, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0007063, 
-                    "type": "sell", 
-                    "price": 0.00072, 
-                    "size": "4.23"
-                }, 
-                {
-                    "index": 38502, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0007627, 
-                    "size": "3.93"
-                }, 
-                {
-                    "index": 38613, 
-                    "trade_type": "TPSC12_MAX", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0007627, 
-                    "type": "sell", 
-                    "price": 0.0007701, 
-                    "size": "3.93"
-                }, 
-                {
-                    "index": 40378, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0007527, 
-                    "size": "3.99"
-                }, 
-                {
-                    "index": 40451, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0007527, 
-                    "type": "sell", 
-                    "price": 0.0007619, 
-                    "size": "3.99"
-                }, 
-                {
-                    "index": 41775, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.0007189, 
-                    "size": "4.17"
-                }, 
-                {
-                    "index": 41806, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "buy_price": 0.0007189, 
-                    "type": "sell", 
-                    "price": 0.0007255, 
-                    "size": "4.17"
-                }, 
-                {
-                    "index": 43243, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "LUNBTC", 
-                    "type": "buy", 
-                    "price": 0.000791, 
-                    "size": "3.79"
+                    "price": 0.0025678, 
+                    "size": "40.0"
                 }
             ], 
-            "CLOAKBTC": [
+            "SALTBTC": [
                 {
-                    "index": 156, 
+                    "index": 820, 
                     "trade_type": "TPSC12", 
-                    "symbol": "CLOAKBTC", 
+                    "symbol": "SALTBTC", 
                     "type": "buy", 
-                    "price": 0.0003248, 
-                    "size": "9.24"
+                    "price": 6.24e-05, 
+                    "size": "64.1"
                 }, 
                 {
-                    "index": 263, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "CLOAKBTC", 
-                    "buy_price": 0.0003248, 
-                    "type": "sell", 
-                    "price": 0.0003286, 
-                    "size": "9.24"
-                }, 
-                {
-                    "index": 344, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "CLOAKBTC", 
-                    "type": "buy", 
-                    "price": 0.0003327, 
-                    "size": "9.02"
-                }, 
-                {
-                    "index": 385, 
+                    "index": 2074, 
                     "trade_type": "TPSC12", 
-                    "symbol": "CLOAKBTC", 
-                    "buy_price": 0.0003327, 
+                    "symbol": "SALTBTC", 
+                    "buy_price": 6.24e-05, 
                     "type": "sell", 
-                    "price": 0.000336, 
-                    "size": "9.02"
+                    "price": 6.32e-05, 
+                    "size": "64.1"
                 }, 
                 {
-                    "index": 717, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "CLOAKBTC", 
-                    "type": "buy", 
-                    "price": 0.0003311, 
-                    "size": "9.06"
-                }, 
-                {
-                    "index": 802, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "CLOAKBTC", 
-                    "buy_price": 0.0003311, 
-                    "type": "sell", 
-                    "price": 0.000334, 
-                    "size": "9.06"
-                }, 
-                {
-                    "index": 839, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "CLOAKBTC", 
-                    "type": "buy", 
-                    "price": 0.0003317, 
-                    "size": "9.04"
-                }
-            ], 
-            "BCHABCBTC": [
-                {
-                    "index": 1069, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHABCBTC", 
-                    "type": "buy", 
-                    "price": 0.034273, 
-                    "size": "0.088000000"
-                }, 
-                {
-                    "index": 2837, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHABCBTC", 
-                    "buy_price": 0.034273, 
-                    "type": "sell", 
-                    "price": 0.034591, 
-                    "size": "0.088000000"
-                }, 
-                {
-                    "index": 3290, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHABCBTC", 
-                    "type": "buy", 
-                    "price": 0.034466, 
-                    "size": "0.087000000"
-                }, 
-                {
-                    "index": 14379, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHABCBTC", 
-                    "buy_price": 0.034466, 
-                    "type": "sell", 
-                    "price": 0.034818, 
-                    "size": "0.087000000"
-                }, 
-                {
-                    "index": 15772, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHABCBTC", 
-                    "type": "buy", 
-                    "price": 0.035969, 
-                    "size": "0.083000000"
-                }, 
-                {
-                    "index": 21930, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHABCBTC", 
-                    "buy_price": 0.035969, 
-                    "type": "sell", 
-                    "price": 0.036386, 
-                    "size": "0.083000000"
-                }, 
-                {
-                    "index": 23142, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCHABCBTC", 
-                    "type": "buy", 
-                    "price": 0.036243, 
-                    "size": "0.083000000"
-                }
-            ], 
-            "REPBNB": [
-                {
-                    "index": 59, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "REPBNB", 
-                    "type": "buy", 
-                    "price": 2.623, 
-                    "size": "1.144"
-                }
-            ], 
-            "XZCBTC": [
-                {
-                    "index": 413, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "type": "buy", 
-                    "price": 0.001434, 
-                    "size": "2.09"
-                }, 
-                {
-                    "index": 696, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "buy_price": 0.001434, 
-                    "type": "sell", 
-                    "price": 0.001436, 
-                    "size": "2.09"
-                }, 
-                {
-                    "index": 816, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "type": "buy", 
-                    "price": 0.001471, 
-                    "size": "2.04"
-                }, 
-                {
-                    "index": 3036, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "buy_price": 0.001471, 
-                    "type": "sell", 
-                    "price": 0.00148, 
-                    "size": "2.04"
-                }, 
-                {
-                    "index": 3149, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "type": "buy", 
-                    "price": 0.001478, 
-                    "size": "2.02"
-                }, 
-                {
-                    "index": 3285, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "buy_price": 0.001478, 
-                    "type": "sell", 
-                    "price": 0.001493, 
-                    "size": "2.02"
-                }, 
-                {
-                    "index": 3357, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "type": "buy", 
-                    "price": 0.001488, 
-                    "size": "2.02"
-                }, 
-                {
-                    "index": 3516, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "buy_price": 0.001488, 
-                    "type": "sell", 
-                    "price": 0.001503, 
-                    "size": "2.02"
-                }, 
-                {
-                    "index": 3560, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "XZCBTC", 
-                    "type": "buy", 
-                    "price": 0.001487, 
-                    "size": "2.02"
-                }
-            ], 
-            "SKYBTC": [
-                {
-                    "index": 481, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "SKYBTC", 
-                    "type": "buy", 
-                    "price": 0.000277, 
-                    "size": "10.83"
-                }, 
-                {
-                    "index": 609, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "SKYBTC", 
-                    "buy_price": 0.000277, 
-                    "type": "sell", 
-                    "price": 0.000278, 
-                    "size": "10.83"
-                }, 
-                {
-                    "index": 702, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "SKYBTC", 
-                    "type": "buy", 
-                    "price": 0.00028, 
-                    "size": "10.638"
-                }, 
-                {
-                    "index": 886, 
+                    "index": 4476, 
                     "trade_type": "TPSC12", 
-                    "symbol": "SKYBTC", 
-                    "buy_price": 0.00028, 
-                    "type": "sell", 
-                    "price": 0.000283, 
-                    "size": "10.638"
-                }, 
-                {
-                    "index": 969, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "SKYBTC", 
+                    "symbol": "SALTBTC", 
                     "type": "buy", 
-                    "price": 0.000282, 
-                    "size": "10.601"
-                }, 
-                {
-                    "index": 2234, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "SKYBTC", 
-                    "buy_price": 0.000282, 
-                    "type": "sell", 
-                    "price": 0.000285, 
-                    "size": "10.601"
-                }, 
-                {
-                    "index": 2349, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "SKYBTC", 
-                    "type": "buy", 
-                    "price": 0.000285, 
-                    "size": "10.526"
-                }
-            ], 
-            "BNBBTC": [
-                {
-                    "index": 3270, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BNBBTC", 
-                    "type": "buy", 
-                    "price": 0.0018241, 
-                    "size": "3.28"
-                }
-            ], 
-            "ETCBTC": [
-                {
-                    "index": 192, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "ETCBTC", 
-                    "type": "buy", 
-                    "price": 0.001202, 
-                    "size": "2.49"
-                }
-            ], 
-            "LSKBTC": [
-                {
-                    "index": 437, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "LSKBTC", 
-                    "type": "buy", 
-                    "price": 0.00035, 
-                    "size": "8.56"
-                }
-            ], 
-            "BCDETH": [
-                {
-                    "index": 49, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCDETH", 
-                    "type": "buy", 
-                    "price": 0.00695, 
-                    "size": "14.388"
-                }
-            ], 
-            "ETHBTC": [
-                {
-                    "index": 2222, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "ETHBTC", 
-                    "type": "buy", 
-                    "price": 0.032694, 
-                    "size": "0.184"
-                }
-            ], 
-            "EOSBTC": [
-                {
-                    "index": 576, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "EOSBTC", 
-                    "type": "buy", 
-                    "price": 0.000658, 
-                    "size": "4.56"
-                }, 
-                {
-                    "index": 3664, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "EOSBTC", 
-                    "buy_price": 0.000658, 
-                    "type": "sell", 
-                    "price": 0.0006659, 
-                    "size": "4.56"
-                }, 
-                {
-                    "index": 4802, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "EOSBTC", 
-                    "type": "buy", 
-                    "price": 0.0006662, 
-                    "size": "4.51"
-                }, 
-                {
-                    "index": 20235, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "EOSBTC", 
-                    "buy_price": 0.0006662, 
-                    "type": "sell", 
-                    "price": 0.0006728, 
-                    "size": "4.51"
-                }, 
-                {
-                    "index": 21098, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "EOSBTC", 
-                    "type": "buy", 
-                    "price": 0.0006759, 
-                    "size": "4.44"
-                }, 
-                {
-                    "index": 23065, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "EOSBTC", 
-                    "buy_price": 0.0006759, 
-                    "type": "sell", 
-                    "price": 0.000688, 
-                    "size": "4.44"
-                }, 
-                {
-                    "index": 23748, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "EOSBTC", 
-                    "type": "buy", 
-                    "price": 0.0006869, 
-                    "size": "4.37"
-                }
-            ], 
-            "NANOBTC": [
-                {
-                    "index": 158, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "NANOBTC", 
-                    "type": "buy", 
-                    "price": 0.0002445, 
-                    "size": "12.25"
-                }, 
-                {
-                    "index": 416, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "NANOBTC", 
-                    "buy_price": 0.0002445, 
-                    "type": "sell", 
-                    "price": 0.000247, 
-                    "size": "12.25"
-                }, 
-                {
-                    "index": 1511, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "NANOBTC", 
-                    "type": "buy", 
-                    "price": 0.00025, 
-                    "size": "12.0"
-                }, 
-                {
-                    "index": 1590, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "NANOBTC", 
-                    "buy_price": 0.00025, 
-                    "type": "sell", 
-                    "price": 0.0002525, 
-                    "size": "12.0"
-                }, 
-                {
-                    "index": 2471, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NANOBTC", 
-                    "type": "buy", 
-                    "price": 0.0002537, 
-                    "size": "11.83"
-                }, 
-                {
-                    "index": 11831, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "NANOBTC", 
-                    "buy_price": 0.0002537, 
-                    "type": "sell", 
-                    "price": 0.0002552, 
-                    "size": "11.83"
-                }
-            ], 
-            "ZENBTC": [
-                {
-                    "index": 410, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "ZENBTC", 
-                    "type": "buy", 
-                    "price": 0.001378, 
-                    "size": "2.177"
-                }, 
-                {
-                    "index": 467, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "ZENBTC", 
-                    "buy_price": 0.001378, 
-                    "type": "sell", 
-                    "price": 0.00139, 
-                    "size": "2.177"
-                }, 
-                {
-                    "index": 991, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "ZENBTC", 
-                    "type": "buy", 
-                    "price": 0.001348, 
-                    "size": "2.226"
-                }, 
-                {
-                    "index": 1098, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "ZENBTC", 
-                    "buy_price": 0.001348, 
-                    "type": "sell", 
-                    "price": 0.001359, 
-                    "size": "2.226"
-                }, 
-                {
-                    "index": 1180, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "ZENBTC", 
-                    "type": "buy", 
-                    "price": 0.001361, 
-                    "size": "2.204"
-                }
-            ], 
-            "STRATBTC": [
-                {
-                    "index": 261, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "STRATBTC", 
-                    "type": "buy", 
-                    "price": 0.0002717, 
-                    "size": "11.06"
-                }, 
-                {
-                    "index": 786, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "STRATBTC", 
-                    "buy_price": 0.0002717, 
-                    "type": "sell", 
-                    "price": 0.000275, 
-                    "size": "11.06"
-                }, 
-                {
-                    "index": 1130, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "STRATBTC", 
-                    "type": "buy", 
-                    "price": 0.0002763, 
-                    "size": "10.85"
-                }, 
-                {
-                    "index": 6995, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "STRATBTC", 
-                    "buy_price": 0.0002763, 
-                    "type": "sell", 
-                    "price": 0.0002791, 
-                    "size": "10.85"
-                }, 
-                {
-                    "index": 8806, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "STRATBTC", 
-                    "type": "buy", 
-                    "price": 0.00028, 
-                    "size": "10.71"
-                }, 
-                {
-                    "index": 8900, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "STRATBTC", 
-                    "buy_price": 0.00028, 
-                    "type": "sell", 
-                    "price": 0.0002833, 
-                    "size": "10.71"
-                }
-            ], 
-            "BCDBTC": [
-                {
-                    "index": 487, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "BCDBTC", 
-                    "type": "buy", 
-                    "price": 0.000224, 
-                    "size": "13.393"
-                }
-            ], 
-            "WAVESBTC": [
-                {
-                    "index": 659, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0007033, 
-                    "size": "4.26"
-                }, 
-                {
-                    "index": 2772, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0007033, 
-                    "type": "sell", 
-                    "price": 0.0007101, 
-                    "size": "4.26"
-                }, 
-                {
-                    "index": 3972, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0007081, 
-                    "size": "4.24"
-                }, 
-                {
-                    "index": 15718, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0007081, 
-                    "type": "sell", 
-                    "price": 0.0007146, 
-                    "size": "4.24"
-                }, 
-                {
-                    "index": 16819, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0007178, 
-                    "size": "4.18"
-                }, 
-                {
-                    "index": 17432, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0007178, 
-                    "type": "sell", 
-                    "price": 0.0007249, 
-                    "size": "4.18"
-                }, 
-                {
-                    "index": 20096, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0007501, 
-                    "size": "4.0"
-                }, 
-                {
-                    "index": 24498, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0007501, 
-                    "type": "sell", 
-                    "price": 0.000758, 
-                    "size": "4.0"
-                }, 
-                {
-                    "index": 26834, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0007733, 
-                    "size": "3.88"
-                }, 
-                {
-                    "index": 28035, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0007733, 
-                    "type": "sell", 
-                    "price": 0.0007805, 
-                    "size": "3.88"
-                }, 
-                {
-                    "index": 30260, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0007714, 
-                    "size": "3.89"
-                }, 
-                {
-                    "index": 30585, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0007714, 
-                    "type": "sell", 
-                    "price": 0.0007792, 
-                    "size": "3.89"
-                }, 
-                {
-                    "index": 32043, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0007757, 
-                    "size": "3.87"
-                }, 
-                {
-                    "index": 35690, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0007757, 
-                    "type": "sell", 
-                    "price": 0.0007832, 
-                    "size": "3.87"
-                }, 
-                {
-                    "index": 38331, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0008332, 
-                    "size": "3.6"
-                }, 
-                {
-                    "index": 38818, 
-                    "trade_type": "TPSC12_MAX", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0008332, 
-                    "type": "sell", 
-                    "price": 0.0008402, 
-                    "size": "3.6"
-                }, 
-                {
-                    "index": 41411, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0008236, 
-                    "size": "3.64"
-                }, 
-                {
-                    "index": 41554, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "WAVESBTC", 
-                    "buy_price": 0.0008236, 
-                    "type": "sell", 
-                    "price": 0.0008321, 
-                    "size": "3.64"
-                }, 
-                {
-                    "index": 43710, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "WAVESBTC", 
-                    "type": "buy", 
-                    "price": 0.0008025, 
-                    "size": "3.74"
-                }
-            ], 
-            "DGDBTC": [
-                {
-                    "index": 34, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "type": "buy", 
-                    "price": 0.004914, 
-                    "size": "0.611"
-                }, 
-                {
-                    "index": 144, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "buy_price": 0.004914, 
-                    "type": "sell", 
-                    "price": 0.00496, 
-                    "size": "0.611"
-                }, 
-                {
-                    "index": 174, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "type": "buy", 
-                    "price": 0.004955, 
-                    "size": "0.605"
-                }, 
-                {
-                    "index": 243, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "DGDBTC", 
-                    "buy_price": 0.004955, 
-                    "type": "sell", 
-                    "price": 0.005, 
-                    "size": "0.605"
-                }, 
-                {
-                    "index": 681, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "type": "buy", 
-                    "price": 0.00508, 
-                    "size": "0.588"
-                }, 
-                {
-                    "index": 972, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "buy_price": 0.00508, 
-                    "type": "sell", 
-                    "price": 0.00512, 
-                    "size": "0.588"
-                }, 
-                {
-                    "index": 1159, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "type": "buy", 
-                    "price": 0.005155, 
-                    "size": "0.583"
-                }, 
-                {
-                    "index": 2113, 
-                    "trade_type": "TPSC12_MAX", 
-                    "symbol": "DGDBTC", 
-                    "buy_price": 0.005155, 
-                    "type": "sell", 
-                    "price": 0.005704, 
-                    "size": "0.583"
-                }, 
-                {
-                    "index": 2694, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "type": "buy", 
-                    "price": 0.005316, 
-                    "size": "0.566"
-                }, 
-                {
-                    "index": 2820, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "buy_price": 0.005316, 
-                    "type": "sell", 
-                    "price": 0.005394, 
-                    "size": "0.566"
-                }, 
-                {
-                    "index": 3056, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DGDBTC", 
-                    "type": "buy", 
-                    "price": 0.005159, 
-                    "size": "0.582"
-                }
-            ], 
-            "DCRBTC": [
-                {
-                    "index": 241, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "type": "buy", 
-                    "price": 0.0047, 
-                    "size": "0.635"
-                }, 
-                {
-                    "index": 602, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "buy_price": 0.0047, 
-                    "type": "sell", 
-                    "price": 0.004744, 
-                    "size": "0.635"
-                }, 
-                {
-                    "index": 621, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "type": "buy", 
-                    "price": 0.004731, 
-                    "size": "0.634"
-                }, 
-                {
-                    "index": 1059, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "buy_price": 0.004731, 
-                    "type": "sell", 
-                    "price": 0.004798, 
-                    "size": "0.634"
-                }, 
-                {
-                    "index": 1130, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "type": "buy", 
-                    "price": 0.00479, 
-                    "size": "0.626"
-                }, 
-                {
-                    "index": 2095, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "buy_price": 0.00479, 
-                    "type": "sell", 
-                    "price": 0.004825, 
-                    "size": "0.626"
-                }, 
-                {
-                    "index": 2505, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "type": "buy", 
-                    "price": 0.004758, 
-                    "size": "0.631"
-                }, 
-                {
-                    "index": 2540, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "DCRBTC", 
-                    "buy_price": 0.004758, 
-                    "type": "sell", 
-                    "price": 0.004823, 
-                    "size": "0.631"
-                }, 
-                {
-                    "index": 2680, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "DCRBTC", 
-                    "type": "buy", 
-                    "price": 0.004786, 
-                    "size": "0.627"
-                }, 
-                {
-                    "index": 2790, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "buy_price": 0.004786, 
-                    "type": "sell", 
-                    "price": 0.004823, 
-                    "size": "0.627"
-                }, 
-                {
-                    "index": 2880, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "DCRBTC", 
-                    "type": "buy", 
-                    "price": 0.00479, 
-                    "size": "0.623"
-                }
-            ], 
-            "QTUMBTC": [
-                {
-                    "index": 296, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "QTUMBTC", 
-                    "type": "buy", 
-                    "price": 0.000572, 
-                    "size": "5.24"
-                }, 
-                {
-                    "index": 1796, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "QTUMBTC", 
-                    "buy_price": 0.000572, 
-                    "type": "sell", 
-                    "price": 0.000573, 
-                    "size": "5.24"
-                }, 
-                {
-                    "index": 1920, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "QTUMBTC", 
-                    "type": "buy", 
-                    "price": 0.000572, 
-                    "size": "5.25"
-                }, 
-                {
-                    "index": 3144, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "QTUMBTC", 
-                    "buy_price": 0.000572, 
-                    "type": "sell", 
-                    "price": 0.000577, 
-                    "size": "5.25"
-                }, 
-                {
-                    "index": 3505, 
-                    "trade_type": "MTS_MOVERATE", 
-                    "symbol": "QTUMBTC", 
-                    "type": "buy", 
-                    "price": 0.000577, 
-                    "size": "5.21"
+                    "price": 6.64e-05, 
+                    "size": "60.42"
                 }
             ]
         }
