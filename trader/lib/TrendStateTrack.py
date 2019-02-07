@@ -281,6 +281,31 @@ class TrendStateTrack(object):
                                                   TrendState.STATE_TRENDING_UP_SLOW,
                                                   TrendState.STATE_TRENDING_UP_FAST)
 
+
+        # check if the state hasn't changed
+        if not trend_state.has_state_changed(clear=False):
+            # process seg_up_list and seg_down_list to determine if we can determine trend has changed
+            for i in range(0, len(self.seg_down_list) - 1):
+                seg_down = self.seg_down_list[i]
+                seg_up = self.seg_up_list[i]
+                seg_down_next = self.seg_down_list[i+1]
+                seg_up_next = self.seg_up_list[i+1]
+
+                # could be trending up
+                if (float(seg_up_next['percent']) > float(seg_up['percent']) and
+                    abs(float(seg_down_next['percent'])) < abs(float(seg_down['percent']))):
+                    seg_up_percent = float(seg_up_next['percent'])
+                    trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
+                                                      TrendState.STATE_NON_TREND_UP_SLOW,
+                                                      TrendState.STATE_NON_TREND_UP_FAST)
+                # could be trending down
+                elif (float(seg_up_next['percent']) < float(seg_up['percent']) and
+                    abs(float(seg_down_next['percent'])) > abs(float(seg_down['percent']))):
+                    seg_down_percent = abs(float(seg_down_next['percent']))
+                    trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
+                                                      TrendState.STATE_NON_TREND_DOWN_SLOW,
+                                                      TrendState.STATE_NON_TREND_DOWN_FAST)
+
         return trend_state
 
 
@@ -348,7 +373,7 @@ class TrendState(object):
     def is_state(self, state):
         return self.state == state
 
-    def state_changed(self, clear=True):
+    def has_state_changed(self, clear=True):
         state_change = self.state_change
         if clear:
             self.state_change = False
