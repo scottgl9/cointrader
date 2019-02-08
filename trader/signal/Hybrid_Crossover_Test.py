@@ -137,12 +137,13 @@ class Hybrid_Crossover_Test(SignalBase):
         #    return False
         state = self.tst.get_trend_state()
         if state == TrendState.STATE_TRENDING_DOWN_FAST or state == TrendState.STATE_TRENDING_DOWN_SLOW:
+            self.sell_type='LongTrendState'
             return True
         return False
 
     def sell_signal(self):
         if self.ema_cross_12_200.cross_down:
-            self.buy_type = 'EMA12_200'
+            self.sell_type = 'EMA12_200'
 
         if self.ema_12_cross_tpsc.cross_down:
             self.sell_type = 'TPSC12'
@@ -159,6 +160,7 @@ class Hybrid_Crossover_Test(SignalBase):
         state = self.tst.get_trend_state()
         if (state == TrendState.STATE_TRENDING_DOWN_SLOW or
             state == TrendState.STATE_TRENDING_DOWN_FAST):
+            self.sell_type='TrendState'
             return True
 
         #if self.mts_moverate_cross_zero.crossdown_detected():
