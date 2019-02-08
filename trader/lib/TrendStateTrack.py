@@ -73,7 +73,7 @@ class TrendStateTrack(object):
         self.check_start_ts = ts
 
     def short_state_changed(self, clear=True):
-        return self.trend_state_short.state_changed(clear=clear)
+        return self.trend_state_short.has_state_changed(clear=clear)
 
     def get_short_trend_string(self):
         return self.trend_state_short.get_trend_string(self.trend_state_short.state)
@@ -82,7 +82,7 @@ class TrendStateTrack(object):
         return self.trend_state.direction
 
     def state_changed(self, clear=True):
-        return self.trend_state.state_changed(clear=clear)
+        return self.trend_state.has_state_changed(clear=clear)
 
     def get_trend_state(self):
         return self.trend_state.state
