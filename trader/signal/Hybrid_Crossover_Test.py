@@ -153,7 +153,9 @@ class Hybrid_Crossover_Test(SignalBase):
             return True
 
         state = self.tst.get_trend_state()
-        if (state == TrendState.STATE_TRENDING_DOWN_SLOW or
+        if (state == TrendState.STATE_NON_TREND_DOWN_SLOW or
+            state == TrendState.STATE_NON_TREND_DOWN_FAST or
+            state == TrendState.STATE_TRENDING_DOWN_SLOW or
             state == TrendState.STATE_TRENDING_DOWN_FAST):
             self.sell_type='TrendState'
             return True

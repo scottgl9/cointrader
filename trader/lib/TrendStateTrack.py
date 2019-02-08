@@ -13,12 +13,14 @@ class TrendStateTrack(object):
                        short_state_seconds=3600,
                        check_state_seconds=900,
                        percent_slow_cutoff=2.0,
+                       percent_very_slow_cutoff=0.5,
                        smoother=None):
         self.init_state_seconds = init_state_seconds
         self.max_state_seconds = max_state_seconds
         self.short_state_seconds = short_state_seconds
         self.check_state_seconds = check_state_seconds
         self.percent_slow_cutoff = percent_slow_cutoff
+        self.percent_very_slow_cutoff = percent_very_slow_cutoff
         self.trend_state = None
         self.trend_state_prev_list = []
         self.trend_state_short = None
@@ -127,11 +129,15 @@ class TrendStateTrack(object):
         if seg_down_end_ts > seg_up_end_ts:
             direction = -1
             if trend_state.is_state(TrendState.STATE_INIT):
-                trend_state.set_state(TrendState.STATE_NON_TREND_DOWN_SLOW)
+                trend_state.set_state_conditional(seg_down_percent < self.percent_very_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_DOWN_VERY_SLOW,
+                                                  TrendState.STATE_NON_TREND_DOWN_SLOW)
         elif seg_up_end_ts > seg_down_end_ts:
             direction = 1
             if trend_state.is_state(TrendState.STATE_INIT):
-                trend_state.set_state(TrendState.STATE_NON_TREND_UP_SLOW)
+                trend_state.set_state_conditional(seg_up_percent < self.percent_very_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_UP_VERY_SLOW,
+                                                  TrendState.STATE_NON_TREND_UP_SLOW)
         else:
             trend_state.set_state(TrendState.STATE_NON_TREND_NO_DIRECTION)
             return trend_state
@@ -323,6 +329,10 @@ class TrendState(object):
     STATE_TRENDING_DOWN_FAST = 10
     STATE_REVERSAL_UP = 11
     STATE_REVERSAL_DOWN = 12
+    STATE_NON_TREND_DOWN_VERY_SLOW = 13
+    STATE_NON_TREND_UP_VERY_SLOW = 14
+    STATE_TRENDING_DOWN_VERY_SLOW = 15
+    STATE_TRENDING_UP_VERY_SLOW = 16
 
     def __init__(self, state):
         self.state = state
