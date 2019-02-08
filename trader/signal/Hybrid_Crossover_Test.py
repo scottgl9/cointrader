@@ -31,7 +31,6 @@ class Hybrid_Crossover_Test(SignalBase):
 
         self.tst = TrendStateTrack(smoother=EMA(26, scale=24))
         self.tspc = MTSPriceChannel(minutes=60)
-        #self.tspc_roc = MTSPercentChangeROC(tspc_seconds=500, roc_seconds=500, smoother=EMA(12))
         self.mts_moverate = MTSMoveRate(small_seg_seconds=120, large_seg_seconds=1800)
         self.obv = OBV()
         self.obv_ema12 = EMA(12)
@@ -148,10 +147,6 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_12_cross_tpsc.cross_down:
             self.sell_type = 'TPSC12'
             return True
-
-        #if self.tspc_roc_cross_zero.cross_down:
-        #    self.sell_type='TSPC_ROC'
-        #    return True
 
         if self.ema_12_cross_tpsc.is_past_current_max(seconds=600, percent=1.0, cutoff=0.03):
             self.sell_type='TPSC12_MAX'

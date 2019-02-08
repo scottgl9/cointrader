@@ -1,6 +1,5 @@
 from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
-from trader.strategy.trade_size_strategy.trade_size_strategy_base import trade_size_strategy_base
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
 from trader.strategy.StrategyBase import StrategyBase
@@ -64,7 +63,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                    bnb=3,
                                                    pax=10.0,
                                                    usdt=10.0,
-                                                   multiplier=2.0)
+                                                   multiplier=5.0)
 
         # for more accurate simulation
         self.delayed_buy_msg = None
@@ -89,19 +88,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             #    signal.sell_marked = False
             return False
 
-        # if we have insufficient funds to buy
-        if self.accnt.simulate:
-            balance_available = self.accnt.get_asset_balance_tuple(self.currency)[1]
-            size = self.round_base(float(balance_available) / float(price))
-        else:
-            size=self.accnt.get_asset_balance(self.currency)['available']
-
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
 
-        if not self.trade_size_handler.check_buy_trade_size(size):
-            return False
-
-        if float(self.min_trade_size) == 0.0 or size < float(self.min_trade_size):
+        if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):
             return False
 
         if self.last_close == 0:
@@ -185,6 +174,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                 if not msg:
                     continue
                 if msg.cmd == Message.MSG_BUY_COMPLETE:
+                    #self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
+                    #                                                             msg.price,
+                    #                                                             msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.buy_price = msg.price
                     signal.buy_price_high = signal.buy_price
@@ -194,16 +186,19 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     #    # Also place trailing stop loss
                     #    self.set_sell_stop_loss(signal, close)
                 elif msg.cmd == Message.MSG_SELL_COMPLETE:
+                    #self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
+                    #                                                                           msg.price,
+                    #                                                                           msg.buy_price,
+                    #                                                                           msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    if not self.accnt.simulate:
-                        self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
-                                                                                     msg.price,
-                                                                                     msg.size))
+                    self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
+                                                                                 msg.price,
+                                                                                 msg.size))
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
                     signal.buy_price = 0.0
