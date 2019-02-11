@@ -106,14 +106,14 @@ class Hybrid_Crossover_Test(SignalBase):
         state = self.tst.get_trend_state()
         if (state == TrendState.STATE_INIT or
             state == TrendState.STATE_NON_TREND_NO_DIRECTION or
-            #state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
+            state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
             state == TrendState.STATE_TRENDING_DOWN_SLOW or
             state == TrendState.STATE_TRENDING_DOWN_FAST or
-            #state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW or
             state == TrendState.STATE_NON_TREND_DOWN_SLOW or
-            state == TrendState.STATE_NON_TREND_DOWN_FAST or
-            state == TrendState.STATE_NON_TREND_UP_VERY_SLOW or
-            state == TrendState.STATE_TRENDING_UP_VERY_SLOW):
+            state == TrendState.STATE_NON_TREND_DOWN_FAST):
+            #state == TrendState.STATE_NON_TREND_UP_VERY_SLOW or
+            #state == TrendState.STATE_TRENDING_UP_VERY_SLOW):
             return False
 
         if self.ema_cross_12_200.cross_up and self.ema_cross_12_200.ma2_trend_up():
@@ -140,14 +140,14 @@ class Hybrid_Crossover_Test(SignalBase):
         if (self.last_close - self.buy_price) / self.buy_price >= -0.05:
             return False
 
-        #if self.tst.state_changed(clear=False):
-        #    return False
+        if self.tst.state_changed():
+            return False
 
         state = self.tst.get_trend_state()
-        if state == TrendState.STATE_TRENDING_DOWN_FAST or state == TrendState.STATE_TRENDING_DOWN_SLOW:
+        if state == TrendState.STATE_TRENDING_DOWN_FAST:
             self.sell_type='LongTrendState'
             self.disabled = True
-            self.disabled_end_ts = self.timestamp + 1000 * 3600 * 8
+            self.disabled_end_ts = self.timestamp + 1000 * 3600 * 4
             return True
         return False
 
@@ -164,15 +164,9 @@ class Hybrid_Crossover_Test(SignalBase):
             return True
 
         state = self.tst.get_trend_state()
-        if (state == TrendState.STATE_NON_TREND_NO_DIRECTION or
-            state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW or
-            state == TrendState.STATE_NON_TREND_DOWN_SLOW or
-            state == TrendState.STATE_NON_TREND_DOWN_FAST or
-            state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
+        if (state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
             state == TrendState.STATE_TRENDING_DOWN_SLOW or
-            state == TrendState.STATE_TRENDING_DOWN_FAST or
-            state == TrendState.STATE_NON_TREND_UP_VERY_SLOW or
-            state == TrendState.STATE_TRENDING_UP_VERY_SLOW):
+            state == TrendState.STATE_TRENDING_DOWN_FAST):
             self.sell_type='TrendState'
             return True
 
