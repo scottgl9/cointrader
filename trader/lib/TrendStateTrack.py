@@ -13,7 +13,7 @@ class TrendStateTrack(object):
                        short_state_seconds=3600,
                        check_state_seconds=900,
                        percent_slow_cutoff=2.0,
-                       percent_very_slow_cutoff=0.5,
+                       percent_very_slow_cutoff=1.0,
                        smoother=None):
         self.init_state_seconds = init_state_seconds
         self.max_state_seconds = max_state_seconds
@@ -144,25 +144,34 @@ class TrendStateTrack(object):
 
         if trend_state.is_state(TrendState.STATE_NON_TREND_NO_DIRECTION):
             trend_state = self.process_state_non_trend_no_direction(trend_state, seg_down, seg_up, direction)
+        elif trend_state.is_state(TrendState.STATE_NON_TREND_DOWN_VERY_SLOW):
+            trend_state = self.process_state_non_trend_down_direction(trend_state, seg_down, seg_up, direction)
         elif trend_state.is_state(TrendState.STATE_NON_TREND_DOWN_SLOW):
-            trend_state = self.process_state_non_trend_down_slow(trend_state, seg_down, seg_up, direction)
-        elif trend_state.is_state(TrendState.STATE_NON_TREND_UP_SLOW):
-            trend_state = self.process_state_non_trend_up_slow(trend_state, seg_down, seg_up, direction)
+            trend_state = self.process_state_non_trend_down_direction(trend_state, seg_down, seg_up, direction)
         elif trend_state.is_state(TrendState.STATE_NON_TREND_DOWN_FAST):
-            trend_state = self.process_state_non_trend_down_fast(trend_state, seg_down, seg_up, direction)
+            trend_state = self.process_state_non_trend_down_direction(trend_state, seg_down, seg_up, direction)
+        elif trend_state.is_state(TrendState.STATE_NON_TREND_UP_VERY_SLOW):
+            trend_state = self.process_state_non_trend_up_direction(trend_state, seg_down, seg_up, direction)
+        elif trend_state.is_state(TrendState.STATE_NON_TREND_UP_SLOW):
+            trend_state = self.process_state_non_trend_up_direction(trend_state, seg_down, seg_up, direction)
         elif trend_state.is_state(TrendState.STATE_NON_TREND_UP_FAST):
-            trend_state = self.process_state_non_trend_up_fast(trend_state, seg_down, seg_up, direction)
+            trend_state = self.process_state_non_trend_up_direction(trend_state, seg_down, seg_up, direction)
+        elif trend_state.is_state(TrendState.STATE_TRENDING_DOWN_VERY_SLOW):
+            trend_state = self.process_state_trending_down_direction(trend_state, seg_down, seg_up, direction)
         elif trend_state.is_state(TrendState.STATE_TRENDING_DOWN_SLOW):
-            trend_state = self.process_state_trending_down_slow(trend_state, seg_down, seg_up, direction)
-        elif trend_state.is_state(TrendState.STATE_TRENDING_UP_SLOW):
-            trend_state = self.process_state_trending_up_slow(trend_state, seg_down, seg_up, direction)
+            trend_state = self.process_state_trending_down_direction(trend_state, seg_down, seg_up, direction)
         elif trend_state.is_state(TrendState.STATE_TRENDING_DOWN_FAST):
-            trend_state = self.process_state_trending_down_fast(trend_state, seg_down, seg_up, direction)
+            trend_state = self.process_state_trending_down_direction(trend_state, seg_down, seg_up, direction)
+        elif trend_state.is_state(TrendState.STATE_TRENDING_UP_VERY_SLOW):
+            trend_state = self.process_state_trending_up_direction(trend_state, seg_down, seg_up, direction)
+        elif trend_state.is_state(TrendState.STATE_TRENDING_UP_SLOW):
+            trend_state = self.process_state_trending_up_direction(trend_state, seg_down, seg_up, direction)
         elif trend_state.is_state(TrendState.STATE_TRENDING_UP_FAST):
-            trend_state = self.process_state_trending_up_fast(trend_state, seg_down, seg_up, direction)
+            trend_state = self.process_state_trending_up_direction(trend_state, seg_down, seg_up, direction)
 
         # check if the state hasn't changed
         if not trend_state.has_state_changed(clear=False):
+            print("HERE")
             # process seg_up_list and seg_down_list to determine if we can determine trend has changed
             for i in range(0, len(self.seg_down_list) - 1):
                 seg_down = self.seg_down_list[i]
@@ -193,180 +202,112 @@ class TrendStateTrack(object):
         # if no determined trend direction, determine non-trend direction
         if direction == -1 and seg_down_percent > seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_DOWN_SLOW,
-                                              TrendState.STATE_NON_TREND_DOWN_FAST)
+            if seg_down_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_NON_TREND_DOWN_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_DOWN_SLOW,
+                                                  TrendState.STATE_NON_TREND_DOWN_FAST)
 
         elif direction == 1 and seg_down_percent < seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_UP_SLOW,
-                                              TrendState.STATE_NON_TREND_UP_FAST)
+            if seg_up_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_TRENDING_UP_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_UP_SLOW,
+                                                  TrendState.STATE_NON_TREND_UP_FAST)
         return trend_state
 
-    def process_state_non_trend_up_very_slow(self, trend_state, seg_down, seg_up, direction):
-        pass
-
-    def process_state_non_trend_up_slow(self, trend_state, seg_down, seg_up, direction):
+    def process_state_non_trend_up_direction(self, trend_state, seg_down, seg_up, direction):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
         # if determined non-trend up direction slow, determine trend direction
         if direction == -1 and seg_down_percent > seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_DOWN_SLOW,
-                                              TrendState.STATE_NON_TREND_DOWN_FAST)
+            if seg_down_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_NON_TREND_DOWN_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_DOWN_SLOW,
+                                                  TrendState.STATE_NON_TREND_DOWN_FAST)
         elif direction == 1 and seg_down_percent < seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_UP_SLOW,
-                                              TrendState.STATE_TRENDING_UP_FAST)
+            if seg_up_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_TRENDING_UP_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_TRENDING_UP_SLOW,
+                                                  TrendState.STATE_TRENDING_UP_FAST)
         return trend_state
 
-    def process_state_non_trend_up_fast(self, trend_state, seg_down, seg_up, direction):
-        seg_down_percent = abs(float(seg_down['percent']))
-        seg_up_percent = abs(float(seg_up['percent']))
-        # if determined non-trend up direction fast, determine trend direction
-        if direction == -1 and seg_down_percent > seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_DOWN_SLOW,
-                                              TrendState.STATE_NON_TREND_DOWN_FAST)
-
-        elif direction == 1 and seg_down_percent < seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_UP_SLOW,
-                                              TrendState.STATE_TRENDING_UP_FAST)
-        return trend_state
-
-    def process_state_non_trend_down_very_slow(self, trend_state, seg_down, seg_up, direction):
-        pass
-
-    def process_state_non_trend_down_slow(self, trend_state, seg_down, seg_up, direction):
+    def process_state_non_trend_down_direction(self, trend_state, seg_down, seg_up, direction):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
         # if determined non-trend down direction slow, determine trend direction
         if direction == -1 and seg_down_percent > seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_DOWN_SLOW,
-                                              TrendState.STATE_TRENDING_DOWN_FAST)
-
-        elif direction == 1 and seg_down_percent < seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_UP_SLOW,
-                                              TrendState.STATE_NON_TREND_UP_FAST)
-        return trend_state
-
-    def process_state_non_trend_down_fast(self, trend_state, seg_down, seg_up, direction):
-        seg_down_percent = abs(float(seg_down['percent']))
-        seg_up_percent = abs(float(seg_up['percent']))
-        # if determined non-trend down direction fast, determine trend direction
-        if direction == -1 and seg_down_percent > seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_DOWN_SLOW,
-                                              TrendState.STATE_TRENDING_DOWN_FAST)
+            if seg_down_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_TRENDING_DOWN_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_TRENDING_DOWN_SLOW,
+                                                  TrendState.STATE_TRENDING_DOWN_FAST)
 
         elif direction == 1 and seg_down_percent < seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_UP_SLOW,
-                                              TrendState.STATE_NON_TREND_UP_FAST)
+            if seg_up_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_NON_TREND_UP_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_UP_SLOW,
+                                                  TrendState.STATE_NON_TREND_UP_FAST)
         return trend_state
 
-    def process_state_trending_up_very_slow(self, trend_state, seg_down, seg_up, direction):
-        pass
-
-    def process_state_trending_up_slow(self, trend_state, seg_down, seg_up, direction):
+    def process_state_trending_up_direction(self, trend_state, seg_down, seg_up, direction):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
         # if determined trend up direction slow, determine trend direction
         if direction == -1 and seg_down_percent > seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_DOWN_SLOW,
-                                              TrendState.STATE_NON_TREND_DOWN_FAST)
-
-        elif direction == 1 and seg_down_percent < seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_UP_SLOW,
-                                              TrendState.STATE_TRENDING_UP_FAST)
-        return trend_state
-
-    def process_state_trending_up_fast(self, trend_state, seg_down, seg_up, direction):
-        seg_down_percent = abs(float(seg_down['percent']))
-        seg_up_percent = abs(float(seg_up['percent']))
-        # if determined trend up direction fast, determine trend direction
-        if direction == -1 and seg_down_percent > seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_DOWN_SLOW,
-                                              TrendState.STATE_NON_TREND_DOWN_FAST)
+            if seg_down_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_NON_TREND_DOWN_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_DOWN_SLOW,
+                                                  TrendState.STATE_NON_TREND_DOWN_FAST)
 
         elif direction == 1 and seg_down_percent < seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_UP_SLOW,
-                                              TrendState.STATE_TRENDING_UP_FAST)
+            if seg_up_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_TRENDING_UP_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_TRENDING_UP_SLOW,
+                                                  TrendState.STATE_TRENDING_UP_FAST)
         return trend_state
 
-    def process_state_trending_down_very_slow(self, trend_state, seg_down, seg_up, direction):
-        pass
-
-    def process_state_trending_down_slow(self, trend_state, seg_down, seg_up, direction):
+    def process_state_trending_down_direction(self, trend_state, seg_down, seg_up, direction):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
         # if determined trend down direction slow, determine trend direction
         if direction == -1 and seg_down_percent > seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_DOWN_SLOW,
-                                              TrendState.STATE_TRENDING_DOWN_FAST)
-
-        elif direction == 1 and seg_down_percent < seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_UP_SLOW,
-                                              TrendState.STATE_NON_TREND_UP_FAST)
-        return trend_state
-
-    def process_state_trending_down_fast(self, trend_state, seg_down, seg_up, direction):
-        seg_down_percent = abs(float(seg_down['percent']))
-        seg_up_percent = abs(float(seg_up['percent']))
-        # if determined trend down direction fast, determine trend direction
-        if direction == -1 and seg_down_percent > seg_up_percent:
-            trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_TRENDING_DOWN_SLOW,
-                                              TrendState.STATE_TRENDING_DOWN_FAST)
+            if seg_down_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_TRENDING_DOWN_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_TRENDING_DOWN_SLOW,
+                                                  TrendState.STATE_TRENDING_DOWN_FAST)
 
         elif direction == 1 and seg_down_percent < seg_up_percent:
             trend_state.set_direction(direction)
-
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_UP_SLOW,
-                                              TrendState.STATE_NON_TREND_UP_FAST)
+            if seg_up_percent < self.percent_very_slow_cutoff:
+                trend_state.set_state(TrendState.STATE_NON_TREND_UP_VERY_SLOW)
+            else:
+                trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
+                                                  TrendState.STATE_NON_TREND_UP_SLOW,
+                                                  TrendState.STATE_NON_TREND_UP_FAST)
         return trend_state
 
 
@@ -414,20 +355,28 @@ class TrendState(object):
                 return "STATE_INIT"
         elif state == TrendState.STATE_NON_TREND_NO_DIRECTION:
                 return "STATE_NON_TREND_NO_DIRECTION"
+        elif state == TrendState.STATE_NON_TREND_UP_VERY_SLOW:
+                return "STATE_NON_TREND_UP_VERY_SLOW"
         elif state == TrendState.STATE_NON_TREND_UP_SLOW:
                 return "STATE_NON_TREND_UP_SLOW"
-        elif state == TrendState.STATE_NON_TREND_DOWN_SLOW:
-                return "STATE_NON_TREND_DOWN_SLOW"
         elif state == TrendState.STATE_NON_TREND_UP_FAST:
                 return "STATE_NON_TREND_UP_FAST"
+        elif state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW:
+                return "STATE_NON_TREND_DOWN_VERY_SLOW"
+        elif state == TrendState.STATE_NON_TREND_DOWN_SLOW:
+                return "STATE_NON_TREND_DOWN_SLOW"
         elif state == TrendState.STATE_NON_TREND_DOWN_FAST:
                 return "STATE_NON_TREND_DOWN_FAST"
+        elif state == TrendState.STATE_TRENDING_UP_VERY_SLOW:
+                return "STATE_TRENDING_UP_VERY_SLOW"
         elif state == TrendState.STATE_TRENDING_UP_SLOW:
                 return "STATE_TRENDING_UP_SLOW"
-        elif state == TrendState.STATE_TRENDING_DOWN_SLOW:
-                return "STATE_TRENDING_DOWN_SLOW"
         elif state == TrendState.STATE_TRENDING_UP_FAST:
                 return "STATE_TRENDING_UP_FAST"
+        elif state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW:
+                return "STATE_TRENDING_DOWN_VERY_SLOW"
+        elif state == TrendState.STATE_TRENDING_DOWN_SLOW:
+                return "STATE_TRENDING_DOWN_SLOW"
         elif state == TrendState.STATE_TRENDING_DOWN_FAST:
                 return "STATE_TRENDING_DOWN_FAST"
         elif state == TrendState.STATE_REVERSAL_UP:
