@@ -449,11 +449,11 @@ class OrderHandler(object):
                 order_size = self.trade_balance_handler.get_balance(base)
                 self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
 
-        if not self.trade_balance_handler.is_zero_balance(currency):
-            # send update message to strategy that buy size has changed
-            order_size = self.trade_balance_handler.get_balance(currency)
-            symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
-            self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
+            if not self.trade_balance_handler.is_zero_balance(currency):
+                # send update message to strategy that buy size has changed
+                order_size = self.trade_balance_handler.get_balance(currency)
+                symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
+                self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
 
 
     def place_sell_market_order(self, msg):
@@ -536,11 +536,11 @@ class OrderHandler(object):
                 order_size = self.trade_balance_handler.get_balance(base)
                 self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
 
-        if not self.trade_balance_handler.is_zero_balance(currency):
-            # send update message to strategy that buy size has changed
-            order_size = self.trade_balance_handler.get_balance(currency)
-            symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
-            self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
+            if not self.trade_balance_handler.is_zero_balance(currency):
+                # send update message to strategy that buy size has changed
+                order_size = self.trade_balance_handler.get_balance(currency)
+                symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
+                self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
 
 
     # store trade into json trade cache
