@@ -11,7 +11,7 @@ class TrendStateTrack(object):
     def __init__(self, init_state_seconds=3600,
                        max_state_seconds=(3600 * 12),
                        short_state_seconds=3600,
-                       check_state_seconds=900,
+                       check_state_seconds=300,
                        percent_slow_cutoff=2.0,
                        percent_very_slow_cutoff=1.0,
                        smoother=None):
