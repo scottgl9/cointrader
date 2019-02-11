@@ -57,7 +57,7 @@
             ], 
             "NEOBTC": [
                 {
-                    "index": 9491, 
+                    "index": 9487, 
                     "trade_type": "TPSC12", 
                     "symbol": "NEOBTC", 
                     "type": "buy", 
@@ -82,16 +82,6 @@
                     "type": "sell", 
                     "price": 0.019253, 
                     "size": "0.204"
-                }
-            ], 
-            "DOCKBTC": [
-                {
-                    "index": 1568, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "DOCKBTC", 
-                    "type": "buy", 
-                    "price": 2.74e-06, 
-                    "size": "1470.0"
                 }
             ], 
             "GXSETH": [
@@ -269,11 +259,28 @@
                     "size": "130.0"
                 }, 
                 {
-                    "index": 1891, 
+                    "index": 1929, 
                     "trade_type": "TrendState", 
                     "symbol": "ADXBTC", 
                     "type": "buy", 
-                    "price": 2.888e-05, 
+                    "price": 2.87e-05, 
+                    "size": "140.0"
+                }, 
+                {
+                    "index": 2617, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ADXBTC", 
+                    "buy_price": 2.87e-05, 
+                    "type": "sell", 
+                    "price": 2.908e-05, 
+                    "size": "140.0"
+                }, 
+                {
+                    "index": 2712, 
+                    "trade_type": "TrendState", 
+                    "symbol": "ADXBTC", 
+                    "type": "buy", 
+                    "price": 2.91e-05, 
                     "size": "140.0"
                 }
             ], 
@@ -313,6 +320,25 @@
                     "type": "sell", 
                     "price": 7.929e-05, 
                     "size": "50.0"
+                }
+            ], 
+            "MCOBTC": [
+                {
+                    "index": 1516, 
+                    "trade_type": "TrendState", 
+                    "symbol": "MCOBTC", 
+                    "type": "buy", 
+                    "price": 0.000625, 
+                    "size": "6.4"
+                }, 
+                {
+                    "index": 1620, 
+                    "trade_type": "TrendState", 
+                    "symbol": "MCOBTC", 
+                    "buy_price": 0.000625, 
+                    "type": "sell", 
+                    "price": 0.000632, 
+                    "size": "6.4"
                 }
             ], 
             "VIAETH": [
@@ -412,7 +438,7 @@
             ], 
             "IOSTBTC": [
                 {
-                    "index": 1401, 
+                    "index": 1375, 
                     "trade_type": "TrendState", 
                     "symbol": "IOSTBTC", 
                     "type": "buy", 
@@ -563,28 +589,11 @@
             ], 
             "XEMBTC": [
                 {
-                    "index": 1195, 
+                    "index": 2696, 
                     "trade_type": "TPSC12", 
                     "symbol": "XEMBTC", 
                     "type": "buy", 
-                    "price": 1.548e-05, 
-                    "size": "260.0"
-                }, 
-                {
-                    "index": 3596, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "XEMBTC", 
-                    "buy_price": 1.548e-05, 
-                    "type": "sell", 
-                    "price": 1.585e-05, 
-                    "size": "260.0"
-                }, 
-                {
-                    "index": 3799, 
-                    "trade_type": "TrendState", 
-                    "symbol": "XEMBTC", 
-                    "type": "buy", 
-                    "price": 1.572e-05, 
+                    "price": 1.6e-05, 
                     "size": "250.0"
                 }
             ], 
@@ -814,38 +823,12 @@
                     "size": "17390.0"
                 }, 
                 {
-                    "index": 4098, 
-                    "trade_type": "TrendState", 
-                    "symbol": "HOTBTC", 
-                    "type": "buy", 
-                    "price": 2.2e-07, 
-                    "size": "17390.0"
-                }, 
-                {
-                    "index": 4562, 
+                    "index": 5544, 
                     "trade_type": "TPSC12", 
                     "symbol": "HOTBTC", 
-                    "buy_price": 2.2e-07, 
-                    "type": "sell", 
-                    "price": 2.2e-07, 
-                    "size": "17390.0"
-                }, 
-                {
-                    "index": 5137, 
-                    "trade_type": "TrendState", 
-                    "symbol": "HOTBTC", 
                     "type": "buy", 
                     "price": 2.1e-07, 
-                    "size": "19050.0"
-                }, 
-                {
-                    "index": 6337, 
-                    "trade_type": "LongTrendState", 
-                    "symbol": "HOTBTC", 
-                    "buy_price": 2.1e-07, 
-                    "type": "sell", 
-                    "price": 2.1e-07, 
-                    "size": "19050.0"
+                    "size": "20000.0"
                 }
             ], 
             "QKCBTC": [
@@ -1009,14 +992,6 @@
                     "type": "sell", 
                     "price": 0.0002776, 
                     "size": "14.16"
-                }, 
-                {
-                    "index": 4421, 
-                    "trade_type": "TrendState", 
-                    "symbol": "STRATBTC", 
-                    "type": "buy", 
-                    "price": 0.0002799, 
-                    "size": "14.34"
                 }
             ], 
             "WAVESBTC": [
@@ -1086,37 +1061,37 @@
                     "size": "90.0"
                 }, 
                 {
-                    "index": 9752, 
+                    "index": 9970, 
                     "trade_type": "TrendState", 
                     "symbol": "OAXBTC", 
                     "type": "buy", 
-                    "price": 5.981e-05, 
+                    "price": 5.9e-05, 
                     "size": "70.0"
                 }, 
                 {
-                    "index": 10014, 
+                    "index": 9991, 
                     "trade_type": "TPSC12_MAX", 
                     "symbol": "OAXBTC", 
-                    "buy_price": 5.981e-05, 
+                    "buy_price": 5.9e-05, 
                     "type": "sell", 
-                    "price": 6.05e-05, 
+                    "price": 5.948e-05, 
                     "size": "70.0"
                 }, 
                 {
-                    "index": 11674, 
+                    "index": 11665, 
                     "trade_type": "TrendState", 
                     "symbol": "OAXBTC", 
                     "type": "buy", 
-                    "price": 5.851e-05, 
+                    "price": 5.805e-05, 
                     "size": "70.0"
                 }, 
                 {
-                    "index": 15528, 
+                    "index": 15521, 
                     "trade_type": "TPSC12", 
                     "symbol": "OAXBTC", 
-                    "buy_price": 5.851e-05, 
+                    "buy_price": 5.805e-05, 
                     "type": "sell", 
-                    "price": 5.948e-05, 
+                    "price": 5.881e-05, 
                     "size": "70.0"
                 }
             ], 
@@ -1132,38 +1107,38 @@
             ], 
             "VIABTC": [
                 {
-                    "index": 1096, 
+                    "index": 1147, 
                     "trade_type": "TrendState", 
                     "symbol": "VIABTC", 
                     "type": "buy", 
-                    "price": 9.02e-05, 
-                    "size": "44.25"
+                    "price": 9.03e-05, 
+                    "size": "44.3"
                 }, 
                 {
-                    "index": 1149, 
+                    "index": 1158, 
                     "trade_type": "TPSC12", 
                     "symbol": "VIABTC", 
-                    "buy_price": 9.02e-05, 
+                    "buy_price": 9.03e-05, 
                     "type": "sell", 
-                    "price": 9.11e-05, 
-                    "size": "44.25"
+                    "price": 9.15e-05, 
+                    "size": "44.3"
                 }, 
                 {
-                    "index": 1706, 
+                    "index": 1723, 
                     "trade_type": "TrendState", 
                     "symbol": "VIABTC", 
                     "type": "buy", 
-                    "price": 9.07e-05, 
-                    "size": "44.0"
+                    "price": 9.01e-05, 
+                    "size": "44.44"
                 }, 
                 {
                     "index": 2862, 
                     "trade_type": "LongTrendState", 
                     "symbol": "VIABTC", 
-                    "buy_price": 9.07e-05, 
+                    "buy_price": 9.01e-05, 
                     "type": "sell", 
                     "price": 8.59e-05, 
-                    "size": "44.0"
+                    "size": "44.44"
                 }
             ], 
             "RLCBTC": [
@@ -1286,32 +1261,15 @@
                     "type": "sell", 
                     "price": 3.21e-06, 
                     "size": "1210.0"
-                }, 
-                {
-                    "index": 1473, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "DNTBTC", 
-                    "type": "buy", 
-                    "price": 3.21e-06, 
-                    "size": "1230.0"
-                }, 
-                {
-                    "index": 1560, 
-                    "trade_type": "LongTrendState", 
-                    "symbol": "DNTBTC", 
-                    "buy_price": 3.21e-06, 
-                    "type": "sell", 
-                    "price": 3.22e-06, 
-                    "size": "1230.0"
                 }
             ], 
             "EDOBTC": [
                 {
-                    "index": 429, 
+                    "index": 427, 
                     "trade_type": "TrendState", 
                     "symbol": "EDOBTC", 
                     "type": "buy", 
-                    "price": 0.0002341, 
+                    "price": 0.0002342, 
                     "size": "17.09"
                 }
             ], 
@@ -1667,12 +1625,12 @@
                     "size": "7840.0"
                 }, 
                 {
-                    "index": 1121, 
+                    "index": 1124, 
                     "trade_type": "TrendState", 
                     "symbol": "NCASHBTC", 
                     "type": "buy", 
                     "price": 5e-07, 
-                    "size": "8160.0"
+                    "size": "8000.0"
                 }, 
                 {
                     "index": 1495, 
@@ -1681,7 +1639,7 @@
                     "buy_price": 5e-07, 
                     "type": "sell", 
                     "price": 5e-07, 
-                    "size": "8160.0"
+                    "size": "8000.0"
                 }
             ], 
             "BCDBTC": [
@@ -1703,29 +1661,21 @@
                     "size": "18.349"
                 }, 
                 {
-                    "index": 4153, 
+                    "index": 2418, 
                     "trade_type": "TrendState", 
                     "symbol": "BCDBTC", 
                     "type": "buy", 
-                    "price": 0.000225, 
-                    "size": "17.778"
+                    "price": 0.000226, 
+                    "size": "17.699"
                 }, 
                 {
                     "index": 4637, 
                     "trade_type": "LongTrendState", 
                     "symbol": "BCDBTC", 
-                    "buy_price": 0.000225, 
+                    "buy_price": 0.000226, 
                     "type": "sell", 
                     "price": 0.000225, 
-                    "size": "17.778"
-                }, 
-                {
-                    "index": 4966, 
-                    "trade_type": "TrendState", 
-                    "symbol": "BCDBTC", 
-                    "type": "buy", 
-                    "price": 0.000228, 
-                    "size": "17.544"
+                    "size": "17.699"
                 }
             ], 
             "OAXETH": [
@@ -1865,23 +1815,6 @@
                     "size": "130.0"
                 }, 
                 {
-                    "index": 5732, 
-                    "trade_type": "TrendState", 
-                    "symbol": "DLTBTC", 
-                    "type": "buy", 
-                    "price": 3.22e-05, 
-                    "size": "120.0"
-                }, 
-                {
-                    "index": 5796, 
-                    "trade_type": "TPSC12_MAX", 
-                    "symbol": "DLTBTC", 
-                    "buy_price": 3.22e-05, 
-                    "type": "sell", 
-                    "price": 3.255e-05, 
-                    "size": "120.0"
-                }, 
-                {
                     "index": 8562, 
                     "trade_type": "TrendState", 
                     "symbol": "DLTBTC", 
@@ -2018,6 +1951,14 @@
                     "type": "sell", 
                     "price": 0.014709, 
                     "size": "0.275"
+                }, 
+                {
+                    "index": 5424, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "ZECBTC", 
+                    "type": "buy", 
+                    "price": 0.014774, 
+                    "size": "0.271"
                 }
             ], 
             "BCHSVBTC": [
@@ -2224,6 +2165,16 @@
                     "size": "36.68"
                 }
             ], 
+            "TNTBTC": [
+                {
+                    "index": 2387, 
+                    "trade_type": "TrendState", 
+                    "symbol": "TNTBTC", 
+                    "type": "buy", 
+                    "price": 4.36e-06, 
+                    "size": "920.0"
+                }
+            ], 
             "BQXETH": [
                 {
                     "index": 5815, 
@@ -2348,12 +2299,12 @@
                     "size": "970.0"
                 }, 
                 {
-                    "index": 1085, 
-                    "trade_type": "TPSC12", 
+                    "index": 1201, 
+                    "trade_type": "TrendState", 
                     "symbol": "YOYOBTC", 
                     "type": "buy", 
-                    "price": 4.25e-06, 
-                    "size": "940.0"
+                    "price": 4.18e-06, 
+                    "size": "960.0"
                 }
             ], 
             "TUSDBTC": [
@@ -2412,20 +2363,20 @@
                     "size": "300.0"
                 }, 
                 {
-                    "index": 2742, 
-                    "trade_type": "TrendState", 
+                    "index": 2973, 
+                    "trade_type": "TPSC12", 
                     "symbol": "APPCBTC", 
                     "type": "buy", 
-                    "price": 1.32e-05, 
+                    "price": 1.315e-05, 
                     "size": "300.0"
                 }, 
                 {
-                    "index": 3023, 
-                    "trade_type": "LongTrendState", 
+                    "index": 4030, 
+                    "trade_type": "TPSC12", 
                     "symbol": "APPCBTC", 
-                    "buy_price": 1.32e-05, 
+                    "buy_price": 1.315e-05, 
                     "type": "sell", 
-                    "price": 1.303e-05, 
+                    "price": 1.342e-05, 
                     "size": "300.0"
                 }
             ], 

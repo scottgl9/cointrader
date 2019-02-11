@@ -134,9 +134,15 @@ class Hybrid_Crossover_Test(SignalBase):
         # don't do sell long unless price has fallen at least 5%
         #if (self.last_close - self.buy_price) / self.buy_price >= -0.05:
         #    return False
+
+        #if self.tst.state_changed(clear=False):
+        #    return False
+
         state = self.tst.get_trend_state()
         if state == TrendState.STATE_TRENDING_DOWN_FAST or state == TrendState.STATE_TRENDING_DOWN_SLOW:
             self.sell_type='LongTrendState'
+            self.disabled = True
+            self.disabled_end_ts = self.timestamp + 1000 * 3600 * 8
             return True
         return False
 

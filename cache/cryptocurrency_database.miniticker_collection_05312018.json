@@ -65,6 +65,14 @@
                     "type": "sell", 
                     "price": 0.0018401, 
                     "size": "2.2"
+                }, 
+                {
+                    "index": 2795, 
+                    "trade_type": "TrendState", 
+                    "symbol": "GVTBTC", 
+                    "type": "buy", 
+                    "price": 0.0018071, 
+                    "size": "2.22"
                 }
             ], 
             "OAXBTC": [
@@ -1106,11 +1114,11 @@
             ], 
             "BQXBTC": [
                 {
-                    "index": 996, 
-                    "trade_type": "TrendState", 
+                    "index": 932, 
+                    "trade_type": "TPSC12", 
                     "symbol": "BQXBTC", 
                     "type": "buy", 
-                    "price": 0.00031595, 
+                    "price": 0.00031169, 
                     "size": "10.0"
                 }
             ], 
@@ -1130,14 +1138,6 @@
                     "buy_price": 0.00052899, 
                     "type": "sell", 
                     "price": 0.0005138, 
-                    "size": "10.0"
-                }, 
-                {
-                    "index": 2814, 
-                    "trade_type": "TrendState", 
-                    "symbol": "NULSBTC", 
-                    "type": "buy", 
-                    "price": 0.00053685, 
                     "size": "10.0"
                 }
             ], 

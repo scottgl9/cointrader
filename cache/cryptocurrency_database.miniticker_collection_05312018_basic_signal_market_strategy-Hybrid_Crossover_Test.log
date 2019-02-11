@@ -35,9 +35,7 @@ buy(1, MTLBTC, 9.71) @ 0.000412
 buy(1, ETHBTC, 0.265) @ 0.075661
 buy(1, ICXETH, 21.07) @ 0.004729
 ORDER_SIZE_UPDATE for ETHBTC orig_size=0.265 new_size=0.265
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.265 new_size=0.16536
 buy(1, THETAETH, 190.0) @ 0.00051536
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.16536 new_size=0.0674416
 BUY_FAILED for GNTETH price=0.00116102 size=90.0
 buy(1, RLCBTC, 17.6) @ 0.0002274
 buy(1, XMRBTC, 0.191) @ 0.020979
@@ -47,7 +45,6 @@ ORDER_SIZE_UPDATE for BNBBTC orig_size=11.75 new_size=11.75
 buy(1, EOSBTC, 2.44) @ 0.0016394
 buy(1, ARNBTC, 30.0) @ 0.00015104
 buy(1, THETABNB, 130.5) @ 0.02298
-ORDER_SIZE_UPDATE for BNBBTC orig_size=11.75 new_size=8.75111
 buy(1, PPTBTC, 2.34) @ 0.0017109
 buy(1, IOTABTC, 20.0) @ 0.00021464
 buy(1, XLMBTC, 110.0) @ 3.767e-05
@@ -69,7 +66,6 @@ buy(1, LENDBTC, 660.0) @ 6.07e-06
 sell(1, SALTBTC, 15.2) @ 0.0002644 (bought @ 0.0002631, 0.49%)	-0.38%
 buy(1, BLZBTC, 80.0) @ 5.252e-05
 buy(1, ADABNB, 182.5) @ 0.01652
-ORDER_SIZE_UPDATE for BNBBTC orig_size=8.75111 new_size=5.73621
 sell(1, MTLBTC, 9.71) @ 0.0004163 (bought @ 0.000412, 1.04%)	-0.52%
 buy(1, WPRBTC, 350.0) @ 1.135e-05
 BUY_FAILED for STORJBTC price=0.00010344 size=40.0
@@ -81,8 +77,6 @@ sell(1, THETABTC, 110.0) @ 3.56e-05 (bought @ 3.805e-05, -6.44%)	-0.74%
 buy(1, MANABTC, 280.0) @ 1.401e-05
 sell(1, THETAETH, 190.0) @ 0.00046656 (bought @ 0.00051536, -9.47%)	-0.77%
 buy(1, ARNETH, 50.0) @ 0.0020699
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.0674416 new_size=0.156088
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.156088 new_size=0.052593
 sell(1, RLCBTC, 17.6) @ 0.0002298 (bought @ 0.0002274, 1.06%)	-0.85%
 buy(1, MTLBTC, 9.65) @ 0.0004132
 sell(1, EOSBTC, 2.44) @ 0.001655 (bought @ 0.0016394, 0.95%)	-0.81%
@@ -93,15 +87,12 @@ sell(1, NULSBTC, 10.0) @ 0.0005138 (bought @ 0.00052899, -2.87%)	-0.81%
 buy(1, NAVBTC, 32.28) @ 0.0001239
 sell(1, ARNBTC, 30.0) @ 0.000157 (bought @ 0.00015104, 3.95%)	-0.8%
 buy(1, GNTBNB, 58.9) @ 0.05064
-ORDER_SIZE_UPDATE for BNBBTC orig_size=5.73621 new_size=2.75351
 buy(1, WPRBTC, 350.0) @ 1.157e-05
 buy(1, NCASHBTC, 1250.0) @ 3.2e-06
 sell(1, BLZBTC, 80.0) @ 5.211e-05 (bought @ 5.252e-05, -0.78%)	-0.6%
 buy(1, SUBBTC, 70.0) @ 5.445e-05
 sell(1, ICXETH, 21.07) @ 0.004646 (bought @ 0.004729, -1.76%)	-0.48%
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.052593 new_size=0.150484
 buy(1, EOSETH, 4.63) @ 0.02159
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.150484 new_size=0.050522
 buy(1, ARNBTC, 20.0) @ 0.0001601
 sell(1, SNGLSBTC, 460.0) @ 8.76e-06 (bought @ 8.63e-06, 1.51%)	-0.05%
 buy(1, EOSBTC, 2.44) @ 0.0016403
@@ -140,48 +131,43 @@ sell(1, BCNBTC, 4550.0) @ 8.8e-07 (bought @ 8.8e-07, 0.0%)	0.07%
 buy(1, REPBTC, 0.795) @ 0.005031
 sell(1, ARNBTC, 20.0) @ 0.0001634 (bought @ 0.0001601, 2.06%)	0.09%
 sell(1, NANOBTC, 7.35) @ 0.0005603 (bought @ 0.0005443, 2.94%)	0.03%
-buy(1, NULSBTC, 10.0) @ 0.00053685
-BUY_FAILED for GVTBTC price=0.0018071 size=2.22
-sell(1, ARNETH, 50.0) @ 0.00216217 (bought @ 0.0020699, 4.46%)	0.03%
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.050522 new_size=0.1586305
+buy(1, GVTBTC, 2.22) @ 0.0018071
+buy(1, BQXBTC, 10.0) @ 0.00031169
+sell(1, ARNETH, 50.0) @ 0.00216217 (bought @ 0.0020699, 4.46%)	0.04%
 buy(1, WPRETH, 630.0) @ 0.00015711
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.1586305 new_size=0.0596512
 BUY_FAILED for ZRXETH price=0.00230444 size=40.0
 BUY_FAILED for NANOETH price=0.007351 size=13.6
 BUY_FAILED for MANAETH price=0.0001887 size=530.0
-sell(1, QLCBTC, 270.0) @ 1.524e-05 (bought @ 1.473e-05, 3.46%)	0.08%
+sell(1, QLCBTC, 270.0) @ 1.524e-05 (bought @ 1.473e-05, 3.46%)	0.11%
 buy(1, ZRXBTC, 20.0) @ 0.00017412
 BUY_FAILED for ADABTC price=2.822e-05 size=140.0
-buy(1, BQXBTC, 10.0) @ 0.00031595
-sell(1, ZECBTC, 0.123) @ 0.032185 (bought @ 0.032592, -1.25%)	0.06%
+sell(1, ZECBTC, 0.123) @ 0.032185 (bought @ 0.032592, -1.25%)	0.09%
 buy(1, NCASHBTC, 1230.0) @ 3.26e-06
-sell(1, BCCBTC, 0.030000000) @ 0.135156 (bought @ 0.133052, 1.58%)	0.06%
+BUY_FAILED for IOTABTC price=0.00022479 size=20.0
+sell(1, BCCBTC, 0.030000000) @ 0.135156 (bought @ 0.133052, 1.58%)	0.09%
 buy(1, SUBBTC, 70.0) @ 5.477e-05
 BUY_FAILED for VIABTC price=0.0002151 size=18.6
-sell(1, OMGBTC, 2.86) @ 0.001415 (bought @ 0.0014, 1.07%)	-0.02%
+sell(1, OMGBTC, 2.86) @ 0.001415 (bought @ 0.0014, 1.07%)	0.03%
 buy(1, XRPBTC, 50.0) @ 8.093e-05
 BUY_FAILED for AIONBTC price=0.0002775 size=14.4
-sell(1, WABIBTC, 40.0) @ 0.00010142 (bought @ 9.766e-05, 3.85%)	0.01%
+sell(1, WABIBTC, 40.0) @ 0.00010142 (bought @ 9.766e-05, 3.85%)	0.07%
 buy(1, ARNBTC, 20.0) @ 0.00016378
-sell(1, GNTBNB, 58.9) @ 0.0432 (bought @ 0.05064, -14.69%)	0.03%
-ORDER_SIZE_UPDATE for BNBBTC orig_size=2.75351 new_size=5.29799
+sell(1, GNTBNB, 58.9) @ 0.0432 (bought @ 0.05064, -14.69%)	0.1%
 buy(1, CVCBNB, 125.5) @ 0.02391
-ORDER_SIZE_UPDATE for BNBBTC orig_size=5.29799 new_size=2.29729
 BUY_FAILED for AMBBTC price=5.133e-05 size=80.0
 BUY_FAILED for WINGSBTC price=5.181e-05 size=80.0
-sell(1, NEOBTC, 0.57) @ 0.00703 (bought @ 0.00698, 0.72%)	-0.35%
+sell(1, NEOBTC, 0.57) @ 0.00703 (bought @ 0.00698, 0.72%)	-0.3%
 buy(1, MANABTC, 290.0) @ 1.379e-05
-BUY_FAILED for IOTABTC price=0.00022387 size=20.0
 BUY_FAILED for BCNBTC price=8.9e-07 size=4550.0
 BUY_FAILED for SALTBTC price=0.0002708 size=14.77
-sell(1, WPRBTC, 350.0) @ 1.172e-05 (bought @ 1.157e-05, 1.3%)	-0.49%
+sell(1, WPRBTC, 350.0) @ 1.172e-05 (bought @ 1.157e-05, 1.3%)	-0.44%
 buy(1, BATBTC, 110.0) @ 3.753e-05
 BUY_FAILED for NANOBTC price=0.000557 size=7.18
-sell(1, SNTBTC, 300.0) @ 1.34e-05 (bought @ 1.314e-05, 1.98%)	-0.2%
+sell(1, SNTBTC, 300.0) @ 1.34e-05 (bought @ 1.314e-05, 1.98%)	-0.13%
 buy(1, GASBTC, 1.5) @ 0.002664
 
 Trade Symbol Profits:
-BQXBTC (1): -0.3%
+BQXBTC (1): 1.06%
 DASHBTC (1): -0.66%
 SNGLSBTC (1): -1.03%
 CMTBTC (1): -7.51%
@@ -190,8 +176,8 @@ ZRXBTC (1): -0.91%
 HSRBTC (1): -1.02%
 ARNBTC (1): -0.78%
 EOSETH (1): -0.53%
-NULSBTC (1): -0.9%
 STORJBTC (1): -1.25%
+GVTBTC (1): 0.81%
 REPBTC (1): -0.52%
 ADABNB (1): -5.75%
 ZILBTC (1): -1.13%
@@ -232,5 +218,5 @@ POABTC (1): -0.68%
 Results:
 Total Capture Time:	10.77 hours
 Initial BTC total:	0.2
-Final BTC total:	0.199407545502
-Percent Profit: 	-0.3%
+Final BTC total:	0.199530819502
+Percent Profit: 	-0.23%

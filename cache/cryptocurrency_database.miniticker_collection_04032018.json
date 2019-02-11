@@ -166,12 +166,12 @@
             ], 
             "IOSTBTC": [
                 {
-                    "index": 7775, 
-                    "trade_type": "TrendState", 
+                    "index": 1756, 
+                    "trade_type": "TPSC12", 
                     "symbol": "IOSTBTC", 
                     "type": "buy", 
-                    "price": 3.92e-06, 
-                    "size": "1020.0"
+                    "price": 3.45e-06, 
+                    "size": "1160.0"
                 }
             ], 
             "TNBBTC": [
@@ -269,6 +269,25 @@
                     "size": "330.0"
                 }
             ], 
+            "WPRBTC": [
+                {
+                    "index": 1045, 
+                    "trade_type": "TPSC12", 
+                    "symbol": "WPRBTC", 
+                    "type": "buy", 
+                    "price": 1.322e-05, 
+                    "size": "300.0"
+                }, 
+                {
+                    "index": 2202, 
+                    "trade_type": "LongTrendState", 
+                    "symbol": "WPRBTC", 
+                    "buy_price": 1.322e-05, 
+                    "type": "sell", 
+                    "price": 1.288e-05, 
+                    "size": "300.0"
+                }
+            ], 
             "POWRBTC": [
                 {
                     "index": 732, 
@@ -286,14 +305,6 @@
                     "type": "sell", 
                     "price": 4.546e-05, 
                     "size": "90.0"
-                }, 
-                {
-                    "index": 1982, 
-                    "trade_type": "TPSC12", 
-                    "symbol": "POWRBTC", 
-                    "type": "buy", 
-                    "price": 4.748e-05, 
-                    "size": "80.0"
                 }
             ], 
             "ENJBTC": [
