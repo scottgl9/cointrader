@@ -317,23 +317,27 @@ class TrendStateTrack(object):
 
 
 class TrendState(object):
-    STATE_UNKNOWN = 0
-    STATE_INIT = 1
-    STATE_NON_TREND_NO_DIRECTION = 2
-    STATE_NON_TREND_UP_SLOW = 3
-    STATE_NON_TREND_DOWN_SLOW = 4
-    STATE_NON_TREND_UP_FAST = 5
-    STATE_NON_TREND_DOWN_FAST = 6
-    STATE_TRENDING_UP_SLOW = 7
-    STATE_TRENDING_DOWN_SLOW = 8
-    STATE_TRENDING_UP_FAST = 9
-    STATE_TRENDING_DOWN_FAST = 10
-    STATE_REVERSAL_UP = 11
-    STATE_REVERSAL_DOWN = 12
-    STATE_NON_TREND_DOWN_VERY_SLOW = 13
-    STATE_NON_TREND_UP_VERY_SLOW = 14
-    STATE_TRENDING_DOWN_VERY_SLOW = 15
-    STATE_TRENDING_UP_VERY_SLOW = 16
+    STATE_UNKNOWN                   = 0
+    STATE_INIT                      = 1
+    STATE_NON_TREND_NO_DIRECTION    = 2
+    STATE_NON_TREND_UP_VERY_SLOW    = 3
+    STATE_NON_TREND_UP_SLOW         = 4
+    STATE_NON_TREND_UP_FAST         = 5
+    STATE_NON_TREND_DOWN_VERY_SLOW  = 6
+    STATE_NON_TREND_DOWN_SLOW       = 7
+    STATE_NON_TREND_DOWN_FAST       = 8
+    STATE_TRENDING_UP_VERY_SLOW     = 9
+    STATE_TRENDING_UP_SLOW          = 10
+    STATE_TRENDING_UP_FAST          = 11
+    STATE_TRENDING_DOWN_VERY_SLOW   = 12
+    STATE_TRENDING_DOWN_SLOW        = 13
+    STATE_TRENDING_DOWN_FAST        = 14
+    STATE_CONT_TREND_UP_VERY_SLOW   = 15
+    STATE_CONT_TREND_UP_SLOW        = 16
+    STATE_CONT_TREND_UP_FAST        = 17
+    STATE_CONT_TREND_DOWN_VERY_SLOW = 18
+    STATE_CONT_TREND_DOWN_SLOW      = 19
+    STATE_CONT_TREND_DOWN_FAST      = 20
 
     def __init__(self, state):
         self.state = state
@@ -384,10 +388,18 @@ class TrendState(object):
                 return "STATE_TRENDING_DOWN_SLOW"
         elif state == TrendState.STATE_TRENDING_DOWN_FAST:
                 return "STATE_TRENDING_DOWN_FAST"
-        elif state == TrendState.STATE_REVERSAL_UP:
-                return "STATE_REVERSAL_UP"
-        elif state == TrendState.STATE_REVERSAL_DOWN:
-                return "STATE_REVERSAL_DOWN"
+        elif state == TrendState.STATE_CONT_TREND_UP_VERY_SLOW:
+                return "STATE_CONT_TREND_UP_VERY_SLOW"
+        elif state == TrendState.STATE_CONT_TREND_UP_SLOW:
+                return "STATE_CONT_TREND_UP_SLOW"
+        elif state == TrendState.STATE_CONT_TREND_UP_FAST:
+                return "STATE_CONT_TREND_UP_FAST"
+        elif state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW:
+                return "STATE_CONT_TREND_DOWN_VERY_SLOW"
+        elif state == TrendState.STATE_CONT_TREND_DOWN_SLOW:
+                return "STATE_CONT_TREND_DOWN_SLOW"
+        elif state == TrendState.STATE_CONT_TREND_DOWN_FAST:
+                return "STATE_CONT_TREND_DOWN_FAST"
 
     def is_state(self, state):
         return self.state == state
@@ -403,6 +415,13 @@ class TrendState(object):
             state == TrendState.STATE_TRENDING_UP_SLOW or
             state == TrendState.STATE_TRENDING_UP_FAST):
             return True
+        elif (state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_FAST or
+            state == TrendState.STATE_CONT_TREND_UP_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_FAST):
+            return True
         return False
 
     def get_trend_direction(self, state=STATE_UNKNOWN):
@@ -416,6 +435,14 @@ class TrendState(object):
         elif (state == TrendState.STATE_TRENDING_UP_VERY_SLOW or
              state == TrendState.STATE_TRENDING_UP_SLOW or
              state == TrendState.STATE_TRENDING_UP_FAST):
+            direction = 1
+        elif (state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_FAST):
+            direction = -1
+        elif (state == TrendState.STATE_CONT_TREND_UP_VERY_SLOW or
+             state == TrendState.STATE_CONT_TREND_UP_SLOW or
+             state == TrendState.STATE_CONT_TREND_UP_FAST):
             direction = 1
         return direction
 
