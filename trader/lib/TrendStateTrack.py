@@ -543,6 +543,60 @@ class TrendState(object):
                 state = TrendState.STATE_CONT_TREND_DOWN_FAST
         return state
 
+    def get_direction_from_trend_state(self, state):
+        dir = 0
+        if (state == TrendState.STATE_NON_TREND_UP_VERY_SLOW or
+            state == TrendState.STATE_TRENDING_UP_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_VERY_SLOW):
+            dir = TrendState.DIR_UP_VERY_SLOW
+        elif (state == TrendState.STATE_NON_TREND_UP_SLOW or
+            state == TrendState.STATE_TRENDING_UP_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_SLOW):
+            dir = TrendState.DIR_UP_SLOW
+        elif (state == TrendState.STATE_NON_TREND_UP_FAST or
+            state == TrendState.STATE_TRENDING_UP_FAST or
+            state == TrendState.STATE_CONT_TREND_UP_FAST):
+            dir = TrendState.DIR_UP_SLOW
+        if (state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW):
+            dir = TrendState.DIR_DOWN_VERY_SLOW
+        elif (state == TrendState.STATE_NON_TREND_DOWN_SLOW or
+            state == TrendState.STATE_TRENDING_DOWN_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_SLOW):
+            dir = TrendState.DIR_DOWN_SLOW
+        elif (state == TrendState.STATE_NON_TREND_DOWN_FAST or
+            state == TrendState.STATE_TRENDING_DOWN_FAST or
+            state == TrendState.STATE_CONT_TREND_DOWN_FAST):
+            dir = TrendState.DIR_DOWN_FAST
+        return dir
+
+    def get_type_from_trend_state(self, state):
+        type = 0
+        if (state == TrendState.STATE_NON_TREND_NO_DIRECTION or
+            state == TrendState.STATE_NON_TREND_UP_VERY_SLOW or
+            state == TrendState.STATE_NON_TREND_UP_SLOW or
+            state == TrendState.STATE_NON_TREND_UP_FAST or
+            state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_NON_TREND_DOWN_SLOW or
+            state == TrendState.STATE_NON_TREND_DOWN_FAST):
+            type = TrendState.TYPE_NON_TREND
+        elif (state == TrendState.STATE_TRENDING_UP_VERY_SLOW or
+            state == TrendState.STATE_TRENDING_UP_SLOW or
+            state == TrendState.STATE_TRENDING_UP_FAST or
+            state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
+            state == TrendState.STATE_TRENDING_DOWN_SLOW or
+            state == TrendState.STATE_TRENDING_DOWN_FAST):
+            type = TrendState.TYPE_TRENDING
+        elif (state == TrendState.STATE_CONT_TREND_UP_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_FAST or
+            state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_FAST):
+            type = TrendState.TYPE_CONT_TREND
+        return type
+
     # return true if is in trend state
     def is_in_trend_state(self, state=STATE_UNKNOWN):
         if state == TrendState.STATE_UNKNOWN:
