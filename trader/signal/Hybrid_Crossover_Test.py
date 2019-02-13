@@ -29,7 +29,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.start_timestamp = 0
         self.last_close = 0
 
-        self.tst = TrendStateTrack(smoother=EMA(26, scale=24))
+        self.tst = TrendStateTrack(smoother=EMA(12, scale=24))
         self.tspc = MTSPriceChannel(minutes=60)
         self.mts_moverate = MTSMoveRate(small_seg_seconds=120, large_seg_seconds=1800)
         self.obv = OBV()
@@ -92,6 +92,8 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema26_result, ma2_result=tspc_result)
 
     def buy_signal(self):
+        if self.is_currency_pair:
+            return False
         if self.disabled:
             if self.timestamp > self.disabled_end_ts:
                 self.disabled = False
