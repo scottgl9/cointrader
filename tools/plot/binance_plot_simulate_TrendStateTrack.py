@@ -91,10 +91,6 @@ def simulate(conn, client, base, currency, type="channel"):
             print("SHORT:" + tst.get_short_trend_string())
             last_short_trend_string = tst.get_short_trend_string()
 
-
-        if tst.reversed_direction():
-            print("REVERSED_DIRECTION")
-
         mts_moverate.update(close, ts)
         mts_moverate_values.append(mts_moverate.result)
         close_prices.append(close)
