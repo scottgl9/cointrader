@@ -12,7 +12,7 @@ class TrendStateTrack(object):
                        max_state_seconds=(3600 * 12),
                        short_state_seconds=3600,
                        check_state_seconds=300,
-                       percent_slow_cutoff=2.0,
+                       percent_slow_cutoff=3.0,
                        percent_very_slow_cutoff=1.0,
                        smoother=None):
         self.init_state_seconds = init_state_seconds

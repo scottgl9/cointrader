@@ -125,7 +125,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.buy_type = 'TPSC12'
             return True
 
-        if state == TrendState.STATE_TRENDING_UP_FAST:
+        if state == TrendState.STATE_TRENDING_UP_FAST or state == TrendState.STATE_TRENDING_UP_SLOW:
             self.buy_type = "TrendState"
             return True
 
@@ -146,7 +146,7 @@ class Hybrid_Crossover_Test(SignalBase):
             return False
 
         state = self.tst.get_trend_state()
-        if state == TrendState.STATE_TRENDING_DOWN_FAST:
+        if state == TrendState.STATE_CONT_TREND_DOWN_FAST or state == TrendState.STATE_CONT_TREND_DOWN_SLOW:
             self.sell_type='LongTrendState'
             self.disabled = True
             self.disabled_end_ts = self.timestamp + 1000 * 3600 * 4
