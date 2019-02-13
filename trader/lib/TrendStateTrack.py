@@ -84,10 +84,7 @@ class TrendStateTrack(object):
         return self.trend_state.direction
 
     def has_trend_state_changed(self):
-        if len(self.seg_down_list) > 2 and len(self.seg_up_list) > 2:
-            if self.trend_state.has_state_changed():
-                return True
-        return False
+        return self.trend_state.has_state_changed()
 
     def is_in_trend_state(self):
         return self.trend_state.is_in_trend_state()
@@ -208,7 +205,7 @@ class TrendStateTrack(object):
             trend_state = self.process_state_cont_trend_up_direction(trend_state, seg_down, seg_up, direction)
 
         # check if the state hasn't changed, and trend could be changing
-        if not self.has_trend_state_changed():
+        if not self.has_trend_state_changed() and len(self.seg_down_list) > 2 and len(self.seg_up_list) > 2:
             trend_state = self.process_potential_upward_reversal(trend_state, seg_down, seg_up, direction)
             trend_state = self.process_potential_downward_reversal(trend_state, seg_down, seg_up, direction)
 
@@ -229,12 +226,21 @@ class TrendStateTrack(object):
         else:
             return trend_state
 
-        if seg_down_percent < self.percent_very_slow_cutoff:
-            trend_state.set_state(TrendState.STATE_NON_TREND_DOWN_VERY_SLOW)
-        else:
-            trend_state.set_state_conditional(seg_down_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_DOWN_SLOW,
-                                              TrendState.STATE_NON_TREND_DOWN_FAST)
+        type = trend_state.get_type_from_trend_state(trend_state.state)
+
+        if type == TrendState.TYPE_CONT_TREND:
+            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_TRENDING, dir)
+            trend_state.set_state(new_state)
+        elif type == TrendState.TYPE_TRENDING:
+            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, dir)
+            trend_state.set_state(new_state)
+        elif type == TrendState.TYPE_NON_TREND:
+            newdir = self.get_direction_speed_movement(seg_down_percent, -1)
+            new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, newdir)
+            trend_state.set_state(new_state)
+
         return trend_state
 
     def process_potential_upward_reversal(self, trend_state, seg_down, seg_up, direction):
@@ -252,12 +258,21 @@ class TrendStateTrack(object):
         else:
             return trend_state
 
-        if seg_up_percent < self.percent_very_slow_cutoff:
-            trend_state.set_state(TrendState.STATE_NON_TREND_UP_VERY_SLOW)
-        else:
-            trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
-                                              TrendState.STATE_NON_TREND_UP_SLOW,
-                                              TrendState.STATE_NON_TREND_UP_FAST)
+        type = trend_state.get_type_from_trend_state(trend_state.state)
+
+        if type == TrendState.TYPE_CONT_TREND:
+            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_TRENDING, dir)
+            trend_state.set_state(new_state)
+        elif type == TrendState.TYPE_TRENDING:
+            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, dir)
+            trend_state.set_state(new_state)
+        elif type == TrendState.TYPE_NON_TREND:
+            newdir = self.get_direction_speed_movement(seg_up_percent, 1)
+            new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, newdir)
+            trend_state.set_state(new_state)
+
         return trend_state
 
     def process_state_non_trend_no_direction(self, trend_state, seg_down, seg_up, direction):
