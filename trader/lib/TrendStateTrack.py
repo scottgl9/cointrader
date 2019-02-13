@@ -83,6 +83,9 @@ class TrendStateTrack(object):
     def get_short_trend_direction(self):
         return self.trend_state.direction
 
+    def is_in_trend_state(self):
+        return self.trend_state.is_in_trend_state()
+
     def state_changed(self):
         return self.trend_state.has_state_changed()
 
@@ -174,7 +177,7 @@ class TrendStateTrack(object):
             seg_down_prev = self.seg_down_list[-2]
             seg_up_prev = self.seg_up_list[-2]
 
-            # check if could be trending up
+            # check if could be upward trend reversal
             if (float(seg_up['percent']) > float(seg_up_prev['percent']) and
                 abs(float(seg_down['percent'])) < abs(float(seg_down_prev['percent']))):
                 if trend_state.get_trend_direction() == -1:
@@ -186,7 +189,7 @@ class TrendStateTrack(object):
                         trend_state.set_state_conditional(seg_up_percent < self.percent_slow_cutoff,
                                                           TrendState.STATE_NON_TREND_UP_SLOW,
                                                           TrendState.STATE_NON_TREND_UP_FAST)
-            # check if could be trending down
+            # check if could be downward trend reversal
             elif (float(seg_up['percent']) < float(seg_up_prev['percent']) and
                 abs(float(seg_down['percent'])) > abs(float(seg_down_prev['percent']))):
                 if trend_state.get_trend_direction() == 1:
