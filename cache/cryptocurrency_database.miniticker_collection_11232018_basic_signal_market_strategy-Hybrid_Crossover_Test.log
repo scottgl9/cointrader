@@ -1,710 +1,581 @@
+Loading cache/cryptocurrency_database.miniticker_collection_11232018.json
 Running simulate with cryptocurrency_database.miniticker_collection_11232018.db signal Hybrid_Crossover_Test
 Resetting initial BTC...
 Initial BTC value = 0.2
 Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
 Resetting initial BTC...
+buy(1, XRPBTC, 40.0) @ 9.591e-05
 buy(1, BCHSVBTC, 0.419) @ 0.009553
-buy(1, ONTBTC, 18.08) @ 0.0002213
-buy(1, DASHBTC, 0.169) @ 0.023669
-buy(1, IOTABTC, 60.0) @ 7.126e-05
-buy(1, BTGBTC, 0.9) @ 0.004467
-buy(1, NEOBTC, 2.07) @ 0.001936
-buy(1, ZECBTC, 0.224) @ 0.017832
-buy(1, INSBTC, 68.49) @ 5.84e-05
-buy(1, VIBBTC, 740.0) @ 5.39e-06
-buy(1, REPBTC, 1.635) @ 0.002447
-buy(1, WANBTC, 38.68) @ 0.0001034
-buy(1, LSKBTC, 11.49) @ 0.000348
-buy(1, XMRBTC, 0.264) @ 0.015154
-buy(1, TRXBTC, 1270.0) @ 3.15e-06
-buy(1, BCHABCBTC, 0.085000000) @ 0.0471
-buy(1, QKCBTC, 390.0) @ 1.03e-05
-buy(1, XEMBTC, 220.0) @ 1.793e-05
-buy(1, WABIBTC, 120.0) @ 3.225e-05
-buy(1, MDABTC, 30.0) @ 0.00015792
-buy(1, XLMBTC, 90.0) @ 4.255e-05
-buy(1, NANOBTC, 16.31) @ 0.0002455
-buy(1, BRDBTC, 60.0) @ 6.727e-05
-sell(1, DASHBTC, 0.169) @ 0.023037 (bought @ 0.023669, -2.67%)	-0.11%
-buy(1, OMGBTC, 9.71) @ 0.000412
-buy(1, ARKBTC, 38.42) @ 0.0001045
-buy(1, EOSBTC, 4.81) @ 0.0008309
-buy(1, DOCKBTC, 1350.0) @ 2.98e-06
-buy(1, VETBTC, 3360.0) @ 1.19e-06
-buy(1, ARNBTC, 60.0) @ 7.01e-05
-buy(1, WTCBTC, 12.8) @ 0.0003123
-buy(1, ENJBTC, 640.0) @ 6.24e-06
-buy(1, GASBTC, 6.91) @ 0.000579
-buy(1, BQXBTC, 120.0) @ 3.245e-05
-buy(1, GTOBTC, 570.0) @ 6.99e-06
-sell(1, QKCBTC, 390.0) @ 1.049e-05 (bought @ 1.03e-05, 1.84%)	-0.13%
-buy(1, IOTXBTC, 1800.0) @ 2.22e-06
-buy(1, BCDBTC, 18.349) @ 0.000218
-sell(1, XLMBTC, 90.0) @ 4.174e-05 (bought @ 4.255e-05, -1.9%)	-0.12%
-sell(1, MDABTC, 30.0) @ 0.00016038 (bought @ 0.00015792, 1.56%)	-0.13%
-buy(1, QTUMBTC, 7.62) @ 0.000526
-sell(1, VETBTC, 3360.0) @ 1.18e-06 (bought @ 1.19e-06, -0.84%)	-0.14%
-sell(1, BCHABCBTC, 0.085000000) @ 0.046053 (bought @ 0.0471, -2.22%)	-0.14%
-sell(1, EOSBTC, 4.81) @ 0.0008297 (bought @ 0.0008309, -0.14%)	0.01%
-sell(1, GASBTC, 6.91) @ 0.000573 (bought @ 0.000579, -1.04%)	-0.0%
-sell(1, REPBTC, 1.635) @ 0.002341 (bought @ 0.002447, -4.33%)	-0.12%
-sell(1, ONTBTC, 18.08) @ 0.0002172 (bought @ 0.0002213, -1.85%)	-0.09%
-buy(1, QKCBTC, 390.0) @ 1.036e-05
-buy(1, MTHBTC, 760.0) @ 5.23e-06
-buy(1, RVNBTC, 990.0) @ 4.04e-06
-buy(1, SALTBTC, 69.2) @ 5.75e-05
-buy(1, BNBBTC, 15.55) @ 0.0012844
-ORDER_SIZE_UPDATE for BNBBTC orig_size=15.55 new_size=15.55
-sell(1, IOTABTC, 60.0) @ 7.251e-05 (bought @ 7.126e-05, 1.75%)	-0.04%
-buy(1, YOYOBTC, 950.0) @ 4.21e-06
-sell(1, ARNBTC, 60.0) @ 7.1e-05 (bought @ 7.01e-05, 1.28%)	-0.1%
-buy(1, ICXBTC, 64.0) @ 6.24e-05
-buy(1, BTSBTC, 330.0) @ 1.203e-05
-buy(1, MDABTC, 30.0) @ 0.00015742
-buy(1, HOTBTC, 30770.0) @ 1.3e-07
-buy(1, LINKBTC, 50.0) @ 7.803e-05
-buy(1, XZCBTC, 2.89) @ 0.001382
-sell(1, BRDBTC, 60.0) @ 7.007e-05 (bought @ 6.727e-05, 4.16%)	-0.09%
-buy(1, ASTBTC, 480.0) @ 8.34e-06
-buy(1, GOBTC, 450.0) @ 8.97e-06
-buy(1, WAVESBTC, 15.66) @ 0.0002555
+buy(1, MANABTC, 290.0) @ 1.362e-05
+buy(1, QKCBTC, 390.0) @ 1.018e-05
+buy(1, EOSBTC, 4.78) @ 0.0008372
+buy(1, RVNBTC, 980.0) @ 4.09e-06
+buy(1, DOCKBTC, 1360.0) @ 2.94e-06
+buy(1, LINKBTC, 50.0) @ 7.863e-05
+buy(1, OMGBTC, 9.9) @ 0.000404
+buy(1, REPBTC, 1.646) @ 0.00243
+buy(1, IOTABTC, 60.0) @ 7.177e-05
+buy(1, ADABTC, 400.0) @ 1.005e-05
+buy(1, ELFBTC, 130.0) @ 3.04e-05
+buy(1, MDABTC, 20.0) @ 0.00016042
+buy(1, XLMBTC, 90.0) @ 4.264e-05
+buy(1, POWRBTC, 190.0) @ 2.068e-05
+buy(1, IOTXBTC, 1810.0) @ 2.2e-06
+buy(1, ASTBTC, 480.0) @ 8.35e-06
+buy(1, MITHBTC, 130.0) @ 3.074e-05
+buy(1, PHXBTC, 1540.0) @ 2.6e-06
+buy(1, GOBTC, 440.0) @ 9.06e-06
+buy(1, ARKBTC, 37.95) @ 0.0001053
+buy(1, MCOBTC, 7.5) @ 0.000531
+buy(1, ARNBTC, 60.0) @ 7.051e-05
+buy(1, WPRBTC, 1180.0) @ 3.38e-06
+buy(1, POLYBTC, 130.0) @ 3.015e-05
+sell(1, QKCBTC, 390.0) @ 1.049e-05 (bought @ 1.018e-05, 3.05%)	-0.34%
+buy(1, VIBBTC, 740.0) @ 5.37e-06
 buy(1, BCPTBTC, 420.0) @ 9.43e-06
-buy(1, GVTBTC, 3.4) @ 0.0011858
-sell(1, GTOBTC, 570.0) @ 6.98e-06 (bought @ 6.99e-06, -0.14%)	-0.25%
-buy(1, LENDBTC, 2020.0) @ 1.98e-06
-buy(1, NASBTC, 23.34) @ 0.0001711
-buy(1, REQBTC, 730.0) @ 5.48e-06
-sell(1, RVNBTC, 990.0) @ 4e-06 (bought @ 4.04e-06, -0.99%)	-0.3%
-buy(1, POLYBTC, 130.0) @ 2.999e-05
-buy(1, WINGSBTC, 200.0) @ 1.99e-05
-sell(1, ENJBTC, 640.0) @ 6.13e-06 (bought @ 6.24e-06, -1.76%)	-0.47%
-buy(1, NEBLBTC, 17.09) @ 0.000234
+buy(1, BRDBTC, 60.0) @ 7.185e-05
+buy(1, ENGBTC, 50.0) @ 7.83e-05
+buy(1, KNCBTC, 90.0) @ 4.417e-05
+buy(1, HCBTC, 17.74) @ 0.0002255
+sell(1, MITHBTC, 130.0) @ 2.917e-05 (bought @ 3.074e-05, -5.11%)	-0.2%
+sell(1, REPBTC, 1.646) @ 0.002333 (bought @ 0.00243, -3.99%)	-0.33%
+buy(1, QKCBTC, 390.0) @ 1.036e-05
+sell(1, IOTABTC, 60.0) @ 7.25e-05 (bought @ 7.177e-05, 1.02%)	-0.27%
+buy(1, FUELBTC, 1320.0) @ 3.04e-06
+buy(1, EVXBTC, 60.0) @ 6.425e-05
+buy(1, MODBTC, 44.64) @ 8.8e-05
+buy(1, STORJBTC, 110.0) @ 3.74e-05
 buy(1, IOTABTC, 60.0) @ 7.24e-05
-sell(1, BNBBTC, 15.55) @ 0.0012741 (bought @ 0.0012844, -0.8%)	-0.48%
-buy(1, MFTBTC, 4260.0) @ 9.4e-07
-buy(1, ARNBTC, 60.0) @ 7.082e-05
-sell(1, YOYOBTC, 950.0) @ 4.21e-06 (bought @ 4.21e-06, 0.0%)	-0.32%
-buy(1, MODBTC, 45.15) @ 8.86e-05
-sell(1, ZECBTC, 0.224) @ 0.017564 (bought @ 0.017832, -1.5%)	-0.19%
-sell(1, MTHBTC, 760.0) @ 5.12e-06 (bought @ 5.23e-06, -2.1%)	-0.2%
-sell(1, NASBTC, 23.34) @ 0.0001701 (bought @ 0.0001711, -0.58%)	-0.37%
-buy(1, BRDBTC, 60.0) @ 7.154e-05
-sell(1, LINKBTC, 50.0) @ 7.784e-05 (bought @ 7.803e-05, -0.24%)	-0.25%
-buy(1, PHXBTC, 1590.0) @ 2.51e-06
-sell(1, NEOBTC, 2.07) @ 0.001918 (bought @ 0.001936, -0.93%)	-0.14%
-sell(1, MDABTC, 30.0) @ 0.00015339 (bought @ 0.00015742, -2.56%)	-0.23%
-buy(1, SNTBTC, 810.0) @ 4.93e-06
-buy(1, CVCBTC, 260.0) @ 1.519e-05
-buy(1, ELFBTC, 130.0) @ 3.005e-05
-sell(1, PHXBTC, 1590.0) @ 2.55e-06 (bought @ 2.51e-06, 1.59%)	0.1%
-buy(1, HCBTC, 18.31) @ 0.0002185
-buy(1, MTLBTC, 59.26) @ 6.78e-05
-buy(1, GRSBTC, 60.0) @ 6.503e-05
-buy(1, CNDBTC, 1310.0) @ 3.06e-06
-sell(1, BCPTBTC, 420.0) @ 9.36e-06 (bought @ 9.43e-06, -0.74%)	0.18%
-sell(1, NANOBTC, 16.31) @ 0.0002438 (bought @ 0.0002455, -0.69%)	-0.02%
-buy(1, TNBBTC, 3600.0) @ 1.11e-06
-buy(1, ENGBTC, 50.0) @ 7.68e-05
-buy(1, EVXBTC, 60.0) @ 6.382e-05
-buy(1, ZILBTC, 1050.0) @ 3.81e-06
-sell(1, BTSBTC, 330.0) @ 1.213e-05 (bought @ 1.203e-05, 0.83%)	0.32%
-buy(1, STORJBTC, 110.0) @ 3.742e-05
-sell(1, HCBTC, 18.31) @ 0.0002201 (bought @ 0.0002185, 0.73%)	0.25%
-sell(1, MFTBTC, 4260.0) @ 9.5e-07 (bought @ 9.4e-07, 1.06%)	0.25%
-buy(1, SUBBTC, 360.0) @ 1.119e-05
-buy(1, TNTBTC, 1120.0) @ 3.57e-06
-sell(1, ARKBTC, 38.42) @ 0.0001108 (bought @ 0.0001045, 6.03%)	0.33%
-buy(1, KNCBTC, 90.0) @ 4.415e-05
-sell(1, GOBTC, 450.0) @ 8.86e-06 (bought @ 8.97e-06, -1.23%)	0.45%
-sell(1, BCHSVBTC, 0.419) @ 0.012606 (bought @ 0.009553, 31.96%)	0.47%
+sell(1, DOCKBTC, 1360.0) @ 2.98e-06 (bought @ 2.94e-06, 1.36%)	-0.37%
+sell(1, MDABTC, 20.0) @ 0.00015212 (bought @ 0.00016042, -5.17%)	-0.31%
+buy(1, BCHABCBTC, 0.083000000) @ 0.048197
+buy(1, MTLBTC, 59.35) @ 6.74e-05
+buy(1, CNDBTC, 1310.0) @ 3.07e-06
+buy(1, APPCBTC, 360.0) @ 1.118e-05
+sell(1, POLYBTC, 130.0) @ 3.05e-05 (bought @ 3.015e-05, 1.16%)	-0.05%
+buy(1, DOCKBTC, 1330.0) @ 3.01e-06
+sell(1, ARKBTC, 37.95) @ 0.0001108 (bought @ 0.0001053, 5.22%)	-0.09%
+buy(1, QLCBTC, 680.0) @ 5.91e-06
+buy(1, RCNBTC, 1170.0) @ 3.4e-06
+sell(1, BCHSVBTC, 0.419) @ 0.012606 (bought @ 0.009553, 31.96%)	-0.19%
+buy(1, ONTBTC, 18.03) @ 0.0002214
 buy(1, CLOAKBTC, 12.89) @ 0.0003098
-sell(1, HOTBTC, 30770.0) @ 1.4e-07 (bought @ 1.3e-07, 7.69%)	0.65%
-sell(1, SNTBTC, 810.0) @ 4.94e-06 (bought @ 4.93e-06, 0.2%)	0.56%
-sell(1, ZILBTC, 1050.0) @ 3.86e-06 (bought @ 3.81e-06, 1.31%)	0.64%
-buy(1, NULSBTC, 30.0) @ 0.00013532
-sell(1, INSBTC, 68.49) @ 5.82e-05 (bought @ 5.84e-05, -0.34%)	0.67%
+buy(1, NEOBTC, 2.07) @ 0.001934
+buy(1, BCDBTC, 16.667) @ 0.000239
+buy(1, WABIBTC, 120.0) @ 3.277e-05
+buy(1, NULSBTC, 30.0) @ 0.00013125
+buy(1, NEBLBTC, 16.67) @ 0.00024
+sell(1, IOTXBTC, 1810.0) @ 2.23e-06 (bought @ 2.2e-06, 1.36%)	-0.28%
+buy(1, ZRXBTC, 40.0) @ 9.259e-05
 buy(1, ARKBTC, 35.68) @ 0.0001121
-buy(1, DATABTC, 840.0) @ 4.78e-06
-buy(1, QSPBTC, 940.0) @ 4.25e-06
+buy(1, RDNBTC, 70.0) @ 5.955e-05
+buy(1, HOTBTC, 30770.0) @ 1.3e-07
 buy(1, BCHSVBTC, 0.315) @ 0.0127
-sell(1, MODBTC, 45.15) @ 8.96e-05 (bought @ 8.86e-05, 1.13%)	0.63%
-sell(1, BCDBTC, 18.349) @ 0.000231 (bought @ 0.000218, 5.96%)	0.57%
-sell(1, POLYBTC, 130.0) @ 3.05e-05 (bought @ 2.999e-05, 1.7%)	0.62%
-buy(1, FUELBTC, 1350.0) @ 2.97e-06
-sell(1, ASTBTC, 480.0) @ 8.4e-06 (bought @ 8.34e-06, 0.72%)	0.42%
-buy(1, MCOBTC, 7.63) @ 0.000524
-sell(1, BQXBTC, 120.0) @ 3.309e-05 (bought @ 3.245e-05, 1.97%)	0.29%
-buy(1, BTSBTC, 330.0) @ 1.205e-05
-buy(1, NAVBTC, 90.91) @ 4.41e-05
-buy(1, STRATBTC, 21.7) @ 0.0001847
-sell(1, OMGBTC, 9.71) @ 0.00039 (bought @ 0.000412, -5.34%)	0.28%
-sell(1, ICXBTC, 64.0) @ 6.12e-05 (bought @ 6.24e-05, -1.92%)	0.24%
-buy(1, MODBTC, 44.35) @ 8.99e-05
-sell(1, NEBLBTC, 17.09) @ 0.00024 (bought @ 0.000234, 2.56%)	0.2%
-buy(1, BCDBTC, 16.949) @ 0.000236
-buy(1, ARDRBTC, 280.0) @ 1.404e-05
-buy(1, XVGBTC, 2740.0) @ 1.47e-06
-sell(1, XMRBTC, 0.264) @ 0.014873 (bought @ 0.015154, -1.85%)	-0.12%
-sell(1, CVCBTC, 260.0) @ 1.499e-05 (bought @ 1.519e-05, -1.32%)	-0.02%
+sell(1, MODBTC, 44.64) @ 8.92e-05 (bought @ 8.8e-05, 1.36%)	-0.21%
+sell(1, ASTBTC, 480.0) @ 8.4e-06 (bought @ 8.35e-06, 0.6%)	-0.16%
+sell(1, HCBTC, 17.74) @ 0.000228 (bought @ 0.0002255, 1.11%)	-0.36%
+buy(1, WTCBTC, 12.64) @ 0.0003164
+buy(1, AEBTC, 28.9) @ 0.0001394
+buy(1, NAVBTC, 95.24) @ 4.21e-05
+buy(1, GVTBTC, 3.27) @ 0.001229
+buy(1, STRATBTC, 21.39) @ 0.0001866
+buy(1, IOTXBTC, 1820.0) @ 2.2e-06
+sell(1, NEBLBTC, 16.67) @ 0.0002402 (bought @ 0.00024, 0.08%)	-0.42%
+buy(1, ARDRBTC, 290.0) @ 1.359e-05
+BUY_FAILED for AGIBTC price=7.97e-06 size=500.0
+sell(1, GOBTC, 440.0) @ 8.6e-06 (bought @ 9.06e-06, -5.08%)	-0.5%
+buy(1, ASTBTC, 480.0) @ 8.25e-06
+BUY_FAILED for SNMBTC price=6.61e-06 size=600.0
+BUY_FAILED for MODBTC price=9.02e-05 size=44.69
+sell(1, NAVBTC, 95.24) @ 4.29e-05 (bought @ 4.21e-05, 1.9%)	-0.46%
+sell(1, BRDBTC, 60.0) @ 6.537e-05 (bought @ 7.185e-05, -9.02%)	-0.48%
+buy(1, TUSDBTC, 20.0) @ 0.000237
 buy(1, ADXBTC, 170.0) @ 2.359e-05
-buy(1, APPCBTC, 360.0) @ 1.125e-05
-sell(1, REQBTC, 730.0) @ 5.63e-06 (bought @ 5.48e-06, 2.74%)	0.43%
-sell(1, LSKBTC, 11.49) @ 0.000345 (bought @ 0.000348, -0.86%)	0.43%
-buy(1, CDTBTC, 1820.0) @ 2.23e-06
-sell(1, ADXBTC, 170.0) @ 2.513e-05 (bought @ 2.359e-05, 6.53%)	0.3%
-sell(1, BCHSVBTC, 0.315) @ 0.014794 (bought @ 0.0127, 16.49%)	0.36%
-sell(1, DOCKBTC, 1350.0) @ 2.9e-06 (bought @ 2.98e-06, -2.68%)	0.36%
-sell(1, XVGBTC, 2740.0) @ 1.49e-06 (bought @ 1.47e-06, 1.36%)	0.36%
-buy(1, QLCBTC, 690.0) @ 5.87e-06
-sell(1, MCOBTC, 7.63) @ 0.000525 (bought @ 0.000524, 0.19%)	0.27%
-sell(1, QKCBTC, 390.0) @ 1.014e-05 (bought @ 1.036e-05, -2.12%)	0.25%
-buy(1, POWRBTC, 200.0) @ 2.046e-05
-buy(1, RDNBTC, 70.0) @ 6e-05
-sell(1, DATABTC, 840.0) @ 4.69e-06 (bought @ 4.78e-06, -1.88%)	0.36%
-buy(1, ASTBTC, 480.0) @ 8.21e-06
-sell(1, GRSBTC, 60.0) @ 6.463e-05 (bought @ 6.503e-05, -0.62%)	0.39%
-sell(1, GVTBTC, 3.4) @ 0.001253 (bought @ 0.0011858, 5.67%)	0.38%
-sell(1, QSPBTC, 940.0) @ 4.16e-06 (bought @ 4.25e-06, -2.12%)	0.45%
-buy(1, ADXBTC, 150.0) @ 2.604e-05
-sell(1, APPCBTC, 360.0) @ 1.137e-05 (bought @ 1.125e-05, 1.07%)	0.24%
-sell(1, TRXBTC, 1270.0) @ 3.12e-06 (bought @ 3.15e-06, -0.95%)	0.24%
-buy(1, TUSDBTC, 20.0) @ 0.00023779
-buy(1, BCHSVBTC, 0.282) @ 0.01417
-buy(1, PAXBTC, 20.0) @ 0.00023561
+sell(1, HOTBTC, 30770.0) @ 1.4e-07 (bought @ 1.3e-07, 7.69%)	-0.55%
+buy(1, HCBTC, 18.1) @ 0.0002226
+sell(1, ADXBTC, 170.0) @ 2.513e-05 (bought @ 2.359e-05, 6.53%)	-0.21%
+buy(1, BQXBTC, 120.0) @ 3.359e-05
+BUY_FAILED for PAXBTC price=0.00023636 size=20.0
+sell(1, BCHSVBTC, 0.315) @ 0.014794 (bought @ 0.0127, 16.49%)	-0.27%
+sell(1, RVNBTC, 980.0) @ 3.88e-06 (bought @ 4.09e-06, -5.13%)	-0.24%
+buy(1, REQBTC, 710.0) @ 5.61e-06
+buy(1, NEBLBTC, 16.9) @ 0.0002369
+sell(1, PHXBTC, 1540.0) @ 2.49e-06 (bought @ 2.6e-06, -4.23%)	-0.12%
+buy(1, WANBTC, 38.91) @ 0.0001027
+sell(1, GVTBTC, 3.27) @ 0.001253 (bought @ 0.001229, 1.95%)	-0.09%
+buy(1, GASBTC, 6.8) @ 0.000589
+BUY_FAILED for NAVBTC price=4.12e-05 size=97.09
+sell(1, APPCBTC, 360.0) @ 1.13e-05 (bought @ 1.118e-05, 1.07%)	-0.16%
+buy(1, ADXBTC, 160.0) @ 2.572e-05
+sell(1, ADXBTC, 160.0) @ 2.6e-05 (bought @ 2.572e-05, 1.09%)	-0.15%
+buy(1, BCHSVBTC, 0.283) @ 0.014068
+sell(1, EVXBTC, 60.0) @ 6.514e-05 (bought @ 6.425e-05, 1.39%)	-0.17%
+buy(1, USDCBTC, 20.0) @ 0.00023699
+BUY_FAILED for DENTBTC price=2.7e-07 size=14290.0
+sell(1, ASTBTC, 480.0) @ 8.33e-06 (bought @ 8.25e-06, 0.97%)	0.05%
 buy(1, IOSTBTC, 3310.0) @ 1.21e-06
-sell(1, ADXBTC, 150.0) @ 2.636e-05 (bought @ 2.604e-05, 1.23%)	0.36%
-sell(1, EVXBTC, 60.0) @ 6.514e-05 (bought @ 6.382e-05, 2.07%)	0.32%
-sell(1, BCDBTC, 16.949) @ 0.000239 (bought @ 0.000236, 1.27%)	0.33%
-buy(1, BCHABCBTC, 0.085000000) @ 0.047279
-sell(1, ENGBTC, 50.0) @ 7.707e-05 (bought @ 7.68e-05, 0.35%)	0.39%
-sell(1, FUELBTC, 1350.0) @ 2.91e-06 (bought @ 2.97e-06, -2.02%)	0.44%
-buy(1, GASBTC, 6.88) @ 0.000581
-buy(1, GNTBTC, 190.0) @ 2.097e-05
-buy(1, ONTBTC, 17.83) @ 0.0002245
-buy(1, GVTBTC, 3.19) @ 0.0012521
-sell(1, XEMBTC, 220.0) @ 1.771e-05 (bought @ 1.793e-05, -1.23%)	0.28%
-buy(1, APPCBTC, 360.0) @ 1.12e-05
-buy(1, ADXBTC, 170.0) @ 2.285e-05
-buy(1, BCDBTC, 16.736) @ 0.000239
-buy(1, EVXBTC, 60.0) @ 6.671e-05
-sell(1, TNTBTC, 1120.0) @ 3.51e-06 (bought @ 3.57e-06, -1.68%)	0.29%
-buy(1, BQXBTC, 120.0) @ 3.43e-05
-sell(1, IOTABTC, 60.0) @ 7.245e-05 (bought @ 7.24e-05, 0.07%)	0.1%
-buy(1, PPTBTC, 10.72) @ 0.0003741
-sell(1, BCHSVBTC, 0.282) @ 0.014715 (bought @ 0.01417, 3.85%)	0.27%
-sell(1, WTCBTC, 12.8) @ 0.0003156 (bought @ 0.0003123, 1.06%)	0.43%
-sell(1, CLOAKBTC, 12.89) @ 0.0003071 (bought @ 0.0003098, -0.87%)	0.47%
-buy(1, FUNBTC, 3130.0) @ 1.28e-06
-buy(1, THETABTC, 310.0) @ 1.278e-05
-sell(1, PPTBTC, 10.72) @ 0.00038 (bought @ 0.0003741, 1.58%)	0.43%
-buy(1, ZRXBTC, 40.0) @ 9.269e-05
-sell(1, XZCBTC, 2.89) @ 0.001361 (bought @ 0.001382, -1.52%)	0.39%
-buy(1, NASBTC, 23.39) @ 0.000171
-buy(1, BCHSVBTC, 0.288) @ 0.0139
-sell(1, ARKBTC, 35.68) @ 0.0001031 (bought @ 0.0001121, -8.03%)	0.57%
-sell(1, QTUMBTC, 7.62) @ 0.000532 (bought @ 0.000526, 1.14%)	0.51%
-buy(1, ZECBTC, 0.225) @ 0.017807
-buy(1, BATBTC, 110.0) @ 3.712e-05
-sell(1, TUSDBTC, 20.0) @ 0.00023241 (bought @ 0.00023779, -2.26%)	0.69%
-buy(1, OAXBTC, 140.0) @ 2.84e-05
-buy(1, NEOBTC, 2.01) @ 0.001983
-sell(1, ARNBTC, 60.0) @ 7.218e-05 (bought @ 7.082e-05, 1.92%)	0.6%
-sell(1, ASTBTC, 480.0) @ 8.37e-06 (bought @ 8.21e-06, 1.95%)	0.61%
-buy(1, ETCBTC, 3.36) @ 0.001192
-sell(1, GNTBTC, 190.0) @ 2.091e-05 (bought @ 2.097e-05, -0.29%)	0.67%
-buy(1, NEBLBTC, 16.35) @ 0.0002446
-sell(1, PAXBTC, 20.0) @ 0.00023219 (bought @ 0.00023561, -1.45%)	0.62%
-buy(1, NANOBTC, 15.83) @ 0.0002524
-sell(1, ONTBTC, 17.83) @ 0.0002268 (bought @ 0.0002245, 1.02%)	0.62%
-buy(1, CMTBTC, 360.0) @ 1.103e-05
-buy(1, EOSBTC, 4.83) @ 0.0008276
-sell(1, BTSBTC, 330.0) @ 1.18e-05 (bought @ 1.205e-05, -2.07%)	0.64%
-buy(1, USDCBTC, 20.0) @ 0.00023338
-sell(1, SUBBTC, 360.0) @ 1.155e-05 (bought @ 1.119e-05, 3.22%)	1.07%
-buy(1, REQBTC, 720.0) @ 5.56e-06
-sell(1, GASBTC, 6.88) @ 0.000609 (bought @ 0.000581, 4.82%)	1.21%
-buy(1, ARNBTC, 50.0) @ 7.342e-05
-sell(1, QLCBTC, 690.0) @ 5.93e-06 (bought @ 5.87e-06, 1.02%)	1.22%
-buy(1, MANABTC, 290.0) @ 1.385e-05
-sell(1, IOSTBTC, 3310.0) @ 1.22e-06 (bought @ 1.21e-06, 0.83%)	1.25%
-sell(1, THETABTC, 310.0) @ 1.288e-05 (bought @ 1.278e-05, 0.78%)	1.19%
-sell(1, ZRXBTC, 40.0) @ 9.353e-05 (bought @ 9.269e-05, 0.91%)	1.17%
-buy(1, ONTBTC, 17.47) @ 0.0002288
-buy(1, LTCBTC, 0.53) @ 0.007522
-buy(1, LRCBTC, 360.0) @ 1.108e-05
-sell(1, BTGBTC, 0.9) @ 0.004568 (bought @ 0.004467, 2.26%)	1.04%
-buy(1, XLMBTC, 100.0) @ 4.164e-05
-sell(1, USDCBTC, 20.0) @ 0.00022936 (bought @ 0.00023338, -1.72%)	0.96%
-buy(1, XMRBTC, 0.26) @ 0.015418
-BUY_FAILED for RLCBTC price=5.57e-05 size=71.68
-sell(1, BCHABCBTC, 0.085000000) @ 0.047783 (bought @ 0.047279, 1.07%)	1.0%
-sell(1, BATBTC, 110.0) @ 3.765e-05 (bought @ 3.712e-05, 1.43%)	1.15%
-buy(1, GASBTC, 6.36) @ 0.00063
-buy(1, MDABTC, 30.0) @ 0.00015571
-BUY_FAILED for THETABTC price=1.303e-05 size=310.0
-sell(1, CNDBTC, 1310.0) @ 3.14e-06 (bought @ 3.06e-06, 2.61%)	1.27%
-buy(1, BTGBTC, 0.87) @ 0.004599
-sell(1, NASBTC, 23.39) @ 0.0001737 (bought @ 0.000171, 1.58%)	1.23%
-buy(1, QKCBTC, 390.0) @ 1.02e-05
-sell(1, VIBBTC, 740.0) @ 5.44e-06 (bought @ 5.39e-06, 0.93%)	1.29%
-sell(1, SALTBTC, 69.2) @ 5.85e-05 (bought @ 5.75e-05, 1.74%)	1.33%
-buy(1, BCHABCBTC, 0.083000000) @ 0.04806
-buy(1, LSKBTC, 11.26) @ 0.0003551
-sell(1, LENDBTC, 2020.0) @ 2.03e-06 (bought @ 1.98e-06, 2.53%)	1.14%
-buy(1, BATBTC, 110.0) @ 3.765e-05
-sell(1, BCHSVBTC, 0.288) @ 0.013171 (bought @ 0.0139, -5.24%)	1.09%
-buy(1, DASHBTC, 0.169) @ 0.023732
-sell(1, POWRBTC, 200.0) @ 2.067e-05 (bought @ 2.046e-05, 1.03%)	1.13%
-buy(1, LOOMBTC, 330.0) @ 1.225e-05
-BUY_FAILED for CNDBTC price=3.13e-06 size=1290.0
-sell(1, NULSBTC, 30.0) @ 0.00012692 (bought @ 0.00013532, -6.21%)	1.05%
-buy(1, XEMBTC, 220.0) @ 1.792e-05
-sell(1, BCDBTC, 16.736) @ 0.000248 (bought @ 0.000239, 3.77%)	1.04%
-buy(1, OMGBTC, 10.13) @ 0.000395
-sell(1, NAVBTC, 90.91) @ 4.1e-05 (bought @ 4.41e-05, -7.03%)	0.93%
-buy(1, TRXBTC, 1260.0) @ 3.18e-06
-sell(1, BTGBTC, 0.87) @ 0.00471 (bought @ 0.004599, 2.41%)	0.92%
-buy(1, RVNBTC, 1000.0) @ 4.02e-06
-BUY_FAILED for ZRXBTC price=9.378e-05 size=40.0
-BUY_FAILED for AIONBTC price=3.69e-05 size=108.4
-sell(1, GVTBTC, 3.19) @ 0.0012606 (bought @ 0.0012521, 0.68%)	0.96%
-buy(1, VIBBTC, 740.0) @ 5.41e-06
-sell(1, ADXBTC, 170.0) @ 2.315e-05 (bought @ 2.285e-05, 1.31%)	0.84%
-buy(1, XRPBTC, 40.0) @ 9.427e-05
-sell(1, QKCBTC, 390.0) @ 1.039e-05 (bought @ 1.02e-05, 1.86%)	0.8%
-buy(1, BCDBTC, 16.461) @ 0.000243
-sell(1, APPCBTC, 360.0) @ 1.121e-05 (bought @ 1.12e-05, 0.09%)	0.73%
-buy(1, QKCBTC, 360.0) @ 1.105e-05
-BUY_FAILED for IOTABTC price=7.34e-05 size=50.0
-BUY_FAILED for BTGBTC price=0.004748 size=0.84
-BUY_FAILED for THETABTC price=1.329e-05 size=300.0
-sell(1, FUNBTC, 3130.0) @ 1.3e-06 (bought @ 1.28e-06, 1.56%)	0.39%
-sell(1, QKCBTC, 360.0) @ 1.116e-05 (bought @ 1.105e-05, 1.0%)	0.31%
-buy(1, GTOBTC, 570.0) @ 7.02e-06
-buy(1, CNDBTC, 1310.0) @ 3.05e-06
-sell(1, EVXBTC, 60.0) @ 6.494e-05 (bought @ 6.671e-05, -2.65%)	0.59%
-buy(1, GOBTC, 480.0) @ 8.42e-06
-sell(1, ONTBTC, 17.47) @ 0.0002247 (bought @ 0.0002288, -1.79%)	0.58%
-buy(1, QKCBTC, 360.0) @ 1.122e-05
-sell(1, MDABTC, 30.0) @ 0.00015212 (bought @ 0.00015571, -2.31%)	0.56%
-buy(1, WTCBTC, 12.78) @ 0.000313
-sell(1, ZECBTC, 0.225) @ 0.017487 (bought @ 0.017807, -1.8%)	0.4%
-buy(1, MTHBTC, 780.0) @ 5.14e-06
-sell(1, BQXBTC, 120.0) @ 3.294e-05 (bought @ 3.43e-05, -3.97%)	0.3%
-buy(1, DLTBTC, 430.0) @ 9.39e-06
-BUY_FAILED for ADXBTC price=2.299e-05 size=170.0
-sell(1, ETCBTC, 3.36) @ 0.001174 (bought @ 0.001192, -1.51%)	0.31%
-buy(1, ASTBTC, 470.0) @ 8.48e-06
-sell(1, WABIBTC, 120.0) @ 3.367e-05 (bought @ 3.225e-05, 4.4%)	0.3%
-buy(1, TUSDBTC, 20.0) @ 0.00023414
-sell(1, EOSBTC, 4.83) @ 0.0008253 (bought @ 0.0008276, -0.28%)	0.33%
-buy(1, NCASHBTC, 7410.0) @ 5.3e-07
-sell(1, LTCBTC, 0.53) @ 0.007394 (bought @ 0.007522, -1.7%)	0.11%
-buy(1, BCHSVBTC, 0.249) @ 0.016044
-BUY_FAILED for PAXBTC price=0.00023409 size=20.0
-sell(1, OMGBTC, 10.13) @ 0.000388 (bought @ 0.000395, -1.77%)	0.17%
-buy(1, GVTBTC, 3.03) @ 0.0013182
-sell(1, NEOBTC, 2.01) @ 0.001948 (bought @ 0.001983, -1.77%)	0.08%
-sell(1, XRPBTC, 40.0) @ 9.302e-05 (bought @ 9.427e-05, -1.33%)	0.11%
-buy(1, BTGBTC, 0.84) @ 0.004741
-buy(1, MCOBTC, 7.45) @ 0.000538
-BUY_FAILED for SUBBTC price=1.109e-05 size=360.0
-BUY_FAILED for SYSBTC price=9.05e-06 size=440.0
-sell(1, WTCBTC, 12.78) @ 0.0003118 (bought @ 0.000313, -0.38%)	0.07%
-buy(1, SKYBTC, 11.561) @ 0.000346
-sell(1, XLMBTC, 100.0) @ 4.117e-05 (bought @ 4.164e-05, -1.13%)	-0.01%
-sell(1, CNDBTC, 1310.0) @ 2.94e-06 (bought @ 3.05e-06, -3.61%)	-0.01%
-buy(1, GRSBTC, 60.0) @ 6.588e-05
-buy(1, AMBBTC, 200.0) @ 2.026e-05
-sell(1, XEMBTC, 220.0) @ 1.765e-05 (bought @ 1.792e-05, -1.51%)	-0.0%
-sell(1, STRATBTC, 21.7) @ 0.0001818 (bought @ 0.0001847, -1.57%)	0.11%
-sell(1, WANBTC, 38.68) @ 0.0001024 (bought @ 0.0001034, -0.97%)	0.12%
-sell(1, XMRBTC, 0.26) @ 0.0151 (bought @ 0.015418, -2.06%)	0.17%
-buy(1, GNTBTC, 190.0) @ 2.074e-05
-buy(1, SNTBTC, 810.0) @ 4.92e-06
-buy(1, IOTABTC, 50.0) @ 7.3e-05
-sell(1, NANOBTC, 15.83) @ 0.0002452 (bought @ 0.0002524, -2.85%)	0.14%
-buy(1, HOTBTC, 28570.0) @ 1.4e-07
-sell(1, BCDBTC, 16.461) @ 0.000268 (bought @ 0.000243, 10.29%)	-0.12%
-sell(1, BTGBTC, 0.84) @ 0.004946 (bought @ 0.004741, 4.32%)	0.01%
-sell(1, BATBTC, 110.0) @ 3.722e-05 (bought @ 3.765e-05, -1.14%)	-0.09%
-buy(1, ENJBTC, 650.0) @ 6.16e-06
-buy(1, BLZBTC, 300.0) @ 1.35e-05
-buy(1, POABTC, 440.0) @ 9.04e-06
-sell(1, MANABTC, 290.0) @ 1.352e-05 (bought @ 1.385e-05, -2.38%)	-0.05%
-sell(1, LRCBTC, 360.0) @ 1.088e-05 (bought @ 1.108e-05, -1.81%)	0.06%
-buy(1, XVGBTC, 2680.0) @ 1.49e-06
-buy(1, ZILBTC, 1050.0) @ 3.82e-06
-buy(1, BCDBTC, 15.209) @ 0.000263
-sell(1, GOBTC, 480.0) @ 8.46e-06 (bought @ 8.42e-06, 0.48%)	0.1%
-buy(1, BTGBTC, 0.8) @ 0.005016
-sell(1, GASBTC, 6.36) @ 0.000605 (bought @ 0.00063, -3.97%)	0.06%
-buy(1, VIBEBTC, 610.0) @ 6.67e-06
-sell(1, BRDBTC, 60.0) @ 6.435e-05 (bought @ 7.154e-05, -10.05%)	0.06%
-buy(1, SALTBTC, 68.38) @ 5.84e-05
-sell(1, SNTBTC, 810.0) @ 4.81e-06 (bought @ 4.92e-06, -2.24%)	0.02%
-buy(1, POWRBTC, 190.0) @ 2.07e-05
-sell(1, ARNBTC, 50.0) @ 6.934e-05 (bought @ 7.342e-05, -5.56%)	0.12%
-buy(1, AEBTC, 27.64) @ 0.0001441
-BUY_FAILED for ADXBTC price=2.375e-05 size=170.0
-sell(1, BCDBTC, 15.209) @ 0.000265 (bought @ 0.000263, 0.76%)	0.12%
-buy(1, WPRBTC, 1120.0) @ 3.58e-06
-sell(1, REQBTC, 720.0) @ 5.61e-06 (bought @ 5.56e-06, 0.9%)	-0.01%
-buy(1, PIVXBTC, 23.05) @ 0.0001736
-sell(1, TRXBTC, 1260.0) @ 3.15e-06 (bought @ 3.18e-06, -0.94%)	0.11%
-buy(1, STORMBTC, 4400.0) @ 9.1e-07
-BUY_FAILED for SNGLSBTC price=3.31e-06 size=1200.0
-sell(1, TUSDBTC, 20.0) @ 0.00023624 (bought @ 0.00023414, 0.9%)	-0.16%
-sell(1, BCHSVBTC, 0.249) @ 0.016215 (bought @ 0.016044, 1.07%)	-0.17%
-sell(1, GNTBTC, 190.0) @ 2.053e-05 (bought @ 2.074e-05, -1.01%)	-0.15%
-buy(1, BCDBTC, 15.564) @ 0.000257
-buy(1, NASBTC, 23.04) @ 0.0001732
-buy(1, MDABTC, 20.0) @ 0.00016429
-sell(1, AEBTC, 27.64) @ 0.0001495 (bought @ 0.0001441, 3.75%)	0.04%
-buy(1, PAXBTC, 20.0) @ 0.00023598
-BUY_FAILED for SNMBTC price=6.92e-06 size=580.0
-sell(1, MODBTC, 44.35) @ 8.81e-05 (bought @ 8.99e-05, -2.0%)	-0.15%
-buy(1, ONTBTC, 17.67) @ 0.0002264
-sell(1, LSKBTC, 11.26) @ 0.0003489 (bought @ 0.0003551, -1.75%)	-0.15%
-buy(1, TUSDBTC, 20.0) @ 0.00023831
-sell(1, ELFBTC, 130.0) @ 2.964e-05 (bought @ 3.005e-05, -1.36%)	-0.28%
-buy(1, BCHSVBTC, 0.249) @ 0.016108
-sell(1, GTOBTC, 570.0) @ 6.97e-06 (bought @ 7.02e-06, -0.71%)	-0.57%
-buy(1, AEBTC, 26.11) @ 0.0001536
-sell(1, ZILBTC, 1050.0) @ 3.79e-06 (bought @ 3.82e-06, -0.79%)	-0.32%
-sell(1, ASTBTC, 470.0) @ 8.66e-06 (bought @ 8.48e-06, 2.12%)	-0.33%
-buy(1, NULSBTC, 30.0) @ 0.00012741
-buy(1, STEEMBTC, 45.4) @ 8.8e-05
-sell(1, AMBBTC, 200.0) @ 1.9e-05 (bought @ 2.026e-05, -6.22%)	-0.36%
-buy(1, ADXBTC, 170.0) @ 2.336e-05
-sell(1, RVNBTC, 1000.0) @ 4.08e-06 (bought @ 4.02e-06, 1.49%)	-0.36%
-sell(1, OAXBTC, 140.0) @ 2.719e-05 (bought @ 2.84e-05, -4.26%)	-0.36%
-buy(1, PHXBTC, 1520.0) @ 2.61e-06
-buy(1, DATABTC, 860.0) @ 4.67e-06
-sell(1, SALTBTC, 68.38) @ 5.79e-05 (bought @ 5.84e-05, -0.86%)	-0.26%
-sell(1, QKCBTC, 360.0) @ 1.134e-05 (bought @ 1.122e-05, 1.07%)	-0.23%
-sell(1, PIVXBTC, 23.05) @ 0.0001713 (bought @ 0.0001736, -1.32%)	-0.34%
-buy(1, ZENBTC, 2.252) @ 0.001776
-buy(1, KEYBTC, 5130.0) @ 7.8e-07
-buy(1, RVNBTC, 970.0) @ 4.11e-06
-sell(1, MTLBTC, 59.26) @ 6.93e-05 (bought @ 6.78e-05, 2.21%)	-0.56%
-buy(1, REPBTC, 1.853) @ 0.002156
-sell(1, GVTBTC, 3.03) @ 0.0012308 (bought @ 0.0013182, -6.63%)	-0.73%
-buy(1, KMDBTC, 27.21) @ 0.0001468
-sell(1, GRSBTC, 60.0) @ 6.425e-05 (bought @ 6.588e-05, -2.47%)	-0.87%
-sell(1, HOTBTC, 28570.0) @ 1.3e-07 (bought @ 1.4e-07, -7.14%)	-0.81%
-buy(1, USDCBTC, 20.0) @ 0.00024265
-sell(1, MTHBTC, 780.0) @ 5.02e-06 (bought @ 5.14e-06, -2.33%)	-0.79%
-buy(1, QKCBTC, 350.0) @ 1.138e-05
-sell(1, IOTABTC, 50.0) @ 7.161e-05 (bought @ 7.3e-05, -1.9%)	-0.81%
-buy(1, DOCKBTC, 1400.0) @ 2.86e-06
-sell(1, STEEMBTC, 45.4) @ 8.69e-05 (bought @ 8.8e-05, -1.25%)	-0.66%
-buy(1, LRCBTC, 370.0) @ 1.089e-05
-sell(1, LOOMBTC, 330.0) @ 1.186e-05 (bought @ 1.225e-05, -3.18%)	-0.69%
-buy(1, SNMBTC, 600.0) @ 6.68e-06
-sell(1, ENJBTC, 650.0) @ 6.1e-06 (bought @ 6.16e-06, -0.97%)	-1.0%
-buy(1, EOSBTC, 4.67) @ 0.0008554
-sell(1, BCHSVBTC, 0.249) @ 0.014533 (bought @ 0.016108, -9.78%)	-1.04%
-buy(1, MTLBTC, 60.33) @ 6.65e-05
-sell(1, BCHABCBTC, 0.083000000) @ 0.047501 (bought @ 0.04806, -1.16%)	-0.98%
-buy(1, QTUMBTC, 7.35) @ 0.000545
-sell(1, KMDBTC, 27.21) @ 0.0001462 (bought @ 0.0001468, -0.41%)	-1.08%
-buy(1, POLYBTC, 130.0) @ 3.056e-05
-sell(1, VIBBTC, 740.0) @ 5.2e-06 (bought @ 5.41e-06, -3.88%)	-1.41%
-buy(1, VIABTC, 50.83) @ 7.88e-05
-sell(1, XVGBTC, 2680.0) @ 1.45e-06 (bought @ 1.49e-06, -2.68%)	-1.46%
-buy(1, HCBTC, 17.01) @ 0.000235
-sell(1, DOCKBTC, 1400.0) @ 2.78e-06 (bought @ 2.86e-06, -2.8%)	-1.23%
-buy(1, XRPBTC, 40.0) @ 9.649e-05
-sell(1, MDABTC, 20.0) @ 0.00014917 (bought @ 0.00016429, -9.2%)	-1.26%
-buy(1, DGDBTC, 0.883) @ 0.00453
-sell(1, NCASHBTC, 7410.0) @ 4.9e-07 (bought @ 5.3e-07, -7.55%)	-1.34%
-sell(1, POABTC, 440.0) @ 8.77e-06 (bought @ 9.04e-06, -2.99%)	-1.41%
-sell(1, KEYBTC, 5130.0) @ 7.5e-07 (bought @ 7.8e-07, -3.85%)	-1.27%
-sell(1, DLTBTC, 430.0) @ 8.53e-06 (bought @ 9.39e-06, -9.16%)	-1.57%
-sell(1, WINGSBTC, 200.0) @ 1.949e-05 (bought @ 1.99e-05, -2.06%)	-1.58%
-sell(1, POWRBTC, 190.0) @ 1.99e-05 (bought @ 2.07e-05, -3.86%)	-1.49%
-buy(1, ETHBTC, 0.69) @ 0.029037
-ORDER_SIZE_UPDATE for ETHBTC orig_size=0.69 new_size=0.69
-sell(1, MTLBTC, 60.33) @ 6.73e-05 (bought @ 6.65e-05, 1.2%)	-1.47%
-buy(1, QKCETH, 240.0) @ 0.00040827
-buy(1, PAXETH, 10.0) @ 0.00893503
-buy(1, BTGETH, 0.61) @ 0.165633
-buy(1, TUSDETH, 10.0) @ 0.00912741
-buy(1, BCDETH, 11.136) @ 0.00891
-buy(1, AEETH, 19.01) @ 0.0052
-buy(1, EOSETH, 3.43) @ 0.0291
-sell(1, PHXBTC, 1520.0) @ 2.4e-06 (bought @ 2.61e-06, -8.05%)	-1.71%
-sell(1, NEBLBTC, 16.35) @ 0.0002407 (bought @ 0.0002446, -1.59%)	-1.94%
-buy(1, LTCBTC, 0.53) @ 0.007539
-buy(1, REQBTC, 730.0) @ 5.45e-06
-buy(1, MITHBTC, 150.0) @ 2.658e-05
-sell(1, DATABTC, 860.0) @ 4.51e-06 (bought @ 4.67e-06, -3.43%)	-1.6%
-buy(1, EDOBTC, 21.1) @ 0.0001896
-sell(1, EDOBTC, 21.1) @ 0.0001933 (bought @ 0.0001896, 1.95%)	-1.39%
-sell(1, ADXBTC, 170.0) @ 2.238e-05 (bought @ 2.336e-05, -4.2%)	-1.38%
-sell(1, VIABTC, 50.83) @ 7.91e-05 (bought @ 7.88e-05, 0.38%)	-1.51%
-sell(1, ZENBTC, 2.252) @ 0.001756 (bought @ 0.001776, -1.13%)	-1.51%
-sell(1, REPBTC, 1.853) @ 0.002095 (bought @ 0.002156, -2.83%)	-1.68%
-buy(1, BNBBTC, 15.55) @ 0.0012893
-ORDER_SIZE_UPDATE for BNBBTC orig_size=15.55 new_size=15.55
-buy(1, XRPBNB, 39.8) @ 0.07529
-buy(1, USDCBNB, 14.1) @ 0.21009
-buy(1, PAXBNB, 14.5) @ 0.20634
-buy(1, TUSDBNB, 14.5) @ 0.20648
-sell(1, EOSETH, 3.43) @ 0.028889 (bought @ 0.0291, -0.73%)	-1.59%
-buy(1, LENDETH, 1520.0) @ 6.631e-05
-sell(1, LRCBTC, 370.0) @ 1.073e-05 (bought @ 1.089e-05, -1.47%)	-1.85%
-sell(1, TUSDBTC, 20.0) @ 0.00026257 (bought @ 0.00023831, 10.18%)	-1.85%
-sell(1, USDCBTC, 20.0) @ 0.000262 (bought @ 0.00024265, 7.97%)	-1.78%
-sell(1, DGDBTC, 0.883) @ 0.004532 (bought @ 0.00453, 0.04%)	-1.8%
-buy(1, ETCBTC, 3.32) @ 0.001207
-sell(1, WPRBTC, 1120.0) @ 3.34e-06 (bought @ 3.58e-06, -6.7%)	-2.09%
-buy(1, NEOBTC, 2.07) @ 0.001933
-sell(1, BTGBTC, 0.8) @ 0.004734 (bought @ 0.005016, -5.62%)	-2.12%
-buy(1, PPTBTC, 10.18) @ 0.0003951
-sell(1, PAXBTC, 20.0) @ 0.00025604 (bought @ 0.00023598, 8.5%)	-2.06%
-sell(1, SKYBTC, 11.561) @ 0.00033 (bought @ 0.000346, -4.62%)	-1.88%
-buy(1, MANABTC, 290.0) @ 1.386e-05
-buy(1, BATBTC, 110.0) @ 3.78e-05
-sell(1, VIBEBTC, 610.0) @ 6.35e-06 (bought @ 6.67e-06, -4.8%)	-1.91%
-buy(1, XMRBTC, 0.261) @ 0.01531
-sell(1, BCDBTC, 15.564) @ 0.000261 (bought @ 0.000257, 1.56%)	-1.81%
-sell(1, IOTXBTC, 1800.0) @ 2.2e-06 (bought @ 2.22e-06, -0.9%)	-1.74%
-buy(1, ETCBNB, 3.16) @ 0.9405
-sell(1, ONTBTC, 17.67) @ 0.000232 (bought @ 0.0002264, 2.47%)	-1.72%
-sell(1, TNBBTC, 3600.0) @ 1.1e-06 (bought @ 1.11e-06, -0.9%)	-1.81%
-buy(1, ADABTC, 400.0) @ 9.93e-06
-buy(1, ZRXBTC, 40.0) @ 9.141e-05
-sell(1, BCDETH, 11.136) @ 0.00878 (bought @ 0.00891, -1.46%)	-1.79%
-buy(1, ETCETH, 2.38) @ 0.042164
+BUY_FAILED for BLZBTC price=1.347e-05 size=300.0
+sell(1, LINKBTC, 50.0) @ 7.455e-05 (bought @ 7.863e-05, -5.19%)	-0.3%
+buy(1, ZECBTC, 0.225) @ 0.017757
+BUY_FAILED for GVTBTC price=0.0012521 size=3.19
+sell(1, NULSBTC, 30.0) @ 0.0001333 (bought @ 0.00013125, 1.56%)	0.02%
+buy(1, APPCBTC, 360.0) @ 1.106e-05
+sell(1, ARDRBTC, 290.0) @ 1.396e-05 (bought @ 1.359e-05, 2.72%)	-0.08%
+buy(1, ICXBTC, 64.1) @ 6.24e-05
+BUY_FAILED for ADXBTC price=2.283e-05 size=170.0
+BUY_FAILED for EVXBTC price=6.686e-05 size=60.0
+sell(1, WPRBTC, 1180.0) @ 3.41e-06 (bought @ 3.38e-06, 0.89%)	-0.04%
+sell(1, FUELBTC, 1320.0) @ 2.89e-06 (bought @ 3.04e-06, -4.93%)	-0.05%
+sell(1, DOCKBTC, 1330.0) @ 2.87e-06 (bought @ 3.01e-06, -4.65%)	-0.09%
+sell(1, BCHSVBTC, 0.283) @ 0.014715 (bought @ 0.014068, 4.6%)	-0.13%
+sell(1, VIBBTC, 740.0) @ 5.43e-06 (bought @ 5.37e-06, 1.12%)	-0.05%
+sell(1, APPCBTC, 360.0) @ 1.118e-05 (bought @ 1.106e-05, 1.08%)	-0.01%
+buy(1, OAXBTC, 140.0) @ 2.795e-05
+buy(1, INSBTC, 67.8) @ 5.88e-05
+buy(1, NULSBTC, 30.0) @ 0.00013027
+buy(1, TRXBTC, 1270.0) @ 3.15e-06
+buy(1, ARDRBTC, 280.0) @ 1.431e-05
+buy(1, XMRBTC, 0.264) @ 0.015163
+sell(1, ARKBTC, 35.68) @ 0.0001023 (bought @ 0.0001121, -8.74%)	-0.02%
+buy(1, CDTBTC, 1790.0) @ 2.24e-06
+sell(1, ONTBTC, 18.03) @ 0.0002257 (bought @ 0.0002214, 1.94%)	-0.01%
+buy(1, ETCBTC, 3.37) @ 0.001187
+BUY_FAILED for BCHSVBTC price=0.0139 size=0.287
+sell(1, IOTXBTC, 1820.0) @ 2.23e-06 (bought @ 2.2e-06, 1.36%)	0.17%
+buy(1, VIBBTC, 730.0) @ 5.47e-06
+BUY_FAILED for CMTBTC price=1.097e-05 size=360.0
+sell(1, NEOBTC, 2.07) @ 0.001954 (bought @ 0.001934, 1.03%)	0.16%
+buy(1, QTUMBTC, 7.52) @ 0.000532
+sell(1, ARNBTC, 60.0) @ 7.312e-05 (bought @ 7.051e-05, 3.7%)	0.35%
+buy(1, NAVBTC, 97.32) @ 4.09e-05
+sell(1, IOTABTC, 60.0) @ 7.304e-05 (bought @ 7.24e-05, 0.88%)	1.01%
+buy(1, ARNBTC, 50.0) @ 7.306e-05
+BUY_FAILED for NEOBTC price=0.001992 size=2.01
+BUY_FAILED for GVTBTC price=0.0012423 size=3.22
+sell(1, GASBTC, 6.8) @ 0.000609 (bought @ 0.000589, 3.4%)	1.22%
+buy(1, ONTBTC, 17.49) @ 0.0002289
+BUY_FAILED for BTGBTC price=0.004637 size=0.86
+sell(1, ZRXBTC, 40.0) @ 9.35e-05 (bought @ 9.259e-05, 0.98%)	1.22%
+buy(1, EVXBTC, 60.0) @ 6.567e-05
+BUY_FAILED for LTCBTC price=0.007487 size=0.53
+sell(1, QLCBTC, 680.0) @ 5.93e-06 (bought @ 5.91e-06, 0.34%)	1.21%
+buy(1, LRCBTC, 350.0) @ 1.129e-05
+sell(1, IOSTBTC, 3310.0) @ 1.22e-06 (bought @ 1.21e-06, 0.83%)	1.22%
+buy(1, GTOBTC, 570.0) @ 6.98e-06
+BUY_FAILED for VETBTC price=1.19e-06 size=3330.0
+BUY_FAILED for BLZBTC price=1.349e-05 size=300.0
+sell(1, ETCBTC, 3.37) @ 0.001197 (bought @ 0.001187, 0.84%)	1.16%
+buy(1, ZILBTC, 1040.0) @ 3.84e-06
+sell(1, XMRBTC, 0.264) @ 0.015398 (bought @ 0.015163, 1.55%)	1.19%
+buy(1, BATBTC, 110.0) @ 3.778e-05
+BUY_FAILED for DGDBTC price=0.004475 size=0.894
+BUY_FAILED for DASHBTC price=0.022964 size=0.174
+BUY_FAILED for GASBTC price=0.000627 size=6.39
+sell(1, POWRBTC, 190.0) @ 2.091e-05 (bought @ 2.068e-05, 1.11%)	1.19%
+buy(1, NANOBTC, 15.94) @ 0.000251
+sell(1, CNDBTC, 1310.0) @ 3.14e-06 (bought @ 3.07e-06, 2.28%)	1.29%
+buy(1, OSTBTC, 710.0) @ 5.65e-06
+BUY_FAILED for STEEMBTC price=9.01e-05 size=44.4
+sell(1, MCOBTC, 7.5) @ 0.000535 (bought @ 0.000531, 0.75%)	1.31%
+BUY_FAILED for MFTBTC price=9.4e-07 size=4260.0
+buy(1, POLYBTC, 130.0) @ 3.08e-05
+BUY_FAILED for LSKBTC price=0.0003558 size=11.27
+BUY_FAILED for MDABTC price=0.00015597 size=30.0
+BUY_FAILED for SUBBTC price=1.135e-05 size=350.0
+BUY_FAILED for ADXBTC price=2.24e-05 size=180.0
+sell(1, OAXBTC, 140.0) @ 2.85e-05 (bought @ 2.795e-05, 1.97%)	1.18%
+buy(1, XEMBTC, 220.0) @ 1.795e-05
+BUY_FAILED for XMRBTC price=0.015309 size=0.261
+BUY_FAILED for ETCBTC price=0.001191 size=3.36
+BUY_FAILED for ZRXBTC price=9.316e-05 size=40.0
+sell(1, HCBTC, 18.1) @ 0.000225 (bought @ 0.0002226, 1.08%)	1.06%
+buy(1, AIONBTC, 108.11) @ 3.7e-05
+BUY_FAILED for RVNBTC price=3.95e-06 size=1010.0
+BUY_FAILED for CVCBTC price=1.53e-05 size=260.0
+sell(1, ICXBTC, 64.1) @ 6.3e-05 (bought @ 6.24e-05, 0.96%)	1.14%
+buy(1, THETABTC, 300.0) @ 1.353e-05
+BUY_FAILED for WPRBTC price=3.45e-06 size=1160.0
+BUY_FAILED for POWRBTC price=2.082e-05 size=190.0
+BUY_FAILED for NASBTC price=0.0001733 size=23.01
+BUY_FAILED for ASTBTC price=8.56e-06 size=470.0
+sell(1, BCDBTC, 16.667) @ 0.000248 (bought @ 0.000239, 3.77%)	1.04%
+buy(1, NEOBTC, 2.02) @ 0.00198
+BUY_FAILED for LTCBTC price=0.007462 size=0.54
+BUY_FAILED for CNDBTC price=3.13e-06 size=1270.0
+sell(1, NAVBTC, 97.32) @ 4.12e-05 (bought @ 4.09e-05, 0.73%)	0.81%
+buy(1, CMTBTC, 370.0) @ 1.082e-05
+BUY_FAILED for BCHSVBTC price=0.013583 size=0.295
+BUY_FAILED for DOCKBTC price=2.92e-06 size=1370.0
+BUY_FAILED for VETBTC price=1.18e-06 size=3390.0
+BUY_FAILED for MITHBTC price=2.851e-05 size=140.0
+BUY_FAILED for GOBTC price=8.55e-06 size=470.0
+BUY_FAILED for XVGBTC price=1.5e-06 size=2670.0
+sell(1, QKCBTC, 390.0) @ 1.098e-05 (bought @ 1.036e-05, 5.98%)	0.81%
+buy(1, BCDBTC, 16.529) @ 0.000244
+BUY_FAILED for DASHBTC price=0.023276 size=0.172
+BUY_FAILED for SALTBTC price=5.99e-05 size=66.78
+BUY_FAILED for ICXBTC price=6.26e-05 size=64.0
+sell(1, NULSBTC, 30.0) @ 0.00012366 (bought @ 0.00013027, -5.07%)	0.62%
+buy(1, MDABTC, 30.0) @ 0.00015287
+BUY_FAILED for MTHBTC price=5.16e-06 size=780.0
+sell(1, WABIBTC, 120.0) @ 3.365e-05 (bought @ 3.277e-05, 2.69%)	0.6%
+buy(1, DNTBTC, 1360.0) @ 2.94e-06
+BUY_FAILED for GASBTC price=0.000617 size=6.48
+sell(1, BCHABCBTC, 0.083000000) @ 0.048783 (bought @ 0.048197, 1.22%)	0.6%
+buy(1, GRSBTC, 60.0) @ 6.6e-05
+BUY_FAILED for ASTBTC price=8.43e-06 size=470.0
+BUY_FAILED for DLTBTC price=9.37e-06 size=430.0
+BUY_FAILED for POABTC price=9.06e-06 size=440.0
+BUY_FAILED for NCASHBTC price=5.3e-07 size=7550.0
+sell(1, BCDBTC, 16.529) @ 0.000268 (bought @ 0.000244, 9.84%)	0.48%
+buy(1, BCHSVBTC, 0.259) @ 0.015341
+BUY_FAILED for GASBTC price=0.0006 size=6.67
+BUY_FAILED for RVNBTC price=3.94e-06 size=1020.0
+BUY_FAILED for SALTBTC price=5.8e-05 size=68.85
+sell(1, MDABTC, 30.0) @ 0.0001545 (bought @ 0.00015287, 1.07%)	0.71%
+buy(1, BTGBTC, 0.8) @ 0.005001
+BUY_FAILED for PAXBTC price=0.00023384 size=20.0
+BUY_FAILED for BCHABCBTC price=0.047658 size=0.084000000
+BUY_FAILED for SKYBTC price=0.000341 size=11.73
+BUY_FAILED for HOTBTC price=1.4e-07 size=28570.0
+BUY_FAILED for BCDBTC price=0.000264 size=15.209
+sell(1, BCHSVBTC, 0.259) @ 0.015511 (bought @ 0.015341, 1.11%)	0.78%
+buy(1, QKCBTC, 360.0) @ 1.119e-05
+BUY_FAILED for IOTABTC price=7.349e-05 size=50.0
+sell(1, NEBLBTC, 16.9) @ 0.0002444 (bought @ 0.0002369, 3.17%)	0.85%
+buy(1, ADXBTC, 170.0) @ 2.388e-05
+sell(1, LRCBTC, 350.0) @ 1.133e-05 (bought @ 1.129e-05, 0.35%)	0.96%
+buy(1, GVTBTC, 3.09) @ 0.0012946
+BUY_FAILED for VIBEBTC price=6.64e-06 size=600.0
+BUY_FAILED for LUNBTC price=0.0004308 size=9.3
+sell(1, ARNBTC, 50.0) @ 6.875e-05 (bought @ 7.306e-05, -5.9%)	0.69%
+buy(1, DASHBTC, 0.172) @ 0.023309
+BUY_FAILED for XVGBTC price=1.49e-06 size=2680.0
+BUY_FAILED for BRDBTC price=6.431e-05 size=60.0
+sell(1, QKCBTC, 360.0) @ 1.128e-05 (bought @ 1.119e-05, 0.8%)	1.07%
+buy(1, BCHSVBTC, 0.252) @ 0.015893
+sell(1, GTOBTC, 570.0) @ 7.04e-06 (bought @ 6.98e-06, 0.86%)	1.06%
+buy(1, AMBBTC, 200.0) @ 1.977e-05
+BUY_FAILED for LOOMBTC price=1.215e-05 size=330.0
+sell(1, MANABTC, 290.0) @ 1.372e-05 (bought @ 1.362e-05, 0.73%)	0.97%
+buy(1, MCOBTC, 7.33) @ 0.000545
+BUY_FAILED for MDABTC price=0.000166 size=20.0
+sell(1, BCHSVBTC, 0.252) @ 0.016215 (bought @ 0.015893, 2.03%)	0.91%
+buy(1, BLZBTC, 290.0) @ 1.371e-05
+BUY_FAILED for LRCBTC price=1.062e-05 size=370.0
+BUY_FAILED for WPRBTC price=3.58e-06 size=1120.0
+BUY_FAILED for STEEMBTC price=8.9e-05 size=44.94
+sell(1, AEBTC, 28.9) @ 0.0001495 (bought @ 0.0001394, 7.25%)	0.82%
+buy(1, QKCBTC, 350.0) @ 1.128e-05
+BUY_FAILED for ASTBTC price=8.72e-06 size=460.0
+sell(1, THETABTC, 300.0) @ 1.284e-05 (bought @ 1.353e-05, -5.1%)	0.72%
+buy(1, BCHSVBTC, 0.249) @ 0.016089
+BUY_FAILED for DATABTC price=4.67e-06 size=860.0
+sell(1, GVTBTC, 3.09) @ 0.0012357 (bought @ 0.0012946, -4.55%)	0.57%
+buy(1, BCHABCBTC, 0.085000000) @ 0.046971
+BUY_FAILED for CVCBTC price=1.534e-05 size=260.0
+BUY_FAILED for RVNBTC price=4.1e-06 size=970.0
+BUY_FAILED for DOCKBTC price=2.88e-06 size=1390.0
+sell(1, MTLBTC, 59.35) @ 6.93e-05 (bought @ 6.74e-05, 2.82%)	0.5%
+buy(1, PHXBTC, 1560.0) @ 2.57e-06
+BUY_FAILED for LTCBTC price=0.00735 size=0.55
+BUY_FAILED for BCDBTC price=0.000258 size=15.444
+BUY_FAILED for PAXBTC price=0.00023961 size=20.0
+sell(1, INSBTC, 67.8) @ 5.56e-05 (bought @ 5.88e-05, -5.44%)	0.2%
+buy(1, LRCBTC, 360.0) @ 1.098e-05
+BUY_FAILED for VETBTC price=1.19e-06 size=3360.0
+BUY_FAILED for VIBEBTC price=6.5e-06 size=620.0
+BUY_FAILED for ETCBTC price=0.001182 size=3.39
+sell(1, NANOBTC, 15.94) @ 0.000238 (bought @ 0.000251, -5.18%)	0.09%
+buy(1, SNGLSBTC, 1260.0) @ 3.17e-06
+BUY_FAILED for AEBTC price=0.0001496 size=26.83
+BUY_FAILED for MANABTC price=1.34e-05 size=300.0
+BUY_FAILED for REPBTC price=0.002147 size=1.867
+sell(1, AMBBTC, 200.0) @ 1.882e-05 (bought @ 1.977e-05, -4.81%)	0.19%
+buy(1, NULSBTC, 30.0) @ 0.00012653
+BUY_FAILED for NAVBTC price=4.1e-05 size=97.32
+BUY_FAILED for DLTBTC price=9.09e-06 size=440.0
+sell(1, SNGLSBTC, 1260.0) @ 3.23e-06 (bought @ 3.17e-06, 1.89%)	0.24%
+buy(1, SNMBTC, 590.0) @ 6.8e-06
+BUY_FAILED for MODBTC price=8.72e-05 size=45.87
+sell(1, EVXBTC, 60.0) @ 6.239e-05 (bought @ 6.567e-05, -4.99%)	0.05%
+buy(1, MDABTC, 30.0) @ 0.00015435
+sell(1, XLMBTC, 90.0) @ 4.05e-05 (bought @ 4.264e-05, -5.02%)	0.03%
+buy(1, PPTBTC, 10.39) @ 0.0003838
+BUY_FAILED for WPRBTC price=3.48e-06 size=1150.0
+BUY_FAILED for ASTBTC price=8.55e-06 size=470.0
+BUY_FAILED for SKYBTC price=0.000334 size=11.94
+BUY_FAILED for NCASHBTC price=5.1e-07 size=7840.0
+sell(1, AIONBTC, 108.11) @ 3.5e-05 (bought @ 3.7e-05, -5.41%)	0.04%
+sell(1, QTUMBTC, 7.52) @ 0.000536 (bought @ 0.000532, 0.75%)	-0.04%
+buy(1, MTLBTC, 58.65) @ 6.83e-05
+buy(1, LINKBTC, 50.0) @ 7.524e-05
+sell(1, BCPTBTC, 420.0) @ 8.95e-06 (bought @ 9.43e-06, -5.09%)	-0.04%
+buy(1, MITHBTC, 140.0) @ 2.806e-05
+sell(1, ADABTC, 400.0) @ 9.59e-06 (bought @ 1.005e-05, -4.58%)	-0.09%
+sell(1, BCHABCBTC, 0.085000000) @ 0.0475 (bought @ 0.046971, 1.13%)	-0.24%
+sell(1, ENGBTC, 50.0) @ 7.434e-05 (bought @ 7.83e-05, -5.06%)	-0.18%
+buy(1, BTSBTC, 330.0) @ 1.205e-05
+sell(1, GRSBTC, 60.0) @ 6.48e-05 (bought @ 6.6e-05, -1.82%)	-0.12%
+sell(1, EOSBTC, 4.78) @ 0.0008472 (bought @ 0.0008372, 1.19%)	-0.22%
+buy(1, HCBTC, 17.09) @ 0.0002341
+sell(1, ELFBTC, 130.0) @ 2.891e-05 (bought @ 3.04e-05, -4.9%)	-0.32%
+sell(1, STRATBTC, 21.39) @ 0.0001779 (bought @ 0.0001866, -4.66%)	-0.37%
+sell(1, BQXBTC, 120.0) @ 3.184e-05 (bought @ 3.359e-05, -5.21%)	-0.33%
+sell(1, VIBBTC, 730.0) @ 5.18e-06 (bought @ 5.47e-06, -5.3%)	-0.26%
+buy(1, XMRBTC, 0.262) @ 0.015326
+sell(1, QKCBTC, 350.0) @ 1.147e-05 (bought @ 1.128e-05, 1.68%)	-0.28%
+sell(1, WTCBTC, 12.64) @ 0.0002978 (bought @ 0.0003164, -5.88%)	-0.33%
+buy(1, DATABTC, 840.0) @ 4.77e-06
+buy(1, IOSTBTC, 3250.0) @ 1.22e-06
+sell(1, BCHSVBTC, 0.249) @ 0.014407 (bought @ 0.016089, -10.45%)	-0.36%
+sell(1, CLOAKBTC, 12.89) @ 0.000293 (bought @ 0.0003098, -5.42%)	-0.32%
+buy(1, NASBTC, 22.51) @ 0.0001778
+sell(1, LINKBTC, 50.0) @ 7.087e-05 (bought @ 7.524e-05, -5.81%)	-0.53%
+sell(1, DNTBTC, 1360.0) @ 2.79e-06 (bought @ 2.94e-06, -5.1%)	-0.74%
+buy(1, QTUMBTC, 7.37) @ 0.000543
+sell(1, XEMBTC, 220.0) @ 1.7e-05 (bought @ 1.795e-05, -5.29%)	-1.01%
+sell(1, PHXBTC, 1560.0) @ 2.44e-06 (bought @ 2.57e-06, -5.06%)	-0.89%
+sell(1, MDABTC, 30.0) @ 0.000146 (bought @ 0.00015435, -5.41%)	-0.91%
+buy(1, EOSBTC, 4.75) @ 0.0008405
+buy(1, ZRXBTC, 40.0) @ 9.15e-05
+sell(1, SNMBTC, 590.0) @ 6.42e-06 (bought @ 6.8e-06, -5.59%)	-1.28%
+sell(1, OSTBTC, 710.0) @ 5.3e-06 (bought @ 5.65e-06, -6.19%)	-1.29%
+sell(1, CMTBTC, 370.0) @ 1.096e-05 (bought @ 1.082e-05, 1.29%)	-1.45%
+buy(1, QKCBTC, 350.0) @ 1.16e-05
+sell(1, IOSTBTC, 3250.0) @ 1.13e-06 (bought @ 1.22e-06, -7.38%)	-1.59%
+buy(1, EDOBTC, 21.27) @ 0.0001879
+sell(1, DATABTC, 840.0) @ 4.5e-06 (bought @ 4.77e-06, -5.66%)	-1.63%
+sell(1, ADXBTC, 170.0) @ 2.205e-05 (bought @ 2.388e-05, -7.66%)	-1.6%
+buy(1, BNTBTC, 20.0) @ 0.0001735
+sell(1, EDOBTC, 21.27) @ 0.0001933 (bought @ 0.0001879, 2.87%)	-1.03%
+buy(1, THETABTC, 300.0) @ 1.303e-05
+sell(1, BTGBTC, 0.8) @ 0.004696 (bought @ 0.005001, -6.1%)	-1.16%
+sell(1, RCNBTC, 1170.0) @ 3.44e-06 (bought @ 3.4e-06, 1.18%)	-1.07%
+sell(1, TUSDBTC, 20.0) @ 0.00026257 (bought @ 0.000237, 10.79%)	-1.18%
+sell(1, USDCBTC, 20.0) @ 0.000262 (bought @ 0.00023699, 10.55%)	-1.16%
+buy(1, GOBTC, 470.0) @ 8.56e-06
+sell(1, BLZBTC, 290.0) @ 1.379e-05 (bought @ 1.371e-05, 0.58%)	-1.32%
+sell(1, ZECBTC, 0.225) @ 0.016864 (bought @ 0.017757, -5.03%)	-1.32%
+buy(1, CMTBTC, 370.0) @ 1.095e-05
+sell(1, ONTBTC, 17.49) @ 0.000232 (bought @ 0.0002289, 1.35%)	-1.3%
+buy(1, RVNBTC, 980.0) @ 4.08e-06
+sell(1, DASHBTC, 0.172) @ 0.023819 (bought @ 0.023309, 2.19%)	-1.35%
+buy(1, LTCBTC, 0.53) @ 0.00751
+buy(1, PAXBTC, 20.0) @ 0.000259
 buy(1, EDOBTC, 21.28) @ 0.000188
-buy(1, GOBTC, 470.0) @ 8.39e-06
-sell(1, GOBTC, 470.0) @ 8.47e-06 (bought @ 8.39e-06, 0.95%)	-1.52%
-sell(1, SNMBTC, 600.0) @ 6.46e-06 (bought @ 6.68e-06, -3.29%)	-1.59%
-sell(1, BTGETH, 0.61) @ 0.168737 (bought @ 0.165633, 1.87%)	-1.65%
+buy(1, PIVXBTC, 22.22) @ 0.0001787
+buy(1, ETCBTC, 3.24) @ 0.001232
 buy(1, TUSDBTC, 20.0) @ 0.00026273
 buy(1, USDCBTC, 20.0) @ 0.00026255
-sell(1, XRPBNB, 39.8) @ 0.07296 (bought @ 0.07529, -3.09%)	-1.64%
-buy(1, OMGBTC, 10.31) @ 0.000387
-buy(1, PAXBTC, 20.0) @ 0.00026104
-buy(1, TRXBTC, 1240.0) @ 3.22e-06
-sell(1, KNCBTC, 90.0) @ 4.256e-05 (bought @ 4.415e-05, -3.6%)	-1.73%
-buy(1, AGIBTC, 500.0) @ 7.98e-06
-sell(1, STORMBTC, 4400.0) @ 9e-07 (bought @ 9.1e-07, -1.1%)	-1.85%
-sell(1, NASBTC, 23.04) @ 0.0001782 (bought @ 0.0001732, 2.89%)	-1.86%
-buy(1, XEMBNB, 218.0) @ 0.0138
-buy(1, GXSETH, 15.84) @ 0.006315
+buy(1, AEBTC, 26.56) @ 0.0001506
+buy(1, MANABTC, 290.0) @ 1.366e-05
+sell(1, OMGBTC, 9.9) @ 0.000384 (bought @ 0.000404, -4.95%)	-1.44%
+buy(1, GNTBTC, 190.0) @ 2.126e-05
 buy(1, ONTBTC, 17.08) @ 0.0002336
-sell(1, BLZBTC, 300.0) @ 1.372e-05 (bought @ 1.35e-05, 1.63%)	-1.8%
-buy(1, XEMBTC, 220.0) @ 1.792e-05
-sell(1, OMGBTC, 10.31) @ 0.000381 (bought @ 0.000387, -1.55%)	-1.89%
-sell(1, AGIBTC, 500.0) @ 8.08e-06 (bought @ 7.98e-06, 1.25%)	-1.82%
-buy(1, GOBTC, 470.0) @ 8.45e-06
-sell(1, REQBTC, 730.0) @ 5.47e-06 (bought @ 5.45e-06, 0.37%)	-1.66%
-sell(1, QKCBTC, 350.0) @ 1.186e-05 (bought @ 1.138e-05, 4.22%)	-2.06%
-buy(1, NASBTC, 22.87) @ 0.0001751
-sell(1, MITHBTC, 150.0) @ 2.597e-05 (bought @ 2.658e-05, -2.29%)	-2.03%
-sell(1, POLYBTC, 130.0) @ 2.982e-05 (bought @ 3.056e-05, -2.42%)	-2.0%
-sell(1, ARDRBTC, 280.0) @ 1.425e-05 (bought @ 1.404e-05, 1.5%)	-2.04%
-sell(1, LTCBTC, 0.53) @ 0.00763 (bought @ 0.007539, 1.21%)	-2.17%
-sell(1, ZRXBTC, 40.0) @ 9.311e-05 (bought @ 9.141e-05, 1.86%)	-2.19%
-sell(1, XRPBTC, 40.0) @ 9.285e-05 (bought @ 9.649e-05, -3.77%)	-2.3%
+sell(1, TRXBTC, 1270.0) @ 3.2e-06 (bought @ 3.15e-06, 1.59%)	-1.36%
+buy(1, DASHBTC, 0.169) @ 0.023739
+buy(1, LSKBTC, 11.46) @ 0.0003488
+sell(1, MTLBTC, 58.65) @ 6.5e-05 (bought @ 6.83e-05, -4.83%)	-1.57%
+sell(1, QKCBTC, 350.0) @ 1.186e-05 (bought @ 1.16e-05, 2.24%)	-1.7%
+buy(1, ADABTC, 410.0) @ 9.8e-06
+sell(1, MITHBTC, 140.0) @ 2.585e-05 (bought @ 2.806e-05, -7.88%)	-1.73%
+sell(1, PAXBTC, 20.0) @ 0.00026176 (bought @ 0.000259, 1.07%)	-1.74%
+sell(1, KNCBTC, 90.0) @ 4.2e-05 (bought @ 4.417e-05, -4.91%)	-1.64%
+buy(1, TRXBTC, 1250.0) @ 3.19e-06
+buy(1, BCHSVBTC, 0.246) @ 0.016258
+buy(1, POABTC, 440.0) @ 9.12e-06
+buy(1, BCDBTC, 13.841) @ 0.000287
+sell(1, LTCBTC, 0.53) @ 0.007625 (bought @ 0.00751, 1.53%)	-1.86%
+sell(1, ZRXBTC, 40.0) @ 9.311e-05 (bought @ 9.15e-05, 1.76%)	-1.88%
 buy(1, QKCBTC, 340.0) @ 1.177e-05
-sell(1, STORJBTC, 110.0) @ 3.53e-05 (bought @ 3.742e-05, -5.67%)	-2.41%
-sell(1, XEMBNB, 218.0) @ 0.01411 (bought @ 0.0138, 2.25%)	-2.53%
-buy(1, LTCBTC, 0.52) @ 0.00765
+buy(1, XEMBTC, 220.0) @ 1.792e-05
+sell(1, STORJBTC, 110.0) @ 3.551e-05 (bought @ 3.74e-05, -5.05%)	-2.31%
+buy(1, PAXBTC, 20.0) @ 0.00026622
+sell(1, XRPBTC, 40.0) @ 9.111e-05 (bought @ 9.591e-05, -5.0%)	-2.31%
+sell(1, POABTC, 440.0) @ 9.13e-06 (bought @ 9.12e-06, 0.11%)	-2.38%
+sell(1, POLYBTC, 130.0) @ 2.92e-05 (bought @ 3.08e-05, -5.19%)	-2.39%
+sell(1, REQBTC, 710.0) @ 5.36e-06 (bought @ 5.61e-06, -4.46%)	-2.42%
+sell(1, ZILBTC, 1040.0) @ 3.65e-06 (bought @ 3.84e-06, -4.95%)	-2.53%
+buy(1, LTCBTC, 0.52) @ 0.00763
 buy(1, ZRXBTC, 40.0) @ 9.058e-05
-sell(1, XMRBTC, 0.261) @ 0.01491 (bought @ 0.01531, -2.61%)	-2.83%
-sell(1, NULSBTC, 30.0) @ 0.00012105 (bought @ 0.00012741, -4.99%)	-2.85%
-sell(1, GXSETH, 15.84) @ 0.006452 (bought @ 0.006315, 2.17%)	-2.8%
-buy(1, EDOETH, 15.35) @ 0.006505
-buy(1, WTCBNB, 12.93) @ 0.2283
-sell(1, BATBTC, 110.0) @ 3.589e-05 (bought @ 3.78e-05, -5.05%)	-2.84%
-sell(1, ADABTC, 400.0) @ 9.51e-06 (bought @ 9.93e-06, -4.23%)	-2.89%
-sell(1, USDCBTC, 20.0) @ 0.00026915 (bought @ 0.00026255, 2.51%)	-3.02%
-sell(1, NEOBTC, 2.07) @ 0.00189 (bought @ 0.001933, -2.22%)	-2.85%
-sell(1, TRXBTC, 1240.0) @ 3.12e-06 (bought @ 3.22e-06, -3.11%)	-2.94%
-buy(1, DCRBTC, 0.758) @ 0.005277
-sell(1, MCOBTC, 7.45) @ 0.000533 (bought @ 0.000538, -0.93%)	-2.82%
-buy(1, BLZBTC, 300.0) @ 1.348e-05
-sell(1, QTUMBTC, 7.35) @ 0.000511 (bought @ 0.000545, -6.24%)	-2.98%
-sell(1, RVNBTC, 970.0) @ 3.92e-06 (bought @ 4.11e-06, -4.62%)	-3.03%
-sell(1, ZRXBTC, 40.0) @ 8.826e-05 (bought @ 9.058e-05, -2.56%)	-3.01%
-sell(1, DASHBTC, 0.169) @ 0.022952 (bought @ 0.023732, -3.29%)	-3.12%
-sell(1, AEBTC, 26.11) @ 0.0001477 (bought @ 0.0001536, -3.84%)	-3.1%
-sell(1, GOBTC, 470.0) @ 7.86e-06 (bought @ 8.45e-06, -6.98%)	-3.06%
+sell(1, NULSBTC, 30.0) @ 0.00012097 (bought @ 0.00012653, -4.39%)	-2.85%
+buy(1, BTGBTC, 0.83) @ 0.004822
+sell(1, BATBTC, 110.0) @ 3.604e-05 (bought @ 3.778e-05, -4.61%)	-3.01%
+buy(1, AGIBTC, 500.0) @ 8.06e-06
+sell(1, USDCBTC, 20.0) @ 0.00026915 (bought @ 0.00026255, 2.51%)	-3.2%
+sell(1, QTUMBTC, 7.37) @ 0.000515 (bought @ 0.000543, -5.16%)	-3.11%
+buy(1, POABTC, 430.0) @ 9.33e-06
+sell(1, NEOBTC, 2.02) @ 0.001887 (bought @ 0.00198, -4.7%)	-3.17%
+sell(1, AEBTC, 26.56) @ 0.0001436 (bought @ 0.0001506, -4.65%)	-3.35%
+sell(1, GOBTC, 470.0) @ 7.74e-06 (bought @ 8.56e-06, -9.58%)	-3.31%
+sell(1, PPTBTC, 10.39) @ 0.0003644 (bought @ 0.0003838, -5.05%)	-3.3%
 buy(1, USDCBTC, 10.0) @ 0.00027394
-sell(1, ONTBTC, 17.08) @ 0.0002243 (bought @ 0.0002336, -3.98%)	-2.93%
-sell(1, TUSDETH, 10.0) @ 0.00961401 (bought @ 0.00912741, 5.33%)	-2.97%
-buy(1, LTCETH, 0.375) @ 0.26688
-sell(1, TUSDBTC, 20.0) @ 0.00027095 (bought @ 0.00026273, 3.13%)	-3.08%
-sell(1, PAXBTC, 20.0) @ 0.00026825 (bought @ 0.00026104, 2.76%)	-3.01%
-sell(1, PAXETH, 10.0) @ 0.00946045 (bought @ 0.00893503, 5.88%)	-3.0%
-sell(1, PPTBTC, 10.18) @ 0.0003684 (bought @ 0.0003951, -6.76%)	-3.0%
-sell(1, CDTBTC, 1820.0) @ 2.18e-06 (bought @ 2.23e-06, -2.24%)	-3.0%
-buy(1, WINGSETH, 150.0) @ 0.0006534
-sell(1, DCRBTC, 0.758) @ 0.005226 (bought @ 0.005277, -0.97%)	-2.96%
-BUY_FAILED for POAETH price=0.00033202 size=300.0
-sell(1, MANABTC, 290.0) @ 1.321e-05 (bought @ 1.386e-05, -4.69%)	-3.03%
+sell(1, TUSDBTC, 20.0) @ 0.00027095 (bought @ 0.00026273, 3.13%)	-3.01%
+sell(1, PAXBTC, 20.0) @ 0.00026935 (bought @ 0.00026622, 1.18%)	-2.96%
+sell(1, ZRXBTC, 40.0) @ 9.155e-05 (bought @ 9.058e-05, 1.07%)	-2.94%
+sell(1, ONTBTC, 17.08) @ 0.0002218 (bought @ 0.0002336, -5.05%)	-3.16%
+sell(1, WANBTC, 38.91) @ 9.77e-05 (bought @ 0.0001027, -4.87%)	-3.16%
+buy(1, BCHABCBTC, 0.087000000) @ 0.0461
+buy(1, WABIBTC, 120.0) @ 3.401e-05
+sell(1, ADABTC, 410.0) @ 9.32e-06 (bought @ 9.8e-06, -4.9%)	-3.15%
 buy(1, TUSDBTC, 10.0) @ 0.00027472
-buy(1, PAXBTC, 10.0) @ 0.0002731
-sell(1, AEETH, 19.01) @ 0.005206 (bought @ 0.0052, 0.12%)	-3.1%
-buy(1, PAXETH, 10.0) @ 0.00955601
-buy(1, BCHSVBTC, 0.249) @ 0.016091
-sell(1, RDNBTC, 70.0) @ 5.775e-05 (bought @ 6e-05, -3.75%)	-3.09%
-buy(1, PIVXBTC, 23.11) @ 0.000174
-buy(1, POABTC, 430.0) @ 9.34e-06
-buy(1, BCHABCBTC, 0.087000000) @ 0.045948
-buy(1, BTGBTC, 0.81) @ 0.004913
-sell(1, CMTBTC, 360.0) @ 1.114e-05 (bought @ 1.103e-05, 1.0%)	-2.92%
-buy(1, BCDBTC, 13.937) @ 0.000287
-buy(1, ARDRBTC, 290.0) @ 1.394e-05
-buy(1, NANOBTC, 16.21) @ 0.0002468
-sell(1, BTGBTC, 0.81) @ 0.004966 (bought @ 0.004913, 1.08%)	-2.98%
-sell(1, BCHABCBTC, 0.087000000) @ 0.0451 (bought @ 0.045948, -1.85%)	-2.93%
-buy(1, GNTBTC, 190.0) @ 2.139e-05
-sell(1, NASBTC, 22.87) @ 0.0001717 (bought @ 0.0001751, -1.94%)	-2.97%
+buy(1, PAXBTC, 10.0) @ 0.0002733
+sell(1, BCDBTC, 13.841) @ 0.000286 (bought @ 0.000287, -0.35%)	-3.18%
+sell(1, MCOBTC, 7.33) @ 0.000547 (bought @ 0.000545, 0.37%)	-3.14%
+buy(1, ZRXBTC, 40.0) @ 9.368e-05
+sell(1, THETABTC, 300.0) @ 1.243e-05 (bought @ 1.303e-05, -4.6%)	-3.07%
+sell(1, BTGBTC, 0.83) @ 0.004897 (bought @ 0.004822, 1.56%)	-3.07%
+buy(1, BCDBTC, 14.035) @ 0.000284
+sell(1, BCDBTC, 14.035) @ 0.000288 (bought @ 0.000284, 1.41%)	-3.24%
+sell(1, CMTBTC, 370.0) @ 1.114e-05 (bought @ 1.095e-05, 1.74%)	-3.19%
+buy(1, GRSBTC, 60.0) @ 6.526e-05
+buy(1, BTGBTC, 0.81) @ 0.004915
+buy(1, NANOBTC, 16.29) @ 0.0002457
+buy(1, BCDBTC, 13.937) @ 0.000285
+buy(1, MCOBTC, 7.46) @ 0.000536
+buy(1, CMTBTC, 360.0) @ 1.105e-05
+buy(1, RCNBTC, 1120.0) @ 3.55e-06
+buy(1, BLZBTC, 300.0) @ 1.355e-05
+sell(1, BTGBTC, 0.81) @ 0.004966 (bought @ 0.004915, 1.04%)	-3.11%
+sell(1, RDNBTC, 70.0) @ 5.669e-05 (bought @ 5.955e-05, -4.8%)	-3.23%
+sell(1, RVNBTC, 980.0) @ 3.85e-06 (bought @ 4.08e-06, -5.64%)	-3.2%
+buy(1, XVGBTC, 2780.0) @ 1.45e-06
 buy(1, BTGBTC, 0.82) @ 0.004841
-buy(1, RCNBTC, 1140.0) @ 3.5e-06
-buy(1, BNTBTC, 20.0) @ 0.00016666
-sell(1, BCHSVBTC, 0.249) @ 0.018301 (bought @ 0.016091, 13.73%)	-2.48%
-sell(1, GNTBTC, 190.0) @ 2.176e-05 (bought @ 2.139e-05, 1.73%)	-2.11%
-buy(1, XVGBTC, 2800.0) @ 1.43e-06
-buy(1, AGIBTC, 490.0) @ 8.17e-06
-buy(1, BTSBTC, 340.0) @ 1.192e-05
-buy(1, CMTBTC, 360.0) @ 1.106e-05
-sell(1, PAXETH, 10.0) @ 0.00973233 (bought @ 0.00955601, 1.85%)	-2.2%
-buy(1, BTGETH, 0.58) @ 0.17294
-BUY_FAILED for TUSDETH price=0.00982753 size=10.0
-BUY_FAILED for GNTETH price=0.00075564 size=130.0
-sell(1, BLZBTC, 300.0) @ 1.442e-05 (bought @ 1.348e-05, 6.97%)	-2.47%
-sell(1, ETCBTC, 3.32) @ 0.001193 (bought @ 0.001207, -1.16%)	-2.2%
-sell(1, PIVXBTC, 23.11) @ 0.000176 (bought @ 0.000174, 1.15%)	-2.31%
+sell(1, NASBTC, 22.51) @ 0.000169 (bought @ 0.0001778, -4.95%)	-3.34%
+sell(1, CDTBTC, 1790.0) @ 2.13e-06 (bought @ 2.24e-06, -4.91%)	-3.35%
+sell(1, BCHABCBTC, 0.087000000) @ 0.043728 (bought @ 0.0461, -5.15%)	-3.41%
+buy(1, IOSTBTC, 3540.0) @ 1.13e-06
+sell(1, BCHSVBTC, 0.246) @ 0.018301 (bought @ 0.016258, 12.57%)	-3.3%
+sell(1, GNTBTC, 190.0) @ 2.176e-05 (bought @ 2.126e-05, 2.35%)	-2.96%
+sell(1, IOSTBTC, 3540.0) @ 1.14e-06 (bought @ 1.13e-06, 0.88%)	-2.95%
+sell(1, BLZBTC, 300.0) @ 1.442e-05 (bought @ 1.355e-05, 6.42%)	-2.99%
 buy(1, BCHSVBTC, 0.218) @ 0.01835
+buy(1, SYSBTC, 440.0) @ 9.04e-06
+buy(1, IOTABTC, 60.0) @ 7.283e-05
 buy(1, GNTBTC, 190.0) @ 2.121e-05
-sell(1, QKCETH, 240.0) @ 0.00046169 (bought @ 0.00040827, 13.08%)	-2.08%
-buy(1, NANOETH, 11.3) @ 0.008851
-sell(1, ETCETH, 2.38) @ 0.040931 (bought @ 0.042164, -2.92%)	-2.15%
-buy(1, IOTAETH, 40.0) @ 0.00252018
-sell(1, BTGBTC, 0.82) @ 0.004919 (bought @ 0.004841, 1.61%)	-2.03%
-BUY_FAILED for XEMETH price=0.00059816 size=170.0
-buy(1, IOTABTC, 60.0) @ 7.252e-05
-buy(1, GRSBTC, 60.0) @ 6.415e-05
-sell(1, XEMBTC, 220.0) @ 1.714e-05 (bought @ 1.792e-05, -4.35%)	-1.95%
+sell(1, BTGBTC, 0.82) @ 0.004899 (bought @ 0.004841, 1.2%)	-2.55%
+buy(1, THETABTC, 300.0) @ 1.322e-05
+buy(1, YOYOBTC, 990.0) @ 4.04e-06
 buy(1, BLZBTC, 280.0) @ 1.429e-05
-sell(1, USDCBTC, 10.0) @ 0.00026804 (bought @ 0.00027394, -2.15%)	-1.91%
-sell(1, EDOBTC, 21.28) @ 0.0001924 (bought @ 0.000188, 2.34%)	-2.02%
-sell(1, TUSDBTC, 10.0) @ 0.00026743 (bought @ 0.00027472, -2.65%)	-2.04%
-buy(1, WABIBTC, 110.0) @ 3.551e-05
-sell(1, PAXBTC, 10.0) @ 0.00026298 (bought @ 0.0002731, -3.71%)	-2.06%
-buy(1, THETABTC, 310.0) @ 1.304e-05
-sell(1, QKCBTC, 340.0) @ 1.302e-05 (bought @ 1.177e-05, 10.62%)	-2.17%
-buy(1, WANBTC, 41.11) @ 9.72e-05
-sell(1, CMTBTC, 360.0) @ 1.127e-05 (bought @ 1.106e-05, 1.9%)	-2.25%
-sell(1, LTCBTC, 0.52) @ 0.007578 (bought @ 0.00765, -0.94%)	-2.23%
-sell(1, XVGBTC, 2800.0) @ 1.46e-06 (bought @ 1.43e-06, 2.1%)	-2.26%
-buy(1, EDOBTC, 20.83) @ 0.0001916
-sell(1, POABTC, 430.0) @ 9.46e-06 (bought @ 9.34e-06, 1.28%)	-2.06%
-buy(1, QKCBTC, 310.0) @ 1.275e-05
-buy(1, ZECBTC, 0.241) @ 0.016615
-buy(1, ZILBTC, 1090.0) @ 3.66e-06
-buy(1, CMTBTC, 360.0) @ 1.123e-05
-buy(1, MCOBTC, 7.48) @ 0.000537
-sell(1, BCDBTC, 13.937) @ 0.000272 (bought @ 0.000287, -5.23%)	-2.12%
-sell(1, BCHSVBTC, 0.218) @ 0.019851 (bought @ 0.01835, 8.18%)	-2.07%
-buy(1, ZRXBTC, 40.0) @ 9.23e-05
-sell(1, MCOBTC, 7.48) @ 0.00054 (bought @ 0.000537, 0.56%)	-1.96%
-buy(1, POABTC, 420.0) @ 9.56e-06
-sell(1, BTSBTC, 340.0) @ 1.245e-05 (bought @ 1.192e-05, 4.45%)	-2.04%
-sell(1, WAVESBTC, 15.66) @ 0.0002637 (bought @ 0.0002555, 3.21%)	-2.04%
-buy(1, RVNBTC, 990.0) @ 4.04e-06
-buy(1, LINKBTC, 60.0) @ 6.942e-05
-sell(1, LTCETH, 0.375) @ 0.26286 (bought @ 0.26688, -1.51%)	-1.99%
-buy(1, BLZETH, 210.0) @ 0.00047271
-BUY_FAILED for PAXETH price=0.00908417 size=10.0
-buy(1, ICXBTC, 68.14) @ 5.87e-05
-buy(1, MANABTC, 290.0) @ 1.36e-05
-buy(1, BCHSVBTC, 0.195) @ 0.020504
-sell(1, NANOBTC, 16.21) @ 0.0002524 (bought @ 0.0002468, 2.27%)	-1.86%
+sell(1, EDOBTC, 21.28) @ 0.0001924 (bought @ 0.000188, 2.34%)	-2.65%
 buy(1, HOTBTC, 30770.0) @ 1.3e-07
-buy(1, MDABTC, 30.0) @ 0.00015892
-buy(1, BTSBTC, 320.0) @ 1.249e-05
-buy(1, POLYBTC, 130.0) @ 2.958e-05
-buy(1, WAVESBTC, 15.13) @ 0.0002643
-buy(1, SALTBTC, 73.8) @ 5.42e-05
-buy(1, GOBTC, 500.0) @ 8.06e-06
-sell(1, LENDETH, 1520.0) @ 6.485e-05 (bought @ 6.631e-05, -2.2%)	-1.85%
-buy(1, POAETH, 300.0) @ 0.00033401
-buy(1, WTCBTC, 13.52) @ 0.000295
-buy(1, PPTBTC, 10.55) @ 0.0003799
-buy(1, BQXBTC, 130.0) @ 3.05e-05
-sell(1, ARDRBTC, 290.0) @ 1.475e-05 (bought @ 1.394e-05, 5.81%)	-1.82%
-buy(1, NANOBTC, 16.15) @ 0.0002478
-buy(1, BTGBTC, 0.8) @ 0.005018
-buy(1, NEOBTC, 2.1) @ 0.001901
-buy(1, INSBTC, 76.48) @ 5.2e-05
-buy(1, OMGBTC, 10.55) @ 0.000379
-sell(1, ZECBTC, 0.241) @ 0.016936 (bought @ 0.016615, 1.93%)	-1.93%
-buy(1, STEEMBTC, 46.84) @ 8.58e-05
+buy(1, EVXBTC, 60.0) @ 6.261e-05
+sell(1, XEMBTC, 220.0) @ 1.706e-05 (bought @ 1.792e-05, -4.8%)	-2.65%
+buy(1, ZILBTC, 1080.0) @ 3.71e-06
+buy(1, WANBTC, 41.15) @ 9.75e-05
+sell(1, QKCBTC, 340.0) @ 1.302e-05 (bought @ 1.177e-05, 10.62%)	-2.78%
+sell(1, CMTBTC, 360.0) @ 1.127e-05 (bought @ 1.105e-05, 1.99%)	-2.81%
+buy(1, WAVESBTC, 15.33) @ 0.0002619
+sell(1, USDCBTC, 10.0) @ 0.00026194 (bought @ 0.00027394, -4.38%)	-3.0%
+sell(1, PAXBTC, 10.0) @ 0.00025915 (bought @ 0.0002733, -5.18%)	-2.97%
+buy(1, ZECBTC, 0.24) @ 0.016637
+buy(1, STEEMBTC, 46.89) @ 8.55e-05
+buy(1, MITHBTC, 150.0) @ 2.583e-05
+buy(1, EDOBTC, 20.83) @ 0.0001916
+sell(1, POABTC, 430.0) @ 9.46e-06 (bought @ 9.33e-06, 1.39%)	-2.68%
+buy(1, STRATBTC, 22.54) @ 0.0001776
+sell(1, NANOBTC, 16.29) @ 0.0002485 (bought @ 0.0002457, 1.14%)	-2.7%
+sell(1, ETCBTC, 3.24) @ 0.001172 (bought @ 0.001232, -4.87%)	-2.95%
+buy(1, RVNBTC, 1000.0) @ 4.02e-06
+buy(1, QKCBTC, 310.0) @ 1.275e-05
+sell(1, TUSDBTC, 10.0) @ 0.00026089 (bought @ 0.00027472, -5.03%)	-2.84%
+buy(1, CMTBTC, 360.0) @ 1.123e-05
+buy(1, GASBTC, 6.83) @ 0.00059
+sell(1, RVNBTC, 1000.0) @ 4.05e-06 (bought @ 4.02e-06, 0.75%)	-2.83%
+buy(1, ARNBTC, 60.0) @ 6.651e-05
+buy(1, DLTBTC, 460.0) @ 8.8e-06
+buy(1, SKYBTC, 12.27) @ 0.000325
+buy(1, ENJBTC, 660.0) @ 6.06e-06
+buy(1, XRPBTC, 40.0) @ 9.11e-05
+buy(1, ICXBTC, 68.03) @ 5.88e-05
+sell(1, BCHSVBTC, 0.218) @ 0.019851 (bought @ 0.01835, 8.18%)	-2.71%
+buy(1, LINKBTC, 60.0) @ 6.951e-05
+buy(1, SUBBTC, 370.0) @ 1.1e-05
+buy(1, POABTC, 420.0) @ 9.56e-06
+sell(1, BTSBTC, 330.0) @ 1.245e-05 (bought @ 1.205e-05, 3.32%)	-2.73%
+buy(1, NANOBTC, 15.73) @ 0.0002542
+sell(1, WAVESBTC, 15.33) @ 0.0002635 (bought @ 0.0002619, 0.61%)	-2.75%
+buy(1, SALTBTC, 73.26) @ 5.46e-05
+sell(1, BCDBTC, 13.937) @ 0.000269 (bought @ 0.000285, -5.61%)	-2.74%
+buy(1, BTGBTC, 0.83) @ 0.004802
+sell(1, ARDRBTC, 280.0) @ 1.453e-05 (bought @ 1.431e-05, 1.54%)	-2.62%
+buy(1, MDABTC, 30.0) @ 0.00015599
+BUY_FAILED for BCPTBTC price=8.65e-06 size=460.0
+BUY_FAILED for DGDBTC price=0.00447 size=0.896
+sell(1, AGIBTC, 500.0) @ 8.22e-06 (bought @ 8.06e-06, 1.99%)	-2.56%
+buy(1, BCHSVBTC, 0.195) @ 0.020513
+sell(1, MCOBTC, 7.46) @ 0.000546 (bought @ 0.000536, 1.87%)	-2.87%
+buy(1, BTSBTC, 320.0) @ 1.24e-05
+BUY_FAILED for INSBTC price=5.16e-05 size=77.37
+BUY_FAILED for BATBTC price=3.486e-05 size=110.0
+BUY_FAILED for NEOBTC price=0.001891 size=2.12
+sell(1, ZECBTC, 0.24) @ 0.016936 (bought @ 0.016637, 1.8%)	-2.87%
+buy(1, ARDRBTC, 270.0) @ 1.492e-05
+sell(1, EOSBTC, 4.75) @ 0.0008475 (bought @ 0.0008405, 0.83%)	-2.86%
+buy(1, NULSBTC, 30.0) @ 0.00012366
+BUY_FAILED for RVNBTC price=4.1e-06 size=980.0
+BUY_FAILED for GOBTC price=7.94e-06 size=500.0
+sell(1, MDABTC, 30.0) @ 0.00015858 (bought @ 0.00015599, 1.66%)	-2.9%
+buy(1, OMGBTC, 10.58) @ 0.000378
+BUY_FAILED for WTCBTC price=0.0002917 size=13.7
+BUY_FAILED for MFTBTC price=8.6e-07 size=4650.0
+BUY_FAILED for AGIBTC price=8.23e-06 size=490.0
 
 Trade Symbol Profits:
-NEOBTC (1): 0.0%
-OMGBTC (1): 0.0%
-INSBTC (1): 0.0%
-WTCBNB (1): 2.93%
+OMGBTC (1): 0.26%
+LSKBTC (1): -3.67%
+LTCBTC (1): -1.23%
 HOTBTC (1): 0.0%
-NANOBTC (1): -0.48%
+NANOBTC (1): -2.99%
+STRATBTC (1): -2.59%
 EDOBTC (1): 0.0%
-IOTABTC (1): -1.12%
-BTGETH (1): -0.81%
-POAETH (1): -0.17%
-RCNBTC (1): 1.43%
-EOSBTC (1): -1.31%
+IOTABTC (1): -1.54%
+MITHBTC (1): -2.94%
+RCNBTC (1): 0.0%
 GNTBTC (1): -0.71%
-MDABTC (1): 0.01%
-BNTBTC (1): 2.75%
-GRSBTC (1): 0.84%
-BQXBTC (1): -0.33%
-WABIBTC (1): -1.75%
-BTSBTC (1): -2.4%
-USDCBNB (1): 2.45%
-BNBBTC (1): -2.61%
-WAVESBTC (1): 0.04%
-ICXBTC (1): -0.85%
-LINKBTC (1): 0.92%
-PPTBTC (1): 0.82%
-BCHSVBTC (1): 3.52%
-BLZETH (1): -0.83%
+BNTBTC (1): -1.3%
+ENJBTC (1): -0.5%
+YOYOBTC (1): -1.24%
+GRSBTC (1): -0.87%
+KEYBTC (1): 0.0%
+DASHBTC (1): -4.12%
+DLTBTC (1): 1.36%
+NULSBTC (1): -0.11%
+WABIBTC (1): 2.59%
+BTSBTC (1): -1.69%
+ICXBTC (1): -1.02%
+LINKBTC (1): 0.79%
+SYSBTC (1): -1.99%
+TRXBTC (1): -4.7%
+GASBTC (1): -3.22%
+BCHSVBTC (1): 3.47%
 POABTC (1): 0.84%
-EDOETH (1): 2.11%
-ZILBTC (1): -2.19%
-BTGBTC (1): -1.0%
-RVNBTC (1): 0.99%
-AGIBTC (1): 1.47%
-IOTAETH (1): -1.32%
-ETHBTC (1): -0.39%
-HCBTC (1): 0.72%
-SALTBTC (1): -0.18%
-TUSDBNB (1): 3.92%
-POLYBTC (1): 1.42%
+XVGBTC (1): 0.0%
+ZILBTC (1): -3.5%
+BTGBTC (1): 3.46%
+SUBBTC (1): -0.73%
+PIVXBTC (1): -0.06%
+HCBTC (1): 1.11%
+SKYBTC (1): -0.92%
+ARDRBTC (1): 3.49%
+SALTBTC (1): -0.92%
 CMTBTC (1): -1.25%
-WTCBTC (1): -0.92%
-PAXBNB (1): 3.01%
-ZRXBTC (1): -3.15%
+ZRXBTC (1): -4.58%
 BLZBTC (1): -5.32%
-WANBTC (1): -0.72%
-STEEMBTC (1): 1.4%
-ETCBNB (1): -1.27%
+WANBTC (1): -1.03%
+ARNBTC (1): 0.71%
+STEEMBTC (1): 1.75%
 QKCBTC (1): 0.71%
-GOBTC (1): -1.74%
-NANOETH (1): -3.4%
-WINGSETH (1): 0.66%
-THETABTC (1): -0.69%
-MANABTC (1): -0.74%
+EVXBTC (1): -0.02%
+XMRBTC (1): -4.45%
+XRPBTC (1): -0.42%
+LRCBTC (1): -2.64%
+THETABTC (1): -2.04%
+MANABTC (1): -1.17%
 
 Results:
 Total Capture Time:	58.09 hours
 Initial BTC total:	0.2
-Final BTC total:	0.196126048556
-Percent Profit: 	-1.94%
+Final BTC total:	0.194342531
+Percent Profit: 	-2.83%

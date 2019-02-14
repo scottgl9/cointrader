@@ -267,10 +267,10 @@ if __name__ == '__main__':
 
     # if we already ran simulation, load the results
     trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
-    #if os.path.exists(trade_cache_filename):
-    #    logger.info("Loading {}".format(trade_cache_filename))
-    #    with open(trade_cache_filename, "r") as f:
-    #        trade_cache = json.loads(str(f.read()))
+    if os.path.exists(trade_cache_filename):
+        logger.info("Loading {}".format(trade_cache_filename))
+        with open(trade_cache_filename, "r") as f:
+            trade_cache = json.loads(str(f.read()))
 
     logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
 
