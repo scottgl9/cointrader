@@ -113,9 +113,10 @@ class Hybrid_Crossover_Test(SignalBase):
             state == TrendState.STATE_TRENDING_DOWN_FAST or
             state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW or
             state == TrendState.STATE_NON_TREND_DOWN_SLOW or
-            state == TrendState.STATE_NON_TREND_DOWN_FAST):
-            #state == TrendState.STATE_NON_TREND_UP_VERY_SLOW or
-            #state == TrendState.STATE_TRENDING_UP_VERY_SLOW):
+            state == TrendState.STATE_NON_TREND_DOWN_FAST or
+            state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_FAST):
             return False
 
         if self.ema_cross_12_200.cross_up and self.ema_cross_12_200.ma2_trend_up():
@@ -125,7 +126,12 @@ class Hybrid_Crossover_Test(SignalBase):
             self.buy_type = 'TPSC12'
             return True
 
-        if state == TrendState.STATE_TRENDING_UP_FAST or state == TrendState.STATE_TRENDING_UP_SLOW:
+        if (state == TrendState.STATE_TRENDING_UP_FAST or
+            state == TrendState.STATE_TRENDING_UP_SLOW or
+            state == TrendState.STATE_TRENDING_UP_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_FAST or
+            state == TrendState.STATE_CONT_TREND_UP_SLOW or
+            state == TrendState.STATE_CONT_TREND_UP_VERY_SLOW):
             self.buy_type = "TrendState"
             return True
 
@@ -168,7 +174,10 @@ class Hybrid_Crossover_Test(SignalBase):
         state = self.tst.get_trend_state()
         if (state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
             state == TrendState.STATE_TRENDING_DOWN_SLOW or
-            state == TrendState.STATE_TRENDING_DOWN_FAST):
+            state == TrendState.STATE_TRENDING_DOWN_FAST or
+            state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendState.STATE_CONT_TREND_DOWN_FAST):
             self.sell_type='TrendState'
             return True
 

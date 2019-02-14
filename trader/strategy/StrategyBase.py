@@ -16,6 +16,7 @@ from trader.signal.PMO_Crossover import PMO_Crossover
 from trader.signal.SignalHandler import SignalHandler
 from trader.signal.SigType import SigType
 from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
+from trader.signal.TrendStateTrack_Signal import TrendStateTrack_Signal
 from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.TSV_Signal import TSV_Signal
 from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
@@ -63,6 +64,7 @@ class StrategyBase(object):
         elif name == "PPO_OBV": return PPO_OBV(accnt, symbol)
         elif name == "PMO_Crossover": return PMO_Crossover(accnt, symbol)
         elif name == "TD_Sequential_Signal": return TD_Sequential_Signal(accnt, symbol)
+        elif name == "TrendStateTrack_Signal": return TrendStateTrack_Signal(accnt, symbol, asset_info)
         elif name == "TSI_Signal": return TSI_Signal(accnt, symbol)
         elif name == "TSV_Signal": return TSV_Signal(accnt, symbol)
 
