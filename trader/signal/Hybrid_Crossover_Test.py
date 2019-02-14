@@ -147,7 +147,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
         state = self.tst.get_trend_state()
         if (state == TrendState.STATE_INIT or
-            #state == TrendState.STATE_NON_TREND_NO_DIRECTION or
+            state == TrendState.STATE_NON_TREND_NO_DIRECTION or
             state == TrendState.STATE_TRENDING_DOWN_SLOW or
             state == TrendState.STATE_TRENDING_DOWN_FAST or
             state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
@@ -221,7 +221,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.sell_type = 'TPSC12'
             return True
 
-        if self.ema_12_cross_tpsc.is_past_current_max(seconds=900, percent=2.0, cutoff=0.03):
+        if self.ema_12_cross_tpsc.is_past_current_max(seconds=300, percent=2.0, cutoff=0.03):
             self.sell_type='TPSC12_MAX'
             return True
 

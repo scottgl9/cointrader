@@ -4,85 +4,65 @@ Resetting initial BTC...
 Initial BTC value = 0.2
 Running MultiTrade simulation strategy basic_signal_market_strategy signal(s) Hybrid_Crossover_Test
 Resetting initial BTC...
-buy(1, ADABTC, 180.0) @ 2.215e-05
-buy(1, XLMBTC, 130.0) @ 3.101e-05
 buy(1, XRPBTC, 60.0) @ 7.182e-05
-buy(1, ZILBTC, 660.0) @ 6.08e-06
 buy(1, IOSTBTC, 1150.0) @ 3.48e-06
 buy(1, XVGBTC, 420.0) @ 9.6e-06
-buy(1, TNBBTC, 1020.0) @ 3.93e-06
 buy(1, DNTBTC, 520.0) @ 7.7e-06
-buy(1, XEMBTC, 120.0) @ 3.311e-05
-buy(1, NCASHBTC, 1070.0) @ 3.72e-06
-sell(1, XLMBTC, 130.0) @ 3.111e-05 (bought @ 3.101e-05, 0.32%)	0.04%
-buy(1, ENJBTC, 290.0) @ 1.386e-05
-sell(1, NCASHBTC, 1070.0) @ 3.76e-06 (bought @ 3.72e-06, 1.08%)	0.1%
-buy(1, TNTBTC, 390.0) @ 1.018e-05
 buy(1, TRXBTC, 860.0) @ 4.65e-06
-buy(1, RCNBTC, 330.0) @ 1.203e-05
-sell(1, XVGBTC, 420.0) @ 9.99e-06 (bought @ 9.6e-06, 4.06%)	0.08%
-buy(1, POEBTC, 1060.0) @ 3.78e-06
-buy(1, LINKBTC, 100.0) @ 3.935e-05
-buy(1, NCASHBTC, 1070.0) @ 3.73e-06
-sell(1, TNBBTC, 1020.0) @ 3.95e-06 (bought @ 3.93e-06, 0.51%)	0.16%
+buy(1, ADABTC, 180.0) @ 2.235e-05
+sell(1, XVGBTC, 420.0) @ 9.99e-06 (bought @ 9.6e-06, 4.06%)	0.03%
+buy(1, RCNBTC, 330.0) @ 1.201e-05
 buy(1, STORMBTC, 940.0) @ 4.27e-06
-buy(1, SNTBTC, 290.0) @ 1.366e-05
+buy(1, POEBTC, 1060.0) @ 3.78e-06
 buy(1, XVGBTC, 410.0) @ 9.8e-06
-sell(1, XVGBTC, 410.0) @ 9.9e-06 (bought @ 9.8e-06, 1.02%)	0.18%
-sell(1, ADABTC, 180.0) @ 2.238e-05 (bought @ 2.215e-05, 1.04%)	0.32%
+sell(1, XVGBTC, 410.0) @ 9.9e-06 (bought @ 9.8e-06, 1.02%)	0.05%
+buy(1, LINKBTC, 100.0) @ 3.98e-05
 buy(1, XLMBTC, 130.0) @ 3.091e-05
+buy(1, SNTBTC, 290.0) @ 1.382e-05
+buy(1, NCASHBTC, 1060.0) @ 3.76e-06
 buy(1, XVGBTC, 420.0) @ 9.42e-06
-sell(1, ZILBTC, 660.0) @ 6.17e-06 (bought @ 6.08e-06, 1.48%)	0.32%
-sell(1, XVGBTC, 420.0) @ 9.52e-06 (bought @ 9.42e-06, 1.06%)	0.33%
-sell(1, TRXBTC, 860.0) @ 4.71e-06 (bought @ 4.65e-06, 1.29%)	0.31%
-sell(1, LINKBTC, 100.0) @ 3.985e-05 (bought @ 3.935e-05, 1.27%)	0.31%
-sell(1, SNTBTC, 290.0) @ 1.379e-05 (bought @ 1.366e-05, 0.95%)	0.38%
-buy(1, WPRBTC, 300.0) @ 1.319e-05
+sell(1, XVGBTC, 420.0) @ 9.52e-06 (bought @ 9.42e-06, 1.06%)	0.13%
+sell(1, TRXBTC, 860.0) @ 4.71e-06 (bought @ 4.65e-06, 1.29%)	0.11%
+sell(1, LINKBTC, 100.0) @ 4.02e-05 (bought @ 3.98e-05, 1.01%)	0.13%
+sell(1, SNTBTC, 290.0) @ 1.425e-05 (bought @ 1.382e-05, 3.11%)	0.31%
+buy(1, WPRBTC, 300.0) @ 1.32e-05
 buy(1, XVGBTC, 410.0) @ 9.66e-06
-buy(1, LINKBTC, 100.0) @ 3.987e-05
-buy(1, SNTBTC, 280.0) @ 1.418e-05
-buy(1, TNBBTC, 1020.0) @ 3.93e-06
-buy(1, ADABTC, 170.0) @ 2.31e-05
+buy(1, LINKBTC, 100.0) @ 3.979e-05
+sell(1, ADABTC, 180.0) @ 2.261e-05 (bought @ 2.235e-05, 1.16%)	0.23%
 buy(1, POWRBTC, 90.0) @ 4.685e-05
-sell(1, XLMBTC, 130.0) @ 3.128e-05 (bought @ 3.091e-05, 1.2%)	0.36%
-sell(1, XEMBTC, 120.0) @ 3.424e-05 (bought @ 3.311e-05, 3.41%)	0.33%
-sell(1, ENJBTC, 290.0) @ 1.413e-05 (bought @ 1.386e-05, 1.95%)	0.33%
-sell(1, XRPBTC, 60.0) @ 7.4e-05 (bought @ 7.182e-05, 3.04%)	0.25%
-sell(1, XVGBTC, 410.0) @ 8.7e-06 (bought @ 9.66e-06, -9.94%)	0.2%
-sell(1, POWRBTC, 90.0) @ 4.712e-05 (bought @ 4.685e-05, 0.58%)	0.19%
+sell(1, XLMBTC, 130.0) @ 3.128e-05 (bought @ 3.091e-05, 1.2%)	0.22%
+sell(1, XRPBTC, 60.0) @ 7.4e-05 (bought @ 7.182e-05, 3.04%)	0.13%
+sell(1, XVGBTC, 410.0) @ 8.7e-06 (bought @ 9.66e-06, -9.94%)	0.09%
+sell(1, POWRBTC, 90.0) @ 4.745e-05 (bought @ 4.685e-05, 1.28%)	0.07%
 buy(1, TRXBTC, 850.0) @ 4.68e-06
-sell(1, STORMBTC, 940.0) @ 4.3e-06 (bought @ 4.27e-06, 0.7%)	0.26%
-sell(1, TRXBTC, 850.0) @ 4.72e-06 (bought @ 4.68e-06, 0.85%)	0.28%
-buy(1, XEMBTC, 110.0) @ 3.48e-05
-sell(1, ADABTC, 170.0) @ 2.334e-05 (bought @ 2.31e-05, 1.04%)	0.07%
+sell(1, STORMBTC, 940.0) @ 4.3e-06 (bought @ 4.27e-06, 0.7%)	0.12%
+buy(1, ADABTC, 170.0) @ 2.356e-05
+buy(1, XEMBTC, 110.0) @ 3.487e-05
+sell(1, TRXBTC, 850.0) @ 4.72e-06 (bought @ 4.68e-06, 0.85%)	0.17%
 buy(1, POWRBTC, 80.0) @ 4.77e-05
-sell(1, NCASHBTC, 1070.0) @ 3.78e-06 (bought @ 3.73e-06, 1.34%)	-0.21%
 buy(1, TRXBTC, 860.0) @ 4.65e-06
-sell(1, RCNBTC, 330.0) @ 1.212e-05 (bought @ 1.203e-05, 0.75%)	-0.1%
-buy(1, ADABTC, 180.0) @ 2.277e-05
-sell(1, IOSTBTC, 1150.0) @ 3.57e-06 (bought @ 3.48e-06, 2.59%)	-0.04%
+sell(1, RCNBTC, 330.0) @ 1.212e-05 (bought @ 1.201e-05, 0.92%)	-0.18%
+sell(1, IOSTBTC, 1150.0) @ 3.57e-06 (bought @ 3.48e-06, 2.59%)	-0.09%
 buy(1, XLMBTC, 130.0) @ 3.146e-05
 buy(1, ZILBTC, 660.0) @ 6.08e-06
 buy(1, XRPBTC, 60.0) @ 7.256e-05
 
 Trade Symbol Profits:
-ADABTC (1): 0.7%
+ADABTC (1): -2.67%
 TRXBTC (1): -1.51%
-XEMBTC (1): -3.48%
+XEMBTC (1): -3.67%
 ZILBTC (1): 0.0%
 DNTBTC (1): -2.6%
-SNTBTC (1): -5.85%
 XLMBTC (1): -0.13%
-LINKBTC (1): 0.48%
-TNTBTC (1): -2.85%
+LINKBTC (1): 0.68%
 XRPBTC (1): 0.22%
-WPRBTC (1): -3.79%
+WPRBTC (1): -3.86%
 POWRBTC (1): -1.45%
-TNBBTC (1): -1.27%
+NCASHBTC (1): -0.27%
 POEBTC (1): -1.59%
 
 Results:
 Total Capture Time:	10.38 hours
 Initial BTC total:	0.2
-Final BTC total:	0.1999659
-Percent Profit: 	-0.02%
+Final BTC total:	0.1998881
+Percent Profit: 	-0.06%
