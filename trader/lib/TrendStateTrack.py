@@ -149,18 +149,18 @@ class TrendStateTrack(object):
         direction = 0
 
         # determine which direction update is most recent
-        if seg_down_end_ts > seg_up_end_ts:
+        if seg_down_end_ts > seg_up_end_ts or seg_down_start_ts > seg_up_end_ts:
             direction = -1
             if trend_state.is_state(TrendState.STATE_INIT):
-                trend_state.set_state_conditional(seg_down_percent < self.percent_very_slow_cutoff,
-                                                  TrendState.STATE_NON_TREND_DOWN_VERY_SLOW,
-                                                  TrendState.STATE_NON_TREND_DOWN_SLOW)
-        elif seg_up_end_ts > seg_down_end_ts:
+                dir = self.get_direction_speed_movement(seg_down_percent, -1)
+                new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, dir)
+                trend_state.set_state(new_state)
+        elif seg_up_end_ts > seg_down_end_ts or seg_up_start_ts > seg_down_end_ts:
             direction = 1
             if trend_state.is_state(TrendState.STATE_INIT):
-                trend_state.set_state_conditional(seg_up_percent < self.percent_very_slow_cutoff,
-                                                  TrendState.STATE_NON_TREND_UP_VERY_SLOW,
-                                                  TrendState.STATE_NON_TREND_UP_SLOW)
+                dir = self.get_direction_speed_movement(seg_down_percent, 1)
+                new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, dir)
+                trend_state.set_state(new_state)
         else:
             trend_state.set_state(TrendState.STATE_NON_TREND_NO_DIRECTION)
             return trend_state
