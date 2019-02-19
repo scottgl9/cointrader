@@ -2831,6 +2831,25 @@
                     "size": "490.0"
                 }
             ], 
+            "MTHBTC": [
+                {
+                    "index": 632, 
+                    "trade_type": "TrendState", 
+                    "symbol": "MTHBTC", 
+                    "type": "buy", 
+                    "price": 5.25e-06, 
+                    "size": "760.0"
+                }, 
+                {
+                    "index": 3959, 
+                    "trade_type": "LongTrendState", 
+                    "symbol": "MTHBTC", 
+                    "buy_price": 5.25e-06, 
+                    "type": "sell", 
+                    "price": 4.97e-06, 
+                    "size": "760.0"
+                }
+            ], 
             "BATBTC": [
                 {
                     "index": 906, 
@@ -2887,23 +2906,23 @@
                     "size": "850.0"
                 }
             ], 
-            "MTHBTC": [
+            "CNDBTC": [
                 {
-                    "index": 632, 
+                    "index": 1938, 
                     "trade_type": "TrendState", 
-                    "symbol": "MTHBTC", 
+                    "symbol": "CNDBTC", 
                     "type": "buy", 
-                    "price": 5.25e-06, 
-                    "size": "760.0"
+                    "price": 3.21e-06, 
+                    "size": "1240.0"
                 }, 
                 {
-                    "index": 3959, 
-                    "trade_type": "LongTrendState", 
-                    "symbol": "MTHBTC", 
-                    "buy_price": 5.25e-06, 
+                    "index": 2300, 
+                    "trade_type": "TrendState", 
+                    "symbol": "CNDBTC", 
+                    "buy_price": 3.21e-06, 
                     "type": "sell", 
-                    "price": 4.97e-06, 
-                    "size": "760.0"
+                    "price": 3.23e-06, 
+                    "size": "1240.0"
                 }
             ], 
             "QKCBTC": [
@@ -2992,14 +3011,23 @@
                     "size": "850.0"
                 }
             ], 
-            "AEBTC": [
+            "EVXBTC": [
                 {
-                    "index": 325, 
+                    "index": 2039, 
                     "trade_type": "TrendState", 
-                    "symbol": "AEBTC", 
+                    "symbol": "EVXBTC", 
                     "type": "buy", 
-                    "price": 0.0001179, 
-                    "size": "33.93"
+                    "price": 8.912e-05, 
+                    "size": "40.0"
+                }, 
+                {
+                    "index": 9416, 
+                    "trade_type": "LongTrendState", 
+                    "symbol": "EVXBTC", 
+                    "buy_price": 8.912e-05, 
+                    "type": "sell", 
+                    "price": 7.315e-05, 
+                    "size": "40.0"
                 }
             ], 
             "NANOBTC": [
@@ -3041,14 +3069,14 @@
                     "size": "14.48"
                 }
             ], 
-            "WAVESBTC": [
+            "KMDBTC": [
                 {
-                    "index": 3099, 
+                    "index": 531, 
                     "trade_type": "TrendState", 
-                    "symbol": "WAVESBTC", 
+                    "symbol": "KMDBTC", 
                     "type": "buy", 
-                    "price": 0.0007145, 
-                    "size": "5.6"
+                    "price": 0.0001843, 
+                    "size": "21.68"
                 }
             ], 
             "DCRBTC": [
@@ -3399,25 +3427,6 @@
                     "size": "160.0"
                 }
             ], 
-            "CNDBTC": [
-                {
-                    "index": 1938, 
-                    "trade_type": "TrendState", 
-                    "symbol": "CNDBTC", 
-                    "type": "buy", 
-                    "price": 3.21e-06, 
-                    "size": "1240.0"
-                }, 
-                {
-                    "index": 2300, 
-                    "trade_type": "TrendState", 
-                    "symbol": "CNDBTC", 
-                    "buy_price": 3.21e-06, 
-                    "type": "sell", 
-                    "price": 3.23e-06, 
-                    "size": "1240.0"
-                }
-            ], 
             "EOSBTC": [
                 {
                     "index": 4028, 
@@ -3457,23 +3466,14 @@
                     "size": "17.778"
                 }
             ], 
-            "EVXBTC": [
+            "AEBTC": [
                 {
-                    "index": 2039, 
+                    "index": 325, 
                     "trade_type": "TrendState", 
-                    "symbol": "EVXBTC", 
+                    "symbol": "AEBTC", 
                     "type": "buy", 
-                    "price": 8.912e-05, 
-                    "size": "40.0"
-                }, 
-                {
-                    "index": 9416, 
-                    "trade_type": "LongTrendState", 
-                    "symbol": "EVXBTC", 
-                    "buy_price": 8.912e-05, 
-                    "type": "sell", 
-                    "price": 7.315e-05, 
-                    "size": "40.0"
+                    "price": 0.0001179, 
+                    "size": "33.93"
                 }
             ], 
             "VETBTC": [
@@ -3580,14 +3580,14 @@
                     "size": "1430.0"
                 }
             ], 
-            "KMDBTC": [
+            "WAVESBTC": [
                 {
-                    "index": 531, 
+                    "index": 3099, 
                     "trade_type": "TrendState", 
-                    "symbol": "KMDBTC", 
+                    "symbol": "WAVESBTC", 
                     "type": "buy", 
-                    "price": 0.0001843, 
-                    "size": "21.68"
+                    "price": 0.0007145, 
+                    "size": "5.6"
                 }
             ], 
             "THETABTC": [
