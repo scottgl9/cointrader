@@ -13,6 +13,7 @@ from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TrendStateTrack import TrendStateTrack, TrendState
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 from trader.lib.MovingTimeSegment.MTSPercentChangeROC import MTSPercentChangeROC
+from trader.lib.MovingTimeSegment.MTSFlatLine import MTSFlatLine
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -27,6 +28,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.last_close = 0
 
         self.tst = TrendStateTrack(smoother=EMA(12, scale=24))
+        #self.mts_flat_line = MTSFlatLine()
 
         self.detector = PeakValleyDetect()
         self.tspc = MTSPriceChannel(minutes=60)
@@ -123,6 +125,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.diff_ema_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
 
         self.tst.update(close, ts=ts)
+        #self.mts_flat_line.update(close, ts=ts)
 
     def buy_signal(self):
         if self.is_currency_pair:
@@ -156,15 +159,21 @@ class Hybrid_Crossover_Test(SignalBase):
 
         if (self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up and
                 self.ema_cross_50_200.ma1_trend_up() and self.ema_cross_50_200.ma2_trend_up()):
+            #if self.mts_flat_line.is_flat_line():
+            #    return False
             self.buy_type = 'EMA26_200|EMA50_200'
             return True
 
         if (self.ema_cross_12_200.cross_up and self.ema_cross_26_200.cross_up and
                 self.ema_cross_26_200.ma1_trend_up() and self.ema_cross_26_200.ma2_trend_up()):
+            #if self.mts_flat_line.is_flat_line():
+            #    return False
             self.buy_type = 'EMA12_200|EMA26_200'
             return True
 
         if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
+            #if self.mts_flat_line.is_flat_line():
+            #    return False
             self.buy_type = 'TPSC12'
             return True
 
