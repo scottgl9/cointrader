@@ -137,33 +137,27 @@ class TrendStateTrack(object):
 
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
-        seg_down_start_ts = int(seg_down['start_ts'])
-        seg_up_start_ts = int(seg_up['start_ts'])
-        seg_down_end_ts = int(seg_down['end_ts'])
-        seg_up_end_ts = int(seg_up['end_ts'])
 
-        if seg_down_percent == seg_up['percent']:
+        if seg_down_percent == seg_up_percent:
             trend_state.set_state(TrendState.STATE_NON_TREND_NO_DIRECTION)
             return trend_state
 
-        direction = 0
-
         # determine which direction update is most recent
-        if seg_down_end_ts > seg_up_end_ts or seg_down_start_ts > seg_up_end_ts:
-            direction = -1
-            if trend_state.is_state(TrendState.STATE_INIT):
+        direction = self.process_trend_direction(trend_state, seg_down, seg_up)
+
+        if not direction:
+            trend_state.set_state(TrendState.STATE_NON_TREND_NO_DIRECTION)
+            return trend_state
+
+        if trend_state.is_state(TrendState.STATE_INIT):
+            if direction == 1:
+                dir = self.get_direction_speed_movement(seg_up_percent, 1)
+                new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, dir)
+                trend_state.set_state(new_state)
+            elif direction == -1:
                 dir = self.get_direction_speed_movement(seg_down_percent, -1)
                 new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, dir)
                 trend_state.set_state(new_state)
-        elif seg_up_end_ts > seg_down_end_ts or seg_up_start_ts > seg_down_end_ts:
-            direction = 1
-            if trend_state.is_state(TrendState.STATE_INIT):
-                dir = self.get_direction_speed_movement(seg_down_percent, 1)
-                new_state = trend_state.get_trend_state_from_type_and_direction(TrendState.TYPE_NON_TREND, dir)
-                trend_state.set_state(new_state)
-        else:
-            trend_state.set_state(TrendState.STATE_NON_TREND_NO_DIRECTION)
-            return trend_state
 
         if trend_state.is_state(TrendState.STATE_NON_TREND_NO_DIRECTION):
             trend_state = self.process_state_non_trend_no_direction(trend_state, seg_down, seg_up, direction)
@@ -210,6 +204,22 @@ class TrendStateTrack(object):
             trend_state = self.process_potential_downward_reversal(trend_state, seg_down, seg_up, direction)
 
         return trend_state
+
+    def process_trend_direction(self, trend_state, seg_down, seg_up):
+        seg_down_start_ts = int(seg_down['start_ts'])
+        seg_up_start_ts = int(seg_up['start_ts'])
+        seg_down_end_ts = int(seg_down['end_ts'])
+        seg_up_end_ts = int(seg_up['end_ts'])
+
+        direction = 0
+
+        # determine which direction update is most recent
+        if seg_down_end_ts > seg_up_end_ts or seg_down_start_ts > seg_up_end_ts:
+            direction = -1
+        elif seg_up_end_ts > seg_down_end_ts or seg_up_start_ts > seg_down_end_ts:
+            direction = 1
+
+        return direction
 
     def process_potential_downward_reversal(self, trend_state, seg_down, seg_up, direction):
         seg_down_prev = self.seg_down_list[-2]
