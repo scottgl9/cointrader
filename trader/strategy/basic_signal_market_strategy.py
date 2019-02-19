@@ -26,6 +26,8 @@ class basic_signal_market_strategy(StrategyBase):
         self.high = 0
         self.last_high = 0
 
+        signal_names.append("BTC_USDT_Signal")
+
         if signal_names:
             for name in signal_names:
                 signal = StrategyBase.select_signal_name(name, self.accnt, self.ticker_id, asset_info)

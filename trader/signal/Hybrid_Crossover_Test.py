@@ -81,6 +81,9 @@ class Hybrid_Crossover_Test(SignalBase):
         return self.cache.get_cache_list()
 
     def pre_update(self, close, volume, ts, cache_db=None):
+        if self.is_currency_pair:
+            return False
+
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:
