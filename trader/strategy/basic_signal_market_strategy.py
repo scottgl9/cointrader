@@ -26,15 +26,19 @@ class basic_signal_market_strategy(StrategyBase):
         self.high = 0
         self.last_high = 0
 
-        signal_names.append("BTC_USDT_Signal")
+        #signal_names.append("BTC_USDT_Signal")
 
         if signal_names:
             for name in signal_names:
+                if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
+                    continue
                 signal = StrategyBase.select_signal_name(name, self.accnt, self.ticker_id, asset_info)
                 if signal.mm_enabled:
                     self.mm_enabled = True
                 # don't add global signal if global_filter doesn't match ticker_id
                 if signal.global_signal and signal.global_filter != self.ticker_id:
+                    continue
+                if not signal.global_signal and self.ticker_id.endswith('USDT'):
                     continue
                 self.signal_handler.add(signal)
         else:
@@ -90,9 +94,7 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def buy_signal(self, signal, price):
-        if float(signal.buy_price) != 0.0:
-            #if signal.buy_signal():
-            #    signal.sell_marked = False
+        if float(signal.buy_price) != 0.0 or self.disable_buy:
             return False
 
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
@@ -134,8 +136,9 @@ class basic_signal_market_strategy(StrategyBase):
         if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
             return False
 
-        #if signal.sell_marked:
-        #    return True
+        # if buying is disabled and symbol is >= 1.0 percent profit, then sell
+        if self.disable_buy:
+            return True
 
         if signal.sell_signal():
             return True
@@ -244,7 +247,6 @@ class basic_signal_market_strategy(StrategyBase):
 
         for signal in self.signal_handler.get_handlers():
             if signal.is_global() and signal.global_filter == kline.symbol:
-                signal.pre_update(kline.close, kline.volume, kline.ts)
                 if signal.enable_buy and not self.enable_buy:
                     self.msg_handler.buy_enable(self.ticker_id)
                 elif signal.disable_buy and not self.disable_buy:
