@@ -118,11 +118,11 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                 #logger.info("Initial BTC={}".format(total_btc))
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
-        if msg['s'].endswith("USDT"):
-            minqty = 20.0
-            balance = accnt.get_asset_balance("USDT")["balance"]
-            if balance < minqty:
-                continue
+        #if msg['s'].endswith("USDT"):
+        #    minqty = 20.0
+        #    balance = accnt.get_asset_balance("USDT")["balance"]
+        #    if balance < minqty:
+        #        continue
 
         if not kline:
             kline = Kline(symbol=msg['s'],
