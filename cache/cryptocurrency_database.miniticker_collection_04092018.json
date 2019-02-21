@@ -1817,14 +1817,14 @@
                     "size": "10.0"
                 }
             ], 
-            "POWRBTC": [
+            "VIBEBTC": [
                 {
-                    "index": 913, 
+                    "index": 524, 
                     "trade_type": "TrendState", 
-                    "symbol": "POWRBTC", 
+                    "symbol": "VIBEBTC", 
                     "type": "buy", 
-                    "price": 4.468e-05, 
-                    "size": "90.0"
+                    "price": 2.318e-05, 
+                    "size": "170.0"
                 }
             ], 
             "OAXBTC": [
@@ -1907,24 +1907,33 @@
                     "size": "470.0"
                 }
             ], 
-            "TRXBTC": [
+            "DNTBTC": [
                 {
-                    "index": 9336, 
+                    "index": 3766, 
                     "trade_type": "TrendState", 
-                    "symbol": "TRXBTC", 
+                    "symbol": "DNTBTC", 
                     "type": "buy", 
-                    "price": 5.5e-06, 
-                    "size": "730.0"
+                    "price": 9.53e-06, 
+                    "size": "420.0"
+                }, 
+                {
+                    "index": 11230, 
+                    "trade_type": "LongTrendState", 
+                    "symbol": "DNTBTC", 
+                    "buy_price": 9.53e-06, 
+                    "type": "sell", 
+                    "price": 8.96e-06, 
+                    "size": "420.0"
                 }
             ], 
-            "BCPTBTC": [
+            "STORMBTC": [
                 {
-                    "index": 1004, 
+                    "index": 1428, 
                     "trade_type": "TrendState", 
-                    "symbol": "BCPTBTC", 
+                    "symbol": "STORMBTC", 
                     "type": "buy", 
-                    "price": 5.401e-05, 
-                    "size": "70.0"
+                    "price": 4.15e-06, 
+                    "size": "960.0"
                 }
             ], 
             "NEBLBTC": [
@@ -1997,23 +2006,14 @@
                     "size": "70.0"
                 }
             ], 
-            "DNTBTC": [
+            "TRXBTC": [
                 {
-                    "index": 3766, 
+                    "index": 9336, 
                     "trade_type": "TrendState", 
-                    "symbol": "DNTBTC", 
+                    "symbol": "TRXBTC", 
                     "type": "buy", 
-                    "price": 9.53e-06, 
-                    "size": "420.0"
-                }, 
-                {
-                    "index": 11230, 
-                    "trade_type": "LongTrendState", 
-                    "symbol": "DNTBTC", 
-                    "buy_price": 9.53e-06, 
-                    "type": "sell", 
-                    "price": 8.96e-06, 
-                    "size": "420.0"
+                    "price": 5.5e-06, 
+                    "size": "730.0"
                 }
             ], 
             "SNTBTC": [
@@ -2066,14 +2066,14 @@
                     "size": "5.31"
                 }
             ], 
-            "ASTBTC": [
+            "AIONBTC": [
                 {
-                    "index": 785, 
+                    "index": 2426, 
                     "trade_type": "TrendState", 
-                    "symbol": "ASTBTC", 
+                    "symbol": "AIONBTC", 
                     "type": "buy", 
-                    "price": 3.911e-05, 
-                    "size": "100.0"
+                    "price": 0.0003011, 
+                    "size": "13.28"
                 }
             ], 
             "BLZBTC": [
@@ -2113,25 +2113,6 @@
                     "size": "140.0"
                 }
             ], 
-            "SALTBTC": [
-                {
-                    "index": 410, 
-                    "trade_type": "TrendState", 
-                    "symbol": "SALTBTC", 
-                    "type": "buy", 
-                    "price": 0.0003147, 
-                    "size": "12.71"
-                }, 
-                {
-                    "index": 7381, 
-                    "trade_type": "TrendState", 
-                    "symbol": "SALTBTC", 
-                    "buy_price": 0.0003147, 
-                    "type": "sell", 
-                    "price": 0.0003173, 
-                    "size": "12.71"
-                }
-            ], 
             "LINKBTC": [
                 {
                     "index": 1128, 
@@ -2140,6 +2121,16 @@
                     "type": "buy", 
                     "price": 4.855e-05, 
                     "size": "80.0"
+                }
+            ], 
+            "WABIBTC": [
+                {
+                    "index": 367, 
+                    "trade_type": "TrendState", 
+                    "symbol": "WABIBTC", 
+                    "type": "buy", 
+                    "price": 9.585e-05, 
+                    "size": "40.0"
                 }
             ], 
             "NAVBTC": [
@@ -2172,24 +2163,24 @@
                     "size": "7.03"
                 }
             ], 
-            "VIBEBTC": [
+            "POWRBTC": [
                 {
-                    "index": 524, 
+                    "index": 913, 
                     "trade_type": "TrendState", 
-                    "symbol": "VIBEBTC", 
+                    "symbol": "POWRBTC", 
                     "type": "buy", 
-                    "price": 2.318e-05, 
-                    "size": "170.0"
+                    "price": 4.468e-05, 
+                    "size": "90.0"
                 }
             ], 
-            "STORMBTC": [
+            "BCPTBTC": [
                 {
-                    "index": 1428, 
+                    "index": 1004, 
                     "trade_type": "TrendState", 
-                    "symbol": "STORMBTC", 
+                    "symbol": "BCPTBTC", 
                     "type": "buy", 
-                    "price": 4.15e-06, 
-                    "size": "960.0"
+                    "price": 5.401e-05, 
+                    "size": "70.0"
                 }
             ], 
             "DLTBTC": [
@@ -2212,14 +2203,14 @@
                     "size": "210.0"
                 }
             ], 
-            "AIONBTC": [
+            "ASTBTC": [
                 {
-                    "index": 2426, 
+                    "index": 785, 
                     "trade_type": "TrendState", 
-                    "symbol": "AIONBTC", 
+                    "symbol": "ASTBTC", 
                     "type": "buy", 
-                    "price": 0.0003011, 
-                    "size": "13.28"
+                    "price": 3.911e-05, 
+                    "size": "100.0"
                 }
             ], 
             "LRCBTC": [
@@ -2230,6 +2221,16 @@
                     "type": "buy", 
                     "price": 6.05e-05, 
                     "size": "70.0"
+                }
+            ], 
+            "APPCBTC": [
+                {
+                    "index": 725, 
+                    "trade_type": "TrendState", 
+                    "symbol": "APPCBTC", 
+                    "type": "buy", 
+                    "price": 4.694e-05, 
+                    "size": "90.0"
                 }
             ], 
             "QSPBTC": [
@@ -2301,16 +2302,6 @@
                     "size": "4.63"
                 }
             ], 
-            "POEBTC": [
-                {
-                    "index": 716, 
-                    "trade_type": "TrendState", 
-                    "symbol": "POEBTC", 
-                    "type": "buy", 
-                    "price": 4.13e-06, 
-                    "size": "970.0"
-                }
-            ], 
             "NCASHBTC": [
                 {
                     "index": 3348, 
@@ -2341,24 +2332,33 @@
                     "size": "7.68"
                 }
             ], 
-            "APPCBTC": [
+            "SALTBTC": [
                 {
-                    "index": 725, 
+                    "index": 410, 
                     "trade_type": "TrendState", 
-                    "symbol": "APPCBTC", 
+                    "symbol": "SALTBTC", 
                     "type": "buy", 
-                    "price": 4.694e-05, 
-                    "size": "90.0"
+                    "price": 0.0003147, 
+                    "size": "12.71"
+                }, 
+                {
+                    "index": 7381, 
+                    "trade_type": "TrendState", 
+                    "symbol": "SALTBTC", 
+                    "buy_price": 0.0003147, 
+                    "type": "sell", 
+                    "price": 0.0003173, 
+                    "size": "12.71"
                 }
             ], 
-            "WABIBTC": [
+            "POEBTC": [
                 {
-                    "index": 367, 
+                    "index": 716, 
                     "trade_type": "TrendState", 
-                    "symbol": "WABIBTC", 
+                    "symbol": "POEBTC", 
                     "type": "buy", 
-                    "price": 9.585e-05, 
-                    "size": "40.0"
+                    "price": 4.13e-06, 
+                    "size": "970.0"
                 }
             ], 
             "AEBTC": [
