@@ -393,16 +393,9 @@ class AccountBinance(AccountBase):
     #def get_asset_balance(self, asset):
     #    return self.client.get_asset_balance(asset=asset)
 
-    def get_account_total_value(self):
+    def get_account_total_btc_value(self):
+        tickers = self.get_all_ticker_symbols()
         btc_usd_price = float(self.client.get_symbol_ticker(symbol='BTCUSDT')['price'])
-        tickers = []
-        for key, value in self.client.get_exchange_info().items():
-            if key != 'symbols': continue
-            for asset in value:
-                # if asset['symbol'].endswith('USDT'): continue
-                tickers.append(asset['symbol'])
-
-        print(btc_usd_price)
         total_balance_usd = 0.0
         total_balance_btc = 0.0
         for accnt in self.client.get_account()['balances']:
@@ -414,7 +407,7 @@ class AccountBinance(AccountBase):
                     symbol = "{}BTC".format(accnt['asset'])
                     if symbol not in tickers:
                         continue
-                    price = float(self.client.get_symbol_ticker(symbol)['price'])
+                    price = float(self.client.get_symbol_ticker(symbol=symbol)['price'])
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = price * total_amount
                 elif accnt['asset'] != 'USDT':
@@ -426,12 +419,10 @@ class AccountBinance(AccountBase):
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = total_amount / btc_usd_price
 
-                price_usd = price_btc * btc_usd_price
-                total_balance_usd += price_usd
+                #price_usd = price_btc * btc_usd_price
+                #total_balance_usd += price_usd
                 total_balance_btc += price_btc
-                usd_price = price * btc_usd_price
-
-        return total_balance_usd, total_balance_btc
+        return total_balance_btc
 
     def total_btc_available(self, tickers=None):
         if not tickers:
