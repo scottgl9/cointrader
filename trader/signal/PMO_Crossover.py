@@ -1,9 +1,7 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.PMO import PMO
-from trader.indicator.ROC import ROC
 from trader.lib.Crossover2 import Crossover2
-from trader.lib.CrossoverDouble import CrossoverDouble
 from trader.signal.SignalBase import SignalBase
 
 

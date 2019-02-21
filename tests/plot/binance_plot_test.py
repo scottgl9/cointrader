@@ -20,7 +20,7 @@ from trader.indicator.RSQUARE import RSQUARE
 from trader.indicator.OBV import OBV
 from trader.indicator.test.PriceChannel import PriceChannel
 from trader.lib.Crossover2 import Crossover2
-from trader.lib.CrossoverDouble import CrossoverDouble
+from trader.lib.unused.CrossoverDouble import CrossoverDouble
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
 from trader.config import *

@@ -1,10 +1,7 @@
 from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
-from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
-from trader.indicator.ROC import ROC
 from trader.lib.Crossover2 import Crossover2
-from trader.lib.CrossoverDouble import CrossoverDouble
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 

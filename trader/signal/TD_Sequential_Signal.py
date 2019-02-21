@@ -1,7 +1,6 @@
 # TD Sequential Indicator / Signal
 from trader.lib.CircularArray import CircularArray
 from trader.lib.FakeKline import FakeKline
-from trader.lib.PriceFilter import PriceFilter
 from trader.signal.SignalBase import SignalBase
 
 class TD_Sequential_Signal(SignalBase):
@@ -16,7 +15,6 @@ class TD_Sequential_Signal(SignalBase):
         self.close_count = close_count
         self.last_age = 0
         self.age = 0
-        self.filter = PriceFilter()
 
         self.bearish_flip = False
         self.bullish_flip = False
@@ -110,9 +108,9 @@ class TD_Sequential_Signal(SignalBase):
     def pre_update(self, close, volume=0, ts=0, cache_db=None):
         if close in self.fkline.values.carray:
             return
-        close = self.filter.update(close)
-        if close == 0:
-            return
+        #close = self.filter.update(close)
+        #if close == 0:
+        #    return
         open, close, low, high, volume = self.fkline.update(close=close, volume=volume)
         self.close_prices.add(float(close))
         self.low_prices.add(float(low))

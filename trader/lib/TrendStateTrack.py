@@ -121,7 +121,7 @@ class TrendStateTrack(object):
                 return TrendState.DIR_DOWN_FAST
         return TrendState.DIR_NONE_NONE
 
-    # process market data received from update(), and re-determine state
+    # process market data received from update(), apply LargestPriceChange algorithm, then re-determine state
     def process_trend_state(self, trend_state, mts, ts):
         values = mts.get_values()
         timestamps = mts.get_timestamps()
@@ -497,6 +497,7 @@ class TrendState(object):
     def is_state(self, state):
         return self.state == state
 
+    # encode trend state given type and direction info
     def get_trend_state_from_type_and_direction(self, type, dir):
         state = TrendState.STATE_UNKNOWN
         if dir == TrendState.DIR_NONE_NONE:
@@ -546,6 +547,7 @@ class TrendState(object):
                 state = TrendState.STATE_CONT_TREND_DOWN_FAST
         return state
 
+    # decode direction from trend state
     def get_direction_from_trend_state(self, state):
         dir = 0
         if (state == TrendState.STATE_NON_TREND_UP_VERY_SLOW or
@@ -574,6 +576,7 @@ class TrendState(object):
             dir = TrendState.DIR_DOWN_FAST
         return dir
 
+    # decode type from trend state
     def get_type_from_trend_state(self, state):
         type = 0
         if (state == TrendState.STATE_NON_TREND_NO_DIRECTION or

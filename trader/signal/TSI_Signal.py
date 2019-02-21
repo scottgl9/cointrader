@@ -1,8 +1,5 @@
-from trader.indicator.EMA import EMA
-from trader.indicator.OBV import OBV
 from trader.indicator.TSI import TSI
 from trader.lib.Crossover2 import Crossover2
-from trader.lib.SimplePeak import SimplePeak
 from trader.signal.SignalBase import SignalBase
 
 class TSI_Signal(SignalBase):
@@ -17,7 +14,6 @@ class TSI_Signal(SignalBase):
         self.tsi_cross_low = Crossover2(window=10)
         self.tsi_cross_zero = Crossover2(window=10)
         self.tsi_cross_high = Crossover2(window=10)
-        self.peak = SimplePeak()
 
     def pre_update(self, close, volume, ts, cache_db=None):
         #obv_value = self.obv.update(close=float(close), volume=float(volume))
@@ -29,7 +25,7 @@ class TSI_Signal(SignalBase):
             self.tsi_cross_low.update(tsi_result, -25)
             self.tsi_cross_high.update(tsi_result, 25)
             self.tsi_cross_zero.update(tsi_result, 0)
-            self.peak.update(tsi_result)
+            #self.peak.update(tsi_result)
 
     def post_update(self, close, volume):
         pass
@@ -62,7 +58,7 @@ class TSI_Signal(SignalBase):
         if self.tsi_cross_zero.crossdown_detected():
             return True
 
-        if self.tsi.result >= 25 and self.peak.peak():
-            return True
+        #if self.tsi.result >= 25 and self.peak.peak():
+        #    return True
 
         return False

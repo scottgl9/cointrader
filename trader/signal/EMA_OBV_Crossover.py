@@ -2,7 +2,6 @@ from trader.indicator.EMA import EMA
 from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
 from trader.lib.Crossover2 import Crossover2
-from trader.lib.CrossoverDouble import CrossoverDouble
 from trader.signal.SignalBase import SignalBase
 
 class EMA_OBV_Crossover(SignalBase):
@@ -17,7 +16,6 @@ class EMA_OBV_Crossover(SignalBase):
         self.ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.cross_short = Crossover2(window=10)
         self.cross_long = Crossover2(window=10)
-        self.cross_double = CrossoverDouble(window=10)
         self.kst = KST()
         self.obv = OBV()
         self.obv_ema12 = EMA(self.win_short, scale=24)
@@ -77,7 +75,7 @@ class EMA_OBV_Crossover(SignalBase):
         #self.cross_long.update(value2, value3)
         self.cross_short.update(value1, value2)
         self.cross_long.update(value2, value3)
-        self.cross_double.update(value1, value2, value3)
+        #self.cross_double.update(value1, value2, value3)
 
     def post_update(self, close, volume):
         pass
@@ -116,8 +114,8 @@ class EMA_OBV_Crossover(SignalBase):
         if self.cross_short.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
             return True
 
-        if self.cross_double.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
-            return True
+        #if self.cross_double.crossup_detected() and self.obv_ema26.result > self.obv_ema26.last_result and self.obv_ema50.result > self.obv_ema50.last_result:
+        #    return True
 
         #if self.trend_down_count > 10 and self.trend_up_count > 2 and self.trending_up:
         #    self.trend_up_count = 0
@@ -145,8 +143,8 @@ class EMA_OBV_Crossover(SignalBase):
         if self.cross_long.crossdown_detected():
             return True
 
-        if self.cross_double.crossdown_detected():
-            return True
+        #if self.cross_double.crossdown_detected():
+        #    return True
 
         if self.ema50.result > self.ema50.last_result and self.obv_ema50.result < self.obv_ema50.last_result:
             return True
