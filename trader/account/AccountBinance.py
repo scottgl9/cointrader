@@ -394,34 +394,24 @@ class AccountBinance(AccountBase):
     #    return self.client.get_asset_balance(asset=asset)
 
     def get_account_total_btc_value(self):
-        tickers = self.get_all_ticker_symbols()
-        btc_usd_price = float(self.client.get_symbol_ticker(symbol='BTCUSDT')['price'])
-        total_balance_usd = 0.0
-        total_balance_btc = 0.0
+        tickers = self.client.get_all_tickers()
+        #for symbol, price in tickers.items():
+        total_balance_btc = 0
         for accnt in self.client.get_account()['balances']:
-            if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
-                price = 0.0
-                price_usd = 0.0
-                price_btc = 0.0
-                if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
-                    symbol = "{}BTC".format(accnt['asset'])
-                    if symbol not in tickers:
-                        continue
-                    price = float(self.client.get_symbol_ticker(symbol=symbol)['price'])
-                    total_amount = float(accnt['free']) + float(accnt['locked'])
-                    price_btc = price * total_amount
-                elif accnt['asset'] != 'USDT':
-                    price = 1.0
-                    total_amount = float(accnt['free']) + float(accnt['locked'])
-                    price_btc = total_amount
-                else:
-                    price = 1.0
-                    total_amount = float(accnt['free']) + float(accnt['locked'])
-                    price_btc = total_amount / btc_usd_price
+            price_btc = 0
+            if float(accnt['free']) == 0.0 and float(accnt['locked']) == 0.0:
+                continue
+            if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
+                symbol = "{}BTC".format(accnt['asset'])
+                if symbol not in tickers.keys():
+                    continue
+                price = float(tickers[symbol])
+                total_amount = float(accnt['free']) + float(accnt['locked'])
+                price_btc = price * total_amount
+            elif accnt['asset'] == 'BTC':
+                price_btc = float(accnt['free']) + float(accnt['locked'])
 
-                #price_usd = price_btc * btc_usd_price
-                #total_balance_usd += price_usd
-                total_balance_btc += price_btc
+            total_balance_btc += price_btc
         return total_balance_btc
 
     def total_btc_available(self, tickers=None):
