@@ -26,11 +26,11 @@ class Hybrid_Crossover_Test(SignalBase):
         self.disabled_end_ts = 0
         self.start_timestamp = 0
         self.last_close = 0
+        self.last_volume = 0
 
         self.tst = TrendStateTrack(smoother=EMA(12, scale=24))
         #self.mts_flat_line = MTSFlatLine()
 
-        self.detector = PeakValleyDetect()
         self.tspc = MTSPriceChannel(minutes=60)
         self.obv = OBV()
         self.EMA = EMA
@@ -50,7 +50,7 @@ class Hybrid_Crossover_Test(SignalBase):
         self.obv_ema26 = EMA(26, scale=24, lag_window=5)
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
 
-        self.tspc_roc = MTSPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
+        #self.tspc_roc = MTSPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
 
         ctimeout = 1000 * 3600
         self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)
@@ -94,6 +94,7 @@ class Hybrid_Crossover_Test(SignalBase):
             self.timestamp = ts
 
         self.last_close = close
+        self.last_volume = volume
 
         self.obv.update(close=close, volume=volume)
         obv12_result = self.obv_ema12.update(self.obv.result)
@@ -140,6 +141,10 @@ class Hybrid_Crossover_Test(SignalBase):
                 self.disabled_end_ts = 0
             else:
                 return False
+
+        #if self.last_volume != 0 and self.currency == 'BTC':
+        #    if self.last_volume <= 50.0 and (self.timestamp - self.last_timestamp) >= 1000 * 300:
+        #        return False
 
         # don't re-buy less than 30 minutes after a sell
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:

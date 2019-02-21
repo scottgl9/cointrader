@@ -173,7 +173,7 @@ class basic_signal_market_strategy(StrategyBase):
             close = kline.close
             self.low = kline.low
             self.high = kline.high
-            volume = kline.volume
+            volume = kline.volume_quote
             self.timestamp = kline.ts
 
         if close == 0 or volume == 0:
@@ -182,7 +182,7 @@ class basic_signal_market_strategy(StrategyBase):
         if self.timestamp == self.last_timestamp:
             return
 
-        self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp, cache_db=cache_db)
+        self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
 
         completed = False
 
