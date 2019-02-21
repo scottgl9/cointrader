@@ -41,20 +41,20 @@ class Hybrid_Crossover_Test(SignalBase):
         self.ema100 = EMA(100, scale=24, lag_window=5)
         self.ema200 = EMA(200, scale=24, lag_window=5)
 
-        self.maavg = MAAvg()
-        self.maavg.add(self.ema12)
-        self.maavg.add(self.ema26)
-        self.maavg.add(self.ema50)
+        #self.maavg = MAAvg()
+        #self.maavg.add(self.ema12)
+        #self.maavg.add(self.ema26)
+        #self.maavg.add(self.ema50)
 
-        self.obv_ema12 = EMA(12, scale=24)
-        self.obv_ema26 = EMA(26, scale=24, lag_window=5)
-        self.obv_ema50 = EMA(50, scale=24, lag_window=5)
+        #self.obv_ema12 = EMA(12, scale=24)
+        #self.obv_ema26 = EMA(26, scale=24, lag_window=5)
+        #self.obv_ema50 = EMA(50, scale=24, lag_window=5)
 
         #self.tspc_roc = MTSPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
 
         ctimeout = 1000 * 3600
-        self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)
-        self.ema_cross_26_50 = MACross(cross_timeout=ctimeout)
+        #self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)
+        #self.ema_cross_26_50 = MACross(cross_timeout=ctimeout)
         self.ema_cross_50_100 = MACross(cross_timeout=ctimeout)
 
         self.ema_cross_12_200 = MACross(cross_timeout=ctimeout * 2)
@@ -96,10 +96,10 @@ class Hybrid_Crossover_Test(SignalBase):
         self.last_close = close
         self.last_volume = volume
 
-        self.obv.update(close=close, volume=volume)
-        obv12_result = self.obv_ema12.update(self.obv.result)
-        obv26_result = self.obv_ema26.update(self.obv.result)
-        obv50_result = self.obv_ema50.update(self.obv.result)
+        #self.obv.update(close=close, volume=volume)
+        #obv12_result = self.obv_ema12.update(self.obv.result)
+        #obv26_result = self.obv_ema26.update(self.obv.result)
+        #obv50_result = self.obv_ema50.update(self.obv.result)
 
         ema12_result = self.ema12.update(close)
         ema26_result = self.ema26.update(close)
@@ -109,11 +109,11 @@ class Hybrid_Crossover_Test(SignalBase):
 
         tspc_result = self.tspc.update(close, ts)
 
-        self.obv_ema_cross_12_26.update(0, ts, ma1_result=obv12_result, ma2_result=obv26_result)
-        self.obv_ema_cross_26_50.update(0, ts, ma1_result=obv26_result, ma2_result=obv50_result)
+        #self.obv_ema_cross_12_26.update(0, ts, ma1_result=obv12_result, ma2_result=obv26_result)
+        #self.obv_ema_cross_26_50.update(0, ts, ma1_result=obv26_result, ma2_result=obv50_result)
 
-        self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
-        self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
+        #self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
+        #self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
 
         self.ema_cross_12_100.update(close, ts, ma1_result=ema12_result, ma2_result=ema100_result)
         self.ema_cross_26_100.update(close, ts, ma1_result=ema26_result, ma2_result=ema100_result)
