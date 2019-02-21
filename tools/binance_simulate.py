@@ -130,7 +130,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
                           close=float(msg['c']),
                           low=float(msg['l']),
                           high=float(msg['h']),
-                          volume=float(msg['v']),
+                          volume_base=float(msg['v']),
+                          volume_quote=float(msg['q']),
                           ts=int(msg['E']))
         else:
             kline.symbol = msg['s']

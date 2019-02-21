@@ -107,7 +107,8 @@ class BinanceTrader:
                                    close=float(msg['c']),
                                    low=float(msg['l']),
                                    high=float(msg['h']),
-                                   volume=float(msg['v']),
+                                   volume_base=float(msg['v']),
+                                   volume_quote=float(msg['q']),
                                    ts=int(msg['E']))
             else:
                 self.kline.symbol = msg['s']
@@ -129,7 +130,8 @@ class BinanceTrader:
                                        close=float(part['c']),
                                        low=float(part['l']),
                                        high=float(part['h']),
-                                       volume=float(part['v']),
+                                       volume_base=float(part['v']),
+                                       volume_quote=float(part['q']),
                                        ts=int(part['E']))
                 else:
                     self.kline.symbol = part['s']

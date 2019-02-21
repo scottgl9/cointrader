@@ -33,104 +33,6 @@ from trader.config import *
 import argparse
 import logging
 
-
-def simulate(conn, client, strategy, signal_name, logger):
-    c = conn.cursor()
-    c.execute("SELECT * FROM miniticker ORDER BY E ASC")
-
-    assets_info = get_info_all_assets(client)
-    accnt = AccountBinance(client, simulation=True)
-    accnt.update_asset_balance('BTC', 0.06, 0.06)
-    #accnt.update_asset_balance('ETH', 0.1, 0.1)
-    #accnt.update_asset_balance('BNB', 15.0, 15.0)
-
-    multitrader = MultiTrader(client,
-                              strategy,
-                              signal_names=[signal_name],
-                              assets_info=assets_info,
-                              simulate=True,
-                              accnt=accnt,
-                              logger=logger,
-                              store_trades=True)
-
-    print(multitrader.accnt.balances)
-
-    tickers = {}
-
-    found = False
-
-    initial_btc_total = 0.0
-
-    first_ts = None
-    last_ts = None
-
-    for row in c:
-        msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
-               'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
-        tickers[msg['s']] = float(msg['c'])
-        if not first_ts:
-            first_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
-        else:
-            last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
-        if msg['s'] == 'BTCUSDT' and not found:
-            if multitrader.accnt.total_btc_available(tickers):
-                found = True
-                #total_btc = multitrader.accnt.balances['BTC']['balance']
-                total_btc = multitrader.accnt.get_total_btc_value(tickers)
-                initial_btc_total = total_btc
-                total_usd = float(msg['o']) * total_btc
-                print("Initial BTC={}".format(total_btc))
-
-        kline = Kline(symbol=msg['s'],
-                      open=float(msg['o']),
-                      close=float(msg['c']),
-                      low=float(msg['l']),
-                      high=float(msg['h']),
-                      volume=float(msg['v']),
-                      ts=int(msg['E']))
-
-        multitrader.process_message(kline)
-
-    return multitrader.get_stored_trades()
-
-def get_info_all_assets(client):
-    assets = {}
-    for key, value in client.get_exchange_info().items():
-        if key != 'symbols':
-            continue
-        for asset in value:
-            minQty = ''
-            tickSize = ''
-            for filter in asset['filters']:
-                if 'minQty' in filter:
-                    minQty = filter['minQty']
-                if 'tickSize' in filter:
-                    tickSize = filter['tickSize']
-            assets[asset['symbol']] = {'minQty': minQty,'tickSize': tickSize}
-    return assets
-
-def get_asset_balances(client):
-    balances = {}
-    for accnt in client.get_account()['balances']:
-        if float(accnt['free']) == 0.0 and float(accnt['locked']) == 0.0:
-            continue
-
-        balances[accnt['asset']] = float(accnt['free']) + float(accnt['locked'])
-    return balances
-
-def filter_assets_by_minqty(assets_info, balances):
-    currencies = ['BTC', 'ETH', 'BNB', 'USDT']
-    result = {}
-    for name, balance in balances.items():
-        for currency in currencies:
-            symbol = "{}{}".format(name, currency)
-            if symbol not in assets_info.keys(): continue
-
-            minQty = float(assets_info[symbol]['minQty'])
-            if float(balance) >= minQty:
-                result[name] = balance
-    return result
-
 class TabType:
     def __init__(self, name):
         self.name = name
@@ -186,10 +88,9 @@ class mainWindow(QtGui.QTabWidget):
         maavg_x_values = []
         maavg_values = []
 
-        #dtwma = DTWMA(30, smoother=EMA(12))
-        #dtwma_values = []
         obv = OBV()
-        volumes = []
+        volumes_base = []
+        volumes_quote = []
         obv_values = []
         obv_ema12 = EMA(12)
         obv_ema26 = EMA(26)
@@ -201,10 +102,6 @@ class mainWindow(QtGui.QTabWidget):
         tspc_values = []
         tspc_x_values = []
 
-        macd = MACD(short_weight=12, long_weight=26, signal_weight=20.0, scale=24, plot_mode=True)
-        macd_diff_values = []
-        macd_signal_values = []
-
         i=0
         for msg in data:
             price = float(msg['c'])
@@ -213,11 +110,13 @@ class mainWindow(QtGui.QTabWidget):
             low = float(msg['l'])
             low_values.append(low)
             ts = msg['E']
-            volume = msg['v']
-            volumes.append(volume)
-            #print(msg['q'])
+            volume_base = float(msg['v'])
+            volumes_base.append(volume_base)
+            volume_quote = float(msg['q'])
+            volumes_quote.append(volume_quote)
+
             prices.append(price)
-            obv.update(price, volume)
+            obv.update(price, volume_base)
             obv_values.append(obv.result)
             obv_ema12.update(obv.result)
             obv_ema12_values.append(obv_ema12.result)
@@ -230,10 +129,6 @@ class mainWindow(QtGui.QTabWidget):
             if tspc.ready():
                 tspc_values.append(tspc.result)
                 tspc_x_values.append(i)
-
-            #dtwma.update(price, ts)
-            #if dtwma.result != 0:
-            #    dtwma_values.append(dtwma.result)
 
             ema12.update(price)
             ema12_values.append(ema12.result)
@@ -249,11 +144,6 @@ class mainWindow(QtGui.QTabWidget):
                 maavg_values.append(maavg.result)
                 maavg_x_values.append(i)
 
-            #macd.update(price)
-            #if macd.diff != 0:
-            #    macd_diff_values.append(macd.diff)
-            #if macd.signal.result != 0:
-            #    macd_signal_values.append(macd.signal.result)
             i += 1
 
 
@@ -280,10 +170,10 @@ class mainWindow(QtGui.QTabWidget):
         #ax2.plot(macd_diff_values)
         #ax2.plot(macd_signal_values)
         ax3 = self.tabs[name].figure.add_subplot(212)
-        #ax3.plot(obv_values)
-        ax3.plot(obv_ema12_values)
+        ax3.plot(volumes_quote)
+        #ax3.plot(obv_ema12_values)
         #ax3.plot(obv_ema26_values)
-        ax3.plot(obv_ema100_values)
+        #ax3.plot(obv_ema100_values)
         self.tabs[name].canvas.draw()
 
 if __name__ == '__main__':
@@ -309,16 +199,10 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
-    #fileHandler = logging.FileHandler("{0}/{1}.log".format(".", "simulate"))
-    #fileHandler.setFormatter(logFormatter)
-    #logger.addHandler(fileHandler)
-
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.DEBUG)
-
-    run_simulation = True
 
     if not os.path.exists(results.cache_dir):
         logger.warning("cache directory {} doesn't exist, exiting...".format(results.cache_dir))
@@ -336,27 +220,9 @@ if __name__ == '__main__':
         with open(trade_cache_filename, "r") as f:
             trade_cache = json.loads(str(f.read()))
 
-        if trade_cache_name in trade_cache.keys():
-            run_simulation = False
-
-    if run_simulation:
-        logger.info("Running simulate with {}, strategy {}, signal {}".format(results.filename,
-                                                                              results.strategy,
-                                                                              results.signal_name))
-
-        try:
-            client = Client(MY_API_KEY, MY_API_SECRET)
-            trades = simulate(conn, client, results.strategy, results.signal_name, logger)
-        except (KeyboardInterrupt, SystemExit):
-            logger.info("CTRL+C: Exiting....")
-            conn.close()
-            sys.exit(0)
-
-        logger.info("Writing trade cache to {}".format(trade_cache_filename))
-        with open(trade_cache_filename, "w") as f:
-            trade_cache[trade_cache_name] = {}
-            trade_cache[trade_cache_name]['trades'] = trades
-            f.write(json.dumps(trade_cache, f, indent=4))
+        if trade_cache_name not in trade_cache.keys():
+            logger.error("Failed to load {}, exiting...".format(trade_cache_name))
+            sys.exit(-1)
 
     plt.rcParams.update({'figure.max_open_warning': 0})
 

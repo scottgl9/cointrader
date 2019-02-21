@@ -214,7 +214,7 @@ class Hybrid_Crossover_Test(SignalBase):
 
     def sell_signal(self):
         if self.ema_cross_12_200.cross_down and self.ema_cross_26_200.cross_down and self.ema_cross_50_200.cross_down:
-            self.sell_type = 1
+            self.sell_type = "EMA12_26_50_200"
             return True
 
         if self.ema_cross_50_100.cross_down:
@@ -234,7 +234,7 @@ class Hybrid_Crossover_Test(SignalBase):
             return True
 
         if self.ema_12_cross_tpsc.is_past_current_max(seconds=300, percent=2.0, cutoff=0.03):
-            self.sell_type='TPSC12_MAX'
+            self.sell_type = 'TPSC12_MAX'
             return True
 
         return False
