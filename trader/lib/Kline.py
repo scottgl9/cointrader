@@ -11,7 +11,7 @@ class Kline(object):
         self.high = high
         self.volume_base = volume_base
         self.volume_quote = volume_quote
-        self.volume = self.volume_quote
+        self.volume = volume_quote
         self.ts = ts
 
     def __repr__(self):

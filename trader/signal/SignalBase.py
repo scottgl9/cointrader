@@ -14,6 +14,11 @@ class SignalBase(object):
         self.mm_enabled = False
         self.cache = None
         self.accnt = accnt
+        self.base = None
+        self.currency = None
+        if self.asset_info:
+            self.base = self.asset_info.base
+            self.currency = self.asset_info.currency
 
         self.is_currency_pair = False
         if self.asset_info and self.asset_info.is_currency_pair:

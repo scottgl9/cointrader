@@ -139,7 +139,9 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
             kline.close = float(msg['c'])
             kline.low = float(msg['l'])
             kline.high= float(msg['h'])
-            kline.volume = float(msg['v'])
+            kline.volume_base = float(msg['v'])
+            kline.volume_quote = float(msg['q'])
+            kline.volume = kline.volume_quote
             kline.ts = int(msg['E'])
 
         multitrader.process_message(kline, cache_db=cache_db)

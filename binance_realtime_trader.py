@@ -116,7 +116,9 @@ class BinanceTrader:
                 self.kline.close = float(msg['c'])
                 self.kline.low = float(msg['l'])
                 self.kline.high = float(msg['h'])
-                self.kline.volume = float(msg['v'])
+                self.kline.volume_base = float(msg['v'])
+                self.kline.volume_quote = float(msg['q'])
+                self.kline.volume = self.kline.volume_quote
                 self.kline.ts = int(msg['E'])
 
             self.multitrader.process_message(self.kline)
@@ -139,7 +141,9 @@ class BinanceTrader:
                     self.kline.close = float(part['c'])
                     self.kline.low = float(part['l'])
                     self.kline.high = float(part['h'])
-                    self.kline.volume = float(part['v'])
+                    self.kline.volume_base = float(part['v'])
+                    self.kline.volume_quote = float(part['q'])
+                    self.kline.volume = self.kline.volume_quote
                     self.kline.ts = int(part['E'])
 
                 self.multitrader.process_message(self.kline)
