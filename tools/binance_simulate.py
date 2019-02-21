@@ -68,7 +68,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     #accnt.update_asset_balance('ETH', 4.0, 4.0)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
 
-    signal_names = [signal_name, "BTC_USDT_Signal"]
+    signal_names = [signal_name] #, "BTC_USDT_Signal"]
 
     multitrader = MultiTrader(client,
                               strategy,

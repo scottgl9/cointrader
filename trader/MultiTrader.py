@@ -181,6 +181,10 @@ class MultiTrader(object):
             elif self.current_ts != 0:
                 if (self.current_ts - self.last_ts) > self.check_ts:
                     self.accnt.get_account_balances()
+
+                    # keep asset details up to date
+                    self.accnt.load_detail_all_assets()
+
                     self.last_ts = self.current_ts
                     timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
                     self.logger.info("MultiTrader running {}".format(timestr))
