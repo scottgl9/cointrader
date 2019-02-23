@@ -128,8 +128,44 @@ class TrendStateTrack(object):
         self.lpc.reset(values, timestamps)
         self.lpc.divide_price_segments()
         seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
+        new_start_ts = self.process_lpc_result(timestamps, seg_down, seg_up)
+        if new_start_ts:
+            mts.remove_before_ts(new_start_ts)
+            values = mts.get_values()
+            timestamps = mts.get_timestamps()
+            self.lpc.reset(values, timestamps)
+            self.lpc.divide_price_segments()
+            seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
+
         trend_state = self.process_trend_segment_state(trend_state, seg_down, seg_up, ts)
         return trend_state
+
+    # process result from LargestPriceChange (LPC) to determine if we need to re-run LPC
+    def process_lpc_result(self, timestamps, seg_down, seg_up):
+        new_start_ts = 0
+        seg_down_start_ts = int(seg_down['start_ts'])
+        seg_up_start_ts = int(seg_up['start_ts'])
+        seg_down_end_ts = int(seg_down['end_ts'])
+        seg_up_end_ts = int(seg_up['end_ts'])
+        seg_down_percent = abs(float(seg_down['percent']))
+        seg_up_percent = abs(float(seg_up['percent']))
+
+        seg_down_diff_ts = seg_down_end_ts - seg_down_start_ts
+        seg_up_diff_ts = seg_up_end_ts - seg_up_start_ts
+
+        # if entire down segment precedes entire up segment and down segment size < up segment size
+        if seg_down_end_ts <= seg_up_start_ts and seg_down_diff_ts < seg_up_diff_ts:
+            new_start_ts = seg_up_start_ts
+        # if entire up segment precedes entire down segment and up segment size < down segment size
+        elif seg_up_end_ts <= seg_down_start_ts and seg_up_diff_ts < seg_down_diff_ts:
+            new_start_ts = seg_down_start_ts
+        # if up segment is completely contained within down segment
+        #elif seg_down_start_ts < seg_up_start_ts and seg_up_end_ts < seg_down_end_ts:
+        #    pass
+        # if down segment is completely contained within up segment
+        #elif seg_up_start_ts < seg_down_start_ts and seg_down_end_ts < seg_up_end_ts:
+        #    pass
+        return new_start_ts
 
     def process_trend_segment_state(self, trend_state, seg_down, seg_up, ts):
         self.seg_down_list.append(seg_down)

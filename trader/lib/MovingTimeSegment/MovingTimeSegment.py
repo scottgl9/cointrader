@@ -68,6 +68,24 @@ class MovingTimeSegment(object):
             self.min_value = self.fmm.min()
             self.max_value = self.fmm.max()
 
+    # remove all values and timestamps before argument ts
+    def remove_before_ts(self, ts):
+        cnt = self.timestamps.index(ts)
+
+        if not self.disable_fmm:
+            self.fmm.remove(cnt)
+
+        for i in range(0, cnt):
+            self._sum -= self.values[i]
+            self._sum_count -= 1
+
+        self.timestamps = self.timestamps[cnt:]
+        self.values = self.values[cnt:]
+
+        if not self.disable_fmm:
+            self.min_value = self.fmm.min()
+            self.max_value = self.fmm.max()
+
     def get_sum(self):
         return float(self._sum)
 

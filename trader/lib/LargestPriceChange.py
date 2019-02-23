@@ -5,12 +5,18 @@ class LargestPriceChange(object):
         self.timestamps = None
         self.root = None
         self._price_segment_percents = None
+        self.start_index = 0
         if prices and timestamps:
             self.reset(prices, timestamps)
 
-    def reset(self, prices, timestamps):
-        self.prices = prices
-        self.timestamps = timestamps
+    def reset(self, prices, timestamps, start_index=0):
+        if start_index:
+            self.start_index = start_index
+            self.prices = prices[self.start_index:]
+            self.timestamps = timestamps[self.start_index:]
+        else:
+            self.prices = prices
+            self.timestamps = timestamps
         self.root = PriceSegment(self.prices, self.timestamps)
         self._price_segment_percents = []
 
