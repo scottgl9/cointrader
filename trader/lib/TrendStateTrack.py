@@ -126,13 +126,13 @@ class TrendStateTrack(object):
         self.lpc.divide_price_segments()
         seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
         new_start_ts = self.process_lpc_result(timestamps, seg_down, seg_up)
-        if new_start_ts:
-            mts.remove_before_ts(new_start_ts)
-            values = mts.get_values()
-            timestamps = mts.get_timestamps()
-            self.lpc.reset(values, timestamps)
-            self.lpc.divide_price_segments()
-            seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
+        #if new_start_ts:
+        #    mts.remove_before_ts(new_start_ts)
+        #    values = mts.get_values()
+        #    timestamps = mts.get_timestamps()
+        #    self.lpc.reset(values, timestamps)
+        #    self.lpc.divide_price_segments()
+        #    seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
 
         trend_state = self.process_trend_segment_state(trend_state, seg_down, seg_up, ts)
         return trend_state
@@ -150,12 +150,16 @@ class TrendStateTrack(object):
         seg_down_diff_ts = seg_down_end_ts - seg_down_start_ts
         seg_up_diff_ts = seg_up_end_ts - seg_up_start_ts
 
-        # if entire down segment precedes entire up segment and down segment size < up segment size
-        if seg_down_end_ts <= seg_up_start_ts and seg_down_diff_ts < seg_up_diff_ts:
-            new_start_ts = seg_up_start_ts
-        # if entire up segment precedes entire down segment and up segment size < down segment size
+        # if entire down segment precedes entire up segment and down segment size < up segment size,
+        # and seg_down_percent > seg_up_percent, remove previous down segment
+        if seg_down_end_ts < seg_up_start_ts and seg_down_diff_ts < seg_up_diff_ts:
+            if seg_down_percent > seg_up_percent:
+                new_start_ts = seg_up_start_ts
+        # if entire up segment precedes entire down segment and up segment size < down segment size,
+        # and seg_up_percent > seg_down_percent, remove previous up segment
         elif seg_up_end_ts <= seg_down_start_ts and seg_up_diff_ts < seg_down_diff_ts:
-            new_start_ts = seg_down_start_ts
+            if seg_up_percent > seg_down_percent:
+                new_start_ts = seg_down_start_ts
         # if up segment is completely contained within down segment
         #elif seg_down_start_ts < seg_up_start_ts and seg_up_end_ts < seg_down_end_ts:
         #    pass

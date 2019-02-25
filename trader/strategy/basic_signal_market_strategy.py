@@ -126,10 +126,6 @@ class basic_signal_market_strategy(StrategyBase):
         if price < float(signal.buy_price):
             return False
 
-        # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0
-        if (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
-            return True
-
         #if not signal.sell_marked and signal.sell_signal():
         #    signal.sell_marked = True
 
@@ -139,6 +135,10 @@ class basic_signal_market_strategy(StrategyBase):
         #else:
         if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
             return False
+
+        # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0
+        if (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
+            return True
 
         # if buying is disabled and symbol is >= 1.0 percent profit, then sell
         if self.disable_buy:
