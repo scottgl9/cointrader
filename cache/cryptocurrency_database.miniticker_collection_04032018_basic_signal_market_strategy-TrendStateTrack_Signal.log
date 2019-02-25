@@ -1,3 +1,4 @@
+Loading cache/cryptocurrency_database.miniticker_collection_04032018.json
 Running simulate with cryptocurrency_database.miniticker_collection_04032018.db signal TrendStateTrack_Signal
 Resetting initial BTC...
 Initial BTC value = 0.2
@@ -10,40 +11,46 @@ buy(1, TRXBTC, 860.0) @ 4.64e-06
 buy(1, XEMBTC, 120.0) @ 3.34e-05
 buy(1, POWRBTC, 90.0) @ 4.657e-05
 buy(1, ADABTC, 180.0) @ 2.234e-05
+buy(1, IOSTBTC, 1160.0) @ 3.46e-06
 buy(1, POEBTC, 1050.0) @ 3.83e-06
 buy(1, RCNBTC, 330.0) @ 1.204e-05
 buy(1, ZILBTC, 650.0) @ 6.17e-06
 buy(1, ENJBTC, 280.0) @ 1.407e-05
+buy(1, STORMBTC, 950.0) @ 4.25e-06
 buy(1, LINKBTC, 100.0) @ 4.017e-05
-buy(1, STORMBTC, 930.0) @ 4.32e-06
+buy(1, QLCBTC, 200.0) @ 1.973e-05
 buy(1, SNTBTC, 290.0) @ 1.375e-05
 buy(1, NCASHBTC, 1070.0) @ 3.76e-06
-buy(1, XLMBTC, 130.0) @ 3.128e-05
-sell(1, POWRBTC, 90.0) @ 4.708e-05 (bought @ 4.657e-05, 1.1%)	0.09%
+sell(1, XVGBTC, 420.0) @ 9.61e-06 (bought @ 9.51e-06, 1.05%)	-0.05%
+buy(1, XLMBTC, 130.0) @ 3.123e-05
+sell(1, POWRBTC, 90.0) @ 4.708e-05 (bought @ 4.657e-05, 1.1%)	0.11%
+sell(1, QLCBTC, 200.0) @ 1.992e-05 (bought @ 1.973e-05, 0.96%)	0.1%
+sell(1, SNTBTC, 290.0) @ 1.412e-05 (bought @ 1.375e-05, 2.69%)	0.23%
+sell(1, TRXBTC, 860.0) @ 4.69e-06 (bought @ 4.64e-06, 1.08%)	0.28%
 buy(1, POWRBTC, 80.0) @ 4.939e-05
-sell(1, XVGBTC, 420.0) @ 8.42e-06 (bought @ 9.51e-06, -11.46%)	-0.69%
-sell(1, DNTBTC, 510.0) @ 7.4e-06 (bought @ 7.79e-06, -5.01%)	-0.59%
-buy(1, IOSTBTC, 1010.0) @ 3.97e-06
+buy(1, QLCBTC, 200.0) @ 1.971e-05
+buy(1, WPRBTC, 300.0) @ 1.32e-05
+sell(1, DNTBTC, 510.0) @ 7.49e-06 (bought @ 7.79e-06, -3.85%)	-0.1%
 
 Trade Symbol Profits:
 ADABTC (1): 2.64%
 RCNBTC (1): 0.17%
-TRXBTC (1): -1.29%
-STORMBTC (1): -3.01%
+STORMBTC (1): -1.41%
 XEMBTC (1): 0.57%
 ZILBTC (1): -1.46%
-SNTBTC (1): -2.91%
-XLMBTC (1): 0.45%
+QLCBTC (1): -3.25%
+XLMBTC (1): 0.61%
 LINKBTC (1): -0.27%
 XRPBTC (1): 1.25%
+WPRBTC (1): -3.86%
 POWRBTC (1): -4.82%
 ENJBTC (1): -1.49%
-IOSTBTC (1): -4.28%
+IOSTBTC (1): 9.83%
 NCASHBTC (1): -0.27%
 POEBTC (1): -2.87%
 
 Results:
 Total Capture Time:	10.38 hours
 Initial BTC total:	0.2
-Final BTC total:	0.1986919
-Percent Profit: 	-0.65%
+Final BTC total:	0.199949
+Percent Profit: 	-0.03%
