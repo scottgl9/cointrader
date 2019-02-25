@@ -1,20 +1,11 @@
 # Testing code for complete rewrite of Hybrid_Crossover for better profits
-from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
-from trader.indicator.ZLEMA import ZLEMA
 from trader.indicator.OBV import OBV
-from trader.indicator.RSI import RSI
-from trader.indicator.DTWMA import DTWMA
-from trader.lib.Crossover2 import Crossover2
-from trader.lib.MAAvg import MAAvg
 from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff
-from trader.lib.PeakValleyDetect import PeakValleyDetect
-from trader.lib.TrendStateTrack import TrendStateTrack, TrendState
+from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
+from trader.lib.TrendState.TrendState import TrendState
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
-from trader.lib.MovingTimeSegment.MTSPercentChangeROC import MTSPercentChangeROC
-from trader.lib.MovingTimeSegment.MTSFlatLine import MTSFlatLine
-from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
 

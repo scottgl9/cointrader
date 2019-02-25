@@ -10,16 +10,12 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 from trader.lib.MovingTimeSegment.MTSMoveRate import MTSMoveRate
-from trader.indicator.DTWMA import DTWMA
 from trader.indicator.EMA import EMA
-from trader.indicator.DTWMA_EMA import DTWMA_EMA
-from trader.lib.TrendStateTrack import TrendStateTrack
+from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
+from trader.lib.TrendState.TrendState import TrendState
 
 
 def get_rows_as_msgs(c):
