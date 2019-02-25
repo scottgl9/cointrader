@@ -126,6 +126,10 @@ class basic_signal_market_strategy(StrategyBase):
         if price < float(signal.buy_price):
             return False
 
+        # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0
+        if (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
+            return True
+
         #if not signal.sell_marked and signal.sell_signal():
         #    signal.sell_marked = True
 
@@ -196,7 +200,6 @@ class basic_signal_market_strategy(StrategyBase):
                     #                                                             msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.buy_price = msg.price
-                    signal.buy_price_high = signal.buy_price
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_SELL_COMPLETE:
@@ -220,7 +223,7 @@ class basic_signal_market_strategy(StrategyBase):
                     signal.buy_timestamp = 0
                     # for failed buy, disable buys for this symbol for 4 hours
                     signal.disabled = True
-                    signal.disabled_end_ts = signal.timestamp + 1000 * 3600 * 4
+                    signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_SELL_FAILED:
                     id = msg.sig_id
@@ -272,7 +275,6 @@ class basic_signal_market_strategy(StrategyBase):
             self.delayed_buy_msg = None
             signal.buy_timestamp = self.timestamp
             signal.last_buy_ts = self.timestamp
-            signal.buy_price_high = signal.buy_price
 
         if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
             self.delayed_sell_msg.price = price
@@ -288,27 +290,9 @@ class basic_signal_market_strategy(StrategyBase):
             signal.buy_timestamp = 0
             signal.last_sell_ts = self.timestamp
 
-        # keep track of the highest close price after a buy
-        if signal.buy_price_high != 0 and price > signal.buy_price_high:
-            signal.buy_price_high = price
-
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
             return
-
-        # check if coin was already sold (probably manually), and if so mark as SOLD
-        #balance = self.round_base(float(self.accnt.get_asset_balance(self.base)['balance']))
-        #if not self.simulate and signal.buy_size != 0 and balance != 0 and signal.buy_size < balance:
-        #    self.logger.info("ALREADY_SOLD for {} buy_price={} size={}".format(self.ticker_id,
-        #                                                                       signal.buy_price,
-        #                                                                       signal.buy_size))
-        #    if self.min_trade_size_qty != 1.0:
-        #        self.min_trade_size_qty = 1.0
-        #    signal.last_buy_price = signal.buy_price
-        #    signal.buy_price = 0.0
-        #    signal.buy_size = 0.0
-        #    signal.buy_timestamp = 0
-        #    signal.buy_price_high = 0
 
         if signal.get_flag() == SignalBase.FLAG_SELL_ALL:
             balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
@@ -374,7 +358,6 @@ class basic_signal_market_strategy(StrategyBase):
         # for more accurate simulation, delay sell message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
         if self.accnt.simulate and not self.delayed_sell_msg:
-            signal.buy_price_high = 0
             self.delayed_sell_msg = Message(self.ticker_id,
                                             Message.ID_MULTI,
                                             Message.MSG_MARKET_SELL,

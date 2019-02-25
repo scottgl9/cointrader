@@ -472,9 +472,11 @@ class TrendState(object):
         self.direction = 0
         self.prev_direction = 0
         self.direction_count = 0
+        self.prev_direction_count = 0
         self.direction_speed = TrendState.DIR_NONE_NONE
         self.prev_direction_speed = TrendState.DIR_NONE_NONE
         self.direction_speed_count = 0
+        self.prev_direction_speed_count = 0
         self.start_ts = 0
         self.cur_ts = 0
         self.end_ts = 0
@@ -684,6 +686,18 @@ class TrendState(object):
     def has_state_changed(self):
         return self.state != self.prev_state
 
+    def has_direction_speed_changed(self):
+        return self.direction_speed != self.prev_direction_speed
+
+    def has_direction_speed_count_changed(self):
+        return self.direction_speed_count != self.prev_direction_speed_count
+
+    def has_direction_changed(self):
+        return self.direction != self.prev_direction
+
+    def has_direction_count_changed(self):
+        return self.direction_count != self.prev_direction_count
+
     # conditional set state
     def set_state_conditional(self, cond, cond_true_state, cond_false_state):
         if cond:
@@ -704,6 +718,7 @@ class TrendState(object):
         dir = self.get_direction_speed_from_trend_state(state)
         self.prev_direction_speed = self.direction_speed
         self.direction_speed = dir
+        self.prev_direction_speed_count = self.direction_speed_count
         if self.direction_speed != self.prev_direction_speed:
             self.direction_speed_count = 0
         else:
@@ -713,10 +728,11 @@ class TrendState(object):
         self.prev_direction = self.direction
         self.direction = direction
         # determine if direction changed or not
-        if self.direction == self.prev_direction:
-            self.direction_count += 1
-        elif self.direction != self.prev_direction:
+        self.prev_direction_count = self.direction_count
+        if self.direction != self.prev_direction:
             self.direction_count = 0
+        else:
+            self.direction_count += 0
 
     def add_child_trend_state(self, trend_state):
         if not self.child_state_list:
