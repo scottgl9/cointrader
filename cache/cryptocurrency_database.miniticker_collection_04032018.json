@@ -49,11 +49,11 @@
                 }, 
                 {
                     "buy_price": 3.48e-06, 
-                    "index": 6632, 
-                    "price": 3.57e-06, 
+                    "index": 6325, 
+                    "price": 3.52e-06, 
                     "size": "1150.0", 
                     "symbol": "IOSTBTC", 
-                    "trade_type": "TPSC12_MAX", 
+                    "trade_type": 0, 
                     "type": "sell"
                 }
             ], 
@@ -198,15 +198,15 @@
             ], 
             "STORMBTC": [
                 {
-                    "index": 1168, 
-                    "price": 4.25e-06, 
+                    "index": 1039, 
+                    "price": 4.26e-06, 
                     "size": "940.0", 
                     "symbol": "STORMBTC", 
                     "trade_type": "TPSC12", 
                     "type": "buy"
                 }, 
                 {
-                    "buy_price": 4.25e-06, 
+                    "buy_price": 4.26e-06, 
                     "index": 1713, 
                     "price": 4.31e-06, 
                     "size": "940.0", 
@@ -246,17 +246,17 @@
             ], 
             "XLMBTC": [
                 {
-                    "index": 4016, 
-                    "price": 3.13e-05, 
+                    "index": 2965, 
+                    "price": 3.091e-05, 
                     "size": "130.0", 
                     "symbol": "XLMBTC", 
-                    "trade_type": "EMA26_200|EMA50_200", 
+                    "trade_type": "TPSC12", 
                     "type": "buy"
                 }, 
                 {
-                    "buy_price": 3.13e-05, 
-                    "index": 6001, 
-                    "price": 3.153e-05, 
+                    "buy_price": 3.091e-05, 
+                    "index": 4825, 
+                    "price": 3.128e-05, 
                     "size": "130.0", 
                     "symbol": "XLMBTC", 
                     "trade_type": "TPSC12", 
