@@ -32,6 +32,10 @@ class TrendStateInfo(object):
     DIR_DOWN_VERY_SLOW              = 28
     DIR_DOWN_SLOW                   = 29
     DIR_DOWN_FAST                   = 30
+    # direction: -1 down, 1 up, 0 none
+    DIRECTION_DOWN                  = -1
+    DIRECTION_UP                    = 1
+    DIRECTION_NONE                  = 0
 
     def __init__(self, state):
         self.state = state

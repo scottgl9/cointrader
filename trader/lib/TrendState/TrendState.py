@@ -13,14 +13,14 @@ class TrendState(object):
         return self.trend_state.state
 
     def get_direction_speed_movement(self, percent, direction):
-        if direction == 1:
+        if direction == TrendStateInfo.DIRECTION_UP:
             if percent < self.percent_very_slow_cutoff:
                 return TrendStateInfo.DIR_UP_VERY_SLOW
             elif percent < self.percent_slow_cutoff:
                 return TrendStateInfo.DIR_UP_SLOW
             else:
                 return TrendStateInfo.DIR_UP_FAST
-        elif direction == -1:
+        elif direction == TrendStateInfo.DIRECTION_DOWN:
             if percent < self.percent_very_slow_cutoff:
                 return TrendStateInfo.DIR_DOWN_VERY_SLOW
             elif percent < self.percent_slow_cutoff:
@@ -48,12 +48,12 @@ class TrendState(object):
             return self.trend_state
 
         if self.trend_state.is_state(TrendStateInfo.STATE_INIT):
-            if direction == 1:
-                dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            if direction == TrendStateInfo.DIRECTION_UP:
+                dir = self.get_direction_speed_movement(seg_up_percent, TrendStateInfo.DIRECTION_UP)
                 new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
                 self.trend_state.set_state(new_state)
-            elif direction == -1:
-                dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            elif direction == TrendStateInfo.DIRECTION_DOWN:
+                dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
                 new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
                 self.trend_state.set_state(new_state)
 
@@ -129,7 +129,7 @@ class TrendState(object):
 
         # check if could be downward trend reversal
         if seg_up_percent < seg_up_prev_percent and seg_down_percent > seg_down_prev_percent:
-            if TrendStateInfo.get_trend_direction(self.trend_state.state) != 1:
+            if TrendStateInfo.get_trend_direction(self.trend_state.state) != TrendStateInfo.DIRECTION_UP:
                 return
         else:
             return
@@ -137,15 +137,15 @@ class TrendState(object):
         type = TrendStateInfo.get_type_from_trend_state(self.trend_state.state)
 
         if type == TrendStateInfo.TYPE_CONT_TREND:
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent, TrendStateInfo.DIRECTION_UP)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(new_state)
         elif type == TrendStateInfo.TYPE_TRENDING:
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent, TrendStateInfo.DIRECTION_UP)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(new_state)
         elif type == TrendStateInfo.TYPE_NON_TREND:
-            newdir = self.get_direction_speed_movement(seg_down_percent, -1)
+            newdir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, newdir)
             self.trend_state.set_state(new_state)
 
@@ -159,7 +159,7 @@ class TrendState(object):
 
         # check if could be upward trend reversal
         if seg_up_percent > seg_up_prev_percent and seg_down_percent < seg_down_prev_percent:
-            if TrendStateInfo.get_trend_direction(self.trend_state.state) != -1:
+            if TrendStateInfo.get_trend_direction(self.trend_state.state) != TrendStateInfo.DIRECTION_DOWN:
                 return
         else:
             return
@@ -167,15 +167,15 @@ class TrendState(object):
         type = TrendStateInfo.get_type_from_trend_state(self.trend_state.state)
 
         if type == TrendStateInfo.TYPE_CONT_TREND:
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(new_state)
         elif type == TrendStateInfo.TYPE_TRENDING:
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(new_state)
         elif type == TrendStateInfo.TYPE_NON_TREND:
-            newdir = self.get_direction_speed_movement(seg_up_percent, 1)
+            newdir = self.get_direction_speed_movement(seg_up_percent, TrendStateInfo.DIRECTION_UP)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, newdir)
             self.trend_state.set_state(new_state)
 
@@ -183,14 +183,14 @@ class TrendState(object):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
 
-        if direction == -1 and seg_down_percent > seg_up_percent:
+        if direction == TrendStateInfo.DIRECTION_DOWN and seg_down_percent > seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(state)
-        elif direction == 1 and seg_down_percent < seg_up_percent:
+        elif direction == TrendStateInfo.DIRECTION_UP and seg_down_percent < seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent, TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(state)
 
@@ -198,14 +198,14 @@ class TrendState(object):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
 
-        if direction == -1 and seg_down_percent > seg_up_percent:
+        if direction == TrendStateInfo.DIRECTION_DOWN and seg_down_percent > seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(state)
-        elif direction == 1 and seg_down_percent < seg_up_percent:
+        elif direction == TrendStateInfo.DIRECTION_UP and seg_down_percent < seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent,TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(state)
 
@@ -213,14 +213,14 @@ class TrendState(object):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
 
-        if direction == -1 and seg_down_percent > seg_up_percent:
+        if direction == TrendStateInfo.DIRECTION_DOWN and seg_down_percent > seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(state)
-        elif direction == 1 and seg_down_percent < seg_up_percent:
+        elif direction == TrendStateInfo.DIRECTION_UP and seg_down_percent < seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent,TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(state)
 
@@ -228,14 +228,14 @@ class TrendState(object):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
 
-        if direction == -1 and seg_down_percent > seg_up_percent:
+        if direction == TrendStateInfo.DIRECTION_DOWN and seg_down_percent > seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(state)
-        elif direction == 1 and seg_down_percent < seg_up_percent:
+        elif direction == TrendStateInfo.DIRECTION_UP and seg_down_percent < seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent,TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
             self.trend_state.set_state(state)
 
@@ -243,14 +243,14 @@ class TrendState(object):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
 
-        if direction == -1 and seg_down_percent > seg_up_percent:
+        if direction == TrendStateInfo.DIRECTION_DOWN and seg_down_percent > seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
             self.trend_state.set_state(state)
-        elif direction == 1 and seg_down_percent < seg_up_percent:
+        elif direction == TrendStateInfo.DIRECTION_UP and seg_down_percent < seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent,TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
             self.trend_state.set_state(state)
 
@@ -258,14 +258,14 @@ class TrendState(object):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
 
-        if direction == -1 and seg_down_percent > seg_up_percent:
+        if direction == TrendStateInfo.DIRECTION_DOWN and seg_down_percent > seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent,TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(state)
-        elif direction == 1 and seg_down_percent < seg_up_percent:
+        elif direction == TrendStateInfo.DIRECTION_UP and seg_down_percent < seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_up_percent, 1)
+            dir = self.get_direction_speed_movement(seg_up_percent,TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
             self.trend_state.set_state(state)
 
@@ -273,13 +273,13 @@ class TrendState(object):
         seg_down_percent = abs(float(seg_down['percent']))
         seg_up_percent = abs(float(seg_up['percent']))
 
-        if direction == -1 and seg_down_percent > seg_up_percent:
+        if direction == TrendStateInfo.DIRECTION_DOWN and seg_down_percent > seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
             self.trend_state.set_state(state)
-        elif direction == 1 and seg_down_percent < seg_up_percent:
+        elif direction == TrendStateInfo.DIRECTION_UP and seg_down_percent < seg_up_percent:
             # self.trend_state.set_direction(direction)
-            dir = self.get_direction_speed_movement(seg_down_percent, -1)
+            dir = self.get_direction_speed_movement(seg_down_percent, TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(state)
