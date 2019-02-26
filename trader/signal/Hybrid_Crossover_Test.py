@@ -5,6 +5,7 @@ from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
 from trader.lib.TrendState.TrendState import TrendState
+from trader.lib.TrendState.TrendStateInfo import TrendStateInfo
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 from trader.signal.SignalBase import SignalBase
 
@@ -148,12 +149,12 @@ class Hybrid_Crossover_Test(SignalBase):
             return False
 
         state = self.tst.get_trend_state()
-        if (state == TrendState.STATE_INIT or
-            state == TrendState.STATE_NON_TREND_NO_DIRECTION or
-            state == TrendState.STATE_TRENDING_DOWN_SLOW or
-            state == TrendState.STATE_TRENDING_DOWN_FAST or
-            state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
-            state == TrendState.STATE_CONT_TREND_DOWN_FAST):
+        if (state == TrendStateInfo.STATE_INIT or
+            state == TrendStateInfo.STATE_NON_TREND_NO_DIRECTION or
+            state == TrendStateInfo.STATE_TRENDING_DOWN_SLOW or
+            state == TrendStateInfo.STATE_TRENDING_DOWN_FAST or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST):
             return False
 
         if (self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up and

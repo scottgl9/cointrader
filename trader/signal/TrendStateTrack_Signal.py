@@ -2,6 +2,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
 from trader.lib.TrendState.TrendState import TrendState
+from trader.lib.TrendState.TrendStateInfo import TrendStateInfo
 from trader.signal.SignalBase import SignalBase
 
 
@@ -61,25 +62,25 @@ class TrendStateTrack_Signal(SignalBase):
             return False
 
         state = self.tst.get_trend_state()
-        #if (state == TrendState.STATE_INIT or
-        #    state == TrendState.STATE_NON_TREND_NO_DIRECTION or
-        #    state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
-        #    state == TrendState.STATE_TRENDING_DOWN_SLOW or
-        #    state == TrendState.STATE_TRENDING_DOWN_FAST or
-        #    state == TrendState.STATE_NON_TREND_DOWN_VERY_SLOW or
-        #    state == TrendState.STATE_NON_TREND_DOWN_SLOW or
-        #    state == TrendState.STATE_NON_TREND_DOWN_FAST or
-        #    state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW or
-        #    state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
-        #    state == TrendState.STATE_CONT_TREND_DOWN_FAST):
+        #if (state == TrendStateInfo.STATE_INIT or
+        #    state == TrendStateInfo.STATE_NON_TREND_NO_DIRECTION or
+        #    state == TrendStateInfo.STATE_TRENDING_DOWN_VERY_SLOW or
+        #    state == TrendStateInfo.STATE_TRENDING_DOWN_SLOW or
+        #    state == TrendStateInfo.STATE_TRENDING_DOWN_FAST or
+        #    state == TrendStateInfo.STATE_NON_TREND_DOWN_VERY_SLOW or
+        #    state == TrendStateInfo.STATE_NON_TREND_DOWN_SLOW or
+        #    state == TrendStateInfo.STATE_NON_TREND_DOWN_FAST or
+        #    state == TrendStateInfo.STATE_CONT_TREND_DOWN_VERY_SLOW or
+        #    state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW or
+        #    state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST):
         #    return False
 
-        if (state == TrendState.STATE_TRENDING_UP_FAST or
-            state == TrendState.STATE_TRENDING_UP_SLOW or
-            state == TrendState.STATE_TRENDING_UP_VERY_SLOW or
-            state == TrendState.STATE_CONT_TREND_UP_FAST or
-            state == TrendState.STATE_CONT_TREND_UP_SLOW or
-            state == TrendState.STATE_CONT_TREND_UP_VERY_SLOW):
+        if (state == TrendStateInfo.STATE_TRENDING_UP_FAST or
+            state == TrendStateInfo.STATE_TRENDING_UP_SLOW or
+            state == TrendStateInfo.STATE_TRENDING_UP_VERY_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_UP_FAST or
+            state == TrendStateInfo.STATE_CONT_TREND_UP_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_UP_VERY_SLOW):
             self.buy_type = "TrendState"
             return True
 
@@ -96,7 +97,7 @@ class TrendStateTrack_Signal(SignalBase):
             return False
 
         state = self.tst.get_trend_state()
-        if state == TrendState.STATE_CONT_TREND_DOWN_FAST or state == TrendState.STATE_CONT_TREND_DOWN_SLOW:
+        if state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST or state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW:
             self.sell_type='LongTrendState'
             self.disabled = True
             self.disabled_end_ts = self.timestamp + 1000 * 3600 * 4
@@ -105,12 +106,12 @@ class TrendStateTrack_Signal(SignalBase):
 
     def sell_signal(self):
         state = self.tst.get_trend_state()
-        if (state == TrendState.STATE_TRENDING_DOWN_VERY_SLOW or
-            state == TrendState.STATE_TRENDING_DOWN_SLOW or
-            state == TrendState.STATE_TRENDING_DOWN_FAST or
-            state == TrendState.STATE_CONT_TREND_DOWN_VERY_SLOW or
-            state == TrendState.STATE_CONT_TREND_DOWN_SLOW or
-            state == TrendState.STATE_CONT_TREND_DOWN_FAST):
+        if (state == TrendStateInfo.STATE_TRENDING_DOWN_VERY_SLOW or
+            state == TrendStateInfo.STATE_TRENDING_DOWN_SLOW or
+            state == TrendStateInfo.STATE_TRENDING_DOWN_FAST or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_VERY_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST):
             self.sell_type='TrendState'
             return True
 
