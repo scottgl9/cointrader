@@ -174,7 +174,9 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     print("Simulation Run Time:\t{} seconds".format(run_time))
     print(multitrader.order_handler.trade_balance_handler.get_balances())
 
-    return multitrader.get_stored_trades()
+    end_tickers = accnt.get_tickers()
+
+    return multitrader.get_stored_trades(), end_tickers
 
 
 def get_detail_all_assets(client):
@@ -280,7 +282,7 @@ if __name__ == '__main__':
     try:
         simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
         print(simulate_db_filename)
-        trades = simulate(conn, results.strategy, results.signal_name, logger, simulate_db_filename)
+        trades, end_tickers = simulate(conn, results.strategy, results.signal_name, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
@@ -289,4 +291,5 @@ if __name__ == '__main__':
     with open(trade_cache_filename, "w") as f:
         trade_cache[trade_cache_name] = {}
         trade_cache[trade_cache_name]['trades'] = trades
+        trade_cache[trade_cache_name]['end_tickers'] = end_tickers
         f.write(json.dumps(trade_cache, f, indent=4, sort_keys=True))
