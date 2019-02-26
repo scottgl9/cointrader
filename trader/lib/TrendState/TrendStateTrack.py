@@ -115,11 +115,11 @@ class TrendStateTrack(object):
         new_start_ts = self.process_lpc_result(timestamps, seg_down, seg_up)
         if new_start_ts:
             mts.remove_before_ts(new_start_ts)
-            values = mts.get_values()
-            timestamps = mts.get_timestamps()
-            self.lpc.reset(values, timestamps)
-            self.lpc.divide_price_segments()
-            seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
+            #values = mts.get_values()
+            #timestamps = mts.get_timestamps()
+            #self.lpc.reset(values, timestamps)
+            #self.lpc.divide_price_segments()
+            #seg_down, seg_up = self.lpc.get_largest_price_segment_percents()
 
         trend_state.process_trend_segment_state(seg_down, seg_up, ts)
         return trend_state
