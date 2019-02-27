@@ -26,13 +26,15 @@ class TrendStateTrack(object):
         self.trend_state = None
         self.trend_state_list = []
         self.trend_state_short = None
-        self.lpc = LargestPriceChange(use_dict=True)
+        self.lpc = LargestPriceChange(use_dict=False)
         self.mts_long = MovingTimeSegment(seconds=self.max_state_seconds)
         self.mts_short = MovingTimeSegment(seconds=self.short_state_seconds)
         self.start_ts = 0
         self.check_start_ts = 0
         self.ready = False
         self.smoother = smoother
+        self._trend_state_up_cnt = 0
+        self._trend_state_down_cnt = 0
 
     def get_trend_string(self):
         return TrendStateInfo.get_trend_string(self.trend_state.get_state())
@@ -42,6 +44,12 @@ class TrendStateTrack(object):
 
     def get_trend_state(self):
         return self.trend_state.get_state()
+
+    def get_trend_state_up_counter(self):
+        return self._trend_state_up_cnt
+
+    def get_trend_state_down_counter(self):
+        return self._trend_state_down_cnt
 
     def update(self, close, ts, volume=0, low=0, high=0):
         if not self.start_ts:
@@ -85,7 +93,19 @@ class TrendStateTrack(object):
 
         self.trend_state = self.process_trend_state(self.trend_state, self.mts_long, value, ts)
         self.trend_state_list.append(self.trend_state.get_state())
-        self.analyze_trend_state_list(self.trend_state_list)
+
+        if self.trend_state.is_in_up_trend_state():
+            self._trend_state_up_cnt += 1.0
+        else:
+            if not self.trend_state.is_in_up_trend_very_slow_state():
+                self._trend_state_up_cnt -= 0.5
+
+        if self.trend_state.is_in_down_trend_state():
+            self._trend_state_down_cnt += 1.0
+        else:
+            if not self.trend_state.is_in_up_trend_very_slow_state():
+                self._trend_state_down_cnt -= 0.5
+
         #self.trend_state_short = self.process_trend_state(self.trend_state_short, self.mts_short, ts)
         self.check_start_ts = ts
 

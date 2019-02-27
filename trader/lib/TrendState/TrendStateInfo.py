@@ -270,19 +270,51 @@ class TrendStateInfo(object):
     # return true if is in trend state
     @staticmethod
     def is_in_trend_state(state):
-        if (state == TrendStateInfo.STATE_TRENDING_DOWN_VERY_SLOW or
-            state == TrendStateInfo.STATE_TRENDING_DOWN_SLOW or
+        if (state == TrendStateInfo.STATE_TRENDING_DOWN_SLOW or
             state == TrendStateInfo.STATE_TRENDING_DOWN_FAST or
-            state == TrendStateInfo.STATE_TRENDING_UP_VERY_SLOW or
             state == TrendStateInfo.STATE_TRENDING_UP_SLOW or
             state == TrendStateInfo.STATE_TRENDING_UP_FAST):
             return True
-        elif (state == TrendStateInfo.STATE_CONT_TREND_DOWN_VERY_SLOW or
-            state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW or
-            state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST or
-            state == TrendStateInfo.STATE_CONT_TREND_UP_VERY_SLOW or
+        elif (state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW or
+              state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST or
+              state == TrendStateInfo.STATE_CONT_TREND_UP_SLOW or
+              state == TrendStateInfo.STATE_CONT_TREND_UP_FAST):
+            return True
+        return False
+
+    # return true if is in up trend state
+    @staticmethod
+    def is_in_up_trend_state(state):
+        if (state == TrendStateInfo.STATE_TRENDING_UP_SLOW or
+            state == TrendStateInfo.STATE_TRENDING_UP_FAST or
             state == TrendStateInfo.STATE_CONT_TREND_UP_SLOW or
             state == TrendStateInfo.STATE_CONT_TREND_UP_FAST):
+            return True
+        return False
+
+    # return true if is in down trend state
+    @staticmethod
+    def is_in_down_trend_state(state):
+        if (state == TrendStateInfo.STATE_TRENDING_DOWN_SLOW or
+            state == TrendStateInfo.STATE_TRENDING_DOWN_FAST or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST):
+            return True
+        return False
+
+    # return true if is in up trend state
+    @staticmethod
+    def is_in_up_trend_very_slow_state(state):
+        if (state == TrendStateInfo.STATE_TRENDING_UP_VERY_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_UP_VERY_SLOW):
+            return True
+        return False
+
+    # return true if is in down trend state
+    @staticmethod
+    def is_in_down_trend_very_slow_state(state):
+        if (state == TrendStateInfo.STATE_TRENDING_DOWN_VERY_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_DOWN_VERY_SLOW):
             return True
         return False
 

@@ -16,6 +16,24 @@ class TrendState(object):
     def get_state(self):
         return self.trend_state.state
 
+    def state_changed(self):
+        return self.trend_state.state != self.trend_state.prev_state
+
+    def is_in_trend_state(self):
+        return TrendStateInfo.is_in_trend_state(self.trend_state.state)
+
+    def is_in_up_trend_state(self):
+        return TrendStateInfo.is_in_up_trend_state(self.trend_state.state)
+
+    def is_in_down_trend_state(self):
+        return TrendStateInfo.is_in_down_trend_state(self.trend_state.state)
+
+    def is_in_up_trend_very_slow_state(self):
+        return TrendStateInfo.is_in_up_trend_very_slow_state(self.trend_state.state)
+
+    def is_in_down_trend_very_slow_state(self):
+        return TrendStateInfo.is_in_down_trend_very_slow_state(self.trend_state.state)
+
     def get_direction(self):
         return self.trend_state.direction
 

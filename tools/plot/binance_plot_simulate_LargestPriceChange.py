@@ -92,12 +92,12 @@ def simulate(conn, client, base, currency, type="channel"):
     psp = lpc.get_largest_price_segment_percents()
     print(psp[0])
     print(psp[1])
-    psp_down_percent = psp[0][0]
-    psp_down_start_ts = psp[0][1]
-    psp_down_end_ts = psp[0][2]
-    psp_up_percent = psp[1][0]
-    psp_up_start_ts = psp[1][1]
-    psp_up_end_ts = psp[1][2]
+    psp_down_percent = psp[0]['percent']
+    psp_down_start_ts = psp[0]['start_ts']
+    psp_down_end_ts = psp[0]['end_ts']
+    psp_up_percent = psp[1]['percent']
+    psp_up_start_ts = psp[1]['start_ts']
+    psp_up_end_ts = psp[1]['end_ts']
 
     plt.subplot(211)
     i=0

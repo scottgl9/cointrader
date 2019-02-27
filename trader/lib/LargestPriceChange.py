@@ -49,7 +49,7 @@ class LargestPriceChange(object):
         if self.use_dict:
             self._price_segment_percents.sort(key=lambda x: x['percent'])
         else:
-            self._price_segment_percents.sort(key=lambda x: x[0])
+            self._price_segment_percents.sort()
         return self._price_segment_percents
 
     # return largest negative price change, and largest positive price change
@@ -66,7 +66,7 @@ class LargestPriceChange(object):
                                                  'start_ts': node.start_ts,
                                                  'end_ts': node.end_ts})
         else:
-            self._price_segment_percents.append([node.percent, node.start_ts, node.end_ts])
+            self._price_segment_percents.append(LPCSegment(node.percent, node.start_ts, node.end_ts))
 
         if not node.child:
             return
@@ -202,3 +202,30 @@ class PriceSegment(object):
         # if failed to split, self self.child=None
         if not self.child.split():
             self.child = None
+
+
+class LPCSegment(object):
+    def __init__(self, percent=0, start_ts=0, end_ts=0):
+        self.start_ts = start_ts
+        self.end_ts = end_ts
+        self.percent = percent
+
+    def __getitem__(self, item):
+        if item == 'start_ts':
+            return self.start_ts
+        elif item == 'end_ts':
+            return self.end_ts
+        elif item == 'percent':
+            return self.percent
+
+    def __lt__(self, other):
+        if self.percent < other.percent:
+            return True
+        return False
+
+    def __repr__(self):
+        return str(self.__dict__())
+
+    def __dict__(self):
+        return {'start_ts': self.start_ts, 'end_ts': self.end_ts, 'percent': self.percent}
+

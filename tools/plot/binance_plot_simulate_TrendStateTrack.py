@@ -53,6 +53,11 @@ def simulate(conn, client, base, currency, type="channel"):
     high_prices = []
     volumes = []
 
+    trend_state_up_counter_x_values = []
+    trend_state_up_counter_values = []
+    trend_state_down_counter_x_values = []
+    trend_state_down_counter_values = []
+
     last_trend_string = ''
     last_short_trend_string = ''
     state_indices = []
@@ -80,6 +85,10 @@ def simulate(conn, client, base, currency, type="channel"):
         if tst.get_trend_string() != last_trend_string:
             state_indices.append((i, tst.get_trend_direction()))
             print("LONG:" + tst.get_trend_string())
+            trend_state_up_counter_x_values.append(i)
+            trend_state_up_counter_values.append(tst.get_trend_state_up_counter())
+            trend_state_down_counter_x_values.append(i)
+            trend_state_down_counter_values.append(tst.get_trend_state_down_counter())
             last_trend_string = tst.get_trend_string()
 
         mts_moverate.update(close, ts)
@@ -105,9 +114,10 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     #fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
-    fig21, = plt.plot(mts_moverate_values, label='MTSMoverate')
-
-    plt.legend(handles=[fig21])
+    #fig21, = plt.plot(mts_moverate_values, label='MTSMoverate')
+    plt.plot(trend_state_up_counter_x_values, trend_state_up_counter_values)
+    plt.plot(trend_state_down_counter_x_values, trend_state_down_counter_values)
+    #plt.legend(handles=[fig21])
 
     plt.show()
 
