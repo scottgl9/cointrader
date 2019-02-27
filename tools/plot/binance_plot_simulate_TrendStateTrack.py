@@ -15,7 +15,7 @@ import argparse
 from trader.lib.MovingTimeSegment.MTSMoveRate import MTSMoveRate
 from trader.indicator.EMA import EMA
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
-from trader.lib.TrendState.TrendState import TrendState
+from trader.lib.TrendState.TrendStateInfo import TrendStateInfo
 
 
 def get_rows_as_msgs(c):
@@ -81,11 +81,6 @@ def simulate(conn, client, base, currency, type="channel"):
             state_indices.append((i, tst.get_trend_direction()))
             print("LONG:" + tst.get_trend_string())
             last_trend_string = tst.get_trend_string()
-
-        if tst.get_short_trend_string() != last_short_trend_string:
-            #state_indices.append((i, tst.get_short_trend_direction()))
-            print("SHORT:" + tst.get_short_trend_string())
-            last_short_trend_string = tst.get_short_trend_string()
 
         mts_moverate.update(close, ts)
         mts_moverate_values.append(mts_moverate.result)
