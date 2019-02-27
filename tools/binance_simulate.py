@@ -52,6 +52,38 @@ def add_column(c, name, id):
     cur.execute(sql)
     c.commit()
 
+
+def process_trade_cache(trades, end_tickers):
+    trade_info = {}
+    for symbol, info in trades.items():
+        for trade in info:
+            sell_price = trade['price']
+            type = trade['type']
+            if type != 'sell':
+                continue
+
+            buy_price = trade['buy_price']
+
+            # sell trade occurred, so calculate percent profit
+            percent = round(100.0 * (sell_price - buy_price) / buy_price, 2)
+            if symbol not in trade_info:
+                trade_info[symbol] = [percent]
+            else:
+                trade_info[symbol].append(percent)
+
+        # more buy trades than sell trades, so compute profit of last buy order
+        if (len(info) & 1) != 0:
+            buy_price = info[-1]['price']
+            sell_price = end_tickers[symbol]
+            percent = round(100.0 * (sell_price - buy_price) / buy_price, 2)
+            if symbol not in trade_info:
+                trade_info[symbol] = [percent]
+            else:
+                trade_info[symbol].append(percent)
+
+    return trade_info
+
+
 def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
     start_time = time.time()
     c = conn.cursor()
@@ -176,7 +208,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
 
     end_tickers = accnt.get_tickers()
 
-    return multitrader.get_stored_trades(), end_tickers
+    return multitrader.get_stored_trades(), end_tickers, total_pprofit
 
 
 def get_detail_all_assets(client):
@@ -250,6 +282,9 @@ if __name__ == '__main__':
     trade_log_filename = results.filename.replace(".db", "_{}.log".format(trade_cache_name))
     trade_log_filepath = os.path.join(results.cache_dir, trade_log_filename)
 
+    trade_result_filename = results.filename.replace(".db", "_result_{}.txt".format(trade_cache_name))
+    trade_result_filepath = os.path.join(results.cache_dir, trade_result_filename)
+
     # remove old trade log before re-running
     if os.path.exists(trade_log_filepath):
         os.remove(trade_log_filepath)
@@ -282,7 +317,7 @@ if __name__ == '__main__':
     try:
         simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
         print(simulate_db_filename)
-        trades, end_tickers = simulate(conn, results.strategy, results.signal_name, logger, simulate_db_filename)
+        trades, end_tickers, total_pprofit = simulate(conn, results.strategy, results.signal_name, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
@@ -293,3 +328,10 @@ if __name__ == '__main__':
         trade_cache[trade_cache_name]['trades'] = trades
         trade_cache[trade_cache_name]['end_tickers'] = end_tickers
         f.write(json.dumps(trade_cache, f, indent=4, sort_keys=True))
+
+    with open(trade_result_filepath, "w") as f:
+        trade_result = process_trade_cache(trades, end_tickers)
+        for symbol in sorted(trade_result):
+            results = sorted(trade_result[symbol])
+            f.write("{}: {}\n".format(symbol, results))
+        f.write("Total Profit: {}%".format(total_pprofit))
