@@ -62,9 +62,9 @@ class LargestPriceChange(object):
             node = self.root
 
         if self.use_dict:
-            self._price_segment_percents.append({'percent': node.percent,
-                                                 'start_ts': node.start_ts,
-                                                 'end_ts': node.end_ts})
+            self._price_segment_percents.append({'percent': float(node.percent),
+                                                 'start_ts': int(node.start_ts),
+                                                 'end_ts': int(node.end_ts)})
         else:
             self._price_segment_percents.append(LPCSegment(node.percent, node.start_ts, node.end_ts))
 
@@ -206,17 +206,17 @@ class PriceSegment(object):
 
 class LPCSegment(object):
     def __init__(self, percent=0, start_ts=0, end_ts=0):
-        self.start_ts = start_ts
-        self.end_ts = end_ts
-        self.percent = percent
+        self.start_ts = int(start_ts)
+        self.end_ts = int(end_ts)
+        self.percent = float(percent)
 
     def __getitem__(self, item):
         if item == 'start_ts':
-            return self.start_ts
+            return int(self.start_ts)
         elif item == 'end_ts':
-            return self.end_ts
+            return int(self.end_ts)
         elif item == 'percent':
-            return self.percent
+            return float(self.percent)
 
     def __lt__(self, other):
         if self.percent < other.percent:
