@@ -12,6 +12,9 @@ class TrendState(object):
     def get_state(self):
         return self.trend_state.state
 
+    def get_direction(self):
+        return self.trend_state.direction
+
     def get_direction_speed_movement(self, percent, direction):
         if direction == TrendStateInfo.DIRECTION_UP:
             if percent < self.percent_very_slow_cutoff:

@@ -103,7 +103,7 @@ class TrendStateTrack(object):
         return TrendStateInfo.get_trend_string(self.trend_state.get_state())
 
     def get_trend_direction(self):
-        return self.trend_state.direction
+        return self.trend_state.get_direction()
 
     # process market data received from update(), apply LargestPriceChange algorithm, then re-determine state
     def process_trend_state(self, trend_state, mts, ts):
