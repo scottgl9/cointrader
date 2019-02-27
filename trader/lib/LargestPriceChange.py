@@ -1,3 +1,7 @@
+# Class to analyze a data set of prices / timestamps. Result is a sorted list of percent price changes
+# along with the start_ts, end_ts for each segment
+
+
 class LargestPriceChange(object):
     def __init__(self, prices=None, timestamps=None, use_dict=False):
         self.use_dict = use_dict
@@ -23,25 +27,6 @@ class LargestPriceChange(object):
     def divide_price_segments(self):
         self.root.split()
 
-    def print_price_segments(self, node=None):
-        if not node:
-            node = self.root
-        if not node.child:
-            return
-
-        start_price = node.price_values[0]
-        end_price = node.price_values[-1]
-        start_ts = node.ts_values[0]
-        end_ts = node.ts_values[-1]
-        #print(start_ts, end_ts)
-
-        if node.child.start_segment:
-            self.print_price_segments(node.child.start_segment)
-        if node.child.mid_segment:
-            self.print_price_segments(node.child.mid_segment)
-        if node.child.end_segment:
-            self.print_price_segments(node.child.end_segment)
-
     def get_price_segment_percents(self):
         self._price_segment_percents = []
         self.price_segment_percents(node=self.root)
@@ -50,11 +35,17 @@ class LargestPriceChange(object):
             self._price_segment_percents.sort(key=lambda x: x['percent'])
         else:
             self._price_segment_percents.sort()
+
         return self._price_segment_percents
 
     # return largest negative price change, and largest positive price change
     def get_largest_price_segment_percents(self):
         price_segment_percents = self.get_price_segment_percents()
+
+        # indicate only one price segment found
+        if len(price_segment_percents) == 1:
+            return [price_segment_percents[0], None]
+
         return [price_segment_percents[0], price_segment_percents[-1]]
 
     def price_segment_percents(self, node=None, n=1):
