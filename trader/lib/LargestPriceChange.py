@@ -9,6 +9,8 @@ class LargestPriceChange(object):
         self.timestamps = None
         self.root = None
         self._price_segment_percents = None
+        self._price_segment_neg_percents = None
+        self._price_segment_pos_percents = None
         self.start_index = 0
         if prices and timestamps:
             self.reset(prices, timestamps)
@@ -23,6 +25,8 @@ class LargestPriceChange(object):
             self.timestamps = timestamps
         self.root = PriceSegment(self.prices, self.timestamps)
         self._price_segment_percents = []
+        self._price_segment_pos_percents = []
+        self._price_segment_neg_percents = []
 
     def divide_price_segments(self):
         self.root.split()
@@ -34,7 +38,7 @@ class LargestPriceChange(object):
         if self.use_dict:
             self._price_segment_percents.sort(key=lambda x: x['percent'])
         else:
-            self._price_segment_percents.sort()
+            self._price_segment_percents.sort(key=lambda x: x.percent)
 
         return self._price_segment_percents
 
@@ -53,11 +57,18 @@ class LargestPriceChange(object):
             node = self.root
 
         if self.use_dict:
-            self._price_segment_percents.append({'percent': float(node.percent),
-                                                 'start_ts': int(node.start_ts),
-                                                 'end_ts': int(node.end_ts)})
+            entry = {'percent': float(node.percent),
+                     'start_ts': int(node.start_ts),
+                     'end_ts': int(node.end_ts),
+                     'diff_ts': int(node.diff_ts)}
         else:
-            self._price_segment_percents.append(LPCSegment(node.percent, node.start_ts, node.end_ts))
+            entry = LPCSegment(node.percent, node.start_ts, node.end_ts)
+
+        self._price_segment_percents.append(entry)
+        if float(node.percent) < 0:
+            self._price_segment_neg_percents.append(entry)
+        elif float(node.percent) > 0:
+            self._price_segment_pos_percents.append(entry)
 
         if not node.child:
             return
@@ -200,14 +211,17 @@ class LPCSegment(object):
         self.start_ts = int(start_ts)
         self.end_ts = int(end_ts)
         self.percent = float(percent)
+        self.diff_ts = end_ts - start_ts
 
     def __getitem__(self, item):
-        if item == 'start_ts':
+        if item == "percent":
+            return float(self.percent)
+        elif item == 'start_ts':
             return int(self.start_ts)
         elif item == 'end_ts':
             return int(self.end_ts)
-        elif item == 'percent':
-            return float(self.percent)
+        elif item == 'diff_ts':
+            return int(self.diff_ts)
 
     def __lt__(self, other):
         if self.percent < other.percent:
@@ -218,5 +232,5 @@ class LPCSegment(object):
         return str(self.__dict__())
 
     def __dict__(self):
-        return {'start_ts': self.start_ts, 'end_ts': self.end_ts, 'percent': self.percent}
+        return {'start_ts': self.start_ts, 'end_ts': self.end_ts, 'diff_ts': self.diff_ts, 'percent': self.percent}
 
