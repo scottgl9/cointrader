@@ -51,9 +51,15 @@ def process_trade_cache(trade_cache, end_tickers_cache):
             else:
                 trade_info[symbol].append(percent)
 
+    total_trade_info = {}
+
     for symbol, percents in trade_info.items():
         ptotal = round(sum(percents), 2)
-        print("{}: {}%".format(symbol, ptotal))
+        total_trade_info[symbol] = ptotal
+
+    total_trade_info = sorted(total_trade_info.items(), key=lambda x: x[1])
+    for symbol, percent in total_trade_info:
+        print("{}: {}%".format(symbol, percent))
 
 
 if __name__ == '__main__':
