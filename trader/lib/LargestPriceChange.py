@@ -52,6 +52,22 @@ class LargestPriceChange(object):
 
         return [price_segment_percents[0], price_segment_percents[-1]]
 
+    def get_largest_segment_neg_and_pos_percent(self):
+        self.price_segment_percents(node=self.root)
+        if len(self._price_segment_neg_percents) > 1:
+            self._price_segment_neg_percents.sort(key=lambda x: x.diff_ts)
+        if len(self._price_segment_pos_percents) > 1:
+            self._price_segment_pos_percents.sort(key=lambda x: x.diff_ts)
+
+        neg_segment = None
+        pos_segment = None
+        if len(self._price_segment_neg_percents):
+            neg_segment = self._price_segment_neg_percents[-1]
+        if len(self._price_segment_pos_percents):
+            pos_segment = self._price_segment_pos_percents[-1]
+
+        return [neg_segment, pos_segment]
+
     def price_segment_percents(self, node=None, n=1):
         if not node:
             node = self.root
