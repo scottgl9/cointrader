@@ -45,12 +45,36 @@ class LargestPriceChange(object):
     # return largest negative price change, and largest positive price change
     def get_largest_price_segment_percents(self):
         price_segment_percents = self.get_price_segment_percents()
+        seg_down = None
+        seg_up = None
 
         # indicate only one price segment found
         if len(price_segment_percents) == 1:
-            return [price_segment_percents[0], None]
+            if price_segment_percents[0].percent < 0:
+                seg_down = price_segment_percents[0]
+            elif price_segment_percents[0].percent > 0:
+                seg_up = price_segment_percents[0]
+        #elif len(price_segment_percents) > 3:
+        #    seg_down1 = price_segment_percents[0]
+        #    seg_down2 = price_segment_percents[1]
+        #    if (seg_down2.end_ts > seg_down1.end_ts and
+        #        float(seg_down2.percent) != 0 and
+        #        seg_down2.diff_ts >= seg_down1.diff_ts):
+        #        seg_down = seg_down2
+        #    else:
+        #        seg_down = seg_down1
+        #    seg_up1 = price_segment_percents[-1]
+        #    seg_up2 = price_segment_percents[-2]
+        #    if (seg_up2.end_ts > seg_up1.end_ts and
+        #        float(seg_up2.percent) != 0 and
+        #        seg_up2.diff_ts >= seg_up1.diff_ts):
+        #        seg_up = seg_up2
+        #    else:
+        #        seg_up = seg_up1
+        seg_down = price_segment_percents[0]
+        seg_up = price_segment_percents[-1]
 
-        return [price_segment_percents[0], price_segment_percents[-1]]
+        return [seg_down, seg_up]
 
     def get_largest_segment_neg_and_pos_percent(self):
         self.price_segment_percents(node=self.root)
