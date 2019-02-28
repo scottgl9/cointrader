@@ -31,9 +31,13 @@ class LargestPriceChange(object):
     def divide_price_segments(self):
         self.root.split()
 
-    def get_price_segment_percents(self):
+    def get_price_segments(self):
         self._price_segment_percents = []
-        self.price_segment_percents(node=self.root)
+        self.price_segments(node=self.root)
+        return self._price_segment_percents
+
+    def get_price_segments_percent_sorted(self):
+        self.get_price_segments()
         # sort by percent
         if self.use_dict:
             self._price_segment_percents.sort(key=lambda x: x['percent'])
@@ -44,7 +48,7 @@ class LargestPriceChange(object):
 
     # return largest negative price change, and largest positive price change
     def get_largest_price_segment_percents(self):
-        price_segment_percents = self.get_price_segment_percents()
+        price_segment_percents = self.get_price_segments_percent_sorted()
         seg_down = None
         seg_up = None
 
@@ -54,30 +58,14 @@ class LargestPriceChange(object):
                 seg_down = price_segment_percents[0]
             elif price_segment_percents[0].percent > 0:
                 seg_up = price_segment_percents[0]
-        #elif len(price_segment_percents) > 3:
-        #    seg_down1 = price_segment_percents[0]
-        #    seg_down2 = price_segment_percents[1]
-        #    if (seg_down2.end_ts > seg_down1.end_ts and
-        #        float(seg_down2.percent) != 0 and
-        #        seg_down2.diff_ts >= seg_down1.diff_ts):
-        #        seg_down = seg_down2
-        #    else:
-        #        seg_down = seg_down1
-        #    seg_up1 = price_segment_percents[-1]
-        #    seg_up2 = price_segment_percents[-2]
-        #    if (seg_up2.end_ts > seg_up1.end_ts and
-        #        float(seg_up2.percent) != 0 and
-        #        seg_up2.diff_ts >= seg_up1.diff_ts):
-        #        seg_up = seg_up2
-        #    else:
-        #        seg_up = seg_up1
-        seg_down = price_segment_percents[0]
-        seg_up = price_segment_percents[-1]
+        else:
+            seg_down = price_segment_percents[0]
+            seg_up = price_segment_percents[-1]
 
         return [seg_down, seg_up]
 
     def get_largest_segment_neg_and_pos_percent(self):
-        self.price_segment_percents(node=self.root)
+        self.price_segments(node=self.root)
         if len(self._price_segment_neg_percents) > 1:
             self._price_segment_neg_percents.sort(key=lambda x: x.diff_ts)
         if len(self._price_segment_pos_percents) > 1:
@@ -92,7 +80,7 @@ class LargestPriceChange(object):
 
         return [neg_segment, pos_segment]
 
-    def price_segment_percents(self, node=None, n=1):
+    def price_segments(self, node=None, n=1):
         if not node:
             node = self.root
 
@@ -100,9 +88,11 @@ class LargestPriceChange(object):
             entry = {'percent': float(node.percent),
                      'start_ts': int(node.start_ts),
                      'end_ts': int(node.end_ts),
-                     'diff_ts': int(node.diff_ts)}
+                     'diff_ts': int(node.diff_ts),
+                     'start_price': float(node.start_price),
+                     'end_price': float(node.end_price)}
         else:
-            entry = LPCSegment(node.percent, node.start_ts, node.end_ts)
+            entry = LPCSegment(node.percent, node.start_ts, node.end_ts, node.start_price, node.end_price)
 
         self._price_segment_percents.append(entry)
         if float(node.percent) < 0:
@@ -114,11 +104,11 @@ class LargestPriceChange(object):
             return
 
         if node.child.start_segment:
-            self.price_segment_percents(node.child.start_segment, n=n+1)
+            self.price_segments(node.child.start_segment, n=n+1)
         if node.child.mid_segment:
-            self.price_segment_percents(node.child.mid_segment, n=n+1)
+            self.price_segments(node.child.mid_segment, n=n+1)
         if node.child.end_segment:
-            self.price_segment_percents(node.child.end_segment, n=n+1)
+            self.price_segments(node.child.end_segment, n=n+1)
 
 
 # Class to handle splitting a price segment into three parts
@@ -247,11 +237,13 @@ class PriceSegment(object):
 
 
 class LPCSegment(object):
-    def __init__(self, percent=0, start_ts=0, end_ts=0):
+    def __init__(self, percent=0, start_ts=0, end_ts=0, start_price=0, end_price=0):
         self.start_ts = int(start_ts)
         self.end_ts = int(end_ts)
         self.percent = float(percent)
         self.diff_ts = end_ts - start_ts
+        self.start_price = float(start_price)
+        self.end_price = float(end_price)
 
     def __getitem__(self, item):
         if item == "percent":
@@ -262,6 +254,10 @@ class LPCSegment(object):
             return int(self.end_ts)
         elif item == 'diff_ts':
             return int(self.diff_ts)
+        elif item == 'start_price':
+            return float(self.start_price)
+        elif item == 'end_price':
+            return float(self.end_price)
 
     def __lt__(self, other):
         if self.percent < other.percent:
@@ -272,5 +268,6 @@ class LPCSegment(object):
         return str(self.__dict__())
 
     def __dict__(self):
-        return {'start_ts': self.start_ts, 'end_ts': self.end_ts, 'diff_ts': self.diff_ts, 'percent': self.percent}
+        return {'start_ts': self.start_ts, 'end_ts': self.end_ts, 'diff_ts': self.diff_ts,
+                'percent': self.percent, 'start_price': self.start_price, 'end_price': self.end_price}
 
