@@ -80,35 +80,42 @@ class LargestPriceChange(object):
 
         return [neg_segment, pos_segment]
 
-    def price_segments(self, node=None, type=0, n=1):
+    def price_segments(self, node=None, type=0, score=0.0, n=0):
         if not node:
             node = self.root
 
-        if self.use_dict:
+        entry = None
+
+        if n and self.use_dict:
             entry = {'percent': float(node.percent),
                      'start_ts': int(node.start_ts),
                      'end_ts': int(node.end_ts),
                      'diff_ts': int(node.diff_ts),
                      'start_price': float(node.start_price),
                      'end_price': float(node.end_price)}
-        else:
-            entry = LPCSegment(node.percent, node.start_ts, node.end_ts, node.start_price, node.end_price, type, n)
+        elif n:
+            entry = LPCSegment(node.percent, node.start_ts, node.end_ts, node.start_price,
+                               node.end_price, type, score/n, n)
 
-        self._price_segment_percents.append(entry)
-        if float(node.percent) < 0:
-            self._price_segment_neg_percents.append(entry)
-        elif float(node.percent) > 0:
-            self._price_segment_pos_percents.append(entry)
+        if entry:
+            self._price_segment_percents.append(entry)
+            if float(node.percent) < 0:
+                self._price_segment_neg_percents.append(entry)
+            elif float(node.percent) > 0:
+                self._price_segment_pos_percents.append(entry)
 
         if not node.child:
             return
 
         if node.child.start_segment:
-            self.price_segments(node.child.start_segment, type=LPCSegment.TYPE_SEGMENT_START, n=n+1)
+            t = LPCSegment.TYPE_SEGMENT_START
+            self.price_segments(node.child.start_segment, type=t, score=float(score + t), n=n+1)
         if node.child.mid_segment:
-            self.price_segments(node.child.mid_segment, type=LPCSegment.TYPE_SEGMENT_MID, n=n+1)
+            t = LPCSegment.TYPE_SEGMENT_MID
+            self.price_segments(node.child.mid_segment, type=t, score=float(score + t), n=n+1)
         if node.child.end_segment:
-            self.price_segments(node.child.end_segment, type=LPCSegment.TYPE_SEGMENT_END, n=n+1)
+            t = LPCSegment.TYPE_SEGMENT_END
+            self.price_segments(node.child.end_segment, type=t, score=float(score + t), n=n+1)
 
 
 # Class to handle splitting a price segment into three parts
@@ -242,7 +249,7 @@ class LPCSegment(object):
     TYPE_SEGMENT_MID = 2
     TYPE_SEGMENT_END = 3
 
-    def __init__(self, percent=0, start_ts=0, end_ts=0, start_price=0, end_price=0, type=0, depth=0):
+    def __init__(self, percent=0, start_ts=0, end_ts=0, start_price=0, end_price=0, type=0, score=0.0, depth=0):
         self.start_ts = int(start_ts)
         self.end_ts = int(end_ts)
         self.percent = float(percent)
@@ -250,6 +257,7 @@ class LPCSegment(object):
         self.start_price = float(start_price)
         self.end_price = float(end_price)
         self.type = type
+        self.score = score
         self.depth = depth
 
     def __getitem__(self, item):
@@ -280,5 +288,5 @@ class LPCSegment(object):
 
     def __dict__(self):
         return {'start_ts': self.start_ts, 'end_ts': self.end_ts, 'diff_ts': self.diff_ts,
-                'percent': self.percent, 'type': self.type, 'depth': self.depth,
+                'percent': self.percent, 'type': self.type, 'score': self.score, 'depth': self.depth,
                 'start_price': self.start_price, 'end_price': self.end_price}
