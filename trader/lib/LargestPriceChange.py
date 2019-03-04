@@ -11,6 +11,9 @@ class LargestPriceChange(object):
         self._price_segment_percents = None
         self._price_segment_neg_percents = None
         self._price_segment_pos_percents = None
+        self._price_segment_score1 = None
+        self._price_segment_score2 = None
+        self._price_segment_score3 = None
         self.start_index = 0
         if prices and timestamps:
             self.reset(prices, timestamps)
@@ -27,6 +30,9 @@ class LargestPriceChange(object):
         self._price_segment_percents = []
         self._price_segment_pos_percents = []
         self._price_segment_neg_percents = []
+        self._price_segment_score1 = []
+        self._price_segment_score2 = []
+        self._price_segment_score3 = []
 
     def divide_price_segments(self):
         self.root.split()
@@ -95,24 +101,33 @@ class LargestPriceChange(object):
             node = self.root
 
         entry = None
+        rscore = 0
 
-        if n and self.use_dict:
-            entry = {'percent': float(node.percent),
-                     'start_ts': int(node.start_ts),
-                     'end_ts': int(node.end_ts),
-                     'diff_ts': int(node.diff_ts),
-                     'start_price': float(node.start_price),
-                     'end_price': float(node.end_price)}
-        elif n:
-            entry = LPCSegment(node.percent, node.start_ts, node.end_ts, node.start_price,
-                               node.end_price, type, score/n, n)
+        if n:
+            rscore = self.round_score(score/n)
+            if self.use_dict:
+                entry = {'percent': float(node.percent),
+                         'start_ts': int(node.start_ts),
+                         'end_ts': int(node.end_ts),
+                         'diff_ts': int(node.diff_ts),
+                         'start_price': float(node.start_price),
+                         'end_price': float(node.end_price)}
+            else:
+                entry = LPCSegment(node.percent, node.start_ts, node.end_ts, node.start_price,
+                                   node.end_price, type, rscore, n)
 
         if entry:
             self._price_segment_percents.append(entry)
-            if float(node.percent) < 0:
-                self._price_segment_neg_percents.append(entry)
-            elif float(node.percent) > 0:
-                self._price_segment_pos_percents.append(entry)
+            if rscore == 1:
+                self._price_segment_score1.append(entry)
+            elif rscore == 2:
+                self._price_segment_score2.append(entry)
+            elif rscore == 3:
+                self._price_segment_score3.append(entry)
+            #if float(node.percent) < 0:
+            #    self._price_segment_neg_percents.append(entry)
+            #elif float(node.percent) > 0:
+            #    self._price_segment_pos_percents.append(entry)
 
         if not node.child:
             return
@@ -126,6 +141,16 @@ class LargestPriceChange(object):
         if node.child.end_segment:
             t = LPCSegment.TYPE_SEGMENT_END
             self.price_segments(node.child.end_segment, type=t, score=float(score + t), n=n+1)
+
+    def round_score(self, score):
+        score = float(score)
+        if score < 1.5:
+            result = 1
+        elif score < 2.5:
+            result = 2
+        else:
+            result = 3
+        return result
 
 
 # Class to handle splitting a price segment into three parts
@@ -152,6 +177,10 @@ class SplitPriceSegment(object):
         self.min_price = min(self.prices)
         self.min_price_index = self.prices.index(self.min_price)
         self.min_price_ts = self.timestamps[self.min_price_index]
+
+        #diff_secs = (self.timestamps[-1] - self.timestamps[0])
+        #if diff_secs <= self.min_segment_seconds * 1000 * 3:
+        #    return False
 
         # if maximum price change in segment is less than min_percent_price, return
         if 100.0*(self.max_price - self.min_price) / self.min_price <= self.min_percent_price:
