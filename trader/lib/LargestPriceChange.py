@@ -62,6 +62,29 @@ class LargestPriceChange(object):
 
         return self._price_segment_percents
 
+    # get segments categorized into score 1, 2, or 3, then sorted by percent
+    def get_price_score_segments(self):
+        result = {}
+
+        self.get_price_segments()
+        self._price_segment_score1.sort(key=lambda x: x.percent)
+        self._price_segment_score2.sort(key=lambda x: x.percent)
+        self._price_segment_score3.sort(key=lambda x: x.percent)
+
+        if len(self._price_segment_score1) >= 2:
+            result['1'] = {}
+            result['1']['down'] = self._price_segment_score1[0]
+            result['1']['up'] = self._price_segment_score1[-1]
+        if len(self._price_segment_score2) >= 2:
+            result['2'] = {}
+            result['2']['down'] = self._price_segment_score2[0]
+            result['2']['up'] = self._price_segment_score2[-1]
+        if len(self._price_segment_score3) >= 2:
+            result['3'] = {}
+            result['3']['down'] = self._price_segment_score3[0]
+            result['3']['up'] = self._price_segment_score3[-1]
+        return result
+
     # return largest negative price change, and largest positive price change
     def get_largest_price_segment_percents(self):
         price_segment_percents = self.get_price_segments_percent_sorted()

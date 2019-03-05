@@ -124,22 +124,39 @@ class TrendStateTrack(object):
         seg_up = segments[-1]
 
         new_start_ts = self.process_lpc_result(timestamps, seg_down, seg_up)
-        if new_start_ts:
-            mts.remove_before_ts(new_start_ts)
-            values = mts.get_values()
-            timestamps = mts.get_timestamps()
-            self.lpc.reset(values, timestamps)
-            self.lpc.divide_price_segments()
-            segments = self.lpc.get_price_segments_percent_sorted()
-            if len(segments) < 2:
-                return trend_state
+        #if new_start_ts:
+        #    mts.remove_before_ts(new_start_ts)
+        #    values = mts.get_values()
+        #    timestamps = mts.get_timestamps()
+        #    self.lpc.reset(values, timestamps)
+        #    self.lpc.divide_price_segments()
+        #    segments = self.lpc.get_price_segments_percent_sorted()
+        #    if len(segments) < 2:
+        #        return trend_state
+        #    # *TODO* Add more processing on segments here
+        #    seg_down = segments[0]
+        #    seg_up = segments[-1]
 
-            # *TODO* Add more processing on segments here
-            seg_down = segments[0]
-            seg_up = segments[-1]
+        self.process_score_segments(self.lpc)
 
         trend_state.process_trend_state(seg_down, seg_up, value, ts)
         return trend_state
+
+    # process LPC data categorized by score 1, 2, or 3
+    def process_score_segments(self, lpc):
+        segments = self.lpc.get_price_score_segments()
+        if segments['1']:
+            seg1_down = segments['1']['down']
+            seg1_up = segments['1']['up']
+        if segments['2']:
+            seg2_down = segments['2']['down']
+            seg2_up = segments['2']['up']
+        if segments['3']:
+            seg3_down = segments['3']['down']
+            seg3_up = segments['3']['up']
+
+        #print(seg1_down)
+        #print(seg1_up)
 
     # process result from LargestPriceChange (LPC) to determine if we need to re-run LPC
     def process_lpc_result(self, timestamps, seg_down, seg_up):
