@@ -189,17 +189,17 @@
             ], 
             "QLCBTC": [
                 {
-                    "index": 5003, 
-                    "price": 1.968e-05, 
+                    "index": 5439, 
+                    "price": 1.983e-05, 
                     "size": "200.0", 
                     "symbol": "QLCBTC", 
-                    "trade_type": "EMA12_200|EMA26_200", 
+                    "trade_type": "EMA26_200|EMA50_200", 
                     "type": "buy"
                 }, 
                 {
-                    "buy_price": 1.968e-05, 
-                    "index": 8143, 
-                    "price": 1.985e-05, 
+                    "buy_price": 1.983e-05, 
+                    "index": 8176, 
+                    "price": 2e-05, 
                     "size": "200.0", 
                     "symbol": "QLCBTC", 
                     "trade_type": "EMA12_26_50_200", 
@@ -288,6 +288,16 @@
                     "symbol": "TRXBTC", 
                     "trade_type": "TPSC12", 
                     "type": "sell"
+                }
+            ], 
+            "WPRBTC": [
+                {
+                    "index": 1567, 
+                    "price": 1.319e-05, 
+                    "size": "300.0", 
+                    "symbol": "WPRBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "buy"
                 }
             ], 
             "XEMBTC": [

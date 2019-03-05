@@ -53,15 +53,9 @@ def simulate(conn, client, base, currency, type="channel"):
     high_prices = []
     volumes = []
 
-    trend_state_up_counter_x_values = []
-    trend_state_up_counter_values = []
-    trend_state_down_counter_x_values = []
-    trend_state_down_counter_values = []
-
     last_trend_string = ''
     last_short_trend_string = ''
     state_indices = []
-
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -85,10 +79,6 @@ def simulate(conn, client, base, currency, type="channel"):
         if tst.get_trend_string() != last_trend_string:
             state_indices.append((i, tst.get_trend_direction()))
             print("LONG:" + tst.get_trend_string())
-            trend_state_up_counter_x_values.append(i)
-            trend_state_up_counter_values.append(tst.get_trend_state_up_counter())
-            trend_state_down_counter_x_values.append(i)
-            trend_state_down_counter_values.append(tst.get_trend_state_down_counter())
             last_trend_string = tst.get_trend_string()
 
         mts_moverate.update(close, ts)
@@ -99,6 +89,8 @@ def simulate(conn, client, base, currency, type="channel"):
         high_prices.append(high)
         #lstsqs_x_values.append(i)
         i += 1
+
+
 
     plt.subplot(211)
     for (i, dir) in state_indices:
@@ -113,11 +105,16 @@ def simulate(conn, client, base, currency, type="channel"):
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    #fig21, = plt.plot(tspc12_x_values, tspc12_values, label='TSPC12')
-    #fig21, = plt.plot(mts_moverate_values, label='MTSMoverate')
-    plt.plot(trend_state_up_counter_x_values, trend_state_up_counter_values)
-    plt.plot(trend_state_down_counter_x_values, trend_state_down_counter_values)
-    #plt.legend(handles=[fig21])
+
+    fig1, = plt.plot(tst._seg_down_list, label='seg_down')
+    fig2, = plt.plot(tst._seg_up_list, label='seg_up')
+    fig3, = plt.plot(tst._seg1_down_list, label='seg1_down')
+    fig4, = plt.plot(tst._seg1_up_list, label='seg1_up')
+    fig5, = plt.plot(tst._seg2_down_list, label='seg2_down')
+    fig6, = plt.plot(tst._seg2_up_list, label='seg2_up')
+    fig7, = plt.plot(tst._seg3_down_list, label='seg3_down')
+    fig8, = plt.plot(tst._seg3_up_list, label='seg3_up')
+    plt.legend(handles=[fig1,fig2,fig3,fig4,fig5,fig6,fig7,fig8])
 
     plt.show()
 

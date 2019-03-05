@@ -153,6 +153,8 @@ class Hybrid_Crossover_Test(SignalBase):
             state == TrendStateInfo.STATE_NON_TREND_NO_DIRECTION or
             state == TrendStateInfo.STATE_TRENDING_DOWN_SLOW or
             state == TrendStateInfo.STATE_TRENDING_DOWN_FAST or
+            state == TrendStateInfo.STATE_TRENDING_UP_VERY_SLOW or
+            state == TrendStateInfo.STATE_CONT_TREND_UP_VERY_SLOW or
             state == TrendStateInfo.STATE_CONT_TREND_DOWN_SLOW or
             state == TrendStateInfo.STATE_CONT_TREND_DOWN_FAST):
             return False

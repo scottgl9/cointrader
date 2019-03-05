@@ -1,4 +1,5 @@
 # Analyze market data, and track trend(s) using a state representation
+import json
 from trader.lib.LargestPriceChange import LargestPriceChange
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 from trader.lib.TrendState.TrendState import TrendState
@@ -33,6 +34,14 @@ class TrendStateTrack(object):
         self.check_start_ts = 0
         self.ready = False
         self.smoother = smoother
+        self._seg_down_list = []
+        self._seg_up_list = []
+        self._seg1_down_list = []
+        self._seg1_up_list = []
+        self._seg2_down_list = []
+        self._seg2_up_list = []
+        self._seg3_down_list = []
+        self._seg3_up_list = []
         self._trend_state_up_cnt = 0
         self._trend_state_down_cnt = 0
 
@@ -72,18 +81,18 @@ class TrendStateTrack(object):
             self.trend_state = TrendState(state=TrendStateInfo.STATE_INIT,
                                           percent_slow_cutoff=self.percent_slow_cutoff,
                                           percent_very_slow_cutoff=self.percent_very_slow_cutoff)
-            self.trend_state.start_ts = ts
-            self.trend_state.start_price = close
-            self.trend_state.start_volume = volume
-        else:
-            self.trend_state.cur_ts = ts
-            self.trend_state.cur_price = close
-            self.trend_state.cur_volume = volume
+        #    self.trend_state.start_ts = ts
+        #    self.trend_state.start_price = close
+        #    self.trend_state.start_volume = volume
+        #else:
+        #    self.trend_state.cur_ts = ts
+        #    self.trend_state.cur_price = close
+        #    self.trend_state.cur_volume = volume
 
-        if not self.trend_state_short:
-            self.trend_state_short = TrendState(state=TrendStateInfo.STATE_INIT,
-                                                percent_slow_cutoff=self.percent_slow_cutoff,
-                                                percent_very_slow_cutoff=self.percent_very_slow_cutoff)
+        #if not self.trend_state_short:
+        #    self.trend_state_short = TrendState(state=TrendStateInfo.STATE_INIT,
+        #                                        percent_slow_cutoff=self.percent_slow_cutoff,
+        #                                        percent_very_slow_cutoff=self.percent_very_slow_cutoff)
 
         if not self.ready:
             return
@@ -94,17 +103,17 @@ class TrendStateTrack(object):
         self.trend_state = self.process_trend_state(self.trend_state, self.mts_long, value, ts)
         self.trend_state_list.append(self.trend_state.get_state())
 
-        if self.trend_state.is_in_up_trend_state():
-            self._trend_state_up_cnt += 1.0
-        else:
-            if not self.trend_state.is_in_up_trend_very_slow_state():
-                self._trend_state_up_cnt -= 0.5
+        #if self.trend_state.is_in_up_trend_state():
+        #    self._trend_state_up_cnt += 1.0
+        #else:
+        #    if not self.trend_state.is_in_up_trend_very_slow_state():
+        #        self._trend_state_up_cnt -= 0.5
 
-        if self.trend_state.is_in_down_trend_state():
-            self._trend_state_down_cnt += 1.0
-        else:
-            if not self.trend_state.is_in_up_trend_very_slow_state():
-                self._trend_state_down_cnt -= 0.5
+        #if self.trend_state.is_in_down_trend_state():
+        #    self._trend_state_down_cnt += 1.0
+        #else:
+        #    if not self.trend_state.is_in_up_trend_very_slow_state():
+        #        self._trend_state_down_cnt -= 0.5
 
         #self.trend_state_short = self.process_trend_state(self.trend_state_short, self.mts_short, ts)
         self.check_start_ts = ts
@@ -124,39 +133,83 @@ class TrendStateTrack(object):
         seg_up = segments[-1]
 
         new_start_ts = self.process_lpc_result(timestamps, seg_down, seg_up)
-        #if new_start_ts:
-        #    mts.remove_before_ts(new_start_ts)
-        #    values = mts.get_values()
-        #    timestamps = mts.get_timestamps()
-        #    self.lpc.reset(values, timestamps)
-        #    self.lpc.divide_price_segments()
-        #    segments = self.lpc.get_price_segments_percent_sorted()
-        #    if len(segments) < 2:
-        #        return trend_state
-        #    # *TODO* Add more processing on segments here
-        #    seg_down = segments[0]
-        #    seg_up = segments[-1]
+        if new_start_ts:
+            mts.remove_before_ts(new_start_ts)
+            values = mts.get_values()
+            timestamps = mts.get_timestamps()
+            self.lpc.reset(values, timestamps)
+            self.lpc.divide_price_segments()
+            segments = self.lpc.get_price_segments_percent_sorted()
+            if len(segments) < 2:
+                return trend_state
+            # *TODO* Add more processing on segments here
+            seg_down = segments[0]
+            seg_up = segments[-1]
 
-        self.process_score_segments(self.lpc)
+        #segments = self.lpc.get_price_score_segments()
+        #self.process_score_segments(segments, value, ts)
 
         trend_state.process_trend_state(seg_down, seg_up, value, ts)
         return trend_state
 
     # process LPC data categorized by score 1, 2, or 3
-    def process_score_segments(self, lpc):
-        segments = self.lpc.get_price_score_segments()
-        if segments['1']:
-            seg1_down = segments['1']['down']
-            seg1_up = segments['1']['up']
-        if segments['2']:
-            seg2_down = segments['2']['down']
-            seg2_up = segments['2']['up']
-        if segments['3']:
-            seg3_down = segments['3']['down']
-            seg3_up = segments['3']['up']
+    def process_score_segments(self, segments, value, ts):
+        seg_down = None
+        seg_up = None
+        seg1_down = None
+        seg1_up = None
+        seg2_down = None
+        seg2_up = None
+        seg3_down = None
+        seg3_up = None
 
-        #print(seg1_down)
-        #print(seg1_up)
+        try:
+            seg_down = segments['down']
+            seg_up = segments['up']
+            self._seg_down_list.append(seg_down['percent'])
+            self._seg_up_list.append(seg_up['percent'])
+        except KeyError:
+            pass
+
+        try:
+            seg1_down = segments[1]['down']
+            seg1_up = segments[1]['up']
+            self._seg1_down_list.append(seg1_down['percent'])
+            self._seg1_up_list.append(seg1_up['percent'])
+        except KeyError:
+            pass
+
+        try:
+            seg2_down = segments[2]['down']
+            seg2_up = segments[2]['up']
+            self._seg2_down_list.append(seg2_down['percent'])
+            self._seg2_up_list.append(seg2_up['percent'])
+        except KeyError:
+            pass
+
+        try:
+            seg3_down = segments[3]['down']
+            seg3_up = segments[3]['up']
+            self._seg3_down_list.append(seg3_down['percent'])
+            self._seg3_up_list.append(seg3_up['percent'])
+        except KeyError:
+            pass
+
+        if (not seg1_down or not seg1_up or
+            not seg2_down or not seg2_up or
+            not seg3_down or not seg3_up):
+            return None
+
+        if (len(self._seg1_down_list) < 2 or
+            len(self._seg1_up_list) < 2 or
+            len(self._seg2_down_list) < 2 or
+            len(self._seg2_up_list) < 2 or
+            len(self._seg3_down_list) < 2 or
+            len(self._seg3_up_list) < 2):
+            return None
+
+        return None
+
 
     # process result from LargestPriceChange (LPC) to determine if we need to re-run LPC
     def process_lpc_result(self, timestamps, seg_down, seg_up):

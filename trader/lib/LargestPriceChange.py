@@ -9,8 +9,6 @@ class LargestPriceChange(object):
         self.timestamps = None
         self.root = None
         self._price_segment_percents = None
-        self._price_segment_neg_percents = None
-        self._price_segment_pos_percents = None
         self._price_segment_score1 = None
         self._price_segment_score2 = None
         self._price_segment_score3 = None
@@ -28,8 +26,6 @@ class LargestPriceChange(object):
             self.timestamps = timestamps
         self.root = PriceSegment(self.prices, self.timestamps)
         self._price_segment_percents = []
-        self._price_segment_pos_percents = []
-        self._price_segment_neg_percents = []
         self._price_segment_score1 = []
         self._price_segment_score2 = []
         self._price_segment_score3 = []
@@ -67,22 +63,27 @@ class LargestPriceChange(object):
         result = {}
 
         self.get_price_segments()
+        self._price_segment_percents.sort(key=lambda x: x.percent)
         self._price_segment_score1.sort(key=lambda x: x.percent)
         self._price_segment_score2.sort(key=lambda x: x.percent)
         self._price_segment_score3.sort(key=lambda x: x.percent)
 
         if len(self._price_segment_score1) >= 2:
-            result['1'] = {}
-            result['1']['down'] = self._price_segment_score1[0]
-            result['1']['up'] = self._price_segment_score1[-1]
+            result[1] = {}
+            result[1]['down'] = self._price_segment_score1[0]
+            result[1]['up'] = self._price_segment_score1[-1]
         if len(self._price_segment_score2) >= 2:
-            result['2'] = {}
-            result['2']['down'] = self._price_segment_score2[0]
-            result['2']['up'] = self._price_segment_score2[-1]
+            result[2] = {}
+            result[2]['down'] = self._price_segment_score2[0]
+            result[2]['up'] = self._price_segment_score2[-1]
         if len(self._price_segment_score3) >= 2:
-            result['3'] = {}
-            result['3']['down'] = self._price_segment_score3[0]
-            result['3']['up'] = self._price_segment_score3[-1]
+            result[3] = {}
+            result[3]['down'] = self._price_segment_score3[0]
+            result[3]['up'] = self._price_segment_score3[-1]
+        if len(self._price_segment_percents) >= 2:
+            result['down'] = self._price_segment_percents[0]
+            result['up'] = self._price_segment_percents[-1]
+
         return result
 
     # return largest negative price change, and largest positive price change
@@ -102,22 +103,6 @@ class LargestPriceChange(object):
             seg_up = price_segment_percents[-1]
 
         return [seg_down, seg_up]
-
-    def get_largest_segment_neg_and_pos_percent(self):
-        self.price_segments(node=self.root)
-        if len(self._price_segment_neg_percents) > 1:
-            self._price_segment_neg_percents.sort(key=lambda x: x.diff_ts)
-        if len(self._price_segment_pos_percents) > 1:
-            self._price_segment_pos_percents.sort(key=lambda x: x.diff_ts)
-
-        neg_segment = None
-        pos_segment = None
-        if len(self._price_segment_neg_percents):
-            neg_segment = self._price_segment_neg_percents[-1]
-        if len(self._price_segment_pos_percents):
-            pos_segment = self._price_segment_pos_percents[-1]
-
-        return [neg_segment, pos_segment]
 
     def price_segments(self, node=None, type=0, score=0.0, n=0):
         if not node:
@@ -147,10 +132,6 @@ class LargestPriceChange(object):
                 self._price_segment_score2.append(entry)
             elif rscore == 3:
                 self._price_segment_score3.append(entry)
-            #if float(node.percent) < 0:
-            #    self._price_segment_neg_percents.append(entry)
-            #elif float(node.percent) > 0:
-            #    self._price_segment_pos_percents.append(entry)
 
         if not node.child:
             return
