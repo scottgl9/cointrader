@@ -393,12 +393,49 @@ class AccountBinance(AccountBase):
 
         return {'l': low_24hr, 'h': high_24hr, 'o': open_24hr, 'c': last_24hr, 'v': volume, 't': ts_24hr}
 
-    #def get_asset_balance(self, asset):
-    #    return self.client.get_asset_balance(asset=asset)
+    def get_account_total_value(self):
+        result = {}
+        result['assets'] = {}
+        tickers = self.get_all_tickers()
+
+        btc_usd_price = float(tickers['BTCUSDT'])
+        total_balance_usd = 0.0
+        total_balance_btc = 0.0
+        for accnt in self.client.get_account()['balances']:
+            if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
+                if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
+                    symbol = "{}BTC".format(accnt['asset'])
+                    if symbol not in tickers:
+                        continue
+                    price = float(tickers[symbol])
+                    total_amount = float(accnt['free']) + float(accnt['locked'])
+                    price_btc = price * total_amount
+                elif accnt['asset'] != 'USDT':
+                    price = 1.0
+                    total_amount = float(accnt['free']) + float(accnt['locked'])
+                    price_btc = total_amount
+                else:
+                    price = 1.0
+                    total_amount = float(accnt['free']) + float(accnt['locked'])
+                    price_btc = total_amount / btc_usd_price
+
+                price_usd = price_btc * btc_usd_price
+                total_balance_usd += price_usd
+                total_balance_btc += price_btc
+
+                if price_usd > 1.0:
+                    asset = accnt['asset']
+                    result['assets'][asset] = {}
+                    result['assets'][asset]['amount'] = total_amount
+                    result['assets'][asset]['btc'] = price_btc
+                    result['assets'][asset]['usd'] = price_usd
+        result['total'] = {}
+        result['total']['btc'] = total_balance_btc
+        result['total']['usd'] = total_balance_usd
+        return result
 
     def get_account_total_btc_value(self):
         tickers = self.client.get_all_tickers()
-        #for symbol, price in tickers.items():
         total_balance_btc = 0
         for accnt in self.client.get_account()['balances']:
             price_btc = 0
@@ -506,6 +543,15 @@ class AccountBinance(AccountBase):
                 result.append(ticker['symbol'])
         else:
             result = self.info_all_assets.keys()
+        return result
+
+    def get_all_tickers(self):
+        result = {}
+        if not self.simulate:
+            for ticker in self.client.get_all_tickers():
+                result[ticker['symbol']] = ticker['price']
+        else:
+            result = self.info_all_assets
         return result
 
     def get_all_my_trades(self, limit=100):
