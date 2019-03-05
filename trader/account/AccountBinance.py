@@ -33,6 +33,7 @@ class AccountBinance(AccountBase):
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
         self._tickers = {}
+        self._sell_only = False
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
@@ -57,6 +58,13 @@ class AccountBinance(AccountBase):
 
     def set_market_price(self, price):
         pass
+
+    def set_sell_only(self, sell_only):
+        self.logger.info("set_sell_only({})".format(sell_only))
+        self._sell_only = sell_only
+
+    def sell_only(self):
+        return self._sell_only
 
     def get_currencies(self):
         return self.currencies

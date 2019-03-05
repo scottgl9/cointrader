@@ -10,6 +10,7 @@ from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.lib.Kline import Kline
+import argparse
 import collections
 import logging
 import threading
@@ -43,23 +44,9 @@ class BinanceTrader:
         self.thread.daemon = True
         self.thread.start()
 
-
-    #def get_websocket_kline(self, msg):
-    #    kline = list()
-    #    kline.append(int(msg['E']))
-    #    kline.append(float(msg['l']))
-    #    kline.append(float(msg['h']))
-    #    kline.append(float(msg['o']))
-    #    kline.append(float(msg['c']))
-    #    kline.append(float(msg['v']))
-    #    return kline
-
-    # update tickers dict to contain kline ticker values for all traded symbols
-    #def process_websocket_message(self, msg):
-    #    for ticker in msg:
-    #        if 's' not in ticker or 'E' not in ticker: continue
-    #        self.tickers[ticker['s']] = self.get_websocket_kline(ticker)
-    #        return self.tickers[ticker['s']]
+    def set_sell_only(self):
+        if self.multitrader and self.multitrader.accnt:
+            self.multitrader.accnt.set_sell_only(True)
 
     # process message about user account update
     def process_user_message(self, msg):
@@ -245,6 +232,13 @@ def filter_by_balances(assets, balances):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--sell-only', action='store_true', dest='sell_only',
+                        default=False,
+                        help='Set to sell only mode')
+
+    results = parser.parse_args()
+
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
@@ -266,4 +260,7 @@ if __name__ == '__main__':
     currency_list = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
 
     bt = BinanceTrader(client, logger=logger)
+    if results.sell_only:
+        logger.info("Setting SELL ONLY mode")
+        bt.set_sell_only()
     bt.run()
