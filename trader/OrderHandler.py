@@ -63,8 +63,9 @@ class OrderHandler(object):
         self.logger.info("Resetting initial BTC...")
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-
-        self.initial_btc = self.accnt.get_total_btc_value()
+            self.initial_btc = self.accnt.get_account_total_btc_value()
+        else:
+            self.initial_btc = self.accnt.get_total_btc_value()
 
 
     def get_stored_trades(self):
