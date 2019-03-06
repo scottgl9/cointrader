@@ -481,6 +481,9 @@ class OrderHandler(object):
 
         if not result:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
+            if not self.accnt.simulate:
+                # remove from trade db since it failed to be sold
+                self.trader_db.remove_trade(ticker_id, sig_id)
             return
 
         order = self.accnt.parse_order_result(result, symbol=ticker_id)
@@ -526,6 +529,8 @@ class OrderHandler(object):
                 self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id)
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
+            # remove from trade db since it failed to be sold
+            self.trader_db.remove_trade(ticker_id, sig_id)
             return
 
         self.trade_balance_handler.update_for_sell(price, size, asset_info=msg.asset_info, symbol=ticker_id)
