@@ -34,6 +34,8 @@ class TrendStateTrack(object):
         self.check_start_ts = 0
         self.ready = False
         self.smoother = smoother
+        self._seg_down_list = []
+        self._seg_up_list = []
         self._trend_state_up_cnt = 0
         self._trend_state_down_cnt = 0
 
@@ -91,13 +93,57 @@ class TrendStateTrack(object):
         timestamps = mts.get_timestamps()
         self.lpc.reset(values, timestamps)
         self.lpc.divide_price_segments()
-
-        segments = self.lpc.get_price_score_segments()
-        if not self.check_segments(segments):
+        segments = self.lpc.get_price_segments_percent_sorted()
+        if len(segments) < 2:
             return trend_state
 
-        trend_state.process_trend_state(segments, value, ts)
+        # *TODO* Add more processing on segments here
+        seg_down = segments[0]
+        seg_up = segments[-1]
+
+        new_start_ts = self.process_lpc_result(timestamps, seg_down, seg_up)
+        if new_start_ts:
+            mts.remove_before_ts(new_start_ts)
+            values = mts.get_values()
+            timestamps = mts.get_timestamps()
+            self.lpc.reset(values, timestamps)
+            self.lpc.divide_price_segments()
+            segments = self.lpc.get_price_segments_percent_sorted()
+            if len(segments) < 2:
+                return trend_state
+            # *TODO* Add more processing on segments here
+            seg_down = segments[0]
+            seg_up = segments[-1]
+
+        #segments = self.lpc.get_price_score_segments()
+        #self.process_score_segments(segments, value, ts)
+
+        trend_state.process_trend_state(seg_down, seg_up, value, ts)
         return trend_state
+
+    # process result from LargestPriceChange (LPC) to determine if we need to re-run LPC
+    def process_lpc_result(self, timestamps, seg_down, seg_up):
+        new_start_ts = 0
+        seg_down_diff_ts = seg_down.end_ts - seg_down.start_ts
+        seg_up_diff_ts = seg_up.end_ts - seg_up.start_ts
+
+        # if entire down segment precedes entire up segment and down segment size < up segment size,
+        # and seg_down_percent > seg_up_percent, remove previous down segment
+        if seg_down.end_ts < seg_up.start_ts and seg_down.diff_ts < seg_up.diff_ts:
+            if abs(seg_down.percent) > abs(seg_up.percent):
+                new_start_ts = seg_up.start_ts
+        # if entire up segment precedes entire down segment and up segment size < down segment size,
+        # and seg_up_percent > seg_down_percent, remove previous up segment
+        elif seg_up.end_ts <= seg_down.start_ts and seg_up.diff_ts < seg_down.diff_ts:
+            if abs(seg_up.percent) > abs(seg_down.percent):
+                new_start_ts = seg_down.start_ts
+        # if up segment is completely contained within down segment
+        #elif seg_down.start_ts < seg_up.start_ts and seg_up.end_ts < seg_down.end_ts:
+        #    pass
+        # if down segment is completely contained within up segment
+        #elif seg_up.start_ts < seg_down.start_ts and seg_down.end_ts < seg_up.end_ts:
+        #    pass
+        return new_start_ts
 
     # check segments data to see if it's ready to be processed by process_trend_state
     def check_segments(self, segments):

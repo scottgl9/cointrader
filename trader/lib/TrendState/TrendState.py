@@ -6,6 +6,8 @@ class TrendState(object):
         self.percent_slow_cutoff = percent_slow_cutoff
         self.percent_very_slow_cutoff = percent_very_slow_cutoff
         self.trend_state = TrendStateInfo(state)
+        self.seg_down_list = []
+        self.seg_up_list = []
         self._seg_down_list = []
         self._seg_up_list = []
         self._seg1_down_list = []
@@ -60,14 +62,17 @@ class TrendState(object):
                 return TrendStateInfo.DIR_DOWN_FAST
         return TrendStateInfo.DIR_NONE_NONE
 
-    def process_trend_state(self, segments, value, ts):
+    def process_trend_state(self, seg_down, seg_up, value, ts):
         self.prev_value = self.value
         self.value = value
 
         self.prev_ts = self.ts
         self.ts = ts
 
-        seg_down, seg_up = self.process_segments(segments)
+        self._seg_down_list.append(seg_down)
+        self._seg_up_list.append(seg_up)
+
+        #seg_down, seg_up = self.process_segments(segments)
 
         if abs(seg_down.percent) == abs(seg_up.percent):
             self.trend_state.set_state(TrendStateInfo.STATE_NON_TREND_NO_DIRECTION)
@@ -138,26 +143,26 @@ class TrendState(object):
 
         return self.trend_state
 
-    def process_segments(self, segments):
-        seg_down = segments['down']
-        seg_up = segments['up']
-        seg1_down = segments[1]['down']
-        seg1_up = segments[1]['up']
-        seg2_down = segments[2]['down']
-        seg2_up = segments[2]['up']
-        seg3_down = segments[3]['down']
-        seg3_up = segments[3]['up']
-
-        self._seg_down_list.append(seg_down)
-        self._seg_up_list.append(seg_up)
-        self._seg1_down_list.append(seg1_down)
-        self._seg1_up_list.append(seg1_up)
-        self._seg2_down_list.append(seg2_down)
-        self._seg2_up_list.append(seg2_up)
-        self._seg3_down_list.append(seg3_down)
-        self._seg3_up_list.append(seg3_up)
-
-        return seg_down, seg_up
+    # def process_segments(self, segments):
+    #     seg_down = segments['down']
+    #     seg_up = segments['up']
+    #     seg1_down = segments[1]['down']
+    #     seg1_up = segments[1]['up']
+    #     seg2_down = segments[2]['down']
+    #     seg2_up = segments[2]['up']
+    #     seg3_down = segments[3]['down']
+    #     seg3_up = segments[3]['up']
+    #
+    #     self._seg_down_list.append(seg_down)
+    #     self._seg_up_list.append(seg_up)
+    #     self._seg1_down_list.append(seg1_down)
+    #     self._seg1_up_list.append(seg1_up)
+    #     self._seg2_down_list.append(seg2_down)
+    #     self._seg2_up_list.append(seg2_up)
+    #     self._seg3_down_list.append(seg3_down)
+    #     self._seg3_up_list.append(seg3_up)
+    #
+    #     return seg_down, seg_up
 
     def process_trend_direction(self, seg_down, seg_up):
         direction = 0
@@ -322,42 +327,42 @@ class TrendState(object):
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(state)
 
-    def get_seg_down_list(self, field=None):
-        if not field:
-            return self._seg_down_list
-        return map(lambda d: d[field], self._seg_down_list)
-
-    def get_seg_up_list(self, field=None):
-        if not field:
-            return self._seg_up_list
-        return map(lambda d: d[field], self._seg_up_list)
-
-    def get_seg1_down_list(self, field=None):
-        if not field:
-            return self._seg1_down_list
-        return map(lambda d: d[field], self._seg1_down_list)
-
-    def get_seg1_up_list(self, field=None):
-        if not field:
-            return self._seg1_up_list
-        return map(lambda d: d[field], self._seg1_up_list)
-
-    def get_seg2_down_list(self, field=None):
-        if not field:
-            return self._seg2_down_list
-        return map(lambda d: d[field], self._seg2_down_list)
-
-    def get_seg2_up_list(self, field=None):
-        if not field:
-            return self._seg2_up_list
-        return map(lambda d: d[field], self._seg2_up_list)
-
-    def get_seg3_down_list(self, field=None):
-        if not field:
-            return self._seg3_down_list
-        return map(lambda d: d[field], self._seg3_down_list)
-
-    def get_seg3_up_list(self, field=None):
-        if not field:
-            return self._seg3_up_list
-        return map(lambda d: d[field], self._seg3_up_list)
+    # def get_seg_down_list(self, field=None):
+    #     if not field:
+    #         return self._seg_down_list
+    #     return map(lambda d: d[field], self._seg_down_list)
+    #
+    # def get_seg_up_list(self, field=None):
+    #     if not field:
+    #         return self._seg_up_list
+    #     return map(lambda d: d[field], self._seg_up_list)
+    #
+    # def get_seg1_down_list(self, field=None):
+    #     if not field:
+    #         return self._seg1_down_list
+    #     return map(lambda d: d[field], self._seg1_down_list)
+    #
+    # def get_seg1_up_list(self, field=None):
+    #     if not field:
+    #         return self._seg1_up_list
+    #     return map(lambda d: d[field], self._seg1_up_list)
+    #
+    # def get_seg2_down_list(self, field=None):
+    #     if not field:
+    #         return self._seg2_down_list
+    #     return map(lambda d: d[field], self._seg2_down_list)
+    #
+    # def get_seg2_up_list(self, field=None):
+    #     if not field:
+    #         return self._seg2_up_list
+    #     return map(lambda d: d[field], self._seg2_up_list)
+    #
+    # def get_seg3_down_list(self, field=None):
+    #     if not field:
+    #         return self._seg3_down_list
+    #     return map(lambda d: d[field], self._seg3_down_list)
+    #
+    # def get_seg3_up_list(self, field=None):
+    #     if not field:
+    #         return self._seg3_up_list
+    #     return map(lambda d: d[field], self._seg3_up_list)
