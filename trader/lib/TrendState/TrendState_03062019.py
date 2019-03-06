@@ -6,14 +6,8 @@ class TrendState(object):
         self.percent_slow_cutoff = percent_slow_cutoff
         self.percent_very_slow_cutoff = percent_very_slow_cutoff
         self.trend_state = TrendStateInfo(state)
-        self._seg_down_list = []
-        self._seg_up_list = []
-        self._seg1_down_list = []
-        self._seg1_up_list = []
-        self._seg2_down_list = []
-        self._seg2_up_list = []
-        self._seg3_down_list = []
-        self._seg3_up_list = []
+        self.seg_down_list = []
+        self.seg_up_list = []
         self.value = 0
         self.prev_value = 0
         self.ts = 0
@@ -60,14 +54,15 @@ class TrendState(object):
                 return TrendStateInfo.DIR_DOWN_FAST
         return TrendStateInfo.DIR_NONE_NONE
 
-    def process_trend_state(self, segments, value, ts):
+    def process_trend_state(self, seg_down, seg_up, value, ts):
         self.prev_value = self.value
         self.value = value
 
         self.prev_ts = self.ts
         self.ts = ts
 
-        seg_down, seg_up = self.process_segments(segments)
+        self.seg_down_list.append(seg_down)
+        self.seg_up_list.append(seg_up)
 
         if abs(seg_down.percent) == abs(seg_up.percent):
             self.trend_state.set_state(TrendStateInfo.STATE_NON_TREND_NO_DIRECTION)
@@ -132,32 +127,11 @@ class TrendState(object):
             self.process_state_cont_trend_up_direction(seg_down, seg_up, direction)
 
         # check if the state hasn't changed, and trend could be changing
-        if not self.trend_state.has_state_changed() and len(self._seg_down_list) != 1 and len(self._seg_up_list) != 1:
+        if not self.trend_state.has_state_changed() and len(self.seg_down_list) != 1 and len(self.seg_up_list) != 1:
             self.process_potential_upward_reversal(seg_down, seg_up)
             self.process_potential_downward_reversal(seg_down, seg_up)
 
         return self.trend_state
-
-    def process_segments(self, segments):
-        seg_down = segments['down']
-        seg_up = segments['up']
-        seg1_down = segments[1]['down']
-        seg1_up = segments[1]['up']
-        seg2_down = segments[2]['down']
-        seg2_up = segments[2]['up']
-        seg3_down = segments[3]['down']
-        seg3_up = segments[3]['up']
-
-        self._seg_down_list.append(seg_down)
-        self._seg_up_list.append(seg_up)
-        self._seg1_down_list.append(seg1_down)
-        self._seg1_up_list.append(seg1_up)
-        self._seg2_down_list.append(seg2_down)
-        self._seg2_up_list.append(seg2_up)
-        self._seg3_down_list.append(seg3_down)
-        self._seg3_up_list.append(seg3_up)
-
-        return seg_down, seg_up
 
     def process_trend_direction(self, seg_down, seg_up):
         direction = 0
@@ -172,8 +146,8 @@ class TrendState(object):
 
     # process if current trend direction is up, seg_up_percent is shrinking, and seg_down_percent is growing
     def process_potential_downward_reversal(self, seg_down, seg_up):
-        seg_down_prev = self._seg_down_list[-2]
-        seg_up_prev = self._seg_up_list[-2]
+        seg_down_prev = self.seg_down_list[-2]
+        seg_up_prev = self.seg_up_list[-2]
 
         # check if could be downward trend reversal
         if abs(seg_up.percent) < abs(seg_up_prev.percent) and abs(seg_down.percent) > abs(seg_down_prev.percent):
@@ -199,8 +173,8 @@ class TrendState(object):
 
     # process if current trend direction is up, seg_down_percent is shrinking, and seg_up_percent is growing
     def process_potential_upward_reversal(self, seg_down, seg_up):
-        seg_down_prev = self._seg_down_list[-2]
-        seg_up_prev = self._seg_up_list[-2]
+        seg_down_prev = self.seg_down_list[-2]
+        seg_up_prev = self.seg_up_list[-2]
 
         # check if could be upward trend reversal
         if abs(seg_up.percent) > abs(seg_up_prev.percent) and abs(seg_down.percent) < abs(seg_down_prev.percent):
@@ -321,43 +295,3 @@ class TrendState(object):
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
             self.trend_state.set_state(state)
-
-    def get_seg_down_list(self, field=None):
-        if not field:
-            return self._seg_down_list
-        return map(lambda d: d[field], self._seg_down_list)
-
-    def get_seg_up_list(self, field=None):
-        if not field:
-            return self._seg_up_list
-        return map(lambda d: d[field], self._seg_up_list)
-
-    def get_seg1_down_list(self, field=None):
-        if not field:
-            return self._seg1_down_list
-        return map(lambda d: d[field], self._seg1_down_list)
-
-    def get_seg1_up_list(self, field=None):
-        if not field:
-            return self._seg1_up_list
-        return map(lambda d: d[field], self._seg1_up_list)
-
-    def get_seg2_down_list(self, field=None):
-        if not field:
-            return self._seg2_down_list
-        return map(lambda d: d[field], self._seg2_down_list)
-
-    def get_seg2_up_list(self, field=None):
-        if not field:
-            return self._seg2_up_list
-        return map(lambda d: d[field], self._seg2_up_list)
-
-    def get_seg3_down_list(self, field=None):
-        if not field:
-            return self._seg3_down_list
-        return map(lambda d: d[field], self._seg3_down_list)
-
-    def get_seg3_up_list(self, field=None):
-        if not field:
-            return self._seg3_up_list
-        return map(lambda d: d[field], self._seg3_up_list)
