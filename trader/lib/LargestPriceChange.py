@@ -33,7 +33,7 @@ class LargestPriceChange(object):
         self._price_segment_score3 = []
 
     def divide_price_segments(self):
-        self.tree.divide_price_segments()
+        self.tree.split()
 
     def get_price_segments(self):
         self._price_segment_percents = []

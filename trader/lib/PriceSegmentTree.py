@@ -11,6 +11,11 @@ class PriceSegmentTree(object):
         self.root = None
         self.prev_root = None
         self.start_index = 0
+        self._compare_n = 0
+        self._compare_t = 0
+        self._compare_node1 = None
+        self._compare_node2 = None
+
         if prices and timestamps:
             self.reset(prices, timestamps)
 
@@ -25,8 +30,32 @@ class PriceSegmentTree(object):
         self.prev_root = self.root
         self.root = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
-    def divide_price_segments(self):
+    def split(self):
         self.root.split(self.prices, self.timestamps)
+
+    def compare(self, node1=None, node2=None, n=0, t=None):
+        if node1.start_ts != node2.start_ts or node1.end_ts != node2.end_ts:
+            self._compare_n = n
+            self._compare_t = t
+            self._compare_node1 = node1
+            self._compare_node2 = node2
+            return
+
+        if not t:
+            t = []
+            if not node1:
+                node1 = self.prev_root
+            if not node2:
+                node2 = self.root
+
+        if node1.start_segment and node2.start_segment:
+            self.compare(node1.start_segment, node2.start_segment, n+1, t.append(1))
+
+        if node1.mid_segment and node2.mid_segment:
+            self.compare(node1.start_segment, node2.start_segment, n+1, t.append(2))
+
+        if node1.end_segment and node2.end_segment:
+            self.compare(node1.end_segment, node2.end_segment, n+1, t.append(3))
 
 
 # Price segment definition class, and child of PriceSegment is SplitPriceSegment class
@@ -71,8 +100,9 @@ class PriceSegmentNode(object):
         #    return False
 
         # if maximum price change in segment is less than min_percent_price, return
-        if 100.0*(self.max_price - self.min_price) / self.min_price <= self.min_percent_price:
-            return False
+        if self.min_percent_price:
+            if 100.0*(self.max_price - self.min_price) / self.min_price <= self.min_percent_price:
+                return False
 
         # Too small to split into three segments, so return
         if len(prices) <= (3 * self.min_segment_size):
