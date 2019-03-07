@@ -100,6 +100,15 @@ class basic_signal_market_strategy(StrategyBase):
         if float(signal.buy_price) != 0.0 or self.disable_buy:
             return False
 
+        # check USDT value of base by calculating (base_currency) * (currency_usdt)
+        # verify that USDT value >= $0.02, if less do not buy
+        usdt_symbol = self.accnt.make_ticker_id(self.currency, 'USDT')
+        currency_price = float(self.accnt.get_ticker(usdt_symbol))
+        if currency_price:
+            price_usdt = currency_price * price
+            if price_usdt < 0.02:
+                return False
+
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
 
         if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):

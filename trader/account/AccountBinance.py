@@ -46,6 +46,13 @@ class AccountBinance(AccountBase):
     def hours_to_ts(self, hours):
         return float(hours * 3600 * 1000)
 
+    def get_ticker(self, symbol):
+        try:
+            price = self._tickers[symbol]
+        except KeyError:
+            price = 0.0
+        return price
+
     def update_ticker(self, symbol, price):
         self._tickers[symbol] = price
 
