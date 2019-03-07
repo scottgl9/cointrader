@@ -8,14 +8,15 @@ except ImportError:
     import trader
 
 import sqlite3
-import logging
 import sys
 import os
+from trader.account.binance.client import Client
+from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
+from trader.lib.PriceSegmentTree import PriceSegmentTree
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
-from trader.lib.unused.TrendTree import TrendTreeProcessor, EMA_SLOPE
 
 
 def get_rows_as_msgs(c):
@@ -28,37 +29,19 @@ def get_rows_as_msgs(c):
 
 
 def simulate(conn, client, base, currency, type="channel"):
-    logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
-    logger = logging.getLogger()
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.setFormatter(logFormatter)
-    logger.addHandler(consoleHandler)
-    logger.setLevel(logging.INFO)
-
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    ema12 = EMA(12, scale=120)
+    ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
-    ema50 = EMA(50, scale=24, lag_window=5)
-    ema200 = EMA(200, scale=24, lag_window=5)
-    obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
-    obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
-    obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
-    obv_ema12_values = []
-    obv_ema26_values = []
-    obv_ema50_values = []
-
-    slope = EMA_SLOPE()
-    slope_values = []
-
-    ttp = TrendTreeProcessor(logger=logger)
+    ema50 = EMA(100, scale=24)
+    ema200 = EMA(200, scale=24)
 
     obv = OBV()
-    quad_x_values = []
-    quad_y_values = []
+    obv_values = []
+
     ema12_values = []
     ema26_values = []
     ema50_values = []
@@ -66,13 +49,13 @@ def simulate(conn, client, base, currency, type="channel"):
     close_prices = []
     open_prices = []
     low_prices = []
-    diff_values = []
-    signal_values = []
     high_prices = []
-    timestamps = []
+    volumes = []
+    ts_values = []
 
-    macd_diff_values = []
-    macd_signal_values = []
+    pst_ready = False
+    pst_update_ts = 0
+    pst = PriceSegmentTree()
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -81,17 +64,8 @@ def simulate(conn, client, base, currency, type="channel"):
         high = float(msg['h'])
         open = float(msg['o'])
         volume = float(msg['v'])
-        ts = int(msg['E'])
-
-        ttp.update(price=close, ts=ts)
-
-        if ttp.indicator.result != 0:
-            macd_diff_values.append(ttp.indicator.result)
-
-        obv_value = obv.update(close=close, volume=volume)
-        obv_ema12_values.append(obv_ema12.update(obv_value))
-        obv_ema26_values.append(obv_ema26.update(obv_value))
-        obv_ema50_values.append(obv_ema50.update(obv_value))
+        ts=int(msg['E'])
+        volumes.append(volume)
 
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
@@ -101,48 +75,54 @@ def simulate(conn, client, base, currency, type="channel"):
         ema200_value = ema200.update(close)
         ema200_values.append(ema200_value)
 
-        value = slope.update(close)
-        slope_values.append(value)
-
+        ts_values.append(ts)
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
-        timestamps.append(ts)
+
+        if len(ts_values) > 2 and (ts_values[-1] - ts_values[0]) >= 1000*3600:
+            pst_ready = True
+
+        if pst_ready:
+            if pst_update_ts == 0 or (ts - pst_update_ts) > 1000 * 300:
+                pst.reset(close_prices, ts_values)
+                pst.split()
+                if pst.prev_root:
+                    pst.compare(pst.prev_root, pst.root)
+                    result = pst.get_compare_results()
+                    print(result)
+                pst_update_ts = ts
+
         i += 1
 
-    ttp.print_tree()
-
     plt.subplot(211)
-    #fig = plt.figure()
-    #ax = fig.add_subplot(2,1,1)
-
-    for entry in ttp.tree_values:
-        start_i = timestamps.index(entry[3])
-        end_i = timestamps.index(entry[4])
-        start_price = entry[1]
-        end_price = entry[2]
-        size_i = end_i - start_i
-        size_price = end_price - start_price
-        print(entry[0], entry[-1], start_i, end_i)
-        if entry[-1] == 1:
-            color="green"
-        else:
-            color="red"
-        plt.gca().add_patch(plt.Rectangle([start_i, start_price], size_i, size_price, color=color, fill=False))
-
+    # i=0
+    # for ts in ts_values:
+    #     if ts == psp_down_start_ts:
+    #         plt.axvline(x=i, color='red')
+    #         plt.axvline(x=i+1, color='red')
+    #     elif ts == psp_down_end_ts:
+    #         plt.axvline(x=i-1, color='red')
+    #         plt.axvline(x=i, color='red')
+    #     elif ts == psp_up_start_ts:
+    #         plt.axvline(x=i, color='green')
+    #         plt.axvline(x=i+1, color='green')
+    #     elif ts == psp_up_end_ts:
+    #         plt.axvline(x=i-1, color='green')
+    #         plt.axvline(x=i, color='green')
+    #     i += 1
 
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
-    #fig2, = plt.plot(ema26_values, label='EMA26')
-    #fig3, = plt.plot(ema50_values, label='EMA50')
-    #fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1])
+    fig2, = plt.plot(ema26_values, label='EMA26')
+    fig3, = plt.plot(ema50_values, label='EMA50')
+    fig4, = plt.plot(ema200_values, label='EMA200')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
-    #fig21, = plt.plot(macd_diff_values, label='MACDDIFF')
-    #fig22, = plt.plot(macd_signal_values, label='MACDSIG')
-    #plt.legend(handles=[fig21, fig22])
-    plt.plot(slope_values)
+    #plt.plot(obv_values)
+    #plt.legend(handles=[fig21, fig22, fig23, fig24])
+
     plt.show()
 
 if __name__ == '__main__':
