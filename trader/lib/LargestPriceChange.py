@@ -1,5 +1,6 @@
 # Class to analyze a data set of prices / timestamps. Result is a sorted list of percent price changes
 # along with the start_ts, end_ts for each segment
+from trader.lib.PriceSegmentTree import PriceSegmentTree, PriceSegmentNode
 
 
 class LargestPriceChange(object):
@@ -7,6 +8,7 @@ class LargestPriceChange(object):
         self.use_dict = use_dict
         self.prices = None
         self.timestamps = None
+        self.tree = None
         self.root = None
         self._price_segment_percents = None
         self._price_segment_score1 = None
@@ -24,18 +26,18 @@ class LargestPriceChange(object):
         else:
             self.prices = prices
             self.timestamps = timestamps
-        self.root = PriceSegment(self.prices, self.timestamps)
+        self.tree = PriceSegmentTree(self.prices, self.timestamps)
         self._price_segment_percents = []
         self._price_segment_score1 = []
         self._price_segment_score2 = []
         self._price_segment_score3 = []
 
     def divide_price_segments(self):
-        self.root.split()
+        self.tree.divide_price_segments()
 
     def get_price_segments(self):
         self._price_segment_percents = []
-        self.price_segments(node=self.root)
+        self.price_segments(node=self.tree.root)
         return self._price_segment_percents
 
     def get_price_segments_percent_sorted(self):
@@ -105,9 +107,6 @@ class LargestPriceChange(object):
         return [seg_down, seg_up]
 
     def price_segments(self, node=None, type=0, score=0.0, n=0):
-        if not node:
-            node = self.root
-
         entry = None
         rscore = 0
 
@@ -133,18 +132,15 @@ class LargestPriceChange(object):
             elif rscore == 3:
                 self._price_segment_score3.append(entry)
 
-        if not node.child:
-            return
-
-        if node.child.start_segment:
+        if node.start_segment:
             t = LPCSegment.TYPE_SEGMENT_START
-            self.price_segments(node.child.start_segment, type=t, score=float(score + t), n=n+1)
-        if node.child.mid_segment:
+            self.price_segments(node.start_segment, type=t, score=float(score + t), n=n+1)
+        if node.mid_segment:
             t = LPCSegment.TYPE_SEGMENT_MID
-            self.price_segments(node.child.mid_segment, type=t, score=float(score + t), n=n+1)
-        if node.child.end_segment:
+            self.price_segments(node.mid_segment, type=t, score=float(score + t), n=n+1)
+        if node.end_segment:
             t = LPCSegment.TYPE_SEGMENT_END
-            self.price_segments(node.child.end_segment, type=t, score=float(score + t), n=n+1)
+            self.price_segments(node.end_segment, type=t, score=float(score + t), n=n+1)
 
     def round_score(self, score):
         score = float(score)
@@ -155,135 +151,6 @@ class LargestPriceChange(object):
         else:
             result = 3
         return result
-
-
-# Class to handle splitting a price segment into three parts
-class SplitPriceSegment(object):
-    def __init__(self, prices=None, timestamps=None, min_percent_price=1.0, min_segment_size=100):
-        self.prices = prices
-        self.timestamps = timestamps
-        self.min_price = 0
-        self.min_price_index = -1
-        self.min_price_ts = 0
-        self.max_price = 0
-        self.max_price_index = -1
-        self.max_price_ts = 0
-        self.min_percent_price = min_percent_price
-        self.min_segment_size = min_segment_size
-        self.start_segment = None           # start PriceSegment
-        self.mid_segment = None             # mid PriceSegment
-        self.end_segment = None             # end PriceSegment
-
-    def split(self):
-        self.max_price = max(self.prices)
-        self.max_price_index = self.prices.index(self.max_price)
-        self.max_price_ts = self.timestamps[self.max_price_index]
-        self.min_price = min(self.prices)
-        self.min_price_index = self.prices.index(self.min_price)
-        self.min_price_ts = self.timestamps[self.min_price_index]
-
-        #diff_secs = (self.timestamps[-1] - self.timestamps[0])
-        #if diff_secs <= self.min_segment_seconds * 1000 * 3:
-        #    return False
-
-        # if maximum price change in segment is less than min_percent_price, return
-        if 100.0*(self.max_price - self.min_price) / self.min_price <= self.min_percent_price:
-            return False
-
-        # Too small to split into three segments, so return
-        if len(self.prices) <= (3 * self.min_segment_size):
-            return False
-
-        half_split = False
-
-        # if mid segment size is less than min_segment_size, set half_split mode
-        if abs(self.max_price_index - self.min_price_index) < self.min_segment_size:
-            half_split = True
-
-        # if start or end segment size is less than min_segment_size, set half_split mode
-        if self.min_price_index < self.max_price_index:
-            if self.min_price_index < self.min_segment_size:
-                half_split = True
-            if (len(self.prices) - self.max_price_index) < self.min_segment_size:
-                half_split = True
-        elif self.min_price_index > self.max_price_index:
-            if self.max_price_index < self.min_segment_size:
-                half_split = True
-            if (len(self.prices) - self.min_price_index) < self.min_segment_size:
-                half_split = True
-        else:
-            return False
-
-        if half_split:
-            mid_index = int(len(self.prices) / 2)
-            start_price_values = self.prices[0:mid_index]
-            start_ts_values = self.timestamps[0:mid_index]
-            end_price_values = self.prices[mid_index:-1]
-            end_ts_values = self.timestamps[mid_index:-1]
-            self.mid_segment = None
-            self.start_segment = PriceSegment(start_price_values, start_ts_values)
-            self.end_segment = PriceSegment(end_price_values, end_ts_values)
-
-            self.start_segment.split()
-            self.end_segment.split()
-        else:
-            # split self.prices and self.timestamps into three parts
-            if self.max_price_ts < self.min_price_ts:
-                start_price_values = self.prices[0:(self.max_price_index - 1)]
-                start_ts_values = self.timestamps[0:(self.max_price_index - 1)]
-                mid_price_values = self.prices[self.max_price_index:self.min_price_index]
-                mid_ts_values = self.timestamps[self.max_price_index:self.min_price_index]
-                end_price_values = self.prices[(self.min_price_index + 1):-1]
-                end_ts_values = self.timestamps[(self.min_price_index + 1):-1]
-            elif self.max_price_ts > self.min_price_ts:
-                start_price_values = self.prices[0: (self.min_price_index - 1)]
-                start_ts_values = self.timestamps[0: (self.min_price_index - 1)]
-                mid_price_values = self.prices[self.min_price_index: self.max_price_index]
-                mid_ts_values = self.timestamps[self.min_price_index: self.max_price_index]
-                end_price_values = self.prices[(self.max_price_index + 1):-1]
-                end_ts_values = self.timestamps[(self.max_price_index + 1):-1]
-            else:
-                return False
-
-            self.start_segment = PriceSegment(start_price_values, start_ts_values)
-            self.mid_segment = PriceSegment(mid_price_values, mid_ts_values)
-            self.end_segment = PriceSegment(end_price_values, end_ts_values)
-
-            self.start_segment.split()
-            self.mid_segment.split()
-            self.end_segment.split()
-
-        return True
-
-
-# Price segment definition class, and child of PriceSegment is SplitPriceSegment class
-class PriceSegment(object):
-    def __init__(self, prices, timestamps):
-        self.ts_values = timestamps
-        self.price_values = prices
-        #self.max_price = max(self.price_values)
-        #self.max_price_index = self.price_values.index(self.max_price)
-        #self.max_price_ts = self.ts_values[self.max_price_index]
-        #self.min_price = min(self.price_values)
-        #self.min_price_index = self.price_values.index(self.min_price)
-        #self.min_price_ts = self.ts_values[self.min_price_index]
-        self.start_price = self.price_values[0]
-        self.end_price = self.price_values[-1]
-        self.start_ts = self.ts_values[0]
-        self.end_ts = self.ts_values[-1]
-
-        # percent change of price segment
-        self.percent = round(100.0 * (self.end_price - self.start_price) / self.start_price, 2)
-
-        # child SplitPriceSegment class
-        self.child = None
-
-    def split(self):
-        self.child = SplitPriceSegment(self.price_values, self.ts_values)
-
-        # if failed to split, self self.child=None
-        if not self.child.split():
-            self.child = None
 
 
 class LPCSegment(object):
