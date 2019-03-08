@@ -11,6 +11,7 @@ class PriceSegmentTree(object):
         self.root = None
         self.prev_root = None
         self.start_index = 0
+        self._leaf_nodes = []
         self._node_depth_dict = {}
         self._compare_n = 0
         self._compare_t = 0
@@ -34,6 +35,24 @@ class PriceSegmentTree(object):
 
     def split(self):
         self.root.split(self.prices, self.timestamps)
+
+    def get_leaf_nodes(self):
+        self._leaf_nodes = []
+        self._walk_leaf_nodes(self.root)
+        return self._leaf_nodes
+
+    def _walk_leaf_nodes(self, node):
+        if node.start_segment:
+            self._walk_leaf_nodes(node.start_segment)
+        else:
+            self._leaf_nodes.append(node)
+            return
+
+        if node.mid_segment:
+            self._walk_leaf_nodes(node.mid_segment)
+
+        if node.end_segment:
+            self._walk_leaf_nodes(node.end_segment)
 
     # returns dict with list of nodes referenced by depth
     def get_nodes_by_depth(self):
