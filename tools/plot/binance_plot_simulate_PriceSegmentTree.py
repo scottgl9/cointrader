@@ -89,7 +89,8 @@ def simulate(conn, client, base, currency, type="channel"):
                 pst.reset(close_prices, ts_values)
                 pst.split()
                 if pst.prev_root:
-                    pst.compare(pst.prev_root, pst.root)
+                    pst.compare_reset()
+                    pst.compare(pst.prev_root, pst.root, t=[])
                     result = pst.get_compare_results()
                     print(result)
                 pst_update_ts = ts

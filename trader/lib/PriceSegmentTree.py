@@ -15,6 +15,7 @@ class PriceSegmentTree(object):
         self._compare_t = 0
         self._compare_node1 = None
         self._compare_node2 = None
+        self._compare_done = False
 
         if prices and timestamps:
             self.reset(prices, timestamps)
@@ -33,31 +34,39 @@ class PriceSegmentTree(object):
     def split(self):
         self.root.split(self.prices, self.timestamps)
 
-    def compare(self, node1, node2, n=0, t=None):
-        #if n == 0:
-        #    if not node1:
-        #        if not self.prev_root:
-        #            return
-        #        node1 = self.prev_root
-        #    if not node2:
-        #        node2 = self.root
+    def compare_reset(self):
+        self._compare_n = 0
+        self._compare_t = None
+        self._compare_node1 = None
+        self._compare_node2 = None
+        self._compare_done = False
 
-        if n and (node1.start_ts != node2.start_ts or node1.end_ts != node2.end_ts):
-            print(t)
+    def compare(self, node1, node2, n=0, t=None):
+        if self._compare_done:
+            return
+
+        if node1.start_ts != node2.start_ts: # or node1.end_ts != node2.end_ts:
             self._compare_n = n
             self._compare_t = t
             self._compare_node1 = node1
             self._compare_node2 = node2
+            self._compare_done = True
             return
 
         if node1.start_segment and node2.start_segment:
-            self.compare(node1.start_segment, node2.start_segment, n+1, t + [1])
+            tnext = t
+            tnext.append(1)
+            self.compare(node1.start_segment, node2.start_segment, n + 1, tnext)
 
         if node1.mid_segment and node2.mid_segment:
-            self.compare(node1.mid_segment, node2.mid_segment, n+1, t + [2])
+            tnext = t
+            tnext.append(2)
+            self.compare(node1.mid_segment, node2.mid_segment, n + 1, tnext)
 
         if node1.end_segment and node2.end_segment:
-            self.compare(node1.end_segment, node2.end_segment, n+1, t + [3])
+            tnext = t
+            tnext.append(3)
+            self.compare(node1.end_segment, node2.end_segment, n + 1, tnext)
 
     def get_compare_results(self):
         return {'n': self._compare_n, 't': self._compare_t, 'node1': self._compare_node1, 'node2': self._compare_node2}
