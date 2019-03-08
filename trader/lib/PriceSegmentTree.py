@@ -156,21 +156,20 @@ class PriceSegmentNode(object):
         else:
             # split prices and timestamps into three parts
             if self.max_price_ts < self.min_price_ts:
-                start_price_values = prices[0:(self.max_price_index - 1)]
-                start_ts_values = timestamps[0:(self.max_price_index - 1)]
-                mid_price_values = prices[self.max_price_index:self.min_price_index]
-                mid_ts_values = timestamps[self.max_price_index:self.min_price_index]
-                end_price_values = prices[(self.min_price_index + 1):-1]
-                end_ts_values = timestamps[(self.min_price_index + 1):-1]
+                index1 = self.max_price_index
+                index2 = self.min_price_index
             elif self.max_price_ts > self.min_price_ts:
-                start_price_values = prices[0: (self.min_price_index - 1)]
-                start_ts_values = timestamps[0: (self.min_price_index - 1)]
-                mid_price_values = prices[self.min_price_index: self.max_price_index]
-                mid_ts_values = timestamps[self.min_price_index: self.max_price_index]
-                end_price_values = prices[(self.max_price_index + 1):-1]
-                end_ts_values = timestamps[(self.max_price_index + 1):-1]
+                index1 = self.min_price_index
+                index2 = self.max_price_index
             else:
                 return False
+
+            start_price_values = prices[0: (index1 - 1)]
+            start_ts_values = timestamps[0: (index1 - 1)]
+            mid_price_values = prices[index1: index2]
+            mid_ts_values = timestamps[index1: index2]
+            end_price_values = prices[(index2 + 1):-1]
+            end_ts_values = timestamps[(index2 + 1):-1]
 
             self.start_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
             self.mid_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
