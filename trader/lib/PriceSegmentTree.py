@@ -137,14 +137,16 @@ class PriceSegmentNode(object):
         self.end_segment = None             # end PriceSegment
         # percent change of price segment
         self.percent = 0.0
+        self.depth = 0
 
     # recursively split prices/timestamps to create tree with start_segment, mid_segment, and end_segment
-    def split(self, prices, timestamps):
+    def split(self, prices, timestamps, n=0):
         self.start_price = prices[0]
         self.end_price = prices[-1]
         self.start_ts = timestamps[0]
         self.end_ts = timestamps[-1]
         self.percent = round(100.0 * (self.end_price - self.start_price) / self.start_price, 2)
+        self.depth = n
 
         self.max_price = max(prices)
         self.max_price_index = prices.index(self.max_price)
@@ -195,8 +197,8 @@ class PriceSegmentNode(object):
             self.mid_segment = None
             self.end_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
-            self.start_segment.split(start_price_values, start_ts_values)
-            self.end_segment.split(end_price_values, end_ts_values)
+            self.start_segment.split(start_price_values, start_ts_values, n+1)
+            self.end_segment.split(end_price_values, end_ts_values, n+1)
         else:
             # split prices and timestamps into three parts
             if self.max_price_ts < self.min_price_ts:
@@ -219,8 +221,8 @@ class PriceSegmentNode(object):
             self.mid_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
             self.end_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
-            self.start_segment.split(start_price_values, start_ts_values)
-            self.mid_segment.split(mid_price_values, mid_ts_values)
-            self.end_segment.split(end_price_values, end_ts_values)
+            self.start_segment.split(start_price_values, start_ts_values, n+1)
+            self.mid_segment.split(mid_price_values, mid_ts_values, n+1)
+            self.end_segment.split(end_price_values, end_ts_values, n+1)
 
         return True

@@ -111,16 +111,22 @@ def simulate(conn, client, base, currency, type="channel"):
     pst.reset(ema12_values, ts_values)
     pst.split()
 
-    g = pydot.Dot(graph_type='graph')
-    generate_graph(g, pst.root)
-    graph_dot_data = g.to_string()
+    #g = pydot.Dot(graph_type='graph')
+    #generate_graph(g, pst.root)
+    #graph_dot_data = g.to_string()
 
     #graph = None
-    (graph,) = pydot.graph_from_dot_data(graph_dot_data)
+    #(graph,) = pydot.graph_from_dot_data(graph_dot_data)
     #graph.
-    graph.write_png('example.png')
+    #graph.write_png('example.png')
 
     plt.subplot(211)
+    count = 0
+    for node in pst.get_leaf_nodes():
+        start = ts_values.index(node.start_ts)
+        end = ts_values.index(node.end_ts)
+        print(start, end, node.depth, node.percent)
+
     # i=0
     # for ts in ts_values:
     #     if ts == psp_down_start_ts:
