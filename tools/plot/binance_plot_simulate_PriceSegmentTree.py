@@ -17,7 +17,18 @@ import argparse
 from trader.lib.PriceSegmentTree import PriceSegmentTree
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
+import pydot
 
+def generate_graph(graph, node, t=0, n=0):
+    edge = pydot.Edge("depth={}".format(n), "child={}".format(t))
+    graph.add_edge(edge)
+
+    if node.start_segment:
+        generate_graph(graph, node.start_segment, 1, n+1)
+    if node.mid_segment:
+        generate_graph(graph, node.mid_segment, 2, n+1)
+    if node.end_segment:
+        generate_graph(graph, node.end_segment, 3, n+1)
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -81,21 +92,33 @@ def simulate(conn, client, base, currency, type="channel"):
         low_prices.append(low)
         high_prices.append(high)
 
-        if len(ts_values) > 2 and (ts_values[-1] - ts_values[0]) >= 1000*3600:
-            pst_ready = True
-
-        if pst_ready:
-            if pst_update_ts == 0 or (ts - pst_update_ts) > 1000 * 300:
-                pst.reset(close_prices, ts_values)
-                pst.split()
-                if pst.prev_root:
-                    pst.compare_reset()
-                    pst.compare(pst.prev_root, pst.root, t=[])
-                    result = pst.get_compare_results()
-                    print(result)
-                pst_update_ts = ts
+        # if len(ts_values) > 2 and (ts_values[-1] - ts_values[0]) >= 1000*3600:
+        #     pst_ready = True
+        #
+        # if pst_ready:
+        #     if pst_update_ts == 0 or (ts - pst_update_ts) > 1000 * 300:
+        #         pst.reset(close_prices, ts_values)
+        #         pst.split()
+        #         if pst.prev_root:
+        #             pst.compare_reset()
+        #             pst.compare(pst.prev_root, pst.root, t=[])
+        #             result = pst.get_compare_results()
+        #             print(result)
+        #         pst_update_ts = ts
 
         i += 1
+
+    pst.reset(ema12_values, ts_values)
+    pst.split()
+
+    g = pydot.Dot(graph_type='graph')
+    generate_graph(g, pst.root)
+    graph_dot_data = g.to_string()
+
+    #graph = None
+    (graph,) = pydot.graph_from_dot_data(graph_dot_data)
+    #graph.
+    graph.write_png('example.png')
 
     plt.subplot(211)
     # i=0
