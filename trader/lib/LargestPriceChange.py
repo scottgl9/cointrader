@@ -112,6 +112,7 @@ class LargestPriceChange(object):
 
         if n:
             rscore = self.round_score(score/n)
+            node.update_percent()
             if self.use_dict:
                 entry = {'percent': float(node.percent),
                          'start_ts': int(node.start_ts),
