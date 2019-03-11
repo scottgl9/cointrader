@@ -34,7 +34,7 @@ class PriceSegmentTree(object):
         self.root = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
     def split(self):
-        self.root.split(self.prices, self.timestamps)
+        self.root.split_new(self.prices, self.timestamps)
 
     def get_leaf_nodes(self):
         self._leaf_nodes = []
@@ -126,7 +126,7 @@ class PriceSegmentNode(object):
     MODE_SPLIT2_MIN    = 4
     MODE_SPLIT2_HALF   = 5
 
-    def __init__(self, min_percent_price=1.0, min_segment_size=100):
+    def __init__(self, min_percent_price=1.0, min_segment_size=100, max_depth=15):
         self.start_price = 0
         self.end_price = 0
         self.start_ts = 0
@@ -139,6 +139,7 @@ class PriceSegmentNode(object):
         self.max_price_ts = 0
         self.min_percent_price = min_percent_price
         self.min_segment_size = min_segment_size
+        self.max_depth = max_depth
         self.half_split = False
         self.parent = None
         self.start_segment = None           # start PriceSegment
@@ -150,10 +151,20 @@ class PriceSegmentNode(object):
         self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
 
     def update_percent(self):
+        if not self.start_price:
+            return self.percent
         self.percent = round(100.0 * (self.end_price - self.start_price) / self.start_price, 2)
         return self.percent
 
     def split_new(self, prices, timestamps, n=0, t=0, parent=None):
+        # Too small to split into three segments, so return
+        if len(prices) <= (3 * self.min_segment_size):
+            return False
+
+        # if we hit max number of recursive splits, return
+        if n == self.max_depth:
+            return False
+
         self.start_price = prices[0]
         self.end_price = prices[-1]
         self.start_ts = timestamps[0]
@@ -161,16 +172,58 @@ class PriceSegmentNode(object):
         self.depth = n
         self.parent = parent
 
-        self.max_price = max(prices)
-        self.max_price_index = prices.index(self.max_price)
-        self.max_price_ts = timestamps[self.max_price_index]
-        self.min_price = min(prices)
-        self.min_price_index = prices.index(self.min_price)
-        self.min_price_ts = timestamps[self.min_price_index]
+        prices_len = len(prices)
+        if self.parent and (self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MINMAX or
+                            self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MAXMIN):
+            if t == 1:
+                if self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MINMAX:
+                    self.min_price_index = -1
+                    self.max_price_index = prices.index(max(prices))
+                elif self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MAXMIN:
+                    self.max_price_index = -1
+                    self.min_price_index = prices.index(min(prices))
+            elif t == 2:
+                if self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MINMAX:
+                    self.min_price_index = 0
+                    self.max_price_index = -1
+                elif self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MAXMIN:
+                    self.max_price_index = 0
+                    self.min_price_index = -1
+            elif t == 3:
+                if self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MINMAX:
+                    self.min_price_index = prices.index(min(prices))
+                    self.max_price_index = 0
+                elif self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MAXMIN:
+                    self.max_price_index = prices.index(max(prices))
+                    self.min_price_index = 0
 
-        # Too small to split into three segments, so return
-        if len(prices) <= (3 * self.min_segment_size):
-            return False
+            self.min_price = prices[self.min_price_index]
+            self.min_price_ts = timestamps[self.min_price_index]
+            self.max_price = prices[self.max_price_index]
+            self.max_price_ts = timestamps[self.max_price_index]
+        elif self.parent and (self.parent.mode == PriceSegmentNode.MODE_SPLIT2_MIN or
+                              self.parent.mode == PriceSegmentNode.MODE_SPLIT2_MAX):
+            if t == 1:
+                if self.parent.mode == PriceSegmentNode.MODE_SPLIT2_MIN:
+                    self.min_price_index = -1
+                    self.max_price_index = prices.index(max(prices))
+                elif self.parent.mode == PriceSegmentNode.MODE_SPLIT2_MAX:
+                    self.max_price_index = -1
+                    self.min_price_index = prices.index(min(prices))
+            elif t == 3:
+                if self.parent.mode == PriceSegmentNode.MODE_SPLIT2_MAX:
+                    self.min_price_index = prices.index(min(prices))
+                    self.max_price_index = 0
+                elif self.parent.mode == PriceSegmentNode.MODE_SPLIT2_MIN:
+                    self.max_price_index = prices.index(max(prices))
+                    self.min_price_index = 0
+        else:
+            self.max_price = max(prices)
+            self.max_price_index = prices.index(self.max_price)
+            self.max_price_ts = timestamps[self.max_price_index]
+            self.min_price = min(prices)
+            self.min_price_index = prices.index(self.min_price)
+            self.min_price_ts = timestamps[self.min_price_index]
 
         # if maximum price change in segment is less than min_percent_price, return
         if self.min_percent_price:
@@ -178,12 +231,12 @@ class PriceSegmentNode(object):
                 return False
 
         if self.max_price_ts < self.min_price_ts:
-            if (len(prices) - self.max_price_index) < self.min_segment_size:
+            if (prices_len - self.max_price_index) < self.min_segment_size:
                 if self.min_price_index < self.min_segment_size:
                     self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
                 else:
                     self.mode = PriceSegmentNode.MODE_SPLIT2_MIN
-            elif (len(prices) - self.min_price_index) < self.min_segment_size:
+            elif (prices_len - self.min_price_index) < self.min_segment_size:
                 if self.max_price_index < self.min_segment_size:
                     self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
                 else:
@@ -193,12 +246,12 @@ class PriceSegmentNode(object):
             else:
                 self.mode = PriceSegmentNode.MODE_SPLIT3_MAXMIN
         elif self.max_price_ts > self.min_price_ts:
-            if (len(prices) - self.min_price_index) < self.min_segment_size:
+            if (prices_len - self.min_price_index) < self.min_segment_size:
                 if self.max_price_index < self.min_segment_size:
                     self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
                 else:
                     self.mode = PriceSegmentNode.MODE_SPLIT2_MIN
-            elif (len(prices) - self.max_price_index) < self.min_segment_size:
+            elif (prices_len - self.max_price_index) < self.min_segment_size:
                 if self.min_price_index < self.min_segment_size:
                     self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
                 else:
@@ -207,6 +260,12 @@ class PriceSegmentNode(object):
                 self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
             else:
                 self.mode = PriceSegmentNode.MODE_SPLIT3_MINMAX
+
+        # if 3 levels of MODE_SPLIT2_HALF, return
+        if self.mode == PriceSegmentNode.MODE_SPLIT2_HALF and n > 3:
+            if (parent.mode == PriceSegmentNode.MODE_SPLIT2_HALF and
+                parent.parent.mode == PriceSegmentNode.MODE_SPLIT2_HALF):
+                return False
 
         self.start_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
         self.end_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
@@ -241,6 +300,8 @@ class PriceSegmentNode(object):
             else:
                 # self.mode == PriceSegmentNode.MODE_SPLIT2_HALF
                 index = int(len(prices) / 2)
+                if index <= self.min_segment_size:
+                    return
 
             self.mid_segment = None
 
