@@ -28,8 +28,6 @@ def generate_graph(graph, node, t=0, n=0, parent=None):
         end = node.end_ts
         pdiff = round((pend - pstart) / (1000.0 * 60.0), 2)
         diff = round((end - start) / (1000.0 * 60.0), 2)
-        if diff == 0 or pdiff == 0:
-            return
         edge = pydot.Edge("depth={}\ntype={}\n{} min\n{}%".format(n-1, parent.type, pdiff, parent.update_percent()),
                           "depth={}\ntype={}\n{} min\n{}%".format(n, node.type, diff, node.update_percent()))
         graph.add_edge(edge)

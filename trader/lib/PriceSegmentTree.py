@@ -162,12 +162,14 @@ class PriceSegmentNode(object):
         self.depth = n
         self.type = t
 
-        # Too small to split into three segments, so return
-        if len(prices) <= (3 * self.min_segment_size):
-            return False
-
-        # if we hit max number of recursive splits, return
-        if n == self.max_depth:
+        # Too small to split into three segments, or hit max number of recursive splits, so return
+        if len(prices) <= (3 * self.min_segment_size) or n == self.max_depth:
+            if t == 1:
+                self.parent.start_segment = None
+            elif t == 2:
+                self.parent.mid_segment = None
+            elif t == 3:
+                self.parent.end_segment = None
             return False
 
         self.start_price = prices[0]
@@ -265,10 +267,10 @@ class PriceSegmentNode(object):
                 self.mode = PriceSegmentNode.MODE_SPLIT3_MINMAX
 
         # if 3 levels of MODE_SPLIT2_HALF, return
-        if self.mode == PriceSegmentNode.MODE_SPLIT2_HALF and n > 3:
-            if (parent.mode == PriceSegmentNode.MODE_SPLIT2_HALF and
-                parent.parent.mode == PriceSegmentNode.MODE_SPLIT2_HALF):
-                return False
+        #if self.mode == PriceSegmentNode.MODE_SPLIT2_HALF and n > 3:
+        #    if (parent.mode == PriceSegmentNode.MODE_SPLIT2_HALF and
+        #        parent.parent.mode == PriceSegmentNode.MODE_SPLIT2_HALF):
+        #        return False
 
         self.start_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
         self.end_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
@@ -284,16 +286,16 @@ class PriceSegmentNode(object):
 
             self.mid_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
-            start_price_values = prices[0: (index1 - 1)]
-            start_ts_values = timestamps[0: (index1 - 1)]
+            start_price_values = prices[0: index1]
+            start_ts_values = timestamps[0: index1]
             self.start_segment.split_new(start_price_values, start_ts_values, n + 1, 1, parent=self)
 
             mid_price_values = prices[index1: index2]
             mid_ts_values = timestamps[index1: index2]
             self.mid_segment.split_new(mid_price_values, mid_ts_values, n + 1, 2, parent=self)
 
-            end_price_values = prices[(index2 + 1):-1]
-            end_ts_values = timestamps[(index2 + 1):-1]
+            end_price_values = prices[index2:-1]
+            end_ts_values = timestamps[index2:-1]
             self.end_segment.split_new(end_price_values, end_ts_values, n + 1, 3, parent=self)
         else:
             if self.mode == PriceSegmentNode.MODE_SPLIT2_MAX:
