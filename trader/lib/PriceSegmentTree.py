@@ -148,6 +148,7 @@ class PriceSegmentNode(object):
         # percent change of price segment
         self.percent = 0.0
         self.depth = 0
+        self.type = 0
         self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
 
     def update_percent(self):
@@ -157,6 +158,10 @@ class PriceSegmentNode(object):
         return self.percent
 
     def split_new(self, prices, timestamps, n=0, t=0, parent=None):
+        self.parent = parent
+        self.depth = n
+        self.type = t
+
         # Too small to split into three segments, so return
         if len(prices) <= (3 * self.min_segment_size):
             return False
@@ -169,8 +174,6 @@ class PriceSegmentNode(object):
         self.end_price = prices[-1]
         self.start_ts = timestamps[0]
         self.end_ts = timestamps[-1]
-        self.depth = n
-        self.parent = parent
 
         prices_len = len(prices)
         if self.parent and (self.parent.mode == PriceSegmentNode.MODE_SPLIT3_MINMAX or
@@ -316,12 +319,14 @@ class PriceSegmentNode(object):
 
     # recursively split prices/timestamps to create tree with start_segment, mid_segment, and end_segment
     def split(self, prices, timestamps, n=0, t=0, parent=None):
+        self.parent = parent
+        self.depth = n
+        self.type = t
+
         self.start_price = prices[0]
         self.end_price = prices[-1]
         self.start_ts = timestamps[0]
         self.end_ts = timestamps[-1]
-        self.depth = n
-        self.parent = parent
 
         # if parent was split into 3, we don't need to calculate these values
         #if parent and not parent.half_split:

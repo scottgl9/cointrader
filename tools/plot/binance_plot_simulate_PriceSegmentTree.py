@@ -19,16 +19,30 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 import pydot
 
-def generate_graph(graph, node, t=0, n=0):
-    edge = pydot.Edge("depth={}".format(n), "child={}".format(t))
-    graph.add_edge(edge)
+
+def generate_graph(graph, node, t=0, n=0, parent=None):
+    if parent:
+        pstart = parent.start_ts
+        pend = parent.end_ts
+        start = node.start_ts
+        end = node.end_ts
+        pdiff = round((pend - pstart) / (1000.0 * 60.0), 2)
+        diff = round((end - start) / (1000.0 * 60.0), 2)
+        if diff == 0 or pdiff == 0:
+            return
+        edge = pydot.Edge("depth={}\ntype={}\n{} min\n{}%".format(n-1, parent.type, pdiff, parent.update_percent()),
+                          "depth={}\ntype={}\n{} min\n{}%".format(n, node.type, diff, node.update_percent()))
+        graph.add_edge(edge)
+
+    node.type = t
+    node.depth = n
 
     if node.start_segment:
-        generate_graph(graph, node.start_segment, 1, n+1)
+        generate_graph(graph, node.start_segment, 1, n+1, parent=node)
     if node.mid_segment:
-        generate_graph(graph, node.mid_segment, 2, n+1)
+        generate_graph(graph, node.mid_segment, 2, n+1, parent=node)
     if node.end_segment:
-        generate_graph(graph, node.end_segment, 3, n+1)
+        generate_graph(graph, node.end_segment, 3, n+1, parent=node)
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -39,7 +53,7 @@ def get_rows_as_msgs(c):
     return msgs
 
 
-def simulate(conn, client, base, currency, type="channel"):
+def simulate(conn, client, base, currency, filename):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
@@ -94,39 +108,39 @@ def simulate(conn, client, base, currency, type="channel"):
         low_prices.append(low)
         high_prices.append(high)
 
-        if len(ts_values) > 2 and (ts_values[-1] - ts_values[0]) >= 1000*3600:
-             pst_ready = True
-        #
-        if pst_ready:
-            if pst_update_ts == 0 or (ts - pst_update_ts) > 1000 * 300:
-                pst.reset(ema12_values, ts_values)
-                pst.split()
-                percents = []
-                for node in pst.get_leaf_nodes():
-                    #start = ts_values.index(node.start_ts)
-                    #end = ts_values.index(node.end_ts)
-                    #print(start, end, node.depth, node.percent)
-                    percents.append(node.percent)
-                avg_percent = sum(percents)/len(percents)
-                avg_percents.append(avg_percent)
-                avg_x_percents.append(i)
-
+        # if len(ts_values) > 2 and (ts_values[-1] - ts_values[0]) >= 1000*3600:
+        #      pst_ready = True
+        # #
+        # if pst_ready:
+        #     if pst_update_ts == 0 or (ts - pst_update_ts) > 1000 * 300:
+        #         pst.reset(ema12_values, ts_values)
+        #         pst.split()
+        #         percents = []
+        #         for node in pst.get_leaf_nodes():
+        #             #start = ts_values.index(node.start_ts)
+        #             #end = ts_values.index(node.end_ts)
+        #             #print(start, end, node.depth, node.percent)
+        #             percents.append(node.percent)
+        #         avg_percent = sum(percents)/len(percents)
+        #         avg_percents.append(avg_percent)
+        #         avg_x_percents.append(i)
 
         i += 1
 
-    #pst.reset(ema12_values, ts_values)
-    #pst.split()
+    graph_filename = "{}{}_{}.png".format(base, currency, filename.replace('.db', ''))
 
-    #g = pydot.Dot(graph_type='graph')
-    #generate_graph(g, pst.root)
-    #graph_dot_data = g.to_string()
+    pst.reset(ema12_values, ts_values)
+    pst.split()
+    g = pydot.Dot(graph_type='graph')
+    generate_graph(g, pst.root)
+    graph_dot_data = g.to_string()
 
-    #graph = None
-    #(graph,) = pydot.graph_from_dot_data(graph_dot_data)
-    #graph.
-    #graph.write_png('example.png')
+    graph = None
+    (graph,) = pydot.graph_from_dot_data(graph_dot_data)
+    print("Writing graph to {}".format(graph_filename))
+    graph.write_png(graph_filename)
 
-    plt.subplot(211)
+    #plt.subplot(211)
     count = 0
     #for node in pst.get_leaf_nodes():
     #    start = ts_values.index(node.start_ts)
@@ -149,17 +163,16 @@ def simulate(conn, client, base, currency, type="channel"):
     #         plt.axvline(x=i, color='green')
     #     i += 1
 
-    symprice, = plt.plot(close_prices, label=ticker_id)
-    fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
-    fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    plt.subplot(212)
-    plt.plot(avg_x_percents, avg_percents)
+    #symprice, = plt.plot(close_prices, label=ticker_id)
+    #fig1, = plt.plot(ema12_values, label='EMA12')
+    #fig2, = plt.plot(ema26_values, label='EMA26')
+    #fig3, = plt.plot(ema50_values, label='EMA50')
+    #fig4, = plt.plot(ema200_values, label='EMA200')
+    #plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    #plt.subplot(212)
+    #plt.plot(avg_x_percents, avg_percents)
     #plt.legend(handles=[fig21, fig22, fig23, fig24])
-
-    plt.show()
+    #plt.show()
 
 if __name__ == '__main__':
     client = None
@@ -190,5 +203,5 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    simulate(conn, client, base, currency, type="MACD")
+    simulate(conn, client, base, currency, results.filename)
     conn.close()
