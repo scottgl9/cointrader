@@ -15,6 +15,7 @@ class MTSTreeLeaves(object):
         self.start_ts = 0
         self.start_interval_ts = 0
         self._ready = False
+        self._tree_updated = False
 
     def ready(self):
         return self._ready
@@ -33,11 +34,17 @@ class MTSTreeLeaves(object):
         if not self.start_interval_ts:
             self.start_interval_ts = ts
         elif 1000 * (ts - self.start_interval_ts) < self.pst_update_seconds:
+            self._tree_updated = False
             return
 
         self.pst.reset(self.mts.values, self.mts.timestamps)
         self.pst.split()
         self.pst_leaf_nodes = self.pst.get_leaf_nodes()
+        self.start_interval_ts = ts
+        self._tree_updated = True
+
+    def tree_updated(self):
+        return self._tree_updated
 
     def leaves(self):
         return self.pst_leaf_nodes
