@@ -34,7 +34,7 @@ class PriceSegmentTree(object):
         self.root = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
     def split(self):
-        self.root.split_new(self.prices, self.timestamps)
+        self.root.split(self.prices, self.timestamps)
 
     def get_leaf_nodes(self):
         self._leaf_nodes = []
@@ -42,12 +42,13 @@ class PriceSegmentTree(object):
         return self._leaf_nodes
 
     def _walk_leaf_nodes(self, node):
-        if node.start_segment:
-            self._walk_leaf_nodes(node.start_segment)
-        else:
+        if node.is_leaf():
             node.update_percent()
             self._leaf_nodes.append(node)
             return
+
+        if node.start_segment:
+            self._walk_leaf_nodes(node.start_segment)
 
         if node.mid_segment:
             self._walk_leaf_nodes(node.mid_segment)
@@ -150,12 +151,16 @@ class PriceSegmentNode(object):
         self.depth = 0
         self.type = 0
         self.mode = PriceSegmentNode.MODE_SPLIT2_HALF
+        self._is_leaf = False
 
     def update_percent(self):
         if not self.start_price:
             return self.percent
         self.percent = round(100.0 * (self.end_price - self.start_price) / self.start_price, 2)
         return self.percent
+
+    def is_leaf(self):
+        return self._is_leaf
 
     def split_new(self, prices, timestamps, n=0, t=0, parent=None):
         self.parent = parent
@@ -350,10 +355,12 @@ class PriceSegmentNode(object):
         if self.min_percent_price:
             #if 100.0*(self.max_price - self.min_price) / self.min_price <= self.min_percent_price:
             if 100.0 * (self.max_price - self.min_price) <= self.min_percent_price * self.min_price:
+                self._is_leaf = True
                 return False
 
         # Too small to split into three segments, so return
         if len(prices) <= (3 * self.min_segment_size):
+            self._is_leaf = True
             return False
 
         # if mid segment size is less than min_segment_size, set half_split mode
@@ -372,6 +379,7 @@ class PriceSegmentNode(object):
             if (len(prices) - self.min_price_index) < self.min_segment_size:
                 self.half_split = True
         else:
+            self._is_leaf = True
             return False
 
         # split prices and timestamps into two equal size parts
@@ -397,22 +405,23 @@ class PriceSegmentNode(object):
                 index1 = self.min_price_index
                 index2 = self.max_price_index
             else:
+                self._is_leaf = True
                 return False
 
             self.start_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
             self.mid_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
             self.end_segment = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
-            start_price_values = prices[0: (index1 - 1)]
-            start_ts_values = timestamps[0: (index1 - 1)]
+            start_price_values = prices[0: index1]
+            start_ts_values = timestamps[0: index1]
             self.start_segment.split(start_price_values, start_ts_values, n+1, 1, parent=self)
 
             mid_price_values = prices[index1: index2]
             mid_ts_values = timestamps[index1: index2]
             self.mid_segment.split(mid_price_values, mid_ts_values, n+1, 2, parent=self)
 
-            end_price_values = prices[(index2 + 1):-1]
-            end_ts_values = timestamps[(index2 + 1):-1]
+            end_price_values = prices[index2:-1]
+            end_ts_values = timestamps[index2:-1]
             self.end_segment.split(end_price_values, end_ts_values, n+1, 3, parent=self)
 
         return True
