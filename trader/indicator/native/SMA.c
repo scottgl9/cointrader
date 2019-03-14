@@ -58,7 +58,7 @@ static PyMemberDef SMA_members[] = {
 static PyObject *
 SMA_update(SMA* self, PyObject *args)
 {
-    double tail = 0.0;
+    double tail;
     double value;
     int size;
     PyObject *result;
@@ -70,6 +70,7 @@ SMA_update(SMA* self, PyObject *args)
     size = PyList_Size((PyObject*)self->values);
 
     if (size < self->window) {
+        tail = 0.0;
         PyList_Append((PyObject *)self->values, Py_BuildValue("d", value));
     } else {
         tail = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values, self->age));
@@ -78,10 +79,13 @@ SMA_update(SMA* self, PyObject *args)
 
     self->sum += value - tail;
     if (size != 0)  {
-        self->result = self->sum / (double)size;
+        self->result = self->sum / size;
+    } else {
+        self->sum = 0;
+        self->result = value;
     }
-    self->age = (self->age + 1) % self->window;
 
+    self->age = (self->age + 1) % self->window;
     result = Py_BuildValue("d", self->result);
     return result;
 }
@@ -142,7 +146,7 @@ static PyTypeObject SMA_MyTestType = {
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-init_SMA(void)
+initSMA(void)
 {
     PyObject* m;
 
