@@ -8,11 +8,15 @@ typedef struct {
     int age;
     double sum;
     double result;
+    PyListObject *values;
 } SMA;
 
 static void
 SMA_dealloc(SMA* self)
 {
+    if (self->values)
+        self->ob_type->tp_free(self->values);
+
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -26,6 +30,7 @@ SMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->age = 0;
     self->sum = 0;
     self->result = 0;
+    self->values = (PyListObject*)PyList_New(0);
 
     return (PyObject *)self;
 }
@@ -36,6 +41,8 @@ SMA_init(SMA *self, PyObject *args, PyObject *kwds)
     if (! PyArg_ParseTuple(args, "i", &self->window))
         return -1;
 
+    //self->values = (PyListObject*)PyList_New(self->window);
+
     return 0;
 }
 
@@ -44,22 +51,38 @@ static PyMemberDef SMA_members[] = {
     {"age", T_INT, offsetof(SMA, age), 0, "smaobj age"},
     {"sum", T_DOUBLE, offsetof(SMA, sum), 0, "smaobj sum"},
     {"result", T_DOUBLE, offsetof(SMA, result), 0, "smaobj result"},
+    {"values", T_OBJECT, offsetof(SMA, values), 0, "smaobj values"},
     {NULL}  /* Sentinel */
 };
 
 static PyObject *
 SMA_update(SMA* self, PyObject *args)
 {
-    int data;
+    double tail = 0.0;
+    double value;
+    int size;
     PyObject *result;
 
-    if (! PyArg_ParseTuple(args, "i", &data)) {
+    if (! PyArg_ParseTuple(args, "d", &value)) {
         return NULL;
     }
 
-    /* We'll just return data + loc as our result. */
-    result = Py_BuildValue("i", data + self->window);
+    size = PyList_Size((PyObject*)self->values);
 
+    if (size < self->window) {
+        PyList_Append((PyObject *)self->values, Py_BuildValue("d", value));
+    } else {
+        tail = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values, self->age));
+        PyList_SetItem((PyObject *)self->values, self->age, Py_BuildValue("d", value));
+    }
+
+    self->sum += value - tail;
+    if (size != 0)  {
+        self->result = self->sum / (double)size;
+    }
+    self->age = (self->age + 1) % self->window;
+
+    result = Py_BuildValue("d", self->result);
     return result;
 }
 static PyMethodDef SMA_methods[] = {
@@ -98,8 +121,8 @@ static PyTypeObject SMA_MyTestType = {
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
-    SMA_methods,      /* tp_methods */
-    SMA_members,      /* tp_members */
+    SMA_methods,               /* tp_methods */
+    SMA_members,               /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
