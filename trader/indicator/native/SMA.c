@@ -3,12 +3,15 @@
 
 typedef struct {
     PyObject_HEAD
-    /* Your internal 'loc' data. */
-    int loc;
+    /* internal data. */
+    int window;
+    int age;
+    double sum;
+    double result;
 } SMA;
 
 static void
-SMA_dealloc(Test* self)
+SMA_dealloc(SMA* self)
 {
     self->ob_type->tp_free((PyObject*)self);
 }
@@ -18,8 +21,11 @@ SMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     SMA *self;
 
-    self = (Test *)type->tp_alloc(type, 0);
-    self->loc = 0;
+    self = (SMA *)type->tp_alloc(type, 0);
+    self->window = 0;
+    self->age = 0;
+    self->sum = 0;
+    self->result = 0;
 
     return (PyObject *)self;
 }
@@ -27,14 +33,17 @@ SMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 SMA_init(SMA *self, PyObject *args, PyObject *kwds)
 {
-    if (! PyArg_ParseTuple(args, "i", &self->loc))
+    if (! PyArg_ParseTuple(args, "i", &self->window))
         return -1;
 
     return 0;
 }
 
 static PyMemberDef SMA_members[] = {
-    {"loc", T_INT, offsetof(SMA, loc), 0, "mysmaobj loc"},
+    {"window", T_INT, offsetof(SMA, window), 0, "smaobj window"},
+    {"age", T_INT, offsetof(SMA, age), 0, "smaobj age"},
+    {"sum", T_DOUBLE, offsetof(SMA, sum), 0, "smaobj sum"},
+    {"result", T_DOUBLE, offsetof(SMA, result), 0, "smaobj result"},
     {NULL}  /* Sentinel */
 };
 
@@ -49,7 +58,7 @@ SMA_update(SMA* self, PyObject *args)
     }
 
     /* We'll just return data + loc as our result. */
-    result = Py_BuildValue("i", data + self->loc);
+    result = Py_BuildValue("i", data + self->window);
 
     return result;
 }
@@ -102,9 +111,9 @@ static PyTypeObject SMA_MyTestType = {
     SMA_new,                   /* tp_new */
 };
 
-static PyMethodDef SMA_methods[] = {
-    {NULL}  /* Sentinel */
-};
+//static PyMethodDef SMA_methods[] = {
+//    {NULL}  /* Sentinel */
+//};
 
 #ifndef PyMODINIT_FUNC  /* declarations for DLL import/export */
 #define PyMODINIT_FUNC void
