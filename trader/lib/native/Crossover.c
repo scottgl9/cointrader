@@ -20,10 +20,15 @@ typedef struct {
     double values2_max_value;
     int values2_max_age;
 
-    PyListObject *values1;
-    PyListObject *values2;
-    PyListObject *pre_values1;
-    PyListObject *pre_values2;
+    double *values1;
+    double *values2;
+    double *pre_values1;
+    double *pre_values2;
+
+    int values1_size;
+    int values2_size;
+    int pre_values1_size;
+    int pre_values2_size;
 
     PyBoolObject *values_under;
     PyBoolObject *values_over;
@@ -35,13 +40,13 @@ static void
 Crossover_dealloc(Crossover* self)
 {
     if (self->values1)
-        self->ob_type->tp_free(self->values1);
+        free(self->values1);
     if (self->values2)
-        self->ob_type->tp_free(self->values2);
+        free(self->values2);
     if (self->pre_values1)
-        self->ob_type->tp_free(self->pre_values1);
+        free(self->pre_values1);
     if (self->pre_values2)
-        self->ob_type->tp_free(self->pre_values2);
+        free(self->pre_values2);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -56,10 +61,15 @@ Crossover_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->pre_age = 0;
     self->age = 0;
     self->last_age = 0;
-    self->values1 = (PyListObject*)PyList_New(0);
-    self->values2 = (PyListObject*)PyList_New(0);
-    self->pre_values1 = (PyListObject*)PyList_New(0);
-    self->pre_values2 = (PyListObject*)PyList_New(0);
+    self->values1 = NULL;
+    self->values2 = NULL;
+    self->pre_values1 = NULL;
+    self->pre_values2 = NULL;
+
+    self->values1_size = 0;
+    self->values2_size = 0;
+    self->pre_values1_size = 0;
+    self->pre_values2_size = 0;
 
     self->values_under = (PyBoolObject *)Py_False;
     self->values_over = (PyBoolObject *)Py_False;
@@ -97,10 +107,6 @@ static PyMemberDef Crossover_members[] = {
     {"age", T_INT, offsetof(Crossover, age), 0, "crossoverobj age"},
     {"last_age", T_INT, offsetof(Crossover, last_age), 0, "crossoverobj last_age"},
     {"pre_age", T_INT, offsetof(Crossover, pre_age), 0, "crossoverobj pre_age"},
-    {"values1", T_OBJECT, offsetof(Crossover, values1), 0, "crossoverobj values1"},
-    {"values2", T_OBJECT, offsetof(Crossover, values2), 0, "crossoverobj values2"},
-    {"pre_values1", T_OBJECT, offsetof(Crossover, pre_values1), 0, "crossoverobj pre_values1"},
-    {"pre_values2", T_OBJECT, offsetof(Crossover, pre_values2), 0, "crossoverobj pre_values2"},
     {"values_under", T_OBJECT, offsetof(Crossover, values_under), 0, "crossoverobj values_under"},
     {"values_over", T_OBJECT, offsetof(Crossover, values_over), 0, "crossoverobj values_over"},
     {"crossup", T_OBJECT, offsetof(Crossover, crossup), 0, "crossoverobj crossup"},
@@ -115,37 +121,56 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
 
     double value1, value2;
     double pre_value1, pre_value2;
-    int size, pre_size;
-    PyObject *result;
+    int pre_size;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "dd", kwlist,
                                      &value1, &value2))
         return NULL;
 
-    size = PyList_Size((PyObject*)self->values1);
+    if (self->values1_size < self->window) {
+        if (self->values1 == NULL)
+            self->values1 = malloc(self->window * sizeof(double));
+        if (self->values2 == NULL)
+            self->values2 = malloc(self->window * sizeof(double));
 
-    if (size < self->window) {
-        PyList_Append((PyObject *)self->values1, Py_BuildValue("d", value1));
-        PyList_Append((PyObject *)self->values2, Py_BuildValue("d", value2));
+        //PyList_Append((PyObject *)self->values1, Py_BuildValue("d", value1));
+        //PyList_Append((PyObject *)self->values2, Py_BuildValue("d", value2));
+        self->values1[self->values1_size] = value1;
+        self->values2[self->values2_size] = value2;
+        self->values1_size++;
+        self->values2_size++;
     } else {
         if (self->pre_window != 0) {
-            pre_size = PyList_Size((PyObject*)self->pre_values1);
 
-            pre_value1 = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values1, self->age));
-            pre_value2 = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values2, self->age));
+            pre_value1 = self->values1[self->age]; //PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values1, self->age));
+            pre_value2 = self->values2[self->age]; //PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values2, self->age));
 
-            if (pre_size < self->pre_window) {
-                PyList_Append((PyObject *)self->pre_values1, Py_BuildValue("d", pre_value1));
-                PyList_Append((PyObject *)self->pre_values2, Py_BuildValue("d", pre_value2));
+            if (self->pre_values1_size < self->pre_window) {
+                //PyList_Append((PyObject *)self->pre_values1, Py_BuildValue("d", pre_value1));
+                //PyList_Append((PyObject *)self->pre_values2, Py_BuildValue("d", pre_value2));
+                if (self->pre_values1 == NULL)
+                    self->pre_values1 = malloc(self->pre_window * sizeof(double));
+                if (self->pre_values2 == NULL)
+                    self->pre_values2 = malloc(self->pre_window * sizeof(double));
+
+                self->pre_values1[self->pre_values1_size] = pre_value1;
+                self->pre_values2[self->pre_values2_size] = pre_value2;
+                self->pre_values1_size++;
+                self->pre_values2_size++;
             } else {
-                PyList_SetItem((PyObject *)self->pre_values1, self->pre_age, Py_BuildValue("d", pre_value1));
-                PyList_SetItem((PyObject *)self->pre_values2, self->pre_age, Py_BuildValue("d", pre_value2));
+                //PyList_SetItem((PyObject *)self->pre_values1, self->pre_age, Py_BuildValue("d", pre_value1));
+                //PyList_SetItem((PyObject *)self->pre_values2, self->pre_age, Py_BuildValue("d", pre_value2));
+                self->pre_values1[self->pre_age] = pre_value1;
+                self->pre_values2[self->pre_age] = pre_value2;
+
                 self->pre_age = (self->pre_age + 1) % self->pre_window;
             }
         }
 
-        PyList_SetItem((PyObject *)self->values1, self->age, Py_BuildValue("d", value1));
-        PyList_SetItem((PyObject *)self->values2, self->age, Py_BuildValue("d", value2));
+        //PyList_SetItem((PyObject *)self->values1, self->age, Py_BuildValue("d", value1));
+        //PyList_SetItem((PyObject *)self->values2, self->age, Py_BuildValue("d", value2));
+        self->values1[self->age] = value1;
+        self->values2[self->age] = value2;
     }
 
     self->age = (self->age + 1) % self->window;
@@ -153,7 +178,7 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
     return Py_True;
 }
 
-void update_values1_min_max(Crossover *self, double value)
+static void update_values1_min_max(Crossover *self, double value)
 {
     if (self->values1_min_value == 0 || self->values2_max_value == 0) {
         self->values1_min_value = 0; //min(self.values1)
@@ -187,7 +212,7 @@ void update_values1_min_max(Crossover *self, double value)
     }
 }
 
-void update_values2_min_max(Crossover *self, double value)
+static void update_values2_min_max(Crossover *self, double value)
 {
     if (self->values2_min_value == 0 || self->values2_max_value == 0) {
         self->values2_min_value = 0; //min(self.values2)
