@@ -134,8 +134,21 @@ EMA_update(EMA* self, PyObject *args)
     return result;
 }
 
+static PyObject *EMA_ready(EMA* self, PyObject *args)
+{
+    int size;
+    size = PyList_Size((PyObject*)self->sma_values);
+    if (size == self->window) {
+        return Py_True;
+    }
+    return Py_False;
+}
+
 static PyMethodDef EMA_methods[] = {
     {"update", (PyCFunction)EMA_update, METH_VARARGS,
+     "Update EMA",
+    },
+    {"ready", (PyCFunction)EMA_ready, METH_VARARGS,
      "Update EMA",
     },
     {NULL}  /* Sentinel */
