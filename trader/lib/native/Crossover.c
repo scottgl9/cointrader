@@ -24,18 +24,6 @@ typedef struct {
     double values2_max_value;
     int values2_max_age;
 
-/*
-    double *values1;
-    double *values2;
-    double *pre_values1;
-    double *pre_values2;
-
-    int values1_size;
-    int values2_size;
-    int pre_values1_size;
-    int pre_values2_size;
-*/
-
     PyListObject *values1;
     PyListObject *values2;
     PyListObject *pre_values1;
@@ -58,6 +46,7 @@ Crossover_dealloc(Crossover* self)
         self->ob_type->tp_free(self->pre_values1);
     if (self->pre_values2)
         self->ob_type->tp_free(self->pre_values2);
+
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -76,13 +65,6 @@ Crossover_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->values2 = (PyListObject*)PyList_New(0);
     self->pre_values1 = (PyListObject*)PyList_New(0);
     self->pre_values2 = (PyListObject*)PyList_New(0);
-
-/*
-    self->values1_size = 0;
-    self->values2_size = 0;
-    self->pre_values1_size = 0;
-    self->pre_values2_size = 0;
-*/
 
     self->values_under = FALSE;
     self->values_over = FALSE;
@@ -128,6 +110,14 @@ static PyMemberDef Crossover_members[] = {
     {"values2", T_OBJECT, offsetof(Crossover, values2), 0, "crossoverobj values2"},
     {"pre_values1", T_OBJECT, offsetof(Crossover, pre_values1), 0, "crossoverobj pre_values1"},
     {"pre_values2", T_OBJECT, offsetof(Crossover, pre_values2), 0, "crossoverobj pre_values2"},
+    {"values1_min_value", T_DOUBLE, offsetof(Crossover, values1_min_value), 0, "crossoverobj values1_min_value"},
+    {"values1_min_age", T_INT, offsetof(Crossover, values1_min_age), 0, "crossoverobj values1_min_age"},
+    {"values1_max_value", T_DOUBLE, offsetof(Crossover, values1_max_value), 0, "crossoverobj values1_max_value"},
+    {"values1_max_age", T_INT, offsetof(Crossover, values1_max_age), 0, "crossoverobj values1_max_age"},
+    {"values2_min_value", T_DOUBLE, offsetof(Crossover, values2_min_value), 0, "crossoverobj values2_min_value"},
+    {"values2_min_age", T_INT, offsetof(Crossover, values2_min_age), 0, "crossoverobj values2_min_age"},
+    {"values2_max_value", T_DOUBLE, offsetof(Crossover, values2_max_value), 0, "crossoverobj values2_max_value"},
+    {"values2_max_age", T_INT, offsetof(Crossover, values2_max_age), 0, "crossoverobj values2_max_age"},
     {NULL}  /* Sentinel */
 };
 
@@ -308,10 +298,10 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
     self->last_age = self->age;
     self->age = (self->age + 1) % self->window;
 
-    return Py_True;
+    return Py_None;
 }
 
-static PyObject *Crossover_crossup_detected(Crossover* self)//, PyObject *args)
+static PyObject *Crossover_crossup_detected(Crossover* self, PyObject *args)
 {
     BOOL result = self->crossup;
     self->crossup = FALSE;
@@ -320,7 +310,7 @@ static PyObject *Crossover_crossup_detected(Crossover* self)//, PyObject *args)
     return Py_False;
 }
 
-static PyObject *Crossover_crossdown_detected(Crossover* self)//, PyObject *args)
+static PyObject *Crossover_crossdown_detected(Crossover* self, PyObject *args)
 {
     BOOL result = self->crossdown;
     self->crossdown = FALSE;
