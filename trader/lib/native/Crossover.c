@@ -39,14 +39,14 @@ typedef struct {
 static void
 Crossover_dealloc(Crossover* self)
 {
-    if (self->values1)
-        free(self->values1);
-    if (self->values2)
-        free(self->values2);
-    if (self->pre_values1)
-        free(self->pre_values1);
-    if (self->pre_values2)
-        free(self->pre_values2);
+    if (self->values1 != NULL)
+        self->ob_type->tp_free(self->values1);
+    if (self->values2 != NULL)
+        self->ob_type->tp_free(self->values2);
+    if (self->pre_values1 != NULL)
+        self->ob_type->tp_free(self->pre_values1);
+    if (self->pre_values2 != NULL)
+        self->ob_type->tp_free(self->pre_values2);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -92,25 +92,26 @@ Crossover_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 Crossover_init(Crossover *self, PyObject *args, PyObject *kwds)
 {
-    static char *kwlist[] = {"window", "pre_window", NULL};
+    static char *kwlist[] = {"pre_window", "window", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i|i", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "ii", kwlist,
                                      &self->pre_window, &self->window))
         return -1;
 
+    //printf("pre_window=%d, window=%d\n", self->pre_window, self->window);
     return 0;
 }
 
 static PyMemberDef Crossover_members[] = {
     {"pre_window", T_INT, offsetof(Crossover, pre_window), 0, "crossoverobj pre_window"},
     {"window", T_INT, offsetof(Crossover, window), 0, "crossoverobj window"},
-    {"age", T_INT, offsetof(Crossover, age), 0, "crossoverobj age"},
-    {"last_age", T_INT, offsetof(Crossover, last_age), 0, "crossoverobj last_age"},
-    {"pre_age", T_INT, offsetof(Crossover, pre_age), 0, "crossoverobj pre_age"},
-    {"values_under", T_OBJECT, offsetof(Crossover, values_under), 0, "crossoverobj values_under"},
-    {"values_over", T_OBJECT, offsetof(Crossover, values_over), 0, "crossoverobj values_over"},
-    {"crossup", T_OBJECT, offsetof(Crossover, crossup), 0, "crossoverobj crossup"},
-    {"crossdown", T_OBJECT, offsetof(Crossover, crossdown), 0, "crossoverobj crossdown"},
+    //{"age", T_INT, offsetof(Crossover, age), 0, "crossoverobj age"},
+    //{"last_age", T_INT, offsetof(Crossover, last_age), 0, "crossoverobj last_age"},
+    //{"pre_age", T_INT, offsetof(Crossover, pre_age), 0, "crossoverobj pre_age"},
+    //{"values_under", T_OBJECT, offsetof(Crossover, values_under), 0, "crossoverobj values_under"},
+    //{"values_over", T_OBJECT, offsetof(Crossover, values_over), 0, "crossoverobj values_over"},
+    //{"crossup", T_OBJECT, offsetof(Crossover, crossup), 0, "crossoverobj crossup"},
+    //{"crossdown", T_OBJECT, offsetof(Crossover, crossdown), 0, "crossoverobj crossdown"},
     {NULL}  /* Sentinel */
 };
 
@@ -299,7 +300,7 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
     return Py_True;
 }
 
-static PyObject *Crossover_crossup_detected(Crossover* self, PyObject *args)
+static PyObject *Crossover_crossup_detected(Crossover* self)//, PyObject *args)
 {
     PyBoolObject *result;
     result = self->crossup;
@@ -307,7 +308,7 @@ static PyObject *Crossover_crossup_detected(Crossover* self, PyObject *args)
     return (PyObject *)result;
 }
 
-static PyObject *Crossover_crossdown_detected(Crossover* self, PyObject *args)
+static PyObject *Crossover_crossdown_detected(Crossover* self)//, PyObject *args)
 {
     PyBoolObject *result;
     result = self->crossdown;
@@ -319,10 +320,10 @@ static PyMethodDef Crossover_methods[] = {
     {"update", (PyCFunction)Crossover_update, METH_VARARGS|METH_KEYWORDS,
      "Update Crossover",
     },
-    {"crossup_detected", (PyCFunction)Crossover_crossup_detected, METH_VARARGS,
+    {"crossup_detected", (PyCFunction)Crossover_crossup_detected, METH_NOARGS,
      "Crossover crossup detected",
     },
-    {"crossdown_detected", (PyCFunction)Crossover_crossdown_detected, METH_VARARGS,
+    {"crossdown_detected", (PyCFunction)Crossover_crossdown_detected, METH_NOARGS,
      "Crossover crossdown detected",
     },
     {NULL}  /* Sentinel */
