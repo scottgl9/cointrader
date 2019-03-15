@@ -299,9 +299,31 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
     return Py_True;
 }
 
+static PyObject *Crossover_crossup_detected(Crossover* self, PyObject *args)
+{
+    PyBoolObject *result;
+    result = self->crossup;
+    self->crossup = (PyBoolObject *)Py_False;
+    return (PyObject *)result;
+}
+
+static PyObject *Crossover_crossdown_detected(Crossover* self, PyObject *args)
+{
+    PyBoolObject *result;
+    result = self->crossdown;
+    self->crossdown = (PyBoolObject *)Py_False;
+    return (PyObject *)result;
+}
+
 static PyMethodDef Crossover_methods[] = {
     {"update", (PyCFunction)Crossover_update, METH_VARARGS|METH_KEYWORDS,
      "Update Crossover",
+    },
+    {"crossup_detected", (PyCFunction)Crossover_crossup_detected, METH_VARARGS,
+     "Crossover crossup detected",
+    },
+    {"crossdown_detected", (PyCFunction)Crossover_crossdown_detected, METH_VARARGS,
+     "Crossover crossdown detected",
     },
     {NULL}  /* Sentinel */
 };
