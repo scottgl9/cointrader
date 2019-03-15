@@ -6,6 +6,8 @@ typedef struct {
     /* internal data. */
     int window;
     int count;
+    int lag_window;
+    int slope_window;
     double weight;
     double scale;
     double esf;
@@ -35,7 +37,7 @@ EMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self = (EMA *)type->tp_alloc(type, 0);
     self->window = 0;
     self->weight = 0;
-    self->scale = 0;
+    self->scale = 1.0;
     self->esf = 0;
     self->result = 0;
     self->count = 0;
@@ -50,11 +52,13 @@ EMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 EMA_init(EMA *self, PyObject *args, PyObject *kwds)
 {
-    if (! PyArg_ParseTuple(args, "i", &self->window))
+    static char *kwlist[] = {"weight", "scale", "lag_window", "slope_window", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "d|dii", kwlist,
+                                     &self->weight, &self->scale, &self->lag_window, &self->slope_window))
         return -1;
 
-    self->weight = (double)self->window;
-    self->scale = 24.0;
+    self->window = (int)self->weight;
 
     return 0;
 }
