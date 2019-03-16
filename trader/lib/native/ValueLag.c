@@ -13,9 +13,9 @@ typedef struct {
 static void
 ValueLag_dealloc(ValueLag* self)
 {
-    if (self->values)
-        self->ob_type->tp_free(self->values);
-
+    //if (self->values)
+    //    self->ob_type->tp_free(self->values);
+    Py_XDECREF(self->values);
     self->ob_type->tp_free((PyObject*)self);
 }
 

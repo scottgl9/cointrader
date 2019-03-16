@@ -1,6 +1,6 @@
-from trader.lib.native.Crossover import Crossover
+from trader.lib.Crossover2 import Crossover2
 from trader.indicator.EMA import EMA
-from trader.lib.ValueLag import ValueLag
+from trader.lib.native.ValueLag import ValueLag
 
 class MACross(object):
     def __init__(self, ema_win1=0, ema_win2=0, scale=0, cross_window=10, cross_timeout=0,
@@ -75,7 +75,7 @@ class MACross(object):
         if self.indicator and self.ema_win2:
             self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
 
-        self.cross = Crossover(pre_window=0, window=self.cross_window)
+        self.cross = Crossover2(pre_window=0, window=self.cross_window)
 
     def update_min_max_values(self, value, ts):
         if self.cross_up:
