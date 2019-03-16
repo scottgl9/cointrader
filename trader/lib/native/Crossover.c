@@ -66,13 +66,9 @@ Crossover_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->age = 0;
     self->last_age = 0;
     self->values1 = (PyListObject*)PyList_New(0);
-    //Py_INCREF(self->values1);
     self->values2 = (PyListObject*)PyList_New(0);
-    Py_INCREF(self->values2);
     self->pre_values1 = (PyListObject*)PyList_New(0);
-    Py_INCREF(self->pre_values1);
     self->pre_values2 = (PyListObject*)PyList_New(0);
-    Py_INCREF(self->pre_values2);
 
     self->values_under = FALSE;
     self->values_over = FALSE;
@@ -236,16 +232,13 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
     size1 = PyList_Size((PyObject*)self->values1);
 
     if (size1 < self->window) {
-        ovalue1 = Py_BuildValue("d", value1);
-        PyList_Append((PyObject *)self->values1, ovalue1);
-        ovalue2 =  Py_BuildValue("d", value2);
-        PyList_Append((PyObject *)self->values2, ovalue2);
+        PyList_Append((PyObject *)self->values1, Py_BuildValue("d", value1));
+        PyList_Append((PyObject *)self->values2, Py_BuildValue("d", value2));
         //self->values1[self->values1_size] = value1;
         //self->values2[self->values2_size] = value2;
         //self->values1_size++;
         //self->values2_size++;
     } else {
-        /*
         if (self->pre_window != 0) {
 
             pre_size = PyList_Size((PyObject*)self->pre_values1);
@@ -264,15 +257,9 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
                 self->pre_age = (self->pre_age + 1) % self->pre_window;
             }
         }
-        */
-        //ovalue1 = Py_BuildValue("d", value1);
-        //PyList_SetItem((PyObject *)self->values1, self->age, ovalue1);
-        //Py_DECREF(ovalue1);
-        //ovalue2 = Py_BuildValue("d", value2);
-        //PyList_SetItem((PyObject *)self->values2, self->age, ovalue2);
-        //Py_DECREF(ovalue2);
-        //self->values1[self->age] = value1;
-        //self->values2[self->age] = value2;
+
+        PyList_SetItem((PyObject *)self->values1, self->age, Py_BuildValue("d", value1));
+        PyList_SetItem((PyObject *)self->values2, self->age, Py_BuildValue("d", value2));
         //update_values1_min_max(self, value1);
         //update_values2_min_max(self, value2);
 
@@ -285,7 +272,7 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
             self->values_over = FALSE;
             self->crossdown = TRUE;
         } else if (!self->values_under && !self->values_over) {
-        /*
+            /*
             if (self->values1_max_value < self->values2_min_value) {
                 if (self->pre_window != 0) {
                     // make sure values1 in pre_window were also under values2
@@ -305,22 +292,26 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
                     self->values_over = (PyBoolObject *)Py_True;
                 }
             }
-         */
+        */
         }
     }
 
     self->last_age = self->age;
     self->age = (self->age + 1) % self->window;
 
-    return Py_True;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *Crossover_crossup_detected(Crossover* self, PyObject *args)
 {
     BOOL result = self->crossup;
     self->crossup = FALSE;
-    if (result)
+    if (result) {
+        Py_INCREF(Py_True);
         return Py_True;
+    }
+    Py_INCREF(Py_False);
     return Py_False;
 }
 
@@ -328,8 +319,11 @@ static PyObject *Crossover_crossdown_detected(Crossover* self, PyObject *args)
 {
     BOOL result = self->crossdown;
     self->crossdown = FALSE;
-    if (result)
+    if (result) {
+        Py_INCREF(Py_True);
         return Py_True;
+    }
+    Py_INCREF(Py_False);
     return Py_False;
 }
 
