@@ -125,32 +125,52 @@ static PyMemberDef Crossover_members[] = {
     {NULL}  /* Sentinel */
 };
 
-/*
-static double get_min(double *values, int size)
+static double get_min(PyListObject *values)
 {
-    double min_value = 0;
+    int size = PyList_Size((PyObject*)values);
+    double value, min_value = 0;
     for (int i=0; i<size; i++) {
-        if (min_value > values[i] || min_value == 0)
-            min_value = values[i];
+        value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
+        if (min_value > value || min_value == 0)
+            min_value = value;
     }
     return min_value;
 }
 
-static double get_max(double *values, int size)
+static double get_max(PyListObject *values)
 {
-    double max_value = 0;
+    int size = PyList_Size((PyObject*)values);
+    double value, max_value = 0;
     for (int i=0; i<size; i++) {
-        if (max_value < values[i])
-            max_value = values[i];
+        value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
+        if (max_value < value)
+            max_value = value;
     }
     return max_value;
 }
 
+static void get_min_and_max(PyListObject *values, double *min_value, double *max_value)
+{
+    int size = PyList_Size((PyObject*)values);
+    double value;
+    *min_value = 0;
+    *max_value = 0;
+    for (int i=0; i<size; i++) {
+        if (*min_value > value || *min_value == 0)
+            *min_value = value;
+        if (*max_value < value)
+            *max_value = value;
+
+    }
+}
+
 static void update_values1_min_max(Crossover *self, double value)
 {
-    if (self->values1_min_value == 0 || self->values2_max_value == 0) {
-        self->values1_min_value = get_min(self->values1, self->values1_size); //min(self.values1)
-        self->values1_max_value = get_max(self->values1, self->values1_size); //max(self.values1)
+    double min_value, max_value;
+    if (self->values1_min_value == 0 || self->values1_max_value == 0) {
+        //get_min_and_max(self->values1, &min_value, &max_value);
+        self->values1_min_value = get_min(self->values1); //min_value; //min(self.values1)
+        self->values1_max_value = get_max(self->values1); //max_value; //max(self.values1)
         self->values1_min_age = 0;
         self->values1_max_age = 0;
         return;
@@ -170,21 +190,23 @@ static void update_values1_min_max(Crossover *self, double value)
     }
 
     if (self->values1_min_age >= self->window - 1) {
-        self->values1_min_value = get_min(self->values1, self->values1_size); //min(self.values1)
+        self->values1_min_value = get_min(self->values1); //min(self.values1)
         self->values1_min_age++;
     }
 
     if (self->values1_max_age >= self->window - 1) {
-        self->values1_max_value = get_max(self->values1, self->values1_size); //max(self.values1)
+        self->values1_max_value = get_max(self->values1); //max(self.values1)
         self->values1_max_age++;
     }
 }
 
 static void update_values2_min_max(Crossover *self, double value)
 {
+    double min_value, max_value;
     if (self->values2_min_value == 0 || self->values2_max_value == 0) {
-        self->values2_min_value = get_min(self->values2, self->values2_size); //min(self.values2)
-        self->values2_max_value = get_max(self->values2, self->values2_size); //max(self.values2)
+        //get_min_and_max(self->values2, &min_value, &max_value);
+        self->values2_min_value = get_min(self->values2); //min_value; //min(self.values1)
+        self->values2_max_value = get_max(self->values2); //max_value; //max(self.values1)
         self->values2_min_age = 0;
         self->values2_max_age = 0;
         return;
@@ -204,16 +226,15 @@ static void update_values2_min_max(Crossover *self, double value)
     }
 
     if (self->values2_min_age >= self->window - 1) {
-        self->values2_min_value = get_min(self->values2, self->values2_size); //min(self.values2)
+        self->values2_min_value = get_min(self->values2); //min(self.values2)
         self->values2_min_age++;
     }
 
     if (self->values2_max_age >= self->window - 1) {
-        self->values2_max_value = get_max(self->values2, self->values2_size); //max(self.values2)
+        self->values2_max_value = get_max(self->values2); //max(self.values2)
         self->values2_max_age++;
     }
 }
-*/
 
 static PyObject *
 Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
@@ -234,16 +255,14 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
     if (size1 < self->window) {
         PyList_Append((PyObject *)self->values1, Py_BuildValue("d", value1));
         PyList_Append((PyObject *)self->values2, Py_BuildValue("d", value2));
-        //self->values1[self->values1_size] = value1;
-        //self->values2[self->values2_size] = value2;
-        //self->values1_size++;
-        //self->values2_size++;
     } else {
         if (self->pre_window != 0) {
 
+            // PyFloat_AS_DOUBLE trades safety for speed
+            // #define PyFloat_AS_DOUBLE(op) (((PyFloatObject *)(op))->ob_fval)
             pre_size = PyList_Size((PyObject*)self->pre_values1);
-            pre_value1 = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values1, self->age));
-            pre_value2 = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values2, self->age));
+            pre_value1 = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)self->values1, self->age));
+            pre_value2 = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)self->values2, self->age));
 
             if (pre_size < self->pre_window) {
                 PyList_Append((PyObject *)self->pre_values1, Py_BuildValue("d", pre_value1));
@@ -251,8 +270,6 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
             } else {
                 PyList_SetItem((PyObject *)self->pre_values1, self->pre_age, Py_BuildValue("d", pre_value1));
                 PyList_SetItem((PyObject *)self->pre_values2, self->pre_age, Py_BuildValue("d", pre_value2));
-                //self->pre_values1[self->pre_age] = pre_value1;
-                //self->pre_values2[self->pre_age] = pre_value2;
 
                 self->pre_age = (self->pre_age + 1) % self->pre_window;
             }
@@ -260,8 +277,8 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
 
         PyList_SetItem((PyObject *)self->values1, self->age, Py_BuildValue("d", value1));
         PyList_SetItem((PyObject *)self->values2, self->age, Py_BuildValue("d", value2));
-        //update_values1_min_max(self, value1);
-        //update_values2_min_max(self, value2);
+        update_values1_min_max(self, value1);
+        update_values2_min_max(self, value2);
 
         if (self->values_under && self->values1_min_value > self->values2_max_value) {
             // values1 in window were under values2, now all values1 over values2
@@ -272,27 +289,25 @@ Crossover_update(Crossover* self, PyObject *args, PyObject *kwds)
             self->values_over = FALSE;
             self->crossdown = TRUE;
         } else if (!self->values_under && !self->values_over) {
-            /*
             if (self->values1_max_value < self->values2_min_value) {
                 if (self->pre_window != 0) {
                     // make sure values1 in pre_window were also under values2
-                    if (get_max(self->pre_values1, self->pre_values1_size) < get_min(self->pre_values2, self->pre_values2_size))
-                        self->values_under = (PyBoolObject *)Py_True;
+                    if (get_max(self->pre_values1) < get_min(self->pre_values2))
+                        self->values_under = TRUE;
                 } else {
                     // all of values1 under values2
-                    self->values_under = (PyBoolObject *)Py_True;
+                    self->values_under = TRUE;
                 }
             } else if (self->values1_min_value > self->values2_max_value) {
                 if (self->pre_window != 0) {
                     // make sure values1 in pre_window were also over values2
-                    if (get_min(self->pre_values1, self->pre_values1_size) > get_max(self->pre_values2, self->pre_values2_size))
-                        self->values_over = (PyBoolObject *)Py_True;
+                    if (get_min(self->pre_values1) > get_max(self->pre_values2))
+                        self->values_over = TRUE;
                 } else {
                     // all of values1 over values2
-                    self->values_over = (PyBoolObject *)Py_True;
+                    self->values_over = TRUE;
                 }
             }
-        */
         }
     }
 
