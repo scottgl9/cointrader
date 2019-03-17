@@ -63,7 +63,7 @@ class TrendStateTrack(object):
                 self.ready = True
 
         if self.smoother:
-            value = self.smoother.update(close, ts)
+            value = self.smoother.update(close) #, ts)
         else:
             value = close
 
