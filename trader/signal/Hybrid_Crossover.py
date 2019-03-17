@@ -5,7 +5,7 @@ from trader.indicator.ZLEMA import ZLEMA
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
@@ -34,14 +34,14 @@ class Hybrid_Crossover(SignalBase):
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.macd = MACD(scale=24)
-        self.macd_cross = Crossover2(window=10)
-        self.macd_zero_cross = Crossover2(window=10)
-        self.cross_long = Crossover2(window=10)
-        self.obv_cross = Crossover2(window=10)
+        self.macd_cross = Crossover(window=10)
+        self.macd_zero_cross = Crossover(window=10)
+        self.cross_long = Crossover(window=10)
+        self.obv_cross = Crossover(window=10)
 
         self.rsi = RSI(window=30)
-        self.rsi_cross70 = Crossover2(window=10)
-        self.rsi_cross30 = Crossover2(window=10)
+        self.rsi_cross70 = Crossover(window=10)
+        self.rsi_cross30 = Crossover(window=10)
 
         self.trend_down_count = 0
         self.trend_up_count = 0

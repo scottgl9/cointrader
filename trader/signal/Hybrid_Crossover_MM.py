@@ -3,7 +3,7 @@ from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
@@ -28,14 +28,14 @@ class Hybrid_Crossover_MM(SignalBase):
         self.obv_ema26 = EMA(self.win_med, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, lag_window=5)
         self.macd = MACD()
-        self.macd_cross = Crossover2(window=9)
-        self.macd_zero_cross = Crossover2(window=9)
-        self.cross_long = Crossover2(window=9)
-        self.obv_cross = Crossover2(window=9)
+        self.macd_cross = Crossover(window=9)
+        self.macd_zero_cross = Crossover(window=9)
+        self.cross_long = Crossover(window=9)
+        self.obv_cross = Crossover(window=9)
 
         self.rsi = RSI(window=14)
-        self.rsi_cross70 = Crossover2(window=9)
-        self.rsi_cross30 = Crossover2(window=9)
+        self.rsi_cross70 = Crossover(window=9)
+        self.rsi_cross30 = Crossover(window=9)
 
         self.trend_down_count = 0
         self.trend_up_count = 0

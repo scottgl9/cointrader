@@ -1,11 +1,11 @@
 # double crossover detection
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 
 class CrossoverDouble(object):
     def __init__(self, window=10):
         self.window = window
-        self.cross12 = Crossover2(window=window)
-        self.cross13 = Crossover2(window=window)
+        self.cross12 = Crossover(window=window)
+        self.cross13 = Crossover(window=window)
         self.crossup = False
         self.crossdown = False
 

@@ -2,7 +2,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.ZLEMA import ZLEMA
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.signal.SignalBase import SignalBase
 
@@ -21,7 +21,7 @@ class TSV_Signal(SignalBase):
         self.ema50 = EMA(50, scale=24, lag_window=5)
 
         self.tsv = MovingTimeSegment(seconds=1000)
-        self.tsv_cross_zero = Crossover2(window=10)
+        self.tsv_cross_zero = Crossover(window=10)
         self.tsv_ema = ZLEMA(100, scale=24)
         self.detector = PeakValleyDetect()
 

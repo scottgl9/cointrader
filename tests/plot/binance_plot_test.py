@@ -19,7 +19,7 @@ from trader.indicator.REMA import REMA
 from trader.indicator.RSQUARE import RSQUARE
 from trader.indicator.OBV import OBV
 from trader.indicator.test.PriceChannel import PriceChannel
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.lib.unused.CrossoverDouble import CrossoverDouble
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance.client import Client
@@ -60,8 +60,8 @@ def plot_emas_product(plt, klines, product, hours=0):
     quad2 = QUAD2()
     quad2_values = []
     double_cross = CrossoverDouble(window=10)
-    cross_short = Crossover2(window=10)
-    cross_long = Crossover2(window=10)
+    cross_short = Crossover(window=10)
+    cross_long = Crossover(window=10)
     rsquare = RSQUARE()
     rsquare_values = []
 

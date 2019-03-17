@@ -1,5 +1,5 @@
 from trader.indicator.TSI import TSI
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.signal.SignalBase import SignalBase
 
 class TSI_Signal(SignalBase):
@@ -11,9 +11,9 @@ class TSI_Signal(SignalBase):
         self.tsi = TSI()
         #self.obv_ema26 = EMA(self.window, scale=24)
         #self.rsi_ema26 = EMA(self.window, scale=24)
-        self.tsi_cross_low = Crossover2(window=10)
-        self.tsi_cross_zero = Crossover2(window=10)
-        self.tsi_cross_high = Crossover2(window=10)
+        self.tsi_cross_low = Crossover(window=10)
+        self.tsi_cross_zero = Crossover(window=10)
+        self.tsi_cross_high = Crossover(window=10)
 
     def pre_update(self, close, volume, ts, cache_db=None):
         #obv_value = self.obv.update(close=float(close), volume=float(volume))

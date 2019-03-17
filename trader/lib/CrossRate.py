@@ -1,5 +1,5 @@
 # track rate at which two MAs crossover per indicated time frame
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 
 class CrossRate(object):
     def __init__(self, seconds=300, ma1=None, ma2=None):
@@ -8,7 +8,7 @@ class CrossRate(object):
         self.ma2 = ma2
         self.ma1_result = 0
         self.ma2_result = 0
-        self.cross = Crossover2(window=3)
+        self.cross = Crossover(window=3)
         self.cross_list = []
         self.ts = 0
         self.last_cross_value = 0

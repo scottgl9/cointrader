@@ -1,7 +1,7 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.PPO import PPO
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.signal.SignalBase import SignalBase
 
 class PPO_OBV(SignalBase):
@@ -16,7 +16,7 @@ class PPO_OBV(SignalBase):
         self.obv_ema12 = EMA(self.win_short, scale=24)
         self.obv_ema26 = EMA(self.win_med, scale=24)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
-        self.ppo_cross = Crossover2()
+        self.ppo_cross = Crossover()
 
     def pre_update(self, close, volume, ts=0, cache_db=None):
         obv_value = self.obv.update(close=close, volume=volume)

@@ -7,7 +7,7 @@
 # before crossup/crossdown occurred
 
 
-class Crossover2(object):
+class Crossover(object):
     def __init__(self, pre_window=0, window=12):
         self.window = window
         self.pre_window = pre_window

@@ -1,7 +1,7 @@
 from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -21,8 +21,8 @@ class MACD_Crossover(SignalBase):
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.macd = MACD(scale=24)
-        self.macd_cross = Crossover2(window=10)
-        self.macd_zero_cross = Crossover2(window=10)
+        self.macd_cross = Crossover(window=10)
+        self.macd_zero_cross = Crossover(window=10)
 
         self.trend_down_count = 0
         self.trend_up_count = 0

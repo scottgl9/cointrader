@@ -1,6 +1,6 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.signal.SigType import SigType
 from trader.signal.SignalBase import SignalBase
 
@@ -10,8 +10,8 @@ class Currency_EMA_Long(SignalBase):
         super(Currency_EMA_Long, self).__init__(accnt)
         self.ema1 = EMA(100, scale=24)
         self.ema2 = EMA(200, scale=24)
-        self.cross_short = Crossover2(window=10)
-        self.cross_long = Crossover2(window=10)
+        self.cross_short = Crossover(window=10)
+        self.cross_long = Crossover(window=10)
         self.obv = OBV()
         self.obv_ema12 = EMA(12, scale=24)
         self.obv_ema26 = EMA(26, scale=24, lag_window=5)

@@ -28,7 +28,7 @@ import matplotlib
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.MACD import MACD
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 
 
 def get_rows_as_msgs(c):
@@ -51,8 +51,8 @@ def simulate(conn, client, base, currency, type="channel"):
     ema50 = EMA(50, scale=24, lag_window=5)
 
     macd = MACD(12.0, 26.0, 9.0, scale=24.0)
-    macd_cross = Crossover2(window=10)
-    macd_zero_cross = Crossover2(window=10)
+    macd_cross = Crossover(window=10)
+    macd_zero_cross = Crossover(window=10)
     macd_signal = EMA(9, scale=24.0)
     macd_diff_values = []
     macd_signal_values = []

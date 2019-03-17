@@ -1,7 +1,7 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.KST import KST
 from trader.indicator.OBV import OBV
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.signal.SignalBase import SignalBase
 
 class KST_Crossover(SignalBase):
@@ -17,8 +17,8 @@ class KST_Crossover(SignalBase):
         self.obv_ema26 = EMA(self.win_med, scale=24, lag_window=5)
         self.obv_ema50 = EMA(self.win_long, scale=24, lag_window=5)
         self.kst = KST()
-        self.kst_cross = Crossover2(window=10)
-        self.kst_cross_zero = Crossover2(window=10)
+        self.kst_cross = Crossover(window=10)
+        self.kst_cross_zero = Crossover(window=10)
 
         #self.box = BOX()
         self.trend_down_count = 0

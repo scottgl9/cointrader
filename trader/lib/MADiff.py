@@ -1,5 +1,5 @@
 # indicator which tracks the current distance between two MAs
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 
 
 class MADiff(object):
@@ -12,7 +12,7 @@ class MADiff(object):
         self._ready = False
         self.max_diff = 0
         self.max_diff_ts = 0
-        self.cross_diff_zero = Crossover2(window=10)
+        self.cross_diff_zero = Crossover(window=10)
         self.cross_up = False
         self.cross_up_ts = 0
         self.cross_down = False

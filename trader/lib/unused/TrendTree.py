@@ -1,4 +1,4 @@
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.indicator.EMA import EMA
 from trader.indicator.SLOPE import SLOPE
 
@@ -23,7 +23,7 @@ class TrendTreeProcessor(object):
             self.indicator = indicator
         self.direction = 0
         self.last_direction = 0
-        self.cross_zero = Crossover2(window=15)
+        self.cross_zero = Crossover(window=15)
         self.time_node_end = 1000 * 3600 # 1 hour
         self.logger = logger
         self.tree_values = []

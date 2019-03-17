@@ -31,7 +31,7 @@ from trader.indicator.OBV import OBV
 from trader.indicator.MACD import MACD
 from trader.lib.FakeKline import FakeKline
 from trader.indicator.test.PriceChannel import PriceChannel
-from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 from trader.indicator.WMA import WMA
 from scipy import optimize
 

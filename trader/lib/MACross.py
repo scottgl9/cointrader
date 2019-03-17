@@ -1,5 +1,5 @@
 from trader.lib.native.Crossover import Crossover
-from trader.indicator.EMA import EMA
+from trader.indicator.native.EMA import EMA
 from trader.lib.native.ValueLag import ValueLag
 
 class MACross(object):
