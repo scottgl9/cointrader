@@ -14,9 +14,7 @@ typedef struct {
 static void
 SMA_dealloc(SMA* self)
 {
-    if (self->values)
-        self->ob_type->tp_free(self->values);
-
+    Py_XDECREF(self->values);
     self->ob_type->tp_free((PyObject*)self);
 }
 

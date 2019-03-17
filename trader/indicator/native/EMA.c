@@ -23,9 +23,7 @@ typedef struct {
 static void
 EMA_dealloc(EMA* self)
 {
-    if (self->sma_values)
-        self->ob_type->tp_free(self->sma_values);
-
+    Py_XDECREF(self->sma_values);
     self->ob_type->tp_free((PyObject*)self);
 }
 
