@@ -12,9 +12,12 @@ import os
 def scandir(dir, files=[], ignore=[]):
     for file in os.listdir(dir):
         path = os.path.join(dir, file)
+        native_path = os.path.join(dir, 'native', file.replace('.py', '.c'))
         if os.path.isfile(path) and path.endswith(".py"):
             if os.path.basename(path) not in ignore:
-                files.append(path.replace(os.path.sep, ".")[:-3])
+                # don't generate .c file if already has native implementation
+                if not os.path.isfile(native_path):
+                    files.append(path.replace(os.path.sep, ".")[:-3])
         elif os.path.isdir(path):
             if os.path.basename(path) not in ignore:
                 scandir(path, files, ignore)
