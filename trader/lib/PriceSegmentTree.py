@@ -35,7 +35,7 @@ class PriceSegmentTree(object):
         self.root = PriceSegmentNode(self.min_percent_price, self.min_segment_size)
 
     def split(self):
-        self.root.split(self.prices, self.timestamps)
+        self.root.split(self.prices, self.timestamps, 0, 0, None)
 
     def get_leaf_nodes(self):
         self._leaf_nodes = []
