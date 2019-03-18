@@ -146,15 +146,48 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
     }
 
     if (self->half_split) {
-        // /* Pass two arguments, a string and an int. */
-        // PyObject *argList = Py_BuildValue("si", "hello", 42);
+        int mid_index = size / 2;
+        PyObject *argList, *res;
+        argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
+        self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
+        self->seg_mid = Py_None;
+        Py_INCREF(Py_None);
+        self->seg_end = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
+        Py_DECREF(argList);
 
-        /* Call the class object. */
-        // PyObject *obj = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
-        // Py_DECREF(argList);
-        // PyObject_CallFunction((PyObject *)&PriceSegmentNode_MyTestType, "si", "hello", 42);
-
+        res = PyObject_CallMethod(self->seg_start, "split", "(OOiiO)", prices, timestamps, 1, n+1, parent);
+        if (res != NULL) Py_DECREF(res);
+        res = PyObject_CallMethod(self->seg_end, "split", "(OOiiO)", prices, timestamps, 3, n+1, parent);
+        if (res != NULL) Py_DECREF(res);
     } else {
+        int index1, index2;
+        PyObject *argList, *res;
+        // split prices and timestamps into three parts
+        if (self->max_price_ts < self->min_price_ts) {
+            //self.mode = PriceSegmentNode.MODE_SPLIT3_MAXMIN
+            index1 = self->max_price_index;
+            index2 = self->min_price_index;
+        } else if (self->max_price_ts > self->min_price_ts) {
+            //self.mode = PriceSegmentNode.MODE_SPLIT3_MINMAX
+            index1 = self->min_price_index;
+            index2 = self->max_price_index;
+        } else {}
+            self->_is_leaf = TRUE;
+            Py_INCREF(Py_False);
+            return Py_False;
+
+        argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
+        self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
+        self->seg_mid = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
+        self->seg_end = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
+        Py_DECREF(argList);
+
+        res = PyObject_CallMethod(self->seg_start, "split", "(OOiiO)", prices, timestamps, 1, n+1, parent);
+        if (res != NULL) Py_DECREF(res);
+        res = PyObject_CallMethod(self->seg_mid, "split", "(OOiiO)", prices, timestamps, 2, n+1, parent);
+        if (res != NULL) Py_DECREF(res);
+        res = PyObject_CallMethod(self->seg_end, "split", "(OOiiO)", prices, timestamps, 3, n+1, parent);
+        if (res != NULL) Py_DECREF(res);
     }
 
     Py_INCREF(Py_True);
