@@ -15,9 +15,11 @@ FastMinMax_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     FastMinMax *self;
 
     self = (FastMinMax *)type->tp_alloc(type, 0);
-    self->window = 0;
-    self->age = 0;
-    self->result = 0;
+    self->min_value = 0;
+    self->min_value_index = -1;
+    self->max_value = 0;
+    self->max_value_index = -1;
+    self->end_index = 0;
     self->values = (PyListObject*)PyList_New(0);
 
     return (PyObject *)self;
@@ -26,8 +28,8 @@ FastMinMax_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 FastMinMax_init(FastMinMax *self, PyObject *args, PyObject *kwds)
 {
-    if (! PyArg_ParseTuple(args, "i", &self->window))
-        return -1;
+    //if (! PyArg_ParseTuple(args, "i", &self->window))
+    //    return -1;
 
     return 0;
 }
@@ -35,53 +37,83 @@ FastMinMax_init(FastMinMax *self, PyObject *args, PyObject *kwds)
 static PyObject *
 FastMinMax_append(FastMinMax* self, PyObject *args)
 {
-    double tail;
     double value;
-    int size;
-    PyObject *result;
 
     if (! PyArg_ParseTuple(args, "d", &value)) {
         return NULL;
     }
 
-    size = PyList_Size((PyObject*)self->values);
-
-    if (size < self->window) {
-        tail = 0.0;
+    if (self->min_value == 0 || self->max_value == 0) {
+        self->min_value = value;
+        self->min_value_index = 0;
+        self->max_value = value;
+        self->max_value_index = 0;
         PyList_Append((PyObject *)self->values, Py_BuildValue("d", value));
-        return Py_BuildValue("d", self->result);
+
+        Py_INCREF(Py_None);
+        return Py_None;
     }
 
-    tail = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values, self->age));
-    PyList_SetItem((PyObject *)self->values, self->age, Py_BuildValue("d", value));
+    if (self->min_value != 0 && value < self->min_value) {
+        self->min_value = value;
+        self->min_value_index = self->end_index;
+    } else if (value > self->max_value) {
+        self->max_value = value;
+        self->max_value_index = self->end_index;
+    }
 
-    self->result = tail;
-    self->age = (self->age + 1) % self->window;
+    PyList_Append((PyObject *)self->values, Py_BuildValue("d", value));
+    self->end_index++;
 
-    result = Py_BuildValue("d", self->result);
-    return result;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *FastMinMax_remove(FastMinMax* self, PyObject *args)
 {
+    int count;
     int size;
-    size = PyList_Size((PyObject*)self->values);
-    if (size == self->window) {
-        return Py_True;
+    PyObject *result;
+
+    if (! PyArg_ParseTuple(args, "i", &count)) {
+        return NULL;
     }
-    return Py_False;
+
+    size = PyList_Size((PyObject*)self->values);
+
+    if (size <= count) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    self->min_value_index -= count;
+    self->max_value_index -= count;
+    self->end_index -= count;
+
+//    self.values = self.values[count:]
+
+//    if self.min_value_index < 0:
+//        self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
+//
+//    self.min_value = self.values[self.min_value_index]
+//
+//    if self.max_value_index < 0:
+//        self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
+//
+//    self.max_value = self.values[self.max_value_index]
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *FastMinMax_min(FastMinMax* self, PyObject *args)
 {
-    Py_INCREF(Py_False);
-    return Py_False;
+    return Py_BuildValue("d", self->min_value);
 }
 
 static PyObject *FastMinMax_max(FastMinMax* self, PyObject *args)
 {
-    Py_INCREF(Py_False);
-    return Py_False;
+    return Py_BuildValue("d", self->max_value);
 }
 
 PyMODINIT_FUNC

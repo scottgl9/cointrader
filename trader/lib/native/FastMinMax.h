@@ -4,9 +4,11 @@
 typedef struct {
     PyObject_HEAD
     /* internal data. */
-    int window;
-    int age;
-    double result;
+    double min_value;
+    int min_value_index;
+    double max_value;
+    int max_value_index;
+    int end_index;
     PyListObject *values;
 } FastMinMax;
 
@@ -19,9 +21,11 @@ static PyObject *FastMinMax_min(FastMinMax* self, PyObject *args);
 static PyObject *FastMinMax_max(FastMinMax* self, PyObject *args);
 
 static PyMemberDef FastMinMax_members[] = {
-    {"window", T_INT, offsetof(FastMinMax, window), 0, "fastminmaxobj window"},
-    {"age", T_INT, offsetof(FastMinMax, age), 0, "fastminmaxobj age"},
-    {"result", T_DOUBLE, offsetof(FastMinMax, result), 0, "fastminmaxobj result"},
+    {"min_value", T_DOUBLE, offsetof(FastMinMax, min_value), 0, "fastminmaxobj min_value"},
+    {"min_value_index", T_INT, offsetof(FastMinMax, min_value_index), 0, "fastminmaxobj min_value_index"},
+    {"max_value", T_DOUBLE, offsetof(FastMinMax, max_value), 0, "fastminmaxobj max_value"},
+    {"max_value_index", T_INT, offsetof(FastMinMax, max_value_index), 0, "fastminmaxobj max_value_index"},
+    {"end_index", T_INT, offsetof(FastMinMax, end_index), 0, "fastminmaxobj end_index"},
     {"values", T_OBJECT, offsetof(FastMinMax, values), 0, "fastminmaxobj values"},
     {NULL}  /* Sentinel */
 };
