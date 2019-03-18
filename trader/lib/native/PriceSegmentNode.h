@@ -39,6 +39,7 @@ static void PriceSegmentNode_dealloc(PriceSegmentNode* self);
 static PyObject *PriceSegmentNode_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 static int PriceSegmentNode_init(PriceSegmentNode *self, PyObject *args, PyObject *kwds);
 static PyObject *PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds);
+static PyObject *PriceSegmentNode_update_percent(PriceSegmentNode* self, PyObject *args);
 
 static PyMemberDef PriceSegmentNode_members[] = {
     {"min_segment_size", T_INT, offsetof(PriceSegmentNode, min_segment_size), 0, "pstobj min_segment_size"},
@@ -70,6 +71,9 @@ static PyMemberDef PriceSegmentNode_members[] = {
 static PyMethodDef PriceSegmentNode_methods[] = {
     {"split", (PyCFunction)PriceSegmentNode_split, METH_VARARGS|METH_KEYWORDS,
      "Split PriceSegmentNode",
+    },
+    {"update_percent", (PyCFunction)PriceSegmentNode_update_percent, METH_NOARGS,
+     "Update percent PriceSegmentNode",
     },
     {NULL}  /* Sentinel */
 };

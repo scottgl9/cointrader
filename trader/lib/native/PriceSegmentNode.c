@@ -9,7 +9,6 @@ PriceSegmentNode_dealloc(PriceSegmentNode* self)
 static PyObject *
 PriceSegmentNode_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    printf("PriceSegmentNode_new\n");
     PriceSegmentNode *self;
 
     self = (PriceSegmentNode *)type->tp_alloc(type, 0);
@@ -44,8 +43,6 @@ static int
 PriceSegmentNode_init(PriceSegmentNode *self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {"min_percent_price", "min_segment_size", "max_depth", NULL};
-
-    printf("PriceSegmentNode_init\n");
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "di|i", kwlist,
                                      &self->min_percent_price, &self->min_segment_size, &self->max_depth))
@@ -82,14 +79,20 @@ static int get_max_value_index(PyListObject *values)
     return index;
 }
 
+static PyObject *PriceSegmentNode_update_percent(PriceSegmentNode* self, PyObject *args)
+{
+    if (self->start_price != 0) {
+        self->percent = 100.0 * (self->end_price - self->start_price) / self->start_price;
+    }
+    return Py_BuildValue("d", self->percent);
+}
+
 static PyObject *
 PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 {
     PyObject *prices, *timestamps, *parent=NULL;
     int n, t, size, end_index;
     static char *kwlist[] = {"prices", "timestamps", "n", "t", "parent", NULL};
-
-    printf("PriceSegmentNode_split\n");
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO", kwlist, &prices, &timestamps, &n, &t, &parent))
         return NULL;
@@ -154,7 +157,6 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
     if (self->half_split) {
         int mid_index = size / 2;
         PyObject *argList, *res;
-        printf("PriceSegmentNode_split2_start\n");
         argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
         self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
         self->seg_mid = Py_None;
@@ -183,7 +185,6 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
             Py_INCREF(Py_False);
             return Py_False;
 
-        printf("PriceSegmentNode_split3_start\n");
         argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
         self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
         self->seg_mid = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
