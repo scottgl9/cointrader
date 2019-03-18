@@ -100,6 +100,8 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
     size = PyList_Size((PyObject*)prices);
     end_index = size - 1;
 
+    //printf("split(size=%d, t=%d, n=%d)\n", size, t, n);
+
     self->parent = parent;
     self->depth = n;
     self->type = t;
@@ -171,12 +173,12 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 
         start_price_values = PyList_GetSlice(prices, 0, mid_index);
         start_ts_values = PyList_GetSlice(timestamps, 0, mid_index);
-        res = PyObject_CallMethod(self->seg_start, "split", "(OOiiO)", start_price_values, start_ts_values, 1, n+1, parent);
+        res = PyObject_CallMethod(self->seg_start, "split", "(OOiiO)", start_price_values, start_ts_values, n+1, 1, parent);
         if (res != NULL) Py_DECREF(res);
 
         end_price_values = PyList_GetSlice(prices, mid_index, end_index);
         end_ts_values = PyList_GetSlice(timestamps, mid_index, end_index);
-        res = PyObject_CallMethod(self->seg_end, "split", "(OOiiO)", end_price_values, end_ts_values, 3, n+1, parent);
+        res = PyObject_CallMethod(self->seg_end, "split", "(OOiiO)", end_price_values, end_ts_values, n+1, 3, parent);
         if (res != NULL) Py_DECREF(res);
     } else {
         int index1, index2;
@@ -207,17 +209,17 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 
         start_price_values = PyList_GetSlice(prices, 0, index1);
         start_ts_values = PyList_GetSlice(timestamps, 0, index1);
-        res = PyObject_CallMethod(self->seg_start, "split", "(OOiiO)", start_price_values, start_ts_values, 1, n+1, parent);
+        res = PyObject_CallMethod(self->seg_start, "split", "(OOiiO)", start_price_values, start_ts_values, n+1, 1, parent);
         if (res != NULL) Py_DECREF(res);
 
         mid_price_values = PyList_GetSlice(prices, index1, index2);
         mid_ts_values = PyList_GetSlice(timestamps, index1, index2);
-        res = PyObject_CallMethod(self->seg_mid, "split", "(OOiiO)", mid_price_values, mid_ts_values, 2, n+1, parent);
+        res = PyObject_CallMethod(self->seg_mid, "split", "(OOiiO)", mid_price_values, mid_ts_values, n+1, 2, parent);
         if (res != NULL) Py_DECREF(res);
 
         end_price_values = PyList_GetSlice(prices, index2, end_index);
         end_ts_values = PyList_GetSlice(timestamps, index2, end_index);
-        res = PyObject_CallMethod(self->seg_end, "split", "(OOiiO)", end_price_values, end_ts_values, 3, n+1, parent);
+        res = PyObject_CallMethod(self->seg_end, "split", "(OOiiO)", end_price_values, end_ts_values, n+1, 3, parent);
         if (res != NULL) Py_DECREF(res);
     }
 
