@@ -23,6 +23,6 @@ clean_build:
 	rm -rf build
 
 clean: clean_build
-	#find trader -type f -name '*.c' -exec rm {} \;
+	find trader -type f -name '*.c' -not -path *native* -exec rm {} \;
 	find trader -type f -name '*.pyc' -exec rm {} \;
 	rm -rf bin
