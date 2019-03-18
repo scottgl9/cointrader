@@ -1,17 +1,17 @@
-#include "PriceSegmentTree.h"
+#include "PriceSegmentNode.h"
 
 static void
-PriceSegmentTree_dealloc(PriceSegmentTree* self)
+PriceSegmentNode_dealloc(PriceSegmentNode* self)
 {
     self->ob_type->tp_free((PyObject*)self);
 }
 
 static PyObject *
-PriceSegmentTree_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+PriceSegmentNode_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    PriceSegmentTree *self;
+    PriceSegmentNode *self;
 
-    self = (PriceSegmentTree *)type->tp_alloc(type, 0);
+    self = (PriceSegmentNode *)type->tp_alloc(type, 0);
     self->min_percent_price = 0;
     self->min_segment_size = 0;
     self->max_depth = 0;
@@ -40,7 +40,7 @@ PriceSegmentTree_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 static int
-PriceSegmentTree_init(PriceSegmentTree *self, PyObject *args, PyObject *kwds)
+PriceSegmentNode_init(PriceSegmentNode *self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {"min_percent_price", "min_segment_size", "max_depth", NULL};
 
@@ -80,7 +80,7 @@ static int get_max_value_index(PyListObject *values)
 }
 
 static PyObject *
-PriceSegmentTree_split(PriceSegmentTree* self, PyObject *args, PyObject *kwds)
+PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 {
     PyObject *prices, *timestamps, *parent=NULL;
     int n, t, size;
@@ -150,9 +150,9 @@ PriceSegmentTree_split(PriceSegmentTree* self, PyObject *args, PyObject *kwds)
         // PyObject *argList = Py_BuildValue("si", "hello", 42);
 
         /* Call the class object. */
-        // PyObject *obj = PyObject_CallObject((PyObject *) &PriceSegmentTree_MyTestType, argList);
+        // PyObject *obj = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
         // Py_DECREF(argList);
-        // PyObject_CallFunction((PyObject *)&PriceSegmentTree_MyTestType, "si", "hello", 42);
+        // PyObject_CallFunction((PyObject *)&PriceSegmentNode_MyTestType, "si", "hello", 42);
 
     } else {
     }
@@ -162,16 +162,16 @@ PriceSegmentTree_split(PriceSegmentTree* self, PyObject *args, PyObject *kwds)
 }
 
 PyMODINIT_FUNC
-initPriceSegmentTree(void)
+initPriceSegmentNode(void)
 {
     PyObject* m;
 
-    if (PyType_Ready(&PriceSegmentTree_MyTestType) < 0)
+    if (PyType_Ready(&PriceSegmentNode_MyTestType) < 0)
         return;
 
-    m = Py_InitModule3("PriceSegmentTree", PriceSegmentTree_methods,
-                       "Builds Price Segment Tree structure");
+    m = Py_InitModule3("PriceSegmentNode", PriceSegmentNode_methods,
+                       "Builds Price Segment Node structure");
 
-    Py_INCREF(&PriceSegmentTree_MyTestType);
-    PyModule_AddObject(m, "PriceSegmentTree", (PyObject *)&PriceSegmentTree_MyTestType);
+    Py_INCREF(&PriceSegmentNode_MyTestType);
+    PyModule_AddObject(m, "PriceSegmentNode", (PyObject *)&PriceSegmentNode_MyTestType);
 }
