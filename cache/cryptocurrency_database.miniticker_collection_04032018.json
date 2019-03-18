@@ -86,11 +86,11 @@
             ], 
             "DNTBTC": [
                 {
-                    "index": 487, 
-                    "price": 7.7e-06, 
+                    "index": 968, 
+                    "price": 7.67e-06, 
                     "size": "520.0", 
                     "symbol": "DNTBTC", 
-                    "trade_type": "EMA12_200|EMA26_200", 
+                    "trade_type": "TPSC12", 
                     "type": "buy"
                 }
             ], 
@@ -235,21 +235,29 @@
             ], 
             "SNTBTC": [
                 {
-                    "index": 1299, 
-                    "price": 1.382e-05, 
+                    "index": 1303, 
+                    "price": 1.375e-05, 
                     "size": "290.0", 
                     "symbol": "SNTBTC", 
                     "trade_type": "EMA12_200|EMA26_200", 
                     "type": "buy"
                 }, 
                 {
-                    "buy_price": 1.382e-05, 
-                    "index": 2282, 
-                    "price": 1.425e-05, 
+                    "buy_price": 1.375e-05, 
+                    "index": 1842, 
+                    "price": 1.389e-05, 
                     "size": "290.0", 
                     "symbol": "SNTBTC", 
-                    "trade_type": "TPSC12_MAX", 
+                    "trade_type": "TPSC12", 
                     "type": "sell"
+                }, 
+                {
+                    "index": 2569, 
+                    "price": 1.409e-05, 
+                    "size": "280.0", 
+                    "symbol": "SNTBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "buy"
                 }
             ], 
             "STORMBTC": [
@@ -292,7 +300,7 @@
             ], 
             "WPRBTC": [
                 {
-                    "index": 1567, 
+                    "index": 1566, 
                     "price": 1.319e-05, 
                     "size": "300.0", 
                     "symbol": "WPRBTC", 

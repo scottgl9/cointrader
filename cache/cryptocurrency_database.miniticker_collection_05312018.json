@@ -350,7 +350,7 @@
             ], 
             "AMBBTC": [
                 {
-                    "index": 319, 
+                    "index": 316, 
                     "price": 5e-05, 
                     "size": "80.0", 
                     "symbol": "AMBBTC", 
@@ -386,8 +386,8 @@
                     "type": "sell"
                 }, 
                 {
-                    "index": 2633, 
-                    "price": 5.111e-05, 
+                    "index": 2639, 
+                    "price": 5.109e-05, 
                     "size": "80.0", 
                     "symbol": "APPCBTC", 
                     "trade_type": "TPSC12", 
@@ -413,10 +413,20 @@
                     "type": "sell"
                 }, 
                 {
-                    "index": 13025, 
-                    "price": 0.00016596, 
+                    "index": 14755, 
+                    "price": 0.0001643, 
                     "size": "20.0", 
                     "symbol": "ARNBTC", 
+                    "trade_type": "EMA12_200|EMA26_200", 
+                    "type": "buy"
+                }
+            ], 
+            "BCCBTC": [
+                {
+                    "index": 4652, 
+                    "price": 0.135598, 
+                    "size": "0.030000000", 
+                    "symbol": "BCCBTC", 
                     "trade_type": "TPSC12", 
                     "type": "buy"
                 }
@@ -438,6 +448,16 @@
                     "symbol": "BCPTBTC", 
                     "trade_type": "TPSC12", 
                     "type": "sell"
+                }
+            ], 
+            "BQXBTC": [
+                {
+                    "index": 601, 
+                    "price": 0.00029911, 
+                    "size": "10.0", 
+                    "symbol": "BQXBTC", 
+                    "trade_type": "EMA12_200|EMA26_200", 
+                    "type": "buy"
                 }
             ], 
             "BRDBTC": [
@@ -462,17 +482,17 @@
             ], 
             "CDTBTC": [
                 {
-                    "index": 1259, 
-                    "price": 5.28e-06, 
+                    "index": 1121, 
+                    "price": 5.24e-06, 
                     "size": "760.0", 
                     "symbol": "CDTBTC", 
                     "trade_type": "EMA26_200|EMA50_200", 
                     "type": "buy"
                 }, 
                 {
-                    "buy_price": 5.28e-06, 
-                    "index": 1641, 
-                    "price": 5.34e-06, 
+                    "buy_price": 5.24e-06, 
+                    "index": 1148, 
+                    "price": 5.3e-06, 
                     "size": "760.0", 
                     "symbol": "CDTBTC", 
                     "trade_type": "TPSC12", 
@@ -553,16 +573,6 @@
                     "type": "buy"
                 }
             ], 
-            "DLTBTC": [
-                {
-                    "index": 860, 
-                    "price": 2.396e-05, 
-                    "size": "170.0", 
-                    "symbol": "DLTBTC", 
-                    "trade_type": "TPSC12", 
-                    "type": "buy"
-                }
-            ], 
             "ELFBTC": [
                 {
                     "index": 647, 
@@ -588,6 +598,25 @@
                     "symbol": "ELFBTC", 
                     "trade_type": "TPSC12", 
                     "type": "buy"
+                }
+            ], 
+            "ENGBTC": [
+                {
+                    "index": 370, 
+                    "price": 0.00025137, 
+                    "size": "20.0", 
+                    "symbol": "ENGBTC", 
+                    "trade_type": "EMA12_200|EMA26_200", 
+                    "type": "buy"
+                }, 
+                {
+                    "buy_price": 0.00025137, 
+                    "index": 1418, 
+                    "price": 0.000254, 
+                    "size": "20.0", 
+                    "symbol": "ENGBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "sell"
                 }
             ], 
             "EOSBTC": [
@@ -742,8 +771,25 @@
             ], 
             "IOTABTC": [
                 {
-                    "index": 5499, 
-                    "price": 0.00022469, 
+                    "index": 2265, 
+                    "price": 0.00021531, 
+                    "size": "20.0", 
+                    "symbol": "IOTABTC", 
+                    "trade_type": "EMA26_200|EMA50_200", 
+                    "type": "buy"
+                }, 
+                {
+                    "buy_price": 0.00021531, 
+                    "index": 5126, 
+                    "price": 0.00022228, 
+                    "size": "20.0", 
+                    "symbol": "IOTABTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "sell"
+                }, 
+                {
+                    "index": 6377, 
+                    "price": 0.00022428, 
                     "size": "20.0", 
                     "symbol": "IOTABTC", 
                     "trade_type": "TPSC12", 
@@ -799,31 +845,30 @@
                     "type": "sell"
                 }, 
                 {
-                    "index": 2652, 
-                    "price": 1.425e-05, 
+                    "index": 2712, 
+                    "price": 1.418e-05, 
                     "size": "280.0", 
                     "symbol": "MANABTC", 
                     "trade_type": "TPSC12", 
                     "type": "buy"
+                }, 
+                {
+                    "buy_price": 1.418e-05, 
+                    "index": 4237, 
+                    "price": 1.422e-05, 
+                    "size": "280.0", 
+                    "symbol": "MANABTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "sell"
                 }
             ], 
             "MODBTC": [
                 {
-                    "index": 562, 
-                    "price": 0.0002214, 
-                    "size": "18.12", 
+                    "index": 555, 
+                    "price": 0.0002217, 
+                    "size": "18.01", 
                     "symbol": "MODBTC", 
                     "trade_type": "TPSC12", 
-                    "type": "buy"
-                }
-            ], 
-            "MTHBTC": [
-                {
-                    "index": 343, 
-                    "price": 9.93e-06, 
-                    "size": "400.0", 
-                    "symbol": "MTHBTC", 
-                    "trade_type": "EMA26_200|EMA50_200", 
                     "type": "buy"
                 }
             ], 
@@ -844,14 +889,6 @@
                     "symbol": "MTLBTC", 
                     "trade_type": "TPSC12", 
                     "type": "sell"
-                }, 
-                {
-                    "index": 2576, 
-                    "price": 0.0004159, 
-                    "size": "9.66", 
-                    "symbol": "MTLBTC", 
-                    "trade_type": "TPSC12", 
-                    "type": "buy"
                 }
             ], 
             "NANOBTC": [
@@ -927,14 +964,6 @@
                     "symbol": "NEBLBTC", 
                     "trade_type": "TPSC12_MAX", 
                     "type": "sell"
-                }, 
-                {
-                    "index": 1413, 
-                    "price": 0.001036, 
-                    "size": "3.85", 
-                    "symbol": "NEBLBTC", 
-                    "trade_type": "EMA26_200|EMA50_200", 
-                    "type": "buy"
                 }
             ], 
             "NEOBTC": [
@@ -1016,11 +1045,11 @@
             ], 
             "PIVXBTC": [
                 {
-                    "index": 529, 
-                    "price": 0.0005236, 
-                    "size": "7.64", 
+                    "index": 491, 
+                    "price": 0.0005261, 
+                    "size": "7.6", 
                     "symbol": "PIVXBTC", 
-                    "trade_type": "EMA26_200|EMA50_200", 
+                    "trade_type": "TPSC12", 
                     "type": "buy"
                 }
             ], 
@@ -1130,26 +1159,6 @@
                     "type": "buy"
                 }
             ], 
-            "RCNBTC": [
-                {
-                    "index": 1084, 
-                    "price": 1.125e-05, 
-                    "size": "360.0", 
-                    "symbol": "RCNBTC", 
-                    "trade_type": "EMA26_200|EMA50_200", 
-                    "type": "buy"
-                }
-            ], 
-            "REQBTC": [
-                {
-                    "index": 676, 
-                    "price": 1.913e-05, 
-                    "size": "210.0", 
-                    "symbol": "REQBTC", 
-                    "trade_type": "TPSC12", 
-                    "type": "buy"
-                }
-            ], 
             "RLCBTC": [
                 {
                     "index": 416, 
@@ -1169,18 +1178,18 @@
                     "type": "sell"
                 }, 
                 {
-                    "index": 2316, 
-                    "price": 0.0002303, 
-                    "size": "17.35", 
+                    "index": 2358, 
+                    "price": 0.0002318, 
+                    "size": "17.34", 
                     "symbol": "RLCBTC", 
                     "trade_type": "TPSC12", 
                     "type": "buy"
                 }, 
                 {
-                    "buy_price": 0.0002303, 
-                    "index": 3447, 
-                    "price": 0.0002327, 
-                    "size": "17.35", 
+                    "buy_price": 0.0002318, 
+                    "index": 3603, 
+                    "price": 0.000233, 
+                    "size": "17.34", 
                     "symbol": "RLCBTC", 
                     "trade_type": "TPSC12", 
                     "type": "sell"
@@ -1188,21 +1197,12 @@
             ], 
             "RPXBTC": [
                 {
-                    "index": 1534, 
-                    "price": 7.69e-06, 
-                    "size": "520.0", 
+                    "index": 2412, 
+                    "price": 7.78e-06, 
+                    "size": "510.0", 
                     "symbol": "RPXBTC", 
                     "trade_type": "TPSC12", 
                     "type": "buy"
-                }, 
-                {
-                    "buy_price": 7.69e-06, 
-                    "index": 2311, 
-                    "price": 7.77e-06, 
-                    "size": "520.0", 
-                    "symbol": "RPXBTC", 
-                    "trade_type": "TPSC12", 
-                    "type": "sell"
                 }
             ], 
             "SALTBTC": [
@@ -1226,8 +1226,8 @@
             ], 
             "SNGLSBTC": [
                 {
-                    "index": 887, 
-                    "price": 8.71e-06, 
+                    "index": 955, 
+                    "price": 8.74e-06, 
                     "size": "460.0", 
                     "symbol": "SNGLSBTC", 
                     "trade_type": "TPSC12", 
@@ -1299,6 +1299,14 @@
                     "symbol": "SUBBTC", 
                     "trade_type": "TPSC12", 
                     "type": "sell"
+                }, 
+                {
+                    "index": 2250, 
+                    "price": 5.478e-05, 
+                    "size": "70.0", 
+                    "symbol": "SUBBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "buy"
                 }
             ], 
             "SYSBTC": [
@@ -1395,9 +1403,9 @@
             ], 
             "VIABTC": [
                 {
-                    "index": 436, 
-                    "price": 0.0002144, 
-                    "size": "18.66", 
+                    "index": 427, 
+                    "price": 0.0002141, 
+                    "size": "18.67", 
                     "symbol": "VIABTC", 
                     "trade_type": "EMA26_200|EMA50_200", 
                     "type": "buy"
@@ -1405,11 +1413,11 @@
             ], 
             "VIBBTC": [
                 {
-                    "index": 635, 
-                    "price": 1.748e-05, 
+                    "index": 653, 
+                    "price": 1.742e-05, 
                     "size": "230.0", 
                     "symbol": "VIBBTC", 
-                    "trade_type": "EMA12_200|EMA26_200", 
+                    "trade_type": "EMA26_200|EMA50_200", 
                     "type": "buy"
                 }
             ], 
@@ -1425,12 +1433,21 @@
             ], 
             "WABIBTC": [
                 {
-                    "index": 1099, 
-                    "price": 0.00010383, 
+                    "index": 653, 
+                    "price": 9.698e-05, 
                     "size": "40.0", 
                     "symbol": "WABIBTC", 
                     "trade_type": "EMA26_200|EMA50_200", 
                     "type": "buy"
+                }, 
+                {
+                    "buy_price": 9.698e-05, 
+                    "index": 1534, 
+                    "price": 0.00010104, 
+                    "size": "40.0", 
+                    "symbol": "WABIBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "sell"
                 }
             ], 
             "WANBTC": [
@@ -1440,6 +1457,26 @@
                     "size": "6.56", 
                     "symbol": "WANBTC", 
                     "trade_type": "TPSC12", 
+                    "type": "buy"
+                }
+            ], 
+            "WAVESBTC": [
+                {
+                    "index": 6518, 
+                    "price": 0.000548, 
+                    "size": "7.3", 
+                    "symbol": "WAVESBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "buy"
+                }
+            ], 
+            "WINGSBTC": [
+                {
+                    "index": 482, 
+                    "price": 5.112e-05, 
+                    "size": "80.0", 
+                    "symbol": "WINGSBTC", 
+                    "trade_type": "EMA26_200|EMA50_200", 
                     "type": "buy"
                 }
             ], 
@@ -1544,6 +1581,26 @@
                     "type": "buy"
                 }
             ], 
+            "XZCBTC": [
+                {
+                    "index": 585, 
+                    "price": 0.003896, 
+                    "size": "1.03", 
+                    "symbol": "XZCBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "buy"
+                }
+            ], 
+            "ZECBTC": [
+                {
+                    "index": 1779, 
+                    "price": 0.032595, 
+                    "size": "0.123", 
+                    "symbol": "ZECBTC", 
+                    "trade_type": "TPSC12", 
+                    "type": "buy"
+                }
+            ], 
             "ZILBTC": [
                 {
                     "index": 1008, 
@@ -1582,8 +1639,8 @@
                     "type": "sell"
                 }, 
                 {
-                    "index": 5660, 
-                    "price": 0.00017397, 
+                    "index": 5603, 
+                    "price": 0.00017415, 
                     "size": "20.0", 
                     "symbol": "ZRXBTC", 
                     "trade_type": "TPSC12", 
