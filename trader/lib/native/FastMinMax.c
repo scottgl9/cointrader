@@ -72,10 +72,10 @@ FastMinMax_append(FastMinMax* self, PyObject *args)
 static int get_min_value_index(PyListObject *values)
 {
     int index = -1;
-    int size = PyList_Size((PyObject*)values);
+    int size = Py_SIZE((PyObject*)values);
     double value, min_value = 0;
     for (int i=0; i<size; i++) {
-        value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
+        value = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)values, i));
         if (min_value >= value || min_value == 0)
             index = i;
             min_value = value;
@@ -86,10 +86,10 @@ static int get_min_value_index(PyListObject *values)
 static int get_max_value_index(PyListObject *values)
 {
     int index = -1;
-    int size = PyList_Size((PyObject*)values);
+    int size = Py_SIZE((PyObject*)values);
     double value, max_value = 0;
     for (int i=0; i<size; i++) {
-        value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
+        value = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)values, i));
         if (max_value <= value)
             index = i;
             max_value = value;

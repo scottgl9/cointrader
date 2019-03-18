@@ -14,14 +14,14 @@ typedef struct {
 
     double start_price;
     double end_price;
-    int start_ts;
-    int end_ts;
+    long start_ts;
+    long end_ts;
     double min_price;
     int min_price_index;
-    int min_price_ts;
+    long min_price_ts;
     double max_price;
     int max_price_index;
-    int max_price_ts;
+    long max_price_ts;
     //self.half_split = False
     PyObject *parent;
     PyObject *seg_start;
@@ -31,6 +31,7 @@ typedef struct {
     int depth;
     int type;
     int mode;
+    BOOL half_split;
     BOOL _is_leaf;
 } PriceSegmentTree;
 
@@ -45,14 +46,14 @@ static PyMemberDef PriceSegmentTree_members[] = {
     {"min_percent_price", T_DOUBLE, offsetof(PriceSegmentTree, min_percent_price), 0, "pstobj min_percent_price"},
     {"start_price", T_DOUBLE, offsetof(PriceSegmentTree, start_price), 0, "pstobj start_price"},
     {"end_price", T_DOUBLE, offsetof(PriceSegmentTree, end_price), 0, "pstobj end_price"},
-    {"start_ts", T_INT, offsetof(PriceSegmentTree, start_ts), 0, "pstobj start_ts"},
-    {"end_ts", T_INT, offsetof(PriceSegmentTree, end_ts), 0, "pstobj end_ts"},
+    {"start_ts", T_LONG, offsetof(PriceSegmentTree, start_ts), 0, "pstobj start_ts"},
+    {"end_ts", T_LONG, offsetof(PriceSegmentTree, end_ts), 0, "pstobj end_ts"},
     {"min_price", T_DOUBLE, offsetof(PriceSegmentTree, min_price), 0, "pstobj min_price"},
     {"min_price_index", T_INT, offsetof(PriceSegmentTree, min_price_index), 0, "pstobj min_price_index"},
-    {"min_price_ts", T_INT, offsetof(PriceSegmentTree, min_price_ts), 0, "pstobj min_price_ts"},
+    {"min_price_ts", T_LONG, offsetof(PriceSegmentTree, min_price_ts), 0, "pstobj min_price_ts"},
     {"max_price", T_DOUBLE, offsetof(PriceSegmentTree, max_price), 0, "pstobj max_price"},
     {"max_price_index", T_INT, offsetof(PriceSegmentTree, max_price_index), 0, "pstobj max_price_index"},
-    {"max_price_ts", T_INT, offsetof(PriceSegmentTree, max_price_ts), 0, "pstobj max_price_ts"},
+    {"max_price_ts", T_LONG, offsetof(PriceSegmentTree, max_price_ts), 0, "pstobj max_price_ts"},
     {"parent", T_OBJECT, offsetof(PriceSegmentTree, parent), 0, "pstobj parent"},
     {"seg_start", T_OBJECT, offsetof(PriceSegmentTree, seg_start), 0, "pstobj seg_start"},
     {"seg_mid", T_OBJECT, offsetof(PriceSegmentTree, seg_mid), 0, "pstobj seg_mid"},
@@ -61,6 +62,7 @@ static PyMemberDef PriceSegmentTree_members[] = {
     {"depth", T_INT, offsetof(PriceSegmentTree, depth), 0, "pstobj depth"},
     {"type", T_INT, offsetof(PriceSegmentTree, type), 0, "pstobj type"},
     {"mode", T_INT, offsetof(PriceSegmentTree, mode), 0, "pstobj mode"},
+    {"half_split", T_INT, offsetof(PriceSegmentTree, half_split), 0, "pstobj half_split"},
     {"_is_leaf", T_INT, offsetof(PriceSegmentTree, _is_leaf), 0, "pstobj _is_leaf"},
     {NULL}  /* Sentinel */
 };
