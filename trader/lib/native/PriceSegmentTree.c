@@ -146,6 +146,13 @@ PriceSegmentTree_split(PriceSegmentTree* self, PyObject *args, PyObject *kwds)
     }
 
     if (self->half_split) {
+        // /* Pass two arguments, a string and an int. */
+        // PyObject *argList = Py_BuildValue("si", "hello", 42);
+
+        /* Call the class object. */
+        // PyObject *obj = PyObject_CallObject((PyObject *) &PriceSegmentTree_MyTestType, argList);
+        // Py_DECREF(argList);
+        // PyObject_CallFunction((PyObject *)&PriceSegmentTree_MyTestType, "si", "hello", 42);
 
     } else {
     }
