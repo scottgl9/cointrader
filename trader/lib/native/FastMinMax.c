@@ -69,11 +69,39 @@ FastMinMax_append(FastMinMax* self, PyObject *args)
     return Py_None;
 }
 
+static int get_min_value_index(PyListObject *values)
+{
+    int index = -1;
+    int size = PyList_Size((PyObject*)values);
+    double value, min_value = 0;
+    for (int i=0; i<size; i++) {
+        value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
+        if (min_value > value || min_value == 0)
+            index = i;
+            min_value = value;
+    }
+    return index;
+}
+
+static int get_max_value_index(PyListObject *values)
+{
+    int index = -1;
+    int size = PyList_Size((PyObject*)values);
+    double value, max_value = 0;
+    for (int i=0; i<size; i++) {
+        value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
+        if (max_value < value)
+            index = i;
+            max_value = value;
+    }
+    return index;
+}
+
 static PyObject *FastMinMax_remove(FastMinMax* self, PyObject *args)
 {
     int count;
     int size;
-    PyObject *result;
+    PyObject *values;
 
     if (! PyArg_ParseTuple(args, "i", &count)) {
         return NULL;
@@ -90,17 +118,22 @@ static PyObject *FastMinMax_remove(FastMinMax* self, PyObject *args)
     self->max_value_index -= count;
     self->end_index -= count;
 
-//    self.values = self.values[count:]
+    // self.values = self.values[count:]
+    values = PyList_GetSlice((PyObject *)self->values, count, size);
+    Py_XDECREF(self->values);
+    self->values = (PyListObject *)values;
 
-//    if self.min_value_index < 0:
-//        self.min_value_index = min(xrange(len(self.values)), key=self.values.__getitem__)
-//
-//    self.min_value = self.values[self.min_value_index]
-//
-//    if self.max_value_index < 0:
-//        self.max_value_index = max(xrange(len(self.values)), key=self.values.__getitem__)
-//
-//    self.max_value = self.values[self.max_value_index]
+    if (self->min_value_index < 0) {
+        self->min_value_index = get_min_value_index(self->values);
+    }
+
+    self->min_value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, self->min_value_index));
+
+    if (self->max_value_index < 0) {
+        self->max_value_index = get_max_value_index(self->values);
+    }
+
+    self->max_value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, self->max_value_index));
 
     Py_INCREF(Py_None);
     return Py_None;
