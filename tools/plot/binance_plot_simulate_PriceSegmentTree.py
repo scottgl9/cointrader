@@ -38,12 +38,12 @@ def generate_graph(graph, node, t=0, n=0, parent=None):
     node.type = t
     node.depth = n
 
-    if node.start_segment:
-        generate_graph(graph, node.start_segment, 1, n+1, parent=node)
-    if node.mid_segment:
-        generate_graph(graph, node.mid_segment, 2, n+1, parent=node)
-    if node.end_segment:
-        generate_graph(graph, node.end_segment, 3, n+1, parent=node)
+    if node.seg_start:
+        generate_graph(graph, node.seg_start, 1, n+1, parent=node)
+    if node.seg_mid:
+        generate_graph(graph, node.seg_mid, 2, n+1, parent=node)
+    if node.seg_end:
+        generate_graph(graph, node.seg_end, 3, n+1, parent=node)
 
 def get_rows_as_msgs(c):
     msgs = []

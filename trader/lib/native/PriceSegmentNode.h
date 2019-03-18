@@ -68,7 +68,7 @@ static PyMemberDef PriceSegmentNode_members[] = {
 };
 
 static PyMethodDef PriceSegmentNode_methods[] = {
-    {"split", (PyCFunction)PriceSegmentNode_split, METH_VARARGS,
+    {"split", (PyCFunction)PriceSegmentNode_split, METH_VARARGS|METH_KEYWORDS,
      "Split PriceSegmentNode",
     },
     {NULL}  /* Sentinel */

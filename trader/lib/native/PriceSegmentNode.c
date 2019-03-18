@@ -9,6 +9,7 @@ PriceSegmentNode_dealloc(PriceSegmentNode* self)
 static PyObject *
 PriceSegmentNode_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
+    printf("PriceSegmentNode_new\n");
     PriceSegmentNode *self;
 
     self = (PriceSegmentNode *)type->tp_alloc(type, 0);
@@ -43,6 +44,8 @@ static int
 PriceSegmentNode_init(PriceSegmentNode *self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {"min_percent_price", "min_segment_size", "max_depth", NULL};
+
+    printf("PriceSegmentNode_init\n");
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "di|i", kwlist,
                                      &self->min_percent_price, &self->min_segment_size, &self->max_depth))
@@ -83,13 +86,16 @@ static PyObject *
 PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 {
     PyObject *prices, *timestamps, *parent=NULL;
-    int n, t, size;
+    int n, t, size, end_index;
     static char *kwlist[] = {"prices", "timestamps", "n", "t", "parent", NULL};
+
+    printf("PriceSegmentNode_split\n");
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO", kwlist, &prices, &timestamps, &n, &t, &parent))
         return NULL;
 
     size = PyList_Size((PyObject*)prices);
+    end_index = size - 1;
 
     self->parent = parent;
     self->depth = n;
@@ -97,9 +103,9 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
     self->half_split = FALSE;
 
     self->start_price = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)prices, 0));  // prices[0]
-    self->end_price = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)prices, size)); // prices[-1]
+    self->end_price = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)prices, end_index)); // prices[-1]
     self->start_ts = PyInt_AS_LONG(PyList_GET_ITEM((PyObject *)timestamps, 0)); // timestamps[0]
-    self->end_ts = PyInt_AS_LONG(PyList_GET_ITEM((PyObject *)timestamps, size));  //timestamps[-1]
+    self->end_ts = PyInt_AS_LONG(PyList_GET_ITEM((PyObject *)timestamps, end_index));  //timestamps[-1]
 
     self->max_price_index = get_max_value_index((PyListObject *)prices);
     self->max_price = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)prices, self->max_price_index));
@@ -148,6 +154,7 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
     if (self->half_split) {
         int mid_index = size / 2;
         PyObject *argList, *res;
+        printf("PriceSegmentNode_split2_start\n");
         argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
         self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
         self->seg_mid = Py_None;
@@ -176,6 +183,7 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
             Py_INCREF(Py_False);
             return Py_False;
 
+        printf("PriceSegmentNode_split3_start\n");
         argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
         self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
         self->seg_mid = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);

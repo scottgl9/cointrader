@@ -133,15 +133,15 @@ class LargestPriceChange(object):
             elif rscore == 3:
                 self._price_segment_score3.append(entry)
 
-        if node.start_segment:
+        if node.seg_start:
             t = LPCSegment.TYPE_SEGMENT_START
-            self.price_segments(node.start_segment, type=t, score=float(score + t), n=n+1)
-        if node.mid_segment:
+            self.price_segments(node.seg_start, type=t, score=float(score + t), n=n+1)
+        if node.seg_mid:
             t = LPCSegment.TYPE_SEGMENT_MID
-            self.price_segments(node.mid_segment, type=t, score=float(score + t), n=n+1)
-        if node.end_segment:
+            self.price_segments(node.seg_mid, type=t, score=float(score + t), n=n+1)
+        if node.seg_end:
             t = LPCSegment.TYPE_SEGMENT_END
-            self.price_segments(node.end_segment, type=t, score=float(score + t), n=n+1)
+            self.price_segments(node.seg_end, type=t, score=float(score + t), n=n+1)
 
     def round_score(self, score):
         score = float(score)
