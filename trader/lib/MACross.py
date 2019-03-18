@@ -1,6 +1,12 @@
-from trader.lib.native.Crossover import Crossover
-from trader.indicator.native.EMA import EMA
-from trader.lib.native.ValueLag import ValueLag
+try:
+    from trader.lib.native.Crossover import Crossover
+    from trader.lib.native.ValueLag import ValueLag
+    from trader.indicator.native.EMA import EMA
+except ImportError:
+    from trader.lib.Crossover import Crossover
+    from trader.lib.ValueLag import ValueLag
+    from trader.indicator.EMA import EMA
+
 
 class MACross(object):
     def __init__(self, ema_win1=0, ema_win2=0, scale=0, cross_window=10, cross_timeout=0,

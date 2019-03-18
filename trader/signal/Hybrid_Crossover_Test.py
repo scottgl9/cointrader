@@ -1,5 +1,9 @@
 # Testing code for complete rewrite of Hybrid_Crossover for better profits
-from trader.indicator.EMA import EMA
+try:
+    from trader.indicator.native.EMA import EMA
+except ImportError:
+    from trader.indicator.EMA import EMA
+
 from trader.indicator.OBV import OBV
 from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff

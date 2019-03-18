@@ -54,16 +54,16 @@ FastMinMax_append(FastMinMax* self, PyObject *args)
         return Py_None;
     }
 
-    if (self->min_value != 0 && value < self->min_value) {
+    if (self->min_value != 0 && value <= self->min_value) {
         self->min_value = value;
         self->min_value_index = self->end_index;
-    } else if (value > self->max_value) {
+    } else if (value >= self->max_value) {
         self->max_value = value;
         self->max_value_index = self->end_index;
     }
 
     PyList_Append((PyObject *)self->values, Py_BuildValue("d", value));
-    self->end_index++;
+    self->end_index+=1;
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -76,7 +76,7 @@ static int get_min_value_index(PyListObject *values)
     double value, min_value = 0;
     for (int i=0; i<size; i++) {
         value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
-        if (min_value > value || min_value == 0)
+        if (min_value >= value || min_value == 0)
             index = i;
             min_value = value;
     }
@@ -90,7 +90,7 @@ static int get_max_value_index(PyListObject *values)
     double value, max_value = 0;
     for (int i=0; i<size; i++) {
         value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)values, i));
-        if (max_value < value)
+        if (max_value <= value)
             index = i;
             max_value = value;
     }
@@ -107,7 +107,7 @@ static PyObject *FastMinMax_remove(FastMinMax* self, PyObject *args)
         return NULL;
     }
 
-    size = PyList_Size((PyObject*)self->values);
+    size = Py_SIZE((PyObject*)self->values);
 
     if (size <= count) {
         Py_INCREF(Py_None);
@@ -158,7 +158,7 @@ initFastMinMax(void)
         return;
 
     m = Py_InitModule3("FastMinMax", FastMinMax_methods,
-                       "For a window of size N, return value N values ago");
+                       "Track minimum and maximum value in a set of values");
 
     Py_INCREF(&FastMinMax_MyTestType);
     PyModule_AddObject(m, "FastMinMax", (PyObject *)&FastMinMax_MyTestType);
