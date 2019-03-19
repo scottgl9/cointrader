@@ -3,6 +3,13 @@
 #include <math.h>
 #include <stdlib.h>
 
+#define MODE_SPLIT_NONE     0
+#define MODE_SPLIT3_MINMAX  1
+#define MODE_SPLIT3_MAXMIN  2
+#define MODE_SPLIT2_MAX     3
+#define MODE_SPLIT2_MIN     4
+#define MODE_SPLIT2_HALF    5
+
 static inline double my_round(double x, unsigned int digits) {
     double fac = pow(10, digits);
     return round(x*fac)/fac;

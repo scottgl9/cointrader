@@ -174,6 +174,9 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
         PyObject *argList, *res;
         PyObject *start_price_values, *start_ts_values;
         PyObject *end_price_values, *end_ts_values;
+
+        self->mode = MODE_SPLIT2_HALF;
+
         argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
         self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);
         self->seg_mid = Py_None;
@@ -204,11 +207,11 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 
         // split prices and timestamps into three parts
         if (self->max_price_ts < self->min_price_ts) {
-            //self.mode = PriceSegmentNode.MODE_SPLIT3_MAXMIN
+            self->mode = MODE_SPLIT3_MAXMIN;
             index1 = self->max_price_index;
             index2 = self->min_price_index;
         } else if (self->max_price_ts > self->min_price_ts) {
-            //self.mode = PriceSegmentNode.MODE_SPLIT3_MINMAX
+            self->mode = MODE_SPLIT3_MINMAX;
             index1 = self->min_price_index;
             index2 = self->max_price_index;
         } else {}
@@ -258,11 +261,11 @@ initPriceSegmentNode(void)
                        "Builds Price Segment Node structure");
 
     Py_INCREF(&PriceSegmentNode_MyTestType);
-    PyModule_AddIntConstant(m, "MODE_SPLIT_NONE", 0);
-    PyModule_AddIntConstant(m, "MODE_SPLIT3_MINMAX", 1);
-    PyModule_AddIntConstant(m, "MODE_SPLIT3_MAXMIN", 2);
-    PyModule_AddIntConstant(m, "MODE_SPLIT2_MAX", 3);
-    PyModule_AddIntConstant(m, "MODE_SPLIT2_MIN", 4);
-    PyModule_AddIntConstant(m, "MODE_SPLIT2_HALF", 5);
+    PyModule_AddIntConstant(m, "MODE_SPLIT_NONE", MODE_SPLIT_NONE);
+    PyModule_AddIntConstant(m, "MODE_SPLIT3_MINMAX", MODE_SPLIT3_MINMAX);
+    PyModule_AddIntConstant(m, "MODE_SPLIT3_MAXMIN", MODE_SPLIT3_MAXMIN);
+    PyModule_AddIntConstant(m, "MODE_SPLIT2_MAX", MODE_SPLIT2_MAX);
+    PyModule_AddIntConstant(m, "MODE_SPLIT2_MIN", MODE_SPLIT2_MIN);
+    PyModule_AddIntConstant(m, "MODE_SPLIT2_HALF", MODE_SPLIT2_HALF);
     PyModule_AddObject(m, "PriceSegmentNode", (PyObject *)&PriceSegmentNode_MyTestType);
 }
