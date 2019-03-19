@@ -4,15 +4,15 @@ from trader.lib.MessageHandler import Message, MessageHandler
 from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
 from trader.signal.EFI_Breakout_Signal import EFI_Breakout_Signal
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
-from trader.signal.Hybrid_Crossover import Hybrid_Crossover
-from trader.signal.Hybrid_Crossover_MM import Hybrid_Crossover_MM
+#from trader.signal.Hybrid_Crossover import Hybrid_Crossover
+#from trader.signal.Hybrid_Crossover_MM import Hybrid_Crossover_MM
 from trader.signal.Hybrid_Crossover_Test import Hybrid_Crossover_Test
 from trader.signal.KST_Crossover import KST_Crossover
 from trader.signal.MACD_Crossover import MACD_Crossover
 from trader.signal.PPO_OBV import PPO_OBV
 from trader.signal.PMO_Crossover import PMO_Crossover
 from trader.signal.SignalHandler import SignalHandler
-from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
+#from trader.signal.TD_Sequential_Signal import TD_Sequential_Signal
 from trader.signal.TrendStateTrack_Signal import TrendStateTrack_Signal
 from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.TSV_Signal import TSV_Signal
@@ -53,14 +53,14 @@ class StrategyBase(object):
         elif name == "Currency_Long_EMA": return Currency_EMA_Long(accnt)
         elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal(accnt, symbol)
         elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover(accnt, symbol)
-        elif name == "Hybrid_Crossover": return Hybrid_Crossover(accnt, symbol)
-        elif name == "Hybrid_Crossover_MM": return Hybrid_Crossover_MM(accnt, symbol)
+        #elif name == "Hybrid_Crossover": return Hybrid_Crossover(accnt, symbol)
+        #elif name == "Hybrid_Crossover_MM": return Hybrid_Crossover_MM(accnt, symbol)
         elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test(accnt, symbol, asset_info)
         elif name == "KST_Crossover": return KST_Crossover(accnt, symbol)
         elif name == "MACD_Crossover": return MACD_Crossover(accnt, symbol)
         elif name == "PPO_OBV": return PPO_OBV(accnt, symbol)
         elif name == "PMO_Crossover": return PMO_Crossover(accnt, symbol)
-        elif name == "TD_Sequential_Signal": return TD_Sequential_Signal(accnt, symbol)
+        #elif name == "TD_Sequential_Signal": return TD_Sequential_Signal(accnt, symbol)
         elif name == "TrendStateTrack_Signal": return TrendStateTrack_Signal(accnt, symbol, asset_info)
         elif name == "TSI_Signal": return TSI_Signal(accnt, symbol)
         elif name == "TSV_Signal": return TSV_Signal(accnt, symbol)
