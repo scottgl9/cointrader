@@ -87,6 +87,17 @@ static PyObject *PriceSegmentNode_update_percent(PriceSegmentNode* self, PyObjec
     return Py_BuildValue("d", self->percent);
 }
 
+static PyObject *PriceSegmentNode_is_leaf(PriceSegmentNode* self, PyObject *args)
+{
+    if (self->_is_leaf) {
+        Py_INCREF(Py_True);
+        return Py_True;
+    }
+
+    Py_INCREF(Py_False);
+    return Py_False;
+}
+
 static PyObject *
 PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 {
@@ -94,7 +105,7 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
     int n, t, size, end_index;
     static char *kwlist[] = {"prices", "timestamps", "n", "t", "parent", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO", kwlist, &prices, &timestamps, &n, &t, &parent))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOiiO", kwlist, &prices, &timestamps, &n, &t, &parent))
         return NULL;
 
     size = PyList_Size((PyObject*)prices);
@@ -171,6 +182,8 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
         //start_price_values = prices[0:mid_index]
         //start_ts_values = timestamps[0:mid_index]
 
+        parent = (PyObject *)self;
+
         start_price_values = PyList_GetSlice(prices, 0, mid_index);
         start_ts_values = PyList_GetSlice(timestamps, 0, mid_index);
         res = PyObject_CallMethod(self->seg_start, "split", "(OOiiO)", start_price_values, start_ts_values, n+1, 1, parent);
@@ -200,6 +213,8 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
             self->_is_leaf = TRUE;
             Py_INCREF(Py_False);
             return Py_False;
+
+        parent = (PyObject *)self;
 
         argList = Py_BuildValue("dii", self->min_percent_price, self->min_segment_size, self->max_depth);
         self->seg_start = PyObject_CallObject((PyObject *) &PriceSegmentNode_MyTestType, argList);

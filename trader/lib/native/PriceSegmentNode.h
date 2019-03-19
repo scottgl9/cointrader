@@ -40,31 +40,32 @@ static PyObject *PriceSegmentNode_new(PyTypeObject *type, PyObject *args, PyObje
 static int PriceSegmentNode_init(PriceSegmentNode *self, PyObject *args, PyObject *kwds);
 static PyObject *PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds);
 static PyObject *PriceSegmentNode_update_percent(PriceSegmentNode* self, PyObject *args);
+static PyObject *PriceSegmentNode_is_leaf(PriceSegmentNode* self, PyObject *args);
 
 static PyMemberDef PriceSegmentNode_members[] = {
-    {"min_segment_size", T_INT, offsetof(PriceSegmentNode, min_segment_size), 0, "pstobj min_segment_size"},
-    {"max_depth", T_INT, offsetof(PriceSegmentNode, max_depth), 0, "pstobj max_depth"},
-    {"min_percent_price", T_DOUBLE, offsetof(PriceSegmentNode, min_percent_price), 0, "pstobj min_percent_price"},
-    {"start_price", T_DOUBLE, offsetof(PriceSegmentNode, start_price), 0, "pstobj start_price"},
-    {"end_price", T_DOUBLE, offsetof(PriceSegmentNode, end_price), 0, "pstobj end_price"},
-    {"start_ts", T_LONG, offsetof(PriceSegmentNode, start_ts), 0, "pstobj start_ts"},
-    {"end_ts", T_LONG, offsetof(PriceSegmentNode, end_ts), 0, "pstobj end_ts"},
-    {"min_price", T_DOUBLE, offsetof(PriceSegmentNode, min_price), 0, "pstobj min_price"},
-    {"min_price_index", T_INT, offsetof(PriceSegmentNode, min_price_index), 0, "pstobj min_price_index"},
-    {"min_price_ts", T_LONG, offsetof(PriceSegmentNode, min_price_ts), 0, "pstobj min_price_ts"},
-    {"max_price", T_DOUBLE, offsetof(PriceSegmentNode, max_price), 0, "pstobj max_price"},
-    {"max_price_index", T_INT, offsetof(PriceSegmentNode, max_price_index), 0, "pstobj max_price_index"},
-    {"max_price_ts", T_LONG, offsetof(PriceSegmentNode, max_price_ts), 0, "pstobj max_price_ts"},
-    {"parent", T_OBJECT, offsetof(PriceSegmentNode, parent), 0, "pstobj parent"},
-    {"seg_start", T_OBJECT, offsetof(PriceSegmentNode, seg_start), 0, "pstobj seg_start"},
-    {"seg_mid", T_OBJECT, offsetof(PriceSegmentNode, seg_mid), 0, "pstobj seg_mid"},
-    {"seg_end", T_OBJECT, offsetof(PriceSegmentNode, seg_end), 0, "pstobj seg_end"},
-    {"percent", T_DOUBLE, offsetof(PriceSegmentNode, percent), 0, "pstobj percent"},
-    {"depth", T_INT, offsetof(PriceSegmentNode, depth), 0, "pstobj depth"},
-    {"type", T_INT, offsetof(PriceSegmentNode, type), 0, "pstobj type"},
-    {"mode", T_INT, offsetof(PriceSegmentNode, mode), 0, "pstobj mode"},
-    {"half_split", T_INT, offsetof(PriceSegmentNode, half_split), 0, "pstobj half_split"},
-    {"_is_leaf", T_INT, offsetof(PriceSegmentNode, _is_leaf), 0, "pstobj _is_leaf"},
+    {"min_segment_size", T_INT, offsetof(PriceSegmentNode, min_segment_size), 0, "psnobj min_segment_size"},
+    {"max_depth", T_INT, offsetof(PriceSegmentNode, max_depth), 0, "psnobj max_depth"},
+    {"min_percent_price", T_DOUBLE, offsetof(PriceSegmentNode, min_percent_price), 0, "psnobj min_percent_price"},
+    {"start_price", T_DOUBLE, offsetof(PriceSegmentNode, start_price), 0, "psnobj start_price"},
+    {"end_price", T_DOUBLE, offsetof(PriceSegmentNode, end_price), 0, "psnobj end_price"},
+    {"start_ts", T_LONG, offsetof(PriceSegmentNode, start_ts), 0, "psnobj start_ts"},
+    {"end_ts", T_LONG, offsetof(PriceSegmentNode, end_ts), 0, "psnobj end_ts"},
+    {"min_price", T_DOUBLE, offsetof(PriceSegmentNode, min_price), 0, "psnobj min_price"},
+    {"min_price_index", T_INT, offsetof(PriceSegmentNode, min_price_index), 0, "psnobj min_price_index"},
+    {"min_price_ts", T_LONG, offsetof(PriceSegmentNode, min_price_ts), 0, "psnobj min_price_ts"},
+    {"max_price", T_DOUBLE, offsetof(PriceSegmentNode, max_price), 0, "psnobj max_price"},
+    {"max_price_index", T_INT, offsetof(PriceSegmentNode, max_price_index), 0, "psnobj max_price_index"},
+    {"max_price_ts", T_LONG, offsetof(PriceSegmentNode, max_price_ts), 0, "psnobj max_price_ts"},
+    {"parent", T_OBJECT, offsetof(PriceSegmentNode, parent), 0, "psnobj parent"},
+    {"seg_start", T_OBJECT, offsetof(PriceSegmentNode, seg_start), 0, "psnobj seg_start"},
+    {"seg_mid", T_OBJECT, offsetof(PriceSegmentNode, seg_mid), 0, "psnobj seg_mid"},
+    {"seg_end", T_OBJECT, offsetof(PriceSegmentNode, seg_end), 0, "psnobj seg_end"},
+    {"percent", T_DOUBLE, offsetof(PriceSegmentNode, percent), 0, "psnobj percent"},
+    {"depth", T_INT, offsetof(PriceSegmentNode, depth), 0, "psnobj depth"},
+    {"type", T_INT, offsetof(PriceSegmentNode, type), 0, "psnobj type"},
+    {"mode", T_INT, offsetof(PriceSegmentNode, mode), 0, "psnobj mode"},
+    {"half_split", T_INT, offsetof(PriceSegmentNode, half_split), 0, "psnobj half_split"},
+    {"_is_leaf", T_INT, offsetof(PriceSegmentNode, _is_leaf), 0, "psnobj _is_leaf"},
     {NULL}  /* Sentinel */
 };
 
@@ -74,6 +75,9 @@ static PyMethodDef PriceSegmentNode_methods[] = {
     },
     {"update_percent", (PyCFunction)PriceSegmentNode_update_percent, METH_NOARGS,
      "Update percent PriceSegmentNode",
+    },
+    {"is_leaf", (PyCFunction)PriceSegmentNode_is_leaf, METH_NOARGS,
+     "Is Leaf PriceSegmentNode",
     },
     {NULL}  /* Sentinel */
 };
