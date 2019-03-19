@@ -1,5 +1,25 @@
 #include <Python.h>
 #include <structmember.h>
+#include <math.h>
+#include <stdlib.h>
+
+static inline double my_round(double x, unsigned int digits) {
+    double fac = pow(10, digits);
+    return round(x*fac)/fac;
+}
+
+static double f_round(double dval, int n)
+{
+    char l_fmtp[32], l_buf[64];
+    char *p_str;
+    sprintf (l_fmtp, "%%.%df", n);
+    if (dval>=0)
+            sprintf (l_buf, l_fmtp, dval);
+    else
+            sprintf (l_buf, l_fmtp, dval);
+    return ((double)strtod(l_buf, &p_str));
+
+}
 
 #define BOOL int
 #define TRUE 1
