@@ -104,7 +104,7 @@ static PyObject *
 PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 {
     PyObject *prices, *timestamps, *parent=NULL;
-    int n, t, size, end_index;
+    int n, t, size, end_index, mid_size;
     static char *kwlist[] = {"prices", "timestamps", "n", "t", "parent", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOiiO", kwlist, &prices, &timestamps, &n, &t, &parent))
@@ -149,7 +149,12 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
     }
 
     // if mid segment size is less than min_segment_size, set half_split mode
-    if (abs(self->max_price_index - self->min_price_index) < self->min_segment_size)
+    if (self->max_price_index < self->min_price_index)
+        mid_size = self->min_price_index - self->max_price_index;
+    else
+        mid_size = self->max_price_index - self->min_price_index;
+
+    if (mid_size < self->min_segment_size)
         self->half_split = TRUE;
 
     // if start or end segment size is less than min_segment_size, set half_split mode
