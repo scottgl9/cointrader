@@ -127,11 +127,11 @@ PriceSegmentNode_split(PriceSegmentNode* self, PyObject *args, PyObject *kwds)
 
     self->max_price_index = get_max_value_index((PyListObject *)prices);
     self->max_price = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)prices, self->max_price_index));
-    self->max_price_ts = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)timestamps, self->max_price_index));
+    self->max_price_ts = PyInt_AS_LONG(PyList_GET_ITEM((PyObject *)timestamps, self->max_price_index));
 
     self->min_price_index = get_min_value_index((PyListObject *)prices);
     self->min_price = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)prices, self->min_price_index));
-    self->min_price_ts = PyFloat_AS_DOUBLE(PyList_GET_ITEM((PyObject *)timestamps, self->min_price_index));
+    self->min_price_ts = PyInt_AS_LONG(PyList_GET_ITEM((PyObject *)timestamps, self->min_price_index));
 
     if (self->min_percent_price != 0) {
         if (100.0 * (self->max_price - self->min_price) <= self->min_percent_price * self->min_price) {
