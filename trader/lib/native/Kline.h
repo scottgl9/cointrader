@@ -4,7 +4,7 @@
 typedef struct {
     PyObject_HEAD
     /* internal data. */
-    char *symbol;
+    PyUnicodeObject *symbol;
     double open;
     double close;
     double low;
@@ -20,7 +20,7 @@ static PyObject *Kline_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 static int Kline_init(Kline *self, PyObject *args, PyObject *kwds);
 
 static PyMemberDef Kline_members[] = {
-    {"symbol", T_STRING, offsetof(Kline, symbol), 0, "klineobj symbol"},
+    {"symbol", T_OBJECT, offsetof(Kline, symbol), 0, "klineobj symbol"},
     {"open", T_DOUBLE, offsetof(Kline, open), 0, "klineobj open"},
     {"close", T_DOUBLE, offsetof(Kline, close), 0, "klineobj close"},
     {"low", T_DOUBLE, offsetof(Kline, low), 0, "klineobj low"},

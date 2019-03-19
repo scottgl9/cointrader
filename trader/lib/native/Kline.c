@@ -30,7 +30,7 @@ Kline_init(Kline *self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {"symbol", "open", "close", "low", "high", "volume_base", "volume_quote", "ts", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "sddddddl", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Uddddddl", kwlist,
                                      &self->symbol, &self->open, &self->close, &self->low, &self->high,
                                      &self->volume_base, &self->volume_quote, &self->ts))
         return -1;
