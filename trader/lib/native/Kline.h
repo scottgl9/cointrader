@@ -18,6 +18,7 @@ typedef struct {
 static void Kline_dealloc(Kline* self);
 static PyObject *Kline_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 static int Kline_init(Kline *self, PyObject *args, PyObject *kwds);
+static PyObject* Kline_Repr(PyObject *o);
 
 static PyMemberDef Kline_members[] = {
     {"symbol", T_OBJECT, offsetof(Kline, symbol), 0, "klineobj symbol"},
@@ -47,7 +48,7 @@ static PyTypeObject Kline_MyTestType = {
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
     0,                         /*tp_compare*/
-    0,                         /*tp_repr*/
+    Kline_Repr,          /*tp_repr*/
     0,                         /*tp_as_number*/
     0,                         /*tp_as_sequence*/
     0,                         /*tp_as_mapping*/

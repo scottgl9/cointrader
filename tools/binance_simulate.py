@@ -16,10 +16,10 @@ from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 
-try:
-    from trader.lib.native.Kline import Kline
-except ImportError:
-    from trader.lib.Kline import Kline
+#try:
+#    from trader.lib.native.Kline import Kline
+#except ImportError:
+from trader.lib.Kline import Kline
 
 from trader.account.AccountBinance import AccountBinance
 from trader.config import *

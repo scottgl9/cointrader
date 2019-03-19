@@ -40,6 +40,20 @@ Kline_init(Kline *self, PyObject *args, PyObject *kwds)
     return 0;
 }
 
+static PyObject* Kline_Repr(PyObject *o)
+{
+    Kline *self = (Kline *)o;
+    PyObject *result = PyDict_New();
+    Py_INCREF(result);
+    PyDict_SetItemString(result, "open", Py_BuildValue("d", self->open));
+    PyDict_SetItemString(result, "close", Py_BuildValue("d", self->close));
+    PyDict_SetItemString(result, "volume_base", Py_BuildValue("d", self->volume_base));
+    PyDict_SetItemString(result, "volume_quote", Py_BuildValue("d", self->volume_quote));
+    PyDict_SetItemString(result, "ts", Py_BuildValue("l", self->ts));
+
+    return result;
+}
+
 PyMODINIT_FUNC
 initKline(void)
 {
