@@ -12,6 +12,7 @@ typedef struct {
     double last_scale;
     double esf;
     double result;
+    double last_result;
     // SMA related
     int sma_age;
     double sma_sum;
@@ -19,6 +20,8 @@ typedef struct {
     long auto_last_ts;
     int auto_counter;
     PyListObject *sma_values;
+    int value_lag_age;
+    PyListObject *value_lag_values;
 } AEMA;
 
 static void AEMA_dealloc(AEMA* self);
@@ -35,6 +38,7 @@ static PyMemberDef AEMA_members[] = {
     {"esf", T_DOUBLE, offsetof(AEMA, esf), 0, "aemaobj esf"},
     {"count", T_INT, offsetof(AEMA, count), 0, "aemaobj count"},
     {"result", T_DOUBLE, offsetof(AEMA, result), 0, "aemaobj result"},
+    {"last_result", T_DOUBLE, offsetof(AEMA, last_result), 0, "aemaobj last_result"},
     {"sma_age", T_INT, offsetof(AEMA, sma_age), 0, "aemaobj sma_age"},
     {"sma_sum", T_DOUBLE, offsetof(AEMA, sma_sum), 0, "aemaobj sma_sum"},
     {"sma_result", T_DOUBLE, offsetof(AEMA, sma_result), 0, "aemaobj sma_result"},

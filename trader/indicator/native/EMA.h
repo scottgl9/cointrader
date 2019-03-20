@@ -12,12 +12,15 @@ typedef struct {
     double scale;
     double esf;
     double result;
+    double last_result;
 
     // SMA related
     int sma_age;
     double sma_sum;
     double sma_result;
     PyListObject *sma_values;
+    int value_lag_age;
+    PyListObject *value_lag_values;
 } EMA;
 
 static void EMA_dealloc(EMA* self);
@@ -33,6 +36,7 @@ static PyMemberDef EMA_members[] = {
     {"esf", T_DOUBLE, offsetof(EMA, esf), 0, "emaobj esf"},
     {"count", T_INT, offsetof(EMA, count), 0, "emaobj count"},
     {"result", T_DOUBLE, offsetof(EMA, result), 0, "emaobj result"},
+    {"last_result", T_DOUBLE, offsetof(EMA, last_result), 0, "emaobj last_result"},
     {"sma_age", T_INT, offsetof(EMA, sma_age), 0, "emaobj sma_age"},
     {"sma_sum", T_DOUBLE, offsetof(EMA, sma_sum), 0, "emaobj sma_sum"},
     {"sma_result", T_DOUBLE, offsetof(EMA, sma_result), 0, "emaobj sma_result"},

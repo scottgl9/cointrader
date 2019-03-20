@@ -5,6 +5,7 @@ static void
 AEMA_dealloc(AEMA* self)
 {
     Py_XDECREF(self->sma_values);
+     Py_XDECREF(self->value_lag_values);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -20,6 +21,7 @@ AEMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->last_scale = 1.0;
     self->esf = 0;
     self->result = 0;
+    self->last_result = 0;
     self->count = 0;
     self->lag_window = 0;
     self->sma_age = 0;
@@ -28,6 +30,8 @@ AEMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->auto_last_ts = 0;
     self->auto_counter = 0;
     self->sma_values = (PyListObject*)PyList_New(0);
+    self->value_lag_age = 0;
+    self->value_lag_values = (PyListObject*)PyList_New(0);
 
     return (PyObject *)self;
 }
@@ -109,6 +113,24 @@ AEMA_update(AEMA* self, PyObject *args,  PyObject *kwds)
     if (self->esf == 0 || self->scale != self->last_scale) {
         self->esf = 2.0 / (((double)self->win) * self->scale + 1.0);
         self->last_scale = self->scale;
+    }
+
+    if (self->lag_window != 0) {
+        int value_lag_size = PyList_Size((PyObject*)self->value_lag_values);
+
+        if (value_lag_size < self->lag_window) {
+            double tail = 0.0;
+            PyList_Append((PyObject *)self->value_lag_values, Py_BuildValue("d", self->result));
+            self->last_result = tail;
+        } else {
+            double tail = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->value_lag_values, self->value_lag_age));
+            PyList_SetItem((PyObject *)self->value_lag_values, self->value_lag_age, Py_BuildValue("d", self->result));
+
+            self->last_result = tail;
+            self->value_lag_age = (self->value_lag_age + 1) % self->lag_window;
+        }
+    } else {
+        self->last_result = self->result;
     }
 
     self->result = last_result + self->esf * (value - last_result);

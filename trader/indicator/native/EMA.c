@@ -18,11 +18,15 @@ EMA_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->scale = 1.0;
     self->esf = 0;
     self->result = 0;
+    self->last_result = 0;
     self->count = 0;
+    self->lag_window = 0;
     self->sma_age = 0;
     self->sma_sum = 0;
     self->sma_result = 0;
     self->sma_values = (PyListObject*)PyList_New(0);
+    self->value_lag_age = 0;
+    self->value_lag_values = (PyListObject*)PyList_New(0);
 
     return (PyObject *)self;
 }
@@ -90,6 +94,24 @@ EMA_update(EMA* self, PyObject *args)
 
     if (self->esf == 0) {
         self->esf = 2.0 / (self->weight * self->scale + 1.0);
+    }
+
+    if (self->lag_window != 0) {
+        int value_lag_size = PyList_Size((PyObject*)self->value_lag_values);
+
+        if (value_lag_size < self->lag_window) {
+            double tail = 0.0;
+            PyList_Append((PyObject *)self->value_lag_values, Py_BuildValue("d", self->result));
+            self->last_result = tail;
+        } else {
+            double tail = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->value_lag_values, self->value_lag_age));
+            PyList_SetItem((PyObject *)self->value_lag_values, self->value_lag_age, Py_BuildValue("d", self->result));
+
+            self->last_result = tail;
+            self->value_lag_age = (self->value_lag_age + 1) % self->lag_window;
+        }
+    } else {
+        self->last_result = self->result;
     }
 
     self->result = last_result + self->esf * (value - last_result);
