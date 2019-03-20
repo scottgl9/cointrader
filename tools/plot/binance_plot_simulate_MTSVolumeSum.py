@@ -13,6 +13,7 @@ import os
 import matplotlib.pyplot as plt
 from trader.indicator.native.AEMA import AEMA
 from trader.indicator.OBV import OBV
+from trader.lib.MovingTimeSegment.MTSVolumeSum import MTSVolumeSum
 import argparse
 
 
@@ -48,6 +49,10 @@ def simulate(conn, client, base, currency, type="channel"):
     aema50 = AEMA(50, scale_interval_secs=60)
     aema50_values = []
 
+    mtsvs = MTSVolumeSum()
+    mtsvs_values = []
+    mtsvs_x_values = []
+
     i=0
     for msg in get_rows_as_msgs(c):
         close = float(msg['c'])
@@ -58,6 +63,11 @@ def simulate(conn, client, base, currency, type="channel"):
         ts = int(msg['E'])
 
         volumes.append(volume)
+
+        mtsvs.update(volume, ts)
+        #if mtsvs.ready():
+        mtsvs_values.append(mtsvs.result)
+        mtsvs_x_values.append(i)
 
         obv.update(close, volume)
         obv_aema12.update(obv.result, ts)
@@ -83,7 +93,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
     plt.legend(handles=[symprice, fig1, fig3])
     plt.subplot(212)
-    plt.plot(obv_aema12_values)
+    plt.plot(mtsvs_x_values, mtsvs_values)
     plt.show()
 
 if __name__ == '__main__':
