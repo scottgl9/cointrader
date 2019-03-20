@@ -48,6 +48,10 @@ def simulate(conn, client, base, currency, type="channel"):
     aema26_values = []
     aema50 = AEMA(50, scale_interval_secs=60)
     aema50_values = []
+    aema100 = AEMA(100, scale_interval_secs=60)
+    aema100_values = []
+    aema200 = AEMA(200, scale_interval_secs=60)
+    aema200_values = []
 
     mts_obv_sum = MTSOBVSum()
     mts_obv_sum_values = []
@@ -72,9 +76,11 @@ def simulate(conn, client, base, currency, type="channel"):
         obv_aema12.update(obv.result, ts)
         obv_aema12_values.append(obv_aema12.result)
         aema12_values.append(aema12.update(close, ts))
-        aema12_300_values.append(aema12_300.update(close, ts))
+        #aema12_300_values.append(aema12_300.update(close, ts))
         aema26_values.append(aema26.update(close, ts))
         aema50_values.append(aema50.update(close, ts))
+        aema100_values.append(aema100.update(close, ts))
+        aema200_values.append(aema200.update(close, ts))
 
         close_prices.append(close)
         open_prices.append(open)
@@ -87,10 +93,12 @@ def simulate(conn, client, base, currency, type="channel"):
 
     fig1, = plt.plot(aema12_values, label='AEMA12')
     #fig2, = plt.plot(aema26_values, label='AEMA26')
-    fig3, = plt.plot(aema50_values, label='AEMA50')
+    fig2, = plt.plot(aema50_values, label='AEMA50')
+    fig3, = plt.plot(aema100_values, label='AEMA100')
+    fig4, = plt.plot(aema200_values, label='AEMA200')
     #fig4, = plt.plot(aema12_300_values, label='AEMA12_300')
 
-    plt.legend(handles=[symprice, fig1, fig3])
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     plt.plot(mts_obv_sum_x_values, mts_obv_sum_values)
     plt.show()

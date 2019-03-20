@@ -64,8 +64,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
         volumes.append(volume)
 
-        obv.update(close, volume)
-        mtsvs.update(obv.result, ts)
+        mtsvs.update(volume, ts)
         #if mtsvs.ready():
         mtsvs_values.append(mtsvs.result)
         mtsvs_x_values.append(i)

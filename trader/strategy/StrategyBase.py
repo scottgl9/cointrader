@@ -2,6 +2,7 @@
 from datetime import datetime
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
+from trader.signal.AEMA_Crossover_Test import AEMA_Crossover_Test
 from trader.signal.EFI_Breakout_Signal import EFI_Breakout_Signal
 from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
 #from trader.signal.Hybrid_Crossover import Hybrid_Crossover
@@ -50,6 +51,7 @@ class StrategyBase(object):
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None):
         if name == "BTC_USDT_Signal": return BTC_USDT_Signal(accnt)
+        elif name == "AEMA_Crossover_Test": return AEMA_Crossover_Test(accnt, symbol, asset_info)
         elif name == "Currency_Long_EMA": return Currency_EMA_Long(accnt)
         elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal(accnt, symbol)
         elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover(accnt, symbol)
