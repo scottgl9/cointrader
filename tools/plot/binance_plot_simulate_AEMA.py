@@ -35,9 +35,12 @@ def simulate(conn, client, base, currency, type="channel"):
     low_prices = []
     high_prices = []
     volumes = []
-    aema26_values = []
-
+    aema12 = AEMA(12, scale_interval_secs=60)
+    aema12_values = []
     aema26 = AEMA(26, scale_interval_secs=60)
+    aema26_values = []
+    aema50 = AEMA(50, scale_interval_secs=60)
+    aema50_values = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -50,7 +53,9 @@ def simulate(conn, client, base, currency, type="channel"):
 
         volumes.append(volume)
 
+        aema12_values.append(aema12.update(close, ts))
         aema26_values.append(aema26.update(close, ts))
+        aema50_values.append(aema50.update(close, ts))
 
         close_prices.append(close)
         open_prices.append(open)
@@ -61,8 +66,11 @@ def simulate(conn, client, base, currency, type="channel"):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 
-    fig1, = plt.plot(aema26_values, label='AEMA26')
-    plt.legend(handles=[symprice, fig1])#, fig2, fig3, fig4])
+    fig1, = plt.plot(aema12_values, label='AEMA12')
+    fig2, = plt.plot(aema26_values, label='AEMA26')
+    fig3, = plt.plot(aema50_values, label='AEMA50')
+
+    plt.legend(handles=[symprice, fig1, fig2, fig3])#, fig2, fig3, fig4])
     plt.subplot(212)
     plt.show()
 
