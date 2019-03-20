@@ -17,10 +17,7 @@ import matplotlib.pyplot as plt
 from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.indicator.EMA import EMA
-from trader.indicator.ZLEMA import ZLEMA
-from trader.indicator.MACD import MACD
-from trader.indicator.RSI import RSI
-from trader.indicator.DTWMA import DTWMA
+from trader.indicator.AEMA import AEMA
 from trader.indicator.OBV import OBV
 from trader.lib.Kline import Kline
 from trader.lib.MAAvg import MAAvg
@@ -72,19 +69,19 @@ class mainWindow(QtGui.QTabWidget):
         prices = []
         high_values = []
         low_values = []
-        ema12 = EMA(12, scale=24)
-        ema26 = EMA(26, scale=24)
-        ema50 = EMA(50, scale=24)
-        ema200 = EMA(200, scale=24)
-        ema12_values = []
-        ema26_values = []
-        ema50_values = []
-        ema200_values = []
+        aema12 = AEMA(12)
+        aema26 = AEMA(26)
+        aema50 = AEMA(50)
+        aema200 = AEMA(200)
+        aema12_values = []
+        aema26_values = []
+        aema50_values = []
+        aema200_values = []
 
         maavg = MAAvg()
-        maavg.add(ema12)
-        maavg.add(ema26)
-        maavg.add(ema50)
+        #maavg.add(ema12)
+        #maavg.add(ema26)
+        #maavg.add(ema50)
         maavg_x_values = []
         maavg_values = []
 
@@ -130,14 +127,14 @@ class mainWindow(QtGui.QTabWidget):
                 tspc_values.append(tspc.result)
                 tspc_x_values.append(i)
 
-            ema12.update(price)
-            ema12_values.append(ema12.result)
-            ema26.update(price)
-            ema26_values.append(ema26.result)
-            ema50.update(price)
-            ema50_values.append(ema50.result)
-            ema200.update(price)
-            ema200_values.append(ema200.result)
+            aema12.update(price, ts)
+            aema12_values.append(aema12.result)
+            aema26.update(price, ts)
+            aema26_values.append(aema26.result)
+            aema50.update(price, ts)
+            aema50_values.append(aema50.result)
+            aema200.update(price, ts)
+            aema200_values.append(aema200.result)
 
             maavg.update()
             if maavg.result:
@@ -156,11 +153,11 @@ class mainWindow(QtGui.QTabWidget):
                 handles.append(ax.axvline(x=trade['index'], color='red', label="SELL_{}".format(trade['trade_type'])))
         fig1, = ax.plot(prices, label=name)
         fig2, = ax.plot(tspc_x_values, tspc_values, label="TPSC")
-        fig3, = ax.plot(ema12_values, label="EMA12")
-        fig4, = ax.plot(ema26_values, label="EMA26")
-        fig5, = ax.plot(ema50_values, label="EMA50")
+        fig3, = ax.plot(aema12_values, label="AEMA12")
+        fig4, = ax.plot(aema26_values, label="AEMA26")
+        fig5, = ax.plot(aema50_values, label="AEMA50")
         fig6, = ax.plot(maavg_x_values, maavg_values, label="MAAVG")
-        fig7, = ax.plot(ema200_values, label="EMA200")
+        fig7, = ax.plot(aema200_values, label="AEMA200")
         #fig8, = ax.plot(low_values, label="low")
         #fig9, = ax.plot(high_values, label="high")
         for f in [fig1, fig2, fig3, fig4, fig5, fig6, fig7]:
