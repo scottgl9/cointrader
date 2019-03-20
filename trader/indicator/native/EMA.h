@@ -44,7 +44,7 @@ static PyMethodDef EMA_methods[] = {
     {"update", (PyCFunction)EMA_update, METH_VARARGS,
      "Update EMA",
     },
-    {"ready", (PyCFunction)EMA_ready, METH_VARARGS,
+    {"ready", (PyCFunction)EMA_ready, METH_NOARGS,
      "Update EMA",
     },
     {NULL}  /* Sentinel */
