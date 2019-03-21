@@ -35,6 +35,7 @@ OBV_update(OBV* self, PyObject *args, PyObject *kwds)
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "dd", kwlist,
                                      &close, &volume))
+        return NULL;
 
     self->last_result = self->result;
 

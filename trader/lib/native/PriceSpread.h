@@ -18,7 +18,7 @@ typedef struct {
 static void PriceSpread_dealloc(PriceSpread* self);
 static PyObject *PriceSpread_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 static int PriceSpread_init(PriceSpread *self, PyObject *args, PyObject *kwds);
-static PyObject *PriceSpread_update(PriceSpread* self, PyObject *args);
+static PyObject *PriceSpread_update(PriceSpread* self, PyObject *args, PyObject *kwds);
 
 static PyMemberDef PriceSpread_members[] = {
     {"window", T_INT, offsetof(PriceSpread, window), 0, "pricespreadobj window"},
@@ -34,7 +34,7 @@ static PyMemberDef PriceSpread_members[] = {
 };
 
 static PyMethodDef PriceSpread_methods[] = {
-    {"update", (PyCFunction)PriceSpread_update, METH_VARARGS,
+    {"update", (PyCFunction)PriceSpread_update, METH_VARARGS|METH_KEYWORDS,
      "Update PriceSpread",
     },
     {NULL}  /* Sentinel */

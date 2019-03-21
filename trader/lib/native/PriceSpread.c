@@ -1,3 +1,4 @@
+// *FIXME* currently not working
 #include "PriceSpread.h"
 
 static void
@@ -36,16 +37,19 @@ PriceSpread_init(PriceSpread *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-PriceSpread_update(PriceSpread* self, PyObject *args)
+PriceSpread_update(PriceSpread* self, PyObject *args, PyObject *kwds)
 {
     double tail;
     double value;
     int size;
+    long ts;
     PyObject *result;
 
-    if (! PyArg_ParseTuple(args, "d", &value)) {
+    static char *kwlist[] = {"price", "ts", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "dl", kwlist,
+                                     &value, &ts))
         return NULL;
-    }
 
     size = PyList_Size((PyObject*)self->values);
 
@@ -55,6 +59,7 @@ PriceSpread_update(PriceSpread* self, PyObject *args)
     } else {
         tail = PyFloat_AsDouble(PyList_GetItem((PyObject *)self->values, self->age));
         PyList_SetItem((PyObject *)self->values, self->age, Py_BuildValue("d", value));
+        self->age = (self->age + 1) % self->window;
     }
 
     self->sum += value - tail;
@@ -69,15 +74,17 @@ PriceSpread_update(PriceSpread* self, PyObject *args)
         if (value != self->last_bid_price && value != self->bid_price) {
             self->last_ask_price = self->ask_price;
             self->ask_price = value;
+            //printf("ask price = %f\n", self->ask_price);
         }
     } else if (value < self->sma_result) {
         if (value != self->last_ask_price && value != self->ask_price) {
             self->last_bid_price = self->bid_price;
             self->bid_price = value;
+            printf("bid price = %f\n", self->bid_price);
         }
     }
 
-    self->age = (self->age + 1) % self->window;
+
     result = Py_BuildValue("d", self->sma_result);
     return result;
 }
