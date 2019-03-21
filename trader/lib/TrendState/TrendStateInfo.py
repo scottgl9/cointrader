@@ -48,15 +48,8 @@ class TrendStateInfo(object):
         self.prev_direction_speed = TrendStateInfo.DIR_NONE_NONE
         self.direction_speed_count = 0
         self.prev_direction_speed_count = 0
-        self.start_ts = 0
-        self.cur_ts = 0
-        self.end_ts = 0
-        self.start_price = 0
-        self.cur_price = 0
-        self.end_price = 0
-        self.start_volume = 0
-        self.cur_volume = 0
-        self.end_volume = 0
+        self.segment = None
+        self.prev_segment = None
 
     def is_state(self, state):
         return self.state == state
@@ -78,13 +71,13 @@ class TrendStateInfo(object):
 
         # conditional set state
 
-    def set_state_conditional(self, cond, cond_true_state, cond_false_state):
+    def set_state_conditional(self, cond, cond_true_state, cond_false_state, segment=None):
         if cond:
-            self.set_state(cond_true_state)
+            self.set_state(cond_true_state, segment)
         else:
-            self.set_state(cond_false_state)
+            self.set_state(cond_false_state, segment)
 
-    def set_state(self, state):
+    def set_state(self, state, segment=None):
         # update direction from state
         direction = TrendStateInfo.get_trend_direction(state)
         self.set_direction(direction)
@@ -92,6 +85,9 @@ class TrendStateInfo(object):
         # update state
         self.prev_state = self.state
         self.state = state
+        # update segment
+        self.prev_segment = self.segment
+        self.segment = segment
 
     def set_direction_speed_from_state(self, state):
         dir = TrendStateInfo.get_direction_speed_from_trend_state(state)
