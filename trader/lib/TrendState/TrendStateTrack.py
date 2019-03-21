@@ -93,7 +93,7 @@ class TrendStateTrack(object):
         timestamps = mts.get_timestamps()
         self.lpc.reset(values, timestamps)
         self.lpc.divide_price_segments()
-        segments = self.lpc.get_price_segments_percent_sorted()
+        segments = self.lpc.get_price_segments_percent_sorted(leaves_only=True)
         if len(segments) < 2:
             return trend_state
 

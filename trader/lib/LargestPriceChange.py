@@ -110,7 +110,7 @@ class LargestPriceChange(object):
         entry = None
         rscore = 0
 
-        if n and not leaves_only or (leaves_only and node.leaf):
+        if n and (not leaves_only or (leaves_only and node.leaf)):
             rscore = self.round_score(score/n)
             node.update_percent()
             if self.use_dict:
