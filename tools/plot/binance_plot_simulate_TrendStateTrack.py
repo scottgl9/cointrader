@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.lib.MovingTimeSegment.MTSMoveRate import MTSMoveRate
 from trader.indicator.EMA import EMA
+from trader.indicator.AEMA import AEMA
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
 from trader.lib.TrendState.TrendStateInfo import TrendStateInfo
 
@@ -33,20 +34,20 @@ def simulate(conn, client, base, currency, type="channel"):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    ema12 = EMA(12, scale=24)
-    ema26 = EMA(26, scale=24)
-    ema50 = EMA(100, scale=24)
-    ema200 = EMA(200, scale=24)
+    aema12 = AEMA(12, scale_interval_secs=60)
+    aema26 = AEMA(26, scale_interval_secs=60)
+    aema50 = AEMA(100, scale_interval_secs=60)
+    aema200 = AEMA(200, scale_interval_secs=60)
 
-    tst = TrendStateTrack(smoother=EMA(12, scale=24))
+    tst = TrendStateTrack()#smoother=EMA(12, scale=24))
 
     mts_moverate = MTSMoveRate(small_seg_seconds=180, large_seg_seconds=900)
     mts_moverate_values = []
 
-    ema12_values = []
-    ema26_values = []
-    ema50_values = []
-    ema200_values = []
+    aema12_values = []
+    aema26_values = []
+    aema50_values = []
+    aema200_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -67,13 +68,13 @@ def simulate(conn, client, base, currency, type="channel"):
         ts=int(msg['E'])
         volumes.append(volume)
 
-        ema12_value = ema12.update(close)
-        ema12_values.append(ema12_value)
-        ema26_values.append(ema26.update(close))
-        ema50_value = ema50.update(close)
-        ema50_values.append(ema50_value)
-        ema200_value = ema200.update(close)
-        ema200_values.append(ema200_value)
+        aema12_value = aema12.update(close)
+        aema12_values.append(aema12_value)
+        aema26_values.append(aema26.update(close))
+        aema50_value = aema50.update(close)
+        aema50_values.append(aema50_value)
+        aema200_value = aema200.update(close)
+        aema200_values.append(aema200_value)
 
         tst.update(close=close, ts=ts)
         if tst.get_trend_string() != last_trend_string:
@@ -81,7 +82,7 @@ def simulate(conn, client, base, currency, type="channel"):
             print("LONG:" + tst.get_trend_string())
             last_trend_string = tst.get_trend_string()
 
-        mts_moverate.update(close, ts)
+        mts_moverate.update(aema12_value, ts)
         mts_moverate_values.append(mts_moverate.result)
         close_prices.append(close)
         open_prices.append(open)
@@ -99,10 +100,10 @@ def simulate(conn, client, base, currency, type="channel"):
         elif dir == -1:
             plt.axvline(x=i, color='red')
     symprice, = plt.plot(close_prices, label=ticker_id)
-    fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
-    fig4, = plt.plot(ema200_values, label='EMA200')
+    fig1, = plt.plot(aema12_values, label='AEMA12')
+    fig2, = plt.plot(aema26_values, label='AEMA26')
+    fig3, = plt.plot(aema50_values, label='AEMA50')
+    fig4, = plt.plot(aema200_values, label='AEMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
 
