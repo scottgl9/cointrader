@@ -173,14 +173,23 @@ class TrendState(object):
         if type == TrendStateInfo.TYPE_CONT_TREND:
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
+            if not self.trend_state.check_state_change(new_state, seg_up):
+                #print("process_potential_downward_reversal UP failed")
+                return
             self.trend_state.set_state(new_state, seg_up)
         elif type == TrendStateInfo.TYPE_TRENDING:
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(new_state, seg_up):
+                #print("process_potential_downward_reversal UP failed")
+                return
             self.trend_state.set_state(new_state, seg_up)
         elif type == TrendStateInfo.TYPE_NON_TREND:
             newdir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, newdir)
+            if not self.trend_state.check_state_change(new_state, seg_down):
+                #print("process_potential_downward_reversal DOWN failed")
+                return
             self.trend_state.set_state(new_state, seg_down)
 
     # process if current trend direction is up, seg_down_percent is shrinking, and seg_up_percent is growing
@@ -200,14 +209,23 @@ class TrendState(object):
         if type == TrendStateInfo.TYPE_CONT_TREND:
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
+            if not self.trend_state.check_state_change(new_state, seg_down):
+                #print("process_potential_upward_reversal DOWN failed")
+                return
             self.trend_state.set_state(new_state, seg_down)
         elif type == TrendStateInfo.TYPE_TRENDING:
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(new_state, seg_down):
+                #print("process_potential_upward_reversal DOWN failed")
+                return
             self.trend_state.set_state(new_state, seg_down)
         elif type == TrendStateInfo.TYPE_NON_TREND:
             newdir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             new_state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, newdir)
+            if not self.trend_state.check_state_change(new_state, seg_up):
+                #print("process_potential_upward_reversal UP failed")
+                return
             self.trend_state.set_state(new_state, seg_up)
 
     def process_state_non_trend_no_direction(self, seg_down, seg_up, direction):
@@ -216,12 +234,18 @@ class TrendState(object):
                 return
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_down):
+                #print("process_state_non_trend_no_direction failed")
+                return
             self.trend_state.set_state(state, seg_down)
         elif direction == TrendStateInfo.DIRECTION_UP and abs(seg_down.percent) < abs(seg_up.percent):
             if self.value < self.prev_value:
                 return
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_up):
+                #print("process_state_non_trend_no_direction failed")
+                return
             self.trend_state.set_state(state, seg_up)
 
     def process_state_non_trend_up_direction(self, seg_down, seg_up, direction):
@@ -230,12 +254,18 @@ class TrendState(object):
                 return
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_down):
+                #print("process_state_non_trend_up_direction failed")
+                return
             self.trend_state.set_state(state, seg_down)
         elif direction == TrendStateInfo.DIRECTION_UP and abs(seg_down.percent) < abs(seg_up.percent):
             if self.value < self.prev_value:
                 return
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
+            if not self.trend_state.check_state_change(state, seg_up):
+                #print("process_state_non_trend_up_direction failed")
+                return
             self.trend_state.set_state(state, seg_up)
 
     def process_state_non_trend_down_direction(self, seg_down, seg_up, direction):
@@ -244,12 +274,18 @@ class TrendState(object):
                 return
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
+            if not self.trend_state.check_state_change(state, seg_down):
+                #print("process_state_non_trend_down_direction failed")
+                return
             self.trend_state.set_state(state, seg_down)
         elif direction == TrendStateInfo.DIRECTION_UP and abs(seg_down.percent) < abs(seg_up.percent):
             if self.value < self.prev_value:
                 return
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_up):
+                #print("process_state_non_trend_down_direction failed")
+                return
             self.trend_state.set_state(state, seg_up)
 
     def process_state_trending_up_direction(self, seg_down, seg_up, direction):
@@ -258,12 +294,18 @@ class TrendState(object):
                 return
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_down):
+                #print("process_state_trending_up_direction failed")
+                return
             self.trend_state.set_state(state, seg_down)
         elif direction == TrendStateInfo.DIRECTION_UP and abs(seg_down.percent) < abs(seg_up.percent):
             if self.value < self.prev_value:
                 return
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_up):
+                #print("process_state_trending_up_direction failed")
+                return
             self.trend_state.set_state(state, seg_up)
 
     def process_state_trending_down_direction(self, seg_down, seg_up, direction):
@@ -272,12 +314,18 @@ class TrendState(object):
                 return
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_down):
+                #print("process_state_trending_down_direction failed")
+                return
             self.trend_state.set_state(state, seg_down)
         elif direction == TrendStateInfo.DIRECTION_UP and abs(seg_down.percent) < abs(seg_up.percent):
             if self.value < self.prev_value:
                 return
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_NON_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_up):
+                #print("process_state_trending_down_direction failed")
+                return
             self.trend_state.set_state(state, seg_up)
 
     def process_state_cont_trend_up_direction(self, seg_down, seg_up, direction):
@@ -286,12 +334,18 @@ class TrendState(object):
                 return
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
+            if not self.trend_state.check_state_change(state, seg_down):
+                #print("process_state_cont_trend_up_direction DOWN failed")
+                return
             self.trend_state.set_state(state, seg_down)
         elif direction == TrendStateInfo.DIRECTION_UP and abs(seg_down.percent) < abs(seg_up.percent):
             if self.value < self.prev_value:
                 return
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_up):
+                #print("process_state_cont_trend_up_direction UP failed")
+                return
             self.trend_state.set_state(state, seg_up)
 
     def process_state_cont_trend_down_direction(self, seg_down, seg_up, direction):
@@ -300,10 +354,16 @@ class TrendState(object):
                 return
             dir = self.get_direction_speed_movement(abs(seg_down.percent), TrendStateInfo.DIRECTION_DOWN)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_CONT_TREND, dir)
+            if not self.trend_state.check_state_change(state, seg_down):
+                #print("process_state_cont_trend_down_direction DOWN failed")
+                return
             self.trend_state.set_state(state, seg_down)
         elif direction == TrendStateInfo.DIRECTION_UP and abs(seg_down.percent) < abs(seg_up.percent):
             if self.value < self.prev_value:
                 return
             dir = self.get_direction_speed_movement(abs(seg_up.percent), TrendStateInfo.DIRECTION_UP)
             state = TrendStateInfo.get_trend_state_from_type_and_direction(TrendStateInfo.TYPE_TRENDING, dir)
+            if not self.trend_state.check_state_change(state, seg_up):
+                #print("process_state_cont_trend_down_direction UP failed")
+                return
             self.trend_state.set_state(state, seg_up)

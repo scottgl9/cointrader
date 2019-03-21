@@ -89,6 +89,19 @@ class TrendStateInfo(object):
         self.prev_segment = self.segment
         self.segment = segment
 
+    # do a sanity check on state change
+    def check_state_change(self, state, segment):
+        if not self.segment:
+            return True
+        direction = TrendStateInfo.get_trend_direction(state)
+        if direction == TrendStateInfo.DIRECTION_UP:
+            if segment.end_price < segment.start_price or segment.end_price < self.segment.start_price:
+                return False
+        elif direction == TrendStateInfo.DIRECTION_DOWN:
+            if segment.end_price > segment.start_price or segment.end_price > self.segment.start_price:
+                return False
+        return True
+
     def set_direction_speed_from_state(self, state):
         dir = TrendStateInfo.get_direction_speed_from_trend_state(state)
         self.prev_direction_speed = self.direction_speed
