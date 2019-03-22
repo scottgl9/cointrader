@@ -112,7 +112,7 @@ if __name__ == '__main__':
         if trade_cache_name not in trade_cache.keys():
             logger.error("{} not in {}, exiting...".format(trade_cache_name, trade_cache_filename))
             sys.exit(-1)
-        end_tickers_cache = trade_cache[trade_cache_name]['end_tickers']
+        end_tickers_cache = trade_cache['end_tickers']
         trade_cache = trade_cache[trade_cache_name]['trades']
 
     process_trade_cache(trade_cache, end_tickers_cache)

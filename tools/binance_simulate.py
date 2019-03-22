@@ -329,9 +329,10 @@ if __name__ == '__main__':
         sys.exit(0)
 
     with open(trade_cache_filename, "w") as f:
+        if 'end_tickers' not in trade_cache.keys():
+            trade_cache['end_tickers'] = end_tickers
         trade_cache[trade_cache_name] = {}
         trade_cache[trade_cache_name]['trades'] = trades
-        trade_cache[trade_cache_name]['end_tickers'] = end_tickers
         f.write(json.dumps(trade_cache, f, indent=4, sort_keys=True))
 
     with open(trade_result_filepath, "w") as f:
