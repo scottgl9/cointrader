@@ -152,7 +152,7 @@ class MultiTrader(object):
             return None
 
         # keep track of all current price values for all symbols being processed
-        self.accnt.update_ticker(kline.symbol, kline.close)
+        self.accnt.update_ticker(kline.symbol, kline.close, kline.ts)
 
         # compute current total percent profit, and update info in strategy
         tpprofit = self.order_handler.get_total_percent_profit()

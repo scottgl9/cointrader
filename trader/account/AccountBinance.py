@@ -55,7 +55,7 @@ class AccountBinance(AccountBase):
             price = 0.0
         return price
 
-    def update_ticker(self, symbol, price):
+    def update_ticker(self, symbol, price, ts):
         if self.simulate:
             last_price = 0
             try:
@@ -64,13 +64,13 @@ class AccountBinance(AccountBase):
                 pass
 
             if not last_price:
-                self._min_tickers[symbol] = price
-                self._max_tickers[symbol] = price
+                self._min_tickers[symbol] = [price, ts]
+                self._max_tickers[symbol] = [price, ts]
             else:
-                if price < self._min_tickers[symbol]:
-                    self._min_tickers[symbol] = price
-                elif price > self._max_tickers[symbol]:
-                    self._max_tickers[symbol] = price
+                if price < self._min_tickers[symbol][0]:
+                    self._min_tickers[symbol] = [price, ts]
+                elif price > self._max_tickers[symbol][0]:
+                    self._max_tickers[symbol] = [price, ts]
 
         self._tickers[symbol] = price
 
