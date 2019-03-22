@@ -33,7 +33,7 @@ def simulate(conn, client, base, currency, type="channel"):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    price_spread = PriceSpread(10)
+    price_spread = PriceSpread(3)
     obv = OBV()
     obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)

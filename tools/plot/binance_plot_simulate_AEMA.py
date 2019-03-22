@@ -83,8 +83,8 @@ def simulate(conn, client, base, currency, type="channel"):
     #fig2, = plt.plot(aema26_values, label='AEMA26')
     fig3, = plt.plot(aema50_values, label='AEMA50')
     #fig4, = plt.plot(aema12_300_values, label='AEMA12_300')
-    plt.plot(low_prices)
-    plt.plot(high_prices)
+    #plt.plot(low_prices)
+    #plt.plot(high_prices)
 
     plt.legend(handles=[symprice, fig1, fig3])
     plt.subplot(212)
