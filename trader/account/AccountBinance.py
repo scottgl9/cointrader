@@ -33,6 +33,8 @@ class AccountBinance(AccountBase):
         self.client = client
         self.ticker_id = '{}{}'.format(name, asset)
         self._tickers = {}
+        self._min_tickers = {}
+        self._max_tickers = {}
         self._sell_only = False
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
@@ -54,6 +56,22 @@ class AccountBinance(AccountBase):
         return price
 
     def update_ticker(self, symbol, price):
+        if self.simulate:
+            last_price = 0
+            try:
+                last_price = self._tickers[symbol]
+            except KeyError:
+                pass
+
+            if not last_price:
+                self._min_tickers[symbol] = price
+                self._max_tickers[symbol] = price
+            else:
+                if price < self._min_tickers[symbol]:
+                    self._min_tickers[symbol] = price
+                elif price > self._max_tickers[symbol]:
+                    self._max_tickers[symbol] = price
+
         self._tickers[symbol] = price
 
     def update_tickers(self, tickers):
@@ -62,6 +80,12 @@ class AccountBinance(AccountBase):
 
     def get_tickers(self):
         return self._tickers
+
+    def get_min_tickers(self):
+        return self._min_tickers
+
+    def get_max_tickers(self):
+        return self._max_tickers
 
     def set_market_price(self, price):
         pass
