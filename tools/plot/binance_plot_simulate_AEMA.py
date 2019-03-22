@@ -35,7 +35,8 @@ def simulate(conn, client, base, currency, type="channel"):
     open_prices = []
     low_prices = []
     high_prices = []
-    volumes = []
+    base_volumes = []
+    quote_volumes = []
     obv = OBV()
     obv_aema12 = AEMA(12, scale_interval_secs=60)
     obv_aema12_values = []
@@ -54,12 +55,14 @@ def simulate(conn, client, base, currency, type="channel"):
         low = float(msg['l'])
         high = float(msg['h'])
         open = float(msg['o'])
-        volume = float(msg['v'])
+        volume_base = float(msg['v'])
+        volume_quote = float(msg['q'])
         ts = int(msg['E'])
 
-        volumes.append(volume)
+        base_volumes.append(volume_base)
+        quote_volumes.append(volume_quote)
 
-        obv.update(close, volume)
+        obv.update(close, volume_base)
         obv_aema12.update(obv.result, ts)
         obv_aema12_values.append(obv_aema12.result)
         aema12_values.append(aema12.update(close, ts))
@@ -80,6 +83,8 @@ def simulate(conn, client, base, currency, type="channel"):
     #fig2, = plt.plot(aema26_values, label='AEMA26')
     fig3, = plt.plot(aema50_values, label='AEMA50')
     #fig4, = plt.plot(aema12_300_values, label='AEMA12_300')
+    plt.plot(low_prices)
+    plt.plot(high_prices)
 
     plt.legend(handles=[symprice, fig1, fig3])
     plt.subplot(212)
