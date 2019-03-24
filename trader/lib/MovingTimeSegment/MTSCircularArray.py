@@ -3,16 +3,21 @@
 
 
 class MTSCircularArray(object):
-    def __init__(self, win_secs=60, max_win_size=90):
+    def __init__(self, win_secs=60, max_win_size=90, minmax=True):
         self.max_win_size = max_win_size
         self.win_secs = win_secs
         self.win_secs_ts = 1000 * self.win_secs
+        self.minmax = minmax
         self._values = [None] * self.max_win_size
         self._timestamps = [None] * self.max_win_size
         self.current_size = 0
         self.end_age = 0
         self.start_age = 0
         self.age = 0
+        self._min_value = 0
+        self._min_age = 0
+        self._max_value = 0
+        self._max_age = 0
 
     def __len__(self):
         return self.current_size
@@ -39,6 +44,10 @@ class MTSCircularArray(object):
         self.end_age = 0
         self.age = 0
         self.current_size = 0
+        self._min_value = 0
+        self._min_age = 0
+        self._max_value = 0
+        self._max_age = 0
 
     def length(self):
         return self.__len__()
@@ -51,6 +60,19 @@ class MTSCircularArray(object):
 
     # Add value to circular array
     def add(self, value, ts):
+        if self.minmax:
+            if not self.min_value or value < self.min_value:
+                self._min_value = value
+                self._min_age = 0
+            else:
+                self._min_age += 1
+
+            if value > self.max_value:
+                self._max_value = value
+                self._max_age = 0
+            else:
+                self._max_age += 1
+
         self._values[int(self.age)] = value
         self._timestamps[int(self.age)] = ts
 
@@ -68,6 +90,30 @@ class MTSCircularArray(object):
         else:
             self.age = (self.age + 1) % self.max_win_size
 
+        if self.minmax and self.current_size:
+            if self._min_age > self.current_size:
+                age = self.start_age
+                min_age = 0
+                min_value = 0
+                for i in range(0, self.current_size):
+                    if not min_value or self._values[age] < min_value:
+                        min_value = self._values[age]
+                        min_age = age
+                    age = (age + 1) % self.current_size
+                self._min_value = min_value
+                self._min_age = min_age
+            if self._max_age > self.current_size:
+                age = self.start_age
+                max_age = 0
+                max_value = 0
+                for i in range(0, self.current_size):
+                    if max_age < self._values[age]:
+                        max_value = self._values[age]
+                        max_age = age
+                    age = (age + 1) % self.current_size
+                self._max_value = max_value
+                self._max_age = age
+
     def start_index(self):
         return self.start_age
 
@@ -76,7 +122,10 @@ class MTSCircularArray(object):
 
     def values(self, ordered=True):
         if not ordered:
-            return self._values
+            if self.current_size:
+                return self._values[:self.current_size]
+            else:
+                return self._values[:self.end_age]
 
         age = self.start_age
         if self.current_size:
@@ -120,3 +169,15 @@ class MTSCircularArray(object):
     def set_last(self, value, ts):
         self._values[self.end_age] = value
         self._timestamps[self.end_age] = ts
+
+    def min_value(self):
+        return self._min_value
+
+    def max_value(self):
+        return self._max_value
+
+    def min_value_ts(self):
+        return self._timestamps[self._min_age]
+
+    def max_value_ts(self):
+        return self._timestamps[self._max_age]
