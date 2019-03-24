@@ -13,23 +13,24 @@ class MTSCircularArray(object):
         self.end_age = 0
         self.start_age = 0
         self.age = 0
-        self.ts = 0
 
     def __len__(self):
         return self.current_size
 
-    # allow us to index CircularArray like a regular array with reverse indexing
-    # def __getitem__(self, key):
-    #     if self.reverse:
-    #         return self.last(index=key)
-    #     else:
-    #         return self.first(index=key)
-    #
-    # def __setitem__(self, key, value):
-    #     if self.reverse:
-    #         self.last_set(key, value)
-    #     else:
-    #         self.first_set(key, value)
+    # allow us to index CircularArray like a regular array
+    def __getitem__(self, key):
+        if not self.current_size and key > self.end_age:
+            raise KeyError("index {} > {}".format(key, self.end_age))
+        elif key > self.current_size:
+            raise KeyError("index {} > {}".format(key, self.current_size))
+        return self.get_value(key)
+
+    def __setitem__(self, key, value):
+        if not self.current_size and key > self.end_age:
+            raise KeyError("index {} > {}".format(key, self.end_age))
+        elif key > self.current_size:
+            raise KeyError("index {} > {}".format(key, self.current_size))
+        self.set_value(key, value)
 
     def reset(self):
         self._values = [None] * self.max_win_size
@@ -50,7 +51,6 @@ class MTSCircularArray(object):
 
     # Add value to circular array
     def add(self, value, ts):
-        self.ts = ts
         self._values[int(self.age)] = value
         self._timestamps[int(self.age)] = ts
 
@@ -82,13 +82,24 @@ class MTSCircularArray(object):
         if self.current_size:
             size = self.current_size
         else:
-            size = self.max_win_size
+            size = self.age
 
         result = [None] * size
         for i in range(0, size):
             result[i] = self._values[int(age)]
             age = (age + 1) % size
         return result
+
+    def get_value(self, index):
+        if self.current_size:
+            pos = (self.start_age + index) % self.current_size
+        else:
+            pos = index
+        return self._values[pos]
+
+    def set_value(self, index, value):
+        pos = (self.start_age + index) % self.current_size
+        self._values[pos] = value
 
     def first_value(self):
         return self._values[self.start_age]
