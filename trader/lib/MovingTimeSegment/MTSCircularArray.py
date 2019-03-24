@@ -139,6 +139,25 @@ class MTSCircularArray(object):
             age = (age + 1) % size
         return result
 
+    def timestamps(self, ordered=True):
+        if not ordered:
+            if self.current_size:
+                return self._timestamps[:self.current_size]
+            else:
+                return self._timestamps[:self.end_age]
+
+        age = self.start_age
+        if self.current_size:
+            size = self.current_size
+        else:
+            size = self.age
+
+        result = [None] * size
+        for i in range(0, size):
+            result[i] = self._timestamps[int(age)]
+            age = (age + 1) % size
+        return result
+
     def get_value(self, index):
         if self.current_size:
             pos = (self.start_age + index) % self.current_size
