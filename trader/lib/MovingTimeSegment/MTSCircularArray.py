@@ -22,7 +22,12 @@ class MTSCircularArray(object):
         self._sum_count = 0
 
     def __len__(self):
+        if not self.current_size:
+            return self.age
         return self.current_size
+
+    def ready(self):
+        return self.current_size != 0
 
     # allow us to index CircularArray like a regular array
     def __getitem__(self, key):

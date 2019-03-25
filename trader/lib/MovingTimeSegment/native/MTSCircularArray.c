@@ -235,6 +235,10 @@ static PyObject *MTSCircularArray_timestamps(MTSCircularArray* self, PyObject *a
 
 static PyObject *MTSCircularArray_ready(MTSCircularArray* self, PyObject *args)
 {
+    if (self->current_size != 0) {
+        Py_INCREF(Py_True);
+        return Py_True;
+    }
     Py_INCREF(Py_False);
     return Py_False;
 }
