@@ -151,6 +151,82 @@ MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds)
     }
 }
 
+static PyObject *MTSCircularArray_values(MTSCircularArray* self, PyObject *args, PyObject *kwds)
+{
+    static char *kwlist[] = {"ordered", NULL};
+    BOOL ordered;
+    int age, size;
+    double value;
+    PyObject *result, *ordered_obj;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist,
+                                     &ordered_obj))
+        return NULL;
+
+    ordered = PyObject_IsTrue(ordered_obj);
+    Py_XDECREF(ordered_obj);
+
+    if (!ordered) {
+        if (self->current_size != 0) {
+            return PyList_GetSlice((PyObject *)self->values, 0, self->current_size);
+        } else {
+            return PyList_GetSlice((PyObject *)self->values, 0, self->end_age);
+        }
+    }
+
+    age = self->start_age;
+    if (self->current_size != 0) {
+        size = self->current_size;
+    } else {
+        size = self->age;
+    }
+
+    result = PyList_New(size);
+    for (int i=0; i<size; i++) {
+        value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)self->values, age));
+        PyList_SetItem((PyObject *)self->values, i, Py_BuildValue("d", value));
+        age = (age + 1) % size;
+    }
+    return result;
+}
+
+static PyObject *MTSCircularArray_timestamps(MTSCircularArray* self, PyObject *args, PyObject *kwds)
+{
+    static char *kwlist[] = {"ordered", NULL};
+    BOOL ordered;
+    int age, size;
+    double value;
+    PyObject *result, *ordered_obj;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist,
+                                     &ordered_obj))
+        return NULL;
+
+    ordered = PyObject_IsTrue(ordered_obj);
+    Py_XDECREF(ordered_obj);
+
+    if (!ordered) {
+        if (self->current_size != 0) {
+            return PyList_GetSlice((PyObject *)self->timestamps, 0, self->current_size);
+        } else {
+            return PyList_GetSlice((PyObject *)self->timestamps, 0, self->end_age);
+        }
+    }
+
+    age = self->start_age;
+    if (self->current_size != 0) {
+        size = self->current_size;
+    } else {
+        size = self->age;
+    }
+
+    result = PyList_New(size);
+    for (int i=0; i<size; i++) {
+        value = PyInt_AsLong(PyList_GetItem((PyObject *)self->timestamps, age));
+        PyList_SetItem((PyObject *)self->timestamps, i, Py_BuildValue("l", value));
+        age = (age + 1) % size;
+    }
+    return result;
+}
+
 static PyObject *MTSCircularArray_ready(MTSCircularArray* self, PyObject *args)
 {
     Py_INCREF(Py_False);

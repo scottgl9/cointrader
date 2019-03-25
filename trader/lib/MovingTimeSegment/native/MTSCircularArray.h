@@ -29,6 +29,8 @@ static void MTSCircularArray_dealloc(MTSCircularArray* self);
 static PyObject *MTSCircularArray_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 static int MTSCircularArray_init(MTSCircularArray *self, PyObject *args, PyObject *kwds);
 static PyObject *MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds);
+static PyObject *MTSCircularArray_values(MTSCircularArray* self, PyObject *args, PyObject *kwds);
+static PyObject *MTSCircularArray_timestamps(MTSCircularArray* self, PyObject *args, PyObject *kwds);
 static PyObject *MTSCircularArray_ready(MTSCircularArray* self, PyObject *args);
 static PyObject *MTSCircularArray_start_index(MTSCircularArray* self, PyObject *args);
 static PyObject *MTSCircularArray_last_index(MTSCircularArray* self, PyObject *args);
@@ -65,6 +67,12 @@ static PyMemberDef MTSCircularArray_members[] = {
 static PyMethodDef MTSCircularArray_methods[] = {
     {"add", (PyCFunction)MTSCircularArray_add, METH_VARARGS|METH_KEYWORDS,
      "add MTSCircularArray",
+    },
+    {"values", (PyCFunction)MTSCircularArray_values, METH_VARARGS|METH_KEYWORDS,
+     "values MTSCircularArray",
+    },
+    {"timestamps", (PyCFunction)MTSCircularArray_timestamps, METH_VARARGS|METH_KEYWORDS,
+     "timestamps MTSCircularArray",
     },
     {"ready", (PyCFunction)MTSCircularArray_ready, METH_NOARGS,
      "Ready MTSCircularArray",
