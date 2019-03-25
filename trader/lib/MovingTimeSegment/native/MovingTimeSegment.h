@@ -19,7 +19,7 @@ typedef struct {
 static void MovingTimeSegment_dealloc(MovingTimeSegment* self);
 static PyObject *MovingTimeSegment_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 static int MovingTimeSegment_init(MovingTimeSegment *self, PyObject *args, PyObject *kwds);
-static PyObject *MovingTimeSegment_update(MovingTimeSegment* self, PyObject *args);
+static PyObject *MovingTimeSegment_update(MovingTimeSegment* self, PyObject *args,  PyObject *kwds);
 static PyObject *MovingTimeSegment_ready(MovingTimeSegment* self, PyObject *args);
 
 static PyMemberDef MovingTimeSegment_members[] = {
@@ -37,7 +37,7 @@ static PyMemberDef MovingTimeSegment_members[] = {
 };
 
 static PyMethodDef MovingTimeSegment_methods[] = {
-    {"update", (PyCFunction)MovingTimeSegment_update, METH_VARARGS,
+    {"update", (PyCFunction)MovingTimeSegment_update, METH_VARARGS|METH_KEYWORDS,
      "Update MovingTimeSegment",
     },
     {"ready", (PyCFunction)MovingTimeSegment_ready, METH_VARARGS,

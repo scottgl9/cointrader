@@ -48,7 +48,7 @@ MovingTimeSegment_init(MovingTimeSegment *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
-MovingTimeSegment_update(MovingTimeSegment* self, PyObject *args)
+MovingTimeSegment_update(MovingTimeSegment* self, PyObject *args,  PyObject *kwds)
 {
     static char *kwlist[] = {"value", "ts", NULL};
     long ts;
