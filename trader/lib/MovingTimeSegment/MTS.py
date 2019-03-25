@@ -1,6 +1,6 @@
 # New version of MovingTimeSegment (MTS) based on MTSCircularArray class
 # Given a specified time segment, only keep track of newest values no older than the set time segment
-from trader.lib.MovingTimeSegment.MTSCircularArray import MTSCircularArray
+from trader.lib.MovingTimeSegment.native.MTSCircularArray import MTSCircularArray
 
 
 class MTS(object):
@@ -9,14 +9,11 @@ class MTS(object):
         if minutes != 0:
             self.seconds += minutes * 60
         self.seconds_ts = 1000 * self.seconds
-        self.mts_array = MTSCircularArray(win_secs=self.seconds, max_win_size=self.seconds)
+        self.mts_array = MTSCircularArray(win_secs=self.seconds, max_win_size=self.seconds, minmax=True)
         self.full = False
         self.disable_fmm = disable_fmm
         self.value_smoother = value_smoother
         self.percent_smoother = percent_smoother
-        # track moving sum of time segment values
-        self._sum = 0
-        self._sum_count = 0
 
     def empty(self):
         return self.mts_array.__len__() == 0
@@ -50,11 +47,11 @@ class MTS(object):
     #         self.min_value = self.fmm.min()
     #         self.max_value = self.fmm.max()
 
-    # def get_sum(self):
-    #     return float(self._sum)
-    #
-    # def get_sum_count(self):
-    #     return self._sum_count
+    def get_sum(self):
+        return self.mts_array.get_sum()
+
+    def get_sum_count(self):
+        return self.mts_array.get_sum_count()
 
     def min(self):
         if not self.ready():

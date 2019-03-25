@@ -29,6 +29,7 @@ MTSCircularArray_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->max_value = 0;
     self->max_age = 0;
     self->sum = 0;
+    self->sum_count = 0;
 
     return (PyObject *)self;
 }
@@ -84,11 +85,13 @@ MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds)
     if (self->current_size != 0) {
         prev_value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)self->values, self->age));
         self->sum -= prev_value;
+        self->sum_count--;
     }
 
     //self._values[int(self.age)] = value;
     //self._timestamps[int(self.age)] = ts;
     self->sum += value;
+    self->sum_count++;
     PyList_SetItem((PyObject *)self->values, self->age, Py_BuildValue("d", value));
     PyList_SetItem((PyObject *)self->timestamps, self->age, Py_BuildValue("l", ts));
 
@@ -149,6 +152,9 @@ MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds)
             self->max_age = age;
         }
     }
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *MTSCircularArray_values(MTSCircularArray* self, PyObject *args, PyObject *kwds)
@@ -316,6 +322,18 @@ static PyObject *MTSCircularArray_min_value_ts(MTSCircularArray* self, PyObject 
 static PyObject *MTSCircularArray_max_value_ts(MTSCircularArray* self, PyObject *args)
 {
     return PyList_GetItem((PyObject *)self->timestamps, self->max_age);
+}
+
+static PyObject *MTSCircularArray_get_sum(MTSCircularArray* self, PyObject *args)
+{
+    PyObject *result = Py_BuildValue("d", self->sum);
+    return result;
+}
+
+static PyObject *MTSCircularArray_get_sum_count(MTSCircularArray* self, PyObject *args)
+{
+    PyObject *result = Py_BuildValue("i", self->sum_count);
+    return result;
 }
 
 PyMODINIT_FUNC

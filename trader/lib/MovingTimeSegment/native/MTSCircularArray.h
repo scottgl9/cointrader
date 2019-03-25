@@ -23,6 +23,7 @@ typedef struct {
     double max_value;
     int max_age;
     double sum;
+    int sum_count;
 } MTSCircularArray;
 
 static void MTSCircularArray_dealloc(MTSCircularArray* self);
@@ -44,6 +45,9 @@ static PyObject *MTSCircularArray_min_value(MTSCircularArray* self, PyObject *ar
 static PyObject *MTSCircularArray_max_value(MTSCircularArray* self, PyObject *args);
 static PyObject *MTSCircularArray_min_value_ts(MTSCircularArray* self, PyObject *args);
 static PyObject *MTSCircularArray_max_value_ts(MTSCircularArray* self, PyObject *args);
+static PyObject *MTSCircularArray_get_sum(MTSCircularArray* self, PyObject *args);
+static PyObject *MTSCircularArray_get_sum_count(MTSCircularArray* self, PyObject *args);
+
 
 static PyMemberDef MTSCircularArray_members[] = {
     {"max_win_size", T_LONG, offsetof(MTSCircularArray, max_win_size), 0, "mtscaobj max_win_size"},
@@ -61,6 +65,7 @@ static PyMemberDef MTSCircularArray_members[] = {
     {"_max_value", T_DOUBLE, offsetof(MTSCircularArray, max_value), 0, "mtscaobj _max_value"},
     {"_max_age", T_INT, offsetof(MTSCircularArray, max_age), 0, "mtscaobj _max_age"},
     {"_sum", T_DOUBLE, offsetof(MTSCircularArray, sum), 0, "mtscaobj _sum"},
+    {"_sum_count", T_INT, offsetof(MTSCircularArray, sum_count), 0, "mtscaobj _sum_count"},
     {NULL}  /* Sentinel */
 };
 
@@ -101,6 +106,10 @@ static PyMethodDef MTSCircularArray_methods[] = {
     "min_value_ts MTSCircularArray"},
     {"max_value_ts", (PyCFunction)MTSCircularArray_max_value_ts, METH_NOARGS,
     "max_value_ts MTSCircularArray"},
+    {"get_sum", (PyCFunction)MTSCircularArray_get_sum, METH_NOARGS,
+    "get_sum MTSCircularArray"},
+    {"get_sum_count", (PyCFunction)MTSCircularArray_get_sum_count, METH_NOARGS,
+    "get_sum_count MTSCircularArray"},
     {NULL}  /* Sentinel */
 };
 
