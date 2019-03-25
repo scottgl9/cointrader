@@ -18,6 +18,7 @@ class MTSCircularArray(object):
         self._min_age = 0
         self._max_value = 0
         self._max_age = 0
+        self._sum = 0
 
     def __len__(self):
         return self.current_size
@@ -48,6 +49,7 @@ class MTSCircularArray(object):
         self._min_age = 0
         self._max_value = 0
         self._max_age = 0
+        self._sum = 0
 
     def length(self):
         return self.__len__()
@@ -73,6 +75,10 @@ class MTSCircularArray(object):
             else:
                 self._max_age += 1
 
+        if self.current_size:
+            self._sum -= self._values[int(self.age)]
+
+        self._sum += value
         self._values[int(self.age)] = value
         self._timestamps[int(self.age)] = ts
 

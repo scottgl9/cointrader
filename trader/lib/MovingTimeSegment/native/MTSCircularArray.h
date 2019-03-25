@@ -22,6 +22,7 @@ typedef struct {
     int min_age;
     double max_value;
     int max_age;
+    double sum;
 } MTSCircularArray;
 
 static void MTSCircularArray_dealloc(MTSCircularArray* self);
@@ -45,6 +46,7 @@ static PyMemberDef MTSCircularArray_members[] = {
     {"_min_age", T_INT, offsetof(MTSCircularArray, min_age), 0, "mtscaobj _min_age"},
     {"_max_value", T_DOUBLE, offsetof(MTSCircularArray, max_value), 0, "mtscaobj _max_value"},
     {"_max_age", T_INT, offsetof(MTSCircularArray, max_age), 0, "mtscaobj _max_age"},
+    {"_sum", T_DOUBLE, offsetof(MTSCircularArray, sum), 0, "mtscaobj _sum"},
     {NULL}  /* Sentinel */
 };
 

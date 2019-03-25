@@ -28,6 +28,7 @@ MTSCircularArray_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->min_age = 0;
     self->max_value = 0;
     self->max_age = 0;
+    self->sum = 0;
 
     return (PyObject *)self;
 }
@@ -58,7 +59,7 @@ MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {"value", "ts", NULL};
     long ts;
-    double value;
+    double value, prev_value;
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "dl", kwlist,
                                      &value, &ts))
         return NULL;
@@ -79,8 +80,14 @@ MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds)
         }
     }
 
+    if (self->current_size != 0) {
+        prev_value = PyFloat_AS_DOUBLE(PyList_GetItem((PyObject *)self->values, self->age));
+        self->sum -= prev_value;
+    }
+
     //self._values[int(self.age)] = value;
     //self._timestamps[int(self.age)] = ts;
+    self->sum += value;
     PyList_SetItem((PyObject *)self->values, self->age, Py_BuildValue("d", value));
     PyList_SetItem((PyObject *)self->timestamps, self->age, Py_BuildValue("l", ts));
 
