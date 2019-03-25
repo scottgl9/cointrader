@@ -45,6 +45,7 @@ MTSCircularArray_init(MTSCircularArray *self, PyObject *args, PyObject *kwds)
                                      &self->win_secs, &self->max_win_size, &minmax))
         return -1;
 
+    self->minmax = PyObject_IsTrue(minmax);
     self->win_secs_ts = self->win_secs * 1000;
     self->values = (PyListObject*)PyList_New(self->max_win_size);
     self->timestamps = (PyListObject*)PyList_New(self->max_win_size);
@@ -156,6 +157,90 @@ static PyObject *MTSCircularArray_ready(MTSCircularArray* self, PyObject *args)
     return Py_False;
 }
 
+static PyObject *MTSCircularArray_start_index(MTSCircularArray* self, PyObject *args)
+{
+    PyObject *result = Py_BuildValue("d", self->start_age);
+    return result;
+}
+
+static PyObject *MTSCircularArray_last_index(MTSCircularArray* self, PyObject *args)
+{
+    PyObject *result = Py_BuildValue("d", self->end_age);
+    return result;
+}
+
+static PyObject *MTSCircularArray_get_value(MTSCircularArray* self, PyObject *args)
+{
+    int index, pos;
+    if (! PyArg_ParseTuple(args, "i", &index)) {
+        return NULL;
+    }
+
+    if (self->current_size != 0) {
+        pos = (self->start_age + index) % self->current_size;
+    } else {
+        pos = index;
+    }
+    return PyList_GetItem((PyObject *)self->values, pos);
+}
+
+static PyObject *MTSCircularArray_set_value(MTSCircularArray* self, PyObject *args, PyObject *kwds)
+{
+    static char *kwlist[] = {"index", "value", NULL};
+    int index, pos;
+    double value;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "id", kwlist,
+                                     &index, &value))
+        return NULL;
+
+    pos = (self->start_age + index) % self->current_size;
+    //self._values[pos] = value
+    PyList_SetItem((PyObject *)self->values, pos, Py_BuildValue("d", value));
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *MTSCircularArray_first_value(MTSCircularArray* self, PyObject *args)
+{
+    return PyList_GetItem((PyObject *)self->values, self->start_age);
+}
+
+static PyObject *MTSCircularArray_last_value(MTSCircularArray* self, PyObject *args)
+{
+    return PyList_GetItem((PyObject *)self->values, self->end_age);
+}
+
+static PyObject *MTSCircularArray_first_ts(MTSCircularArray* self, PyObject *args)
+{
+    return PyList_GetItem((PyObject *)self->timestamps, self->start_age);
+}
+
+static PyObject *MTSCircularArray_last_ts(MTSCircularArray* self, PyObject *args)
+{
+    return PyList_GetItem((PyObject *)self->timestamps, self->end_age);
+}
+
+static PyObject *MTSCircularArray_min_value(MTSCircularArray* self, PyObject *args)
+{
+    PyObject *result = Py_BuildValue("d", self->min_value);
+    return result;
+}
+
+static PyObject *MTSCircularArray_max_value(MTSCircularArray* self, PyObject *args)
+{
+    PyObject *result = Py_BuildValue("d", self->max_value);
+    return result;
+}
+
+static PyObject *MTSCircularArray_min_value_ts(MTSCircularArray* self, PyObject *args)
+{
+    return PyList_GetItem((PyObject *)self->timestamps, self->min_age);
+}
+
+static PyObject *MTSCircularArray_max_value_ts(MTSCircularArray* self, PyObject *args)
+{
+    return PyList_GetItem((PyObject *)self->timestamps, self->max_age);
+}
 
 PyMODINIT_FUNC
 initMTSCircularArray(void)

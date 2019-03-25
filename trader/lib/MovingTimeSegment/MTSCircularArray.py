@@ -187,13 +187,13 @@ class MTSCircularArray(object):
     def last_ts(self):
         return self._timestamps[self.end_age]
 
-    def set_first(self, value, ts):
-        self._values[self.start_age] = value
-        self._timestamps[self.start_age] = ts
-
-    def set_last(self, value, ts):
-        self._values[self.end_age] = value
-        self._timestamps[self.end_age] = ts
+    # def set_first(self, value, ts):
+    #     self._values[self.start_age] = value
+    #     self._timestamps[self.start_age] = ts
+    #
+    # def set_last(self, value, ts):
+    #     self._values[self.end_age] = value
+    #     self._timestamps[self.end_age] = ts
 
     def min_value(self):
         return self._min_value
