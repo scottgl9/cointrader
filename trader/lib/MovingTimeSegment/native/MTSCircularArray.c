@@ -47,11 +47,11 @@ MTSCircularArray_init(MTSCircularArray *self, PyObject *args, PyObject *kwds)
         return -1;
 
     self->minmax = PyObject_IsTrue(minmax);
+    Py_XDECREF(minmax);
+
     self->win_secs_ts = self->win_secs * 1000;
     self->values = (PyListObject*)PyList_New(self->max_win_size);
     self->timestamps = (PyListObject*)PyList_New(self->max_win_size);
-
-    Py_XDECREF(minmax);
 
     return 0;
 }
@@ -116,7 +116,7 @@ MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds)
     }
 
     if (self->minmax && self->current_size != 0) {
-        if (self->min_age > self->current_size) {
+        if (self->min_age >= self->current_size) {
             double cur_value = 0;
             int min_age=0;
             double min_value = 0;
@@ -134,7 +134,7 @@ MTSCircularArray_add(MTSCircularArray* self, PyObject *args, PyObject *kwds)
             self->min_age = min_age;
         }
 
-        if (self->max_age > self->current_size) {
+        if (self->max_age >= self->current_size) {
             double cur_value = 0;
             int max_age=0;
             double max_value = 0;
@@ -245,13 +245,13 @@ static PyObject *MTSCircularArray_ready(MTSCircularArray* self, PyObject *args)
 
 static PyObject *MTSCircularArray_start_index(MTSCircularArray* self, PyObject *args)
 {
-    PyObject *result = Py_BuildValue("d", self->start_age);
+    PyObject *result = Py_BuildValue("i", self->start_age);
     return result;
 }
 
 static PyObject *MTSCircularArray_last_index(MTSCircularArray* self, PyObject *args)
 {
-    PyObject *result = Py_BuildValue("d", self->end_age);
+    PyObject *result = Py_BuildValue("i", self->end_age);
     return result;
 }
 

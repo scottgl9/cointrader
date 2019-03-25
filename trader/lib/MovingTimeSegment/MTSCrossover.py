@@ -5,11 +5,14 @@
 # pre_window allows an additional window to check before or after crossover
 # in addition to window, to verify all values in pre_window were under/over crosspoint
 # before crossup/crossdown occurred
+#try:
+#    from trader.lib.MovingTimeSegment.native.MTSCircularArray import MTSCircularArray
+#except ImportError:
 from trader.lib.MovingTimeSegment.MTSCircularArray import MTSCircularArray
 
 
 class MTSCrossover(object):
-    def __init__(self, pre_win_secs=60, win_secs=60):
+    def __init__(self, pre_win_secs=0, win_secs=60):
         self.pre_win_secs = pre_win_secs
         self.win_secs = win_secs
 

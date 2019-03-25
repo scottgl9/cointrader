@@ -7,9 +7,10 @@ except ImportError:
     from trader.lib.ValueLag import ValueLag
     from trader.indicator.EMA import EMA
 
+from trader.lib.MovingTimeSegment.MTSCrossover import MTSCrossover
 
 class MACross(object):
-    def __init__(self, ema_win1=0, ema_win2=0, scale=0, cross_window=10, cross_timeout=0,
+    def __init__(self, ema_win1=0, ema_win2=0, scale=0, cross_window=60, cross_timeout=0,
                  lag_window=3, indicator=None, use_ma1_value=False):
         #if not indicator:
         #    self.indicator = EMA
@@ -81,7 +82,7 @@ class MACross(object):
         if self.indicator and self.ema_win2:
             self.ma2 = self.indicator(self.ema_win2, scale=self.scale, lag_window=self.lag_window)
 
-        self.cross = Crossover(pre_window=0, window=self.cross_window)
+        self.cross = MTSCrossover(pre_win_secs=0, win_secs=cross_window) #Crossover(pre_window=0, window=self.cross_window)
 
     def update_min_max_values(self, value, ts):
         if self.cross_up:
@@ -146,7 +147,7 @@ class MACross(object):
             return
 
         if ma1_result != 0 and ma2_result != 0:
-            self.cross.update(ma1_result, ma2_result)
+            self.cross.update(ma1_result, ma2_result, ts)
 
         # use ma1_result for tracking instead of value (raw unfiltered price)
         if self.use_ma1_value:
