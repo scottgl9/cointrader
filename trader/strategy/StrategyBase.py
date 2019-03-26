@@ -21,7 +21,8 @@ from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
 
 
 class StrategyBase(object):
-    def __init__(self, client, base='BTC', currency='USD', account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
+    def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
+                 base_min_size=0.0, tick_size=0.0, logger=None):
         self.strategy_name = None
         self.logger = logger
         self.tickers = None
@@ -33,6 +34,7 @@ class StrategyBase(object):
         self.quote_increment = float(tick_size)
         self.client = client
         self.accnt = account_handler
+        self.order_handler = order_handler
         self.make_ticker_id()
         # true if base, and currency are both tradable currencies (ex ETH/BTC)
         self._currency_pair = self.accnt.is_currency_pair(base=self.base, currency=self.currency)

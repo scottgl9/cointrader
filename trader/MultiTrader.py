@@ -106,6 +106,7 @@ class MultiTrader(object):
 
         trade_pair = TradePair(self.client,
                                self.accnt,
+                               order_handler=self.order_handler,
                                strategy_name=self.strategy_name,
                                signal_names=self.signal_names,
                                base=base_name,

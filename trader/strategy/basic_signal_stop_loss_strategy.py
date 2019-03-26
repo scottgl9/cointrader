@@ -9,11 +9,13 @@ from datetime import datetime
 
 
 class basic_signal_stop_loss_strategy(StrategyBase):
-    def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
+    def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None,
+                 order_handler=None, asset_info=None, base_min_size=0.0, tick_size=0.0, logger=None):
         super(basic_signal_stop_loss_strategy, self).__init__(client,
                                                                base,
                                                                currency,
                                                                account_handler,
+                                                               order_handler,
                                                                base_min_size,
                                                                tick_size,
                                                                logger)

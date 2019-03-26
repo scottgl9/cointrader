@@ -10,19 +10,17 @@ def datetime_to_float(d):
 
 
 class null_strategy(StrategyBase):
-    def __init__(self, client, name='BTC', currency='USD', signal_names=None, account_handler=None, base_min_size=0.0, tick_size=0.0, logger=None):
+    def __init__(self, client, name='BTC', currency='USD', signal_names=None, account_handler=None,
+                 order_handler=None, asset_info=None, base_min_size=0.0, tick_size=0.0, logger=None):
         super(null_strategy, self).__init__(client,
                                             name,
                                             currency,
                                             account_handler,
+                                            order_handler,
                                             base_min_size,
                                             tick_size,
                                             logger)
         self.strategy_name = 'null_strategy'
-        self.client = client
-        self.accnt = account_handler
-        self.logger = logger
-        self.ticker_id = self.accnt.make_ticker_id(name, currency)
         self.last_price = self.price = 0.0
         self.rsi_result = 0.0
         self.last_rsi_result = 0.0
