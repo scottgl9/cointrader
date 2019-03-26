@@ -36,6 +36,7 @@ class AccountBinance(AccountBase):
         self._min_tickers = {}
         self._max_tickers = {}
         self._sell_only = False
+        self._btc_only = False
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
@@ -96,6 +97,13 @@ class AccountBinance(AccountBase):
 
     def sell_only(self):
         return self._sell_only
+
+    def set_btc_only(self, btc_only):
+        self.logger.info("set_btc_only({})".format(btc_only))
+        self._btc_only = btc_only
+
+    def btc_only(self):
+        return self._btc_only
 
     def get_currencies(self):
         return self.currencies

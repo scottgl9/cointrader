@@ -48,6 +48,10 @@ class BinanceTrader:
         if self.multitrader and self.multitrader.accnt:
             self.multitrader.accnt.set_sell_only(True)
 
+    def set_btc_only(self):
+        if self.multitrader and self.multitrader.accnt:
+            self.multitrader.accnt.set_btc_only(True)
+
     # process message about user account update
     def process_user_message(self, msg):
         try:
@@ -233,6 +237,10 @@ if __name__ == '__main__':
     parser.add_argument('--sell-only', action='store_true', dest='sell_only',
                         default=False,
                         help='Set to sell only mode')
+
+    parser.add_argument('--btc-only', action='store_true', dest='btc_only',
+                        default=False,
+                        help='Only buy/sell BTC currency trade pairs')
 
     results = parser.parse_args()
 

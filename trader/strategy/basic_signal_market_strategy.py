@@ -97,6 +97,9 @@ class basic_signal_market_strategy(StrategyBase):
         if self.accnt.sell_only():
             return False
 
+        if self.accnt.btc_only() and self.currency != 'BTC':
+            return False
+
         if float(signal.buy_price) != 0.0 or self.disable_buy:
             return False
 
