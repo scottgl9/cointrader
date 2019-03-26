@@ -85,6 +85,11 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         self.disable_buy = False
         self.simulate = self.accnt.simulate
 
+        # stop loss specific
+        self.stop_loss_set = False
+        self.stop_loss_price = 0
+        self.next_stop_loss_price = 0
+
     # clear pending sell trades which have been bought
     def reset(self):
         for signal in self.signal_handler.get_handlers():
@@ -208,7 +213,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     #                                                             msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.buy_price = msg.price
-                    signal.buy_price_high = signal.buy_price
                     msg.mark_read()
                     completed = True
                     #if msg.order_type == Message.TYPE_MARKET:
@@ -288,7 +292,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             self.delayed_buy_msg = None
             signal.buy_timestamp = self.timestamp
             signal.last_buy_ts = self.timestamp
-            signal.buy_price_high = signal.buy_price
 
         if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
             self.delayed_sell_msg.price = price
@@ -304,10 +307,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             signal.buy_timestamp = 0
             signal.last_sell_ts = self.timestamp
 
-        # keep track of the highest close price after a buy
-        if signal.buy_price_high != 0 and price > signal.buy_price_high:
-            signal.buy_price_high = price
-
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
             return
@@ -318,19 +317,42 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                 self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
 
         if not signal_completed and self.buy_signal(signal, price):
+            if self.stop_loss_set:
+                self.cancel_sell_stop_loss(signal)
+
             self.buy_market(signal, price)
+            return
 
         if not signal_completed and self.sell_signal(signal, price):
             self.sell_market(signal, price)
+            return
+
+        if signal.buy_price and not self.stop_loss_set and not self.stop_loss_price:
+            self.stop_loss_price = signal.buy_price
+            if StrategyBase.percent_p2_gt_p1(self.stop_loss_price, price, 1.0):
+                self.set_sell_stop_loss(signal, self.stop_loss_price)
+                self.next_stop_loss_price = price
+        elif signal.buy_price:
+            if StrategyBase.percent_p2_gt_p1(self.next_stop_loss_price, price, 1.0):
+                self.cancel_sell_stop_loss(signal)
+                self.stop_loss_price = self.next_stop_loss_price
+                self.set_sell_stop_loss(signal, self.stop_loss_price)
+                self.next_stop_loss_price = price
 
 
     def set_sell_stop_loss(self, signal, price):
-        stop_loss_price = signal.buy_price * 0.095
-        self.msg_handler.sell_stop_loss(self.ticker_id, stop_loss_price, signal.size, signal.buy_price, signal.id)
+        if self.stop_loss_set:
+            return False
+        self.msg_handler.sell_stop_loss(self.ticker_id, price, signal.size, signal.buy_price, signal.id)
+        self.stop_loss_set = True
+        return True
 
-    #def set_sell_stop_loss(self, signal, price):
-    #    pass
-
+    def cancel_sell_stop_loss(self, signal):
+        if not self.stop_loss_set:
+            return False
+        self.msg_handler.sell_cancel(self.ticker_id, signal.id, type=Message.TYPE_STOP_LOSS)
+        self.stop_loss_set = False
+        return True
 
     def buy_market(self, signal, price):
         if float(signal.buy_price) != 0:
@@ -378,7 +400,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         # for more accurate simulation, delay sell message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
         if self.accnt.simulate and not self.delayed_sell_msg:
-            signal.buy_price_high = 0
             self.delayed_sell_msg = Message(self.ticker_id,
                                             Message.ID_MULTI,
                                             Message.MSG_MARKET_SELL,
