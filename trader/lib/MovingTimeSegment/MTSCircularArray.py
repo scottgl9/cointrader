@@ -154,6 +154,30 @@ class MTSCircularArray(object):
             age = (age + 1) % size
         return result
 
+    def values_increasing(self):
+        if not self.ready():
+            return False
+        age1 = self.start_age
+        age2 = (self.start_age + 1) % self.current_size
+        for i in range(0, self.current_size - 1):
+            if self._values[int(age1)] > self._values[int(age2)]:
+                return False
+            age1 = (age1 + 1) % self.current_size
+            age2 = (age2 + 1) % self.current_size
+        return True
+
+    def values_decreasing(self):
+        if not self.ready():
+            return False
+        age1 = self.start_age
+        age2 = (self.start_age + 1) % self.current_size
+        for i in range(0, self.current_size - 1):
+            if self._values[int(age1)] < self._values[int(age2)]:
+                return False
+            age1 = (age1 + 1) % self.current_size
+            age2 = (age2 + 1) % self.current_size
+        return True
+
     def timestamps(self, ordered=True):
         if not ordered:
             if self.current_size:
@@ -215,6 +239,12 @@ class MTSCircularArray(object):
 
     def max_value_ts(self):
         return self._timestamps[self._max_age]
+
+    def min_value_index(self):
+        return self._min_age
+
+    def max_value_index(self):
+        return self._max_age
 
     def get_sum(self):
         return self._sum

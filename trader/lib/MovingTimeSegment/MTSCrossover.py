@@ -12,10 +12,14 @@ from trader.lib.MovingTimeSegment.MTSCircularArray import MTSCircularArray
 
 
 class MTSCrossover(object):
-    def __init__(self, pre_win_secs=0, win_secs=60):
+    def __init__(self, pre_win_secs=0, win_secs=60, check_expand=False):
         self.pre_win_secs = pre_win_secs
         self.win_secs = win_secs
+        self.check_expand = check_expand
 
+        self.diff = None
+        if self.check_expand:
+            self.diff = MTSCircularArray(win_secs=win_secs, max_win_size=win_secs+1, minmax=True)
         self.mtsca1 = MTSCircularArray(win_secs=win_secs, max_win_size=win_secs+1, minmax=True)
         self.mtsca2 = MTSCircularArray(win_secs=win_secs, max_win_size=win_secs+1, minmax=True)
         self.pre_mtsca1 = MTSCircularArray(win_secs=pre_win_secs, max_win_size=pre_win_secs+1, minmax=True)
@@ -30,6 +34,8 @@ class MTSCrossover(object):
     def update(self, value1, value2, ts):
         self.mtsca1.add(value1, ts)
         self.mtsca2.add(value2, ts)
+        if self.check_expand:
+            self.diff.add(abs(value1 - value2), ts)
 
         if not self.mtsca1.ready():
             return
@@ -44,17 +50,19 @@ class MTSCrossover(object):
         if self.values_under and self.mtsca1.min_value() > self.mtsca2.max_value():
             if not self.last_cross_ts or (ts - self.last_cross_ts) > (self.pre_win_secs + self.win_secs) * 1000:
                 # values1 in window were under values2, now all values1 over values2
-                self.values_under = False
-                self.values_over = False
-                self.crossup = True
-                self.last_cross_ts = ts
+                if not self.check_expand or self.diff.values_increasing():
+                    self.values_under = False
+                    self.values_over = False
+                    self.crossup = True
+                    self.last_cross_ts = ts
         elif self.values_over and self.mtsca1.max_value() < self.mtsca2.min_value():
             if not self.last_cross_ts or (ts - self.last_cross_ts) > (self.pre_win_secs + self.win_secs) * 1000:
                 # values1 in window were over values2, now all values1 under values2
-                self.values_over = False
-                self.values_under = False
-                self.crossdown = True
-                self.last_cross_ts = ts
+                if not self.check_expand or self.diff.values_increasing():
+                    self.values_over = False
+                    self.values_under = False
+                    self.crossdown = True
+                    self.last_cross_ts = ts
         elif not self.values_under and not self.values_over:
             if self.mtsca1.max_value() < self.mtsca2.min_value():
                 if self.pre_win_secs:
