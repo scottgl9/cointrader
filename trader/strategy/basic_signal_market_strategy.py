@@ -315,13 +315,13 @@ class basic_signal_market_strategy(StrategyBase):
                 self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
 
         if not signal_completed and self.buy_signal(signal, price):
-            self.buy(signal, price)
+            self.buy_market(signal, price)
 
         if not signal_completed and self.sell_signal(signal, price):
-            self.sell(signal, price)
+            self.sell_market(signal, price)
 
 
-    def buy(self, signal, price):
+    def buy_market(self, signal, price):
         if float(signal.buy_price) != 0:
             return
 
@@ -361,7 +361,7 @@ class basic_signal_market_strategy(StrategyBase):
             self.update_buy_price = True
 
 
-    def sell(self, signal, price):
+    def sell_market(self, signal, price):
         if float(signal.buy_price) == 0:
             return
 

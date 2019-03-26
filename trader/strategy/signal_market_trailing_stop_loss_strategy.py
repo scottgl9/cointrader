@@ -2,6 +2,7 @@ from trader.lib.Message import Message
 from trader.lib.MessageHandler import MessageHandler
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
+from trader.strategy.trade_size_strategy.percent_balance_trade_size import percent_balance_trade_size
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
 from trader.indicator.OBV import OBV
@@ -25,13 +26,19 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         self.high = 0
         self.last_high = 0
 
+        #signal_names.append("BTC_USDT_Signal")
+
         if signal_names:
             for name in signal_names:
+                if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
+                    continue
                 signal = StrategyBase.select_signal_name(name, self.accnt, self.ticker_id, asset_info)
                 if signal.mm_enabled:
                     self.mm_enabled = True
                 # don't add global signal if global_filter doesn't match ticker_id
                 if signal.global_signal and signal.global_filter != self.ticker_id:
+                    continue
+                if not signal.global_signal and self.ticker_id.endswith('USDT'):
                     continue
                 self.signal_handler.add(signal)
         else:
@@ -64,6 +71,10 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                    pax=10.0,
                                                    usdt=10.0,
                                                    multiplier=5.0)
+        #self.trade_size_handler = percent_balance_trade_size(self.accnt,
+        #                                                     asset_info,
+        #                                                     percent=10.0,
+        #                                                     multiplier=5)
 
         # for more accurate simulation
         self.delayed_buy_msg = None
@@ -83,10 +94,23 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
 
 
     def buy_signal(self, signal, price):
-        if float(signal.buy_price) != 0.0:
-            #if signal.buy_signal():
-            #    signal.sell_marked = False
+        if self.accnt.sell_only():
             return False
+
+        if self.accnt.btc_only() and self.currency != 'BTC':
+            return False
+
+        if float(signal.buy_price) != 0.0 or self.disable_buy:
+            return False
+
+        # check USDT value of base by calculating (base_currency) * (currency_usdt)
+        # verify that USDT value >= $0.02, if less do not buy
+        usdt_symbol = self.accnt.make_ticker_id(self.currency, 'USDT')
+        currency_price = float(self.accnt.get_ticker(usdt_symbol))
+        if currency_price:
+            price_usdt = currency_price * price
+            if price_usdt < 0.02:
+                return False
 
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
 
@@ -120,8 +144,13 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
             return False
 
-        #if signal.sell_marked:
-        #    return True
+        # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0
+        if (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
+            return True
+
+        # if buying is disabled and symbol is >= 1.0 percent profit, then sell
+        if self.disable_buy:
+            return True
 
         if signal.sell_signal():
             return True
@@ -156,7 +185,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             close = kline.close
             self.low = kline.low
             self.high = kline.high
-            volume = kline.volume
+            volume = kline.volume_quote
             self.timestamp = kline.ts
 
         if close == 0 or volume == 0:
@@ -165,7 +194,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.timestamp == self.last_timestamp:
             return
 
-        self.signal_handler.pre_update(close=close, volume=volume, ts=self.timestamp, cache_db=cache_db)
+        self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
 
         completed = False
 
@@ -206,7 +235,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     signal.buy_timestamp = 0
                     # for failed buy, disable buys for this symbol for 4 hours
                     signal.disabled = True
-                    signal.disabled_end_ts = signal.timestamp + 1000 * 3600 * 4
+                    signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_SELL_FAILED:
                     id = msg.sig_id
