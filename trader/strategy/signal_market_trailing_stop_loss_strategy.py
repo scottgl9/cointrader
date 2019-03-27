@@ -226,6 +226,8 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     #                                                                           msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
+                    if msg.order_type == Message.TYPE_MARKET:
+                        self.cancel_sell_stop_loss(signal)
                     self.stop_loss_set = False
                     self.stop_loss_price = 0
                     msg.mark_read()
@@ -252,6 +254,11 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                                                                msg.buy_price,
                                                                                                msg.size))
                     signal.buy_price = signal.last_buy_price
+                    if self.stop_loss_set:
+                        self.cancel_sell_stop_loss(signal)
+                        self.stop_loss_set = False
+                        self.stop_loss_price = 0
+
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_ORDER_SIZE_UPDATE:
                     id = msg.sig_id
@@ -350,7 +357,8 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
     def set_sell_stop_loss(self, signal, price):
         if self.stop_loss_set:
             return False
-        self.msg_handler.sell_stop_loss(self.ticker_id, price, signal.size, signal.buy_price, signal.id)
+        #self.logger.info("set_sell_stop_loss({}, {}, {})".format(self.ticker_id, price, signal.buy_size))
+        self.msg_handler.sell_stop_loss(self.ticker_id, price, signal.buy_size, signal.buy_price, signal.id)
         self.stop_loss_set = True
         return True
 
@@ -358,6 +366,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
     def cancel_sell_stop_loss(self, signal):
         if not self.stop_loss_set:
             return False
+        #self.logger.info("cancel_sell_stop_loss({})".format(self.ticker_id))
         self.order_handler.cancel_sell_order(self.ticker_id)
         self.stop_loss_set = False
         return True

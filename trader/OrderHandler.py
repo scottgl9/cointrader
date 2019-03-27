@@ -320,7 +320,7 @@ class OrderHandler(object):
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
 
-        self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        #self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
         del self.open_orders[symbol]
 
     def place_buy_limit_order(self, msg):
@@ -391,7 +391,7 @@ class OrderHandler(object):
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
         self.open_orders[ticker_id] = order
 
-        self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        #self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
     def place_buy_market_order(self, msg):
@@ -419,7 +419,7 @@ class OrderHandler(object):
             self.logger.info(message)
             if self.store_trades:
                 self.store_trade_json(ticker_id, price, size, 'buy', trade_type=msg.buy_type)
-            self.msg_handler.buy_complete(ticker_id, price, size, sig_id)
+            self.msg_handler.buy_complete(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
         else:
             order = self.accnt.parse_order_result(result, symbol=ticker_id)
             if isinstance(order, type(None)):
@@ -442,7 +442,7 @@ class OrderHandler(object):
                 self.accnt.get_account_balances()
                 # add to trader db for tracking
                 self.trader_db.insert_trade(int(time.time()), ticker_id, price, size, sig_id)
-                self.msg_handler.buy_complete(ticker_id, price, size, sig_id)
+                self.msg_handler.buy_complete(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
 
@@ -527,11 +527,11 @@ class OrderHandler(object):
                 self.accnt.get_account_balances()
                 # remove from trade db since it has been sold
                 self.trader_db.remove_trade(ticker_id, sig_id)
-                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id)
+                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
             else:
-                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id)
+                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             # remove from trade db since it failed to be sold
