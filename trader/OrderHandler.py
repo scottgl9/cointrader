@@ -293,31 +293,35 @@ class OrderHandler(object):
 
     def place_cancel_buy_order(self, msg):
         ticker_id = msg.src_id
-        if ticker_id not in self.open_orders.keys():
+        self.cancel_buy_order(ticker_id)
+
+    def cancel_buy_order(self, symbol):
+        if symbol not in self.open_orders.keys():
             return
 
-        order = self.open_orders[ticker_id]
+        order = self.open_orders[symbol]
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
 
         self.logger.info("cancel_buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-        del self.open_orders[ticker_id]
-
+        del self.open_orders[symbol]
 
     def place_cancel_sell_order(self, msg):
         ticker_id = msg.src_id
-        if ticker_id not in self.open_orders.keys():
+        self.cancel_sell_order(ticker_id)
+
+    def cancel_sell_order(self, symbol):
+        if symbol not in self.open_orders.keys():
             return
 
-        order = self.open_orders[ticker_id]
+        order = self.open_orders[symbol]
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
 
         self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
-        del self.open_orders[ticker_id]
-
+        del self.open_orders[symbol]
 
     def place_buy_limit_order(self, msg):
         ticker_id = msg.src_id

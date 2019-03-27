@@ -226,6 +226,8 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     #                                                                           msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
+                    self.stop_loss_set = False
+                    self.stop_loss_price = 0
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
@@ -325,11 +327,15 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             return
 
         if not signal_completed and self.sell_signal(signal, price):
+            if self.stop_loss_set:
+                self.cancel_sell_stop_loss(signal)
+
             self.sell_market(signal, price)
             return
 
-        if signal.buy_price and not self.stop_loss_set and not self.stop_loss_price:
-            self.stop_loss_price = signal.buy_price
+        if signal.buy_price and not self.stop_loss_set:
+            if not self.stop_loss_price:
+                self.stop_loss_price = signal.buy_price
             if StrategyBase.percent_p2_gt_p1(self.stop_loss_price, price, 1.0):
                 self.set_sell_stop_loss(signal, self.stop_loss_price)
                 self.next_stop_loss_price = price
@@ -348,10 +354,11 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         self.stop_loss_set = True
         return True
 
+    # instant cancel of sell order using order_handler directly
     def cancel_sell_stop_loss(self, signal):
         if not self.stop_loss_set:
             return False
-        self.msg_handler.sell_cancel(self.ticker_id, signal.id, type=Message.TYPE_STOP_LOSS)
+        self.order_handler.cancel_sell_order(self.ticker_id)
         self.stop_loss_set = False
         return True
 
