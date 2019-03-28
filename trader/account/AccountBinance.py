@@ -35,6 +35,8 @@ class AccountBinance(AccountBase):
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
+        self.initial_btc = 0
+        self.actual_initial_btc = 0
         self._sell_only = False
         self._btc_only = False
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)

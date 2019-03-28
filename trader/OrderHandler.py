@@ -4,6 +4,7 @@ from trader.lib.Order import Order
 from trader.notify.Email import Email
 from trader.lib.TraderDB import TraderDB
 from trader.TradeBalanceHandler import TradeBalanceHandler
+from trader.OrderLimitHandler import OrderLimitHandler
 import time
 import os
 
@@ -13,12 +14,12 @@ class OrderHandler(object):
         self.accnt = accnt
         self.msg_handler = msg_handler
         self.logger = logger
-        self.open_orders = {}
         self.trader_db = None
         self.store_trades = store_trades
         self.trades = {}
         self.counters = {}
         self.buy_disabled = False
+        self.limit_handler = OrderLimitHandler(accnt, msg_handler, logger)
         self.trade_balance_handler = TradeBalanceHandler(self.accnt, logger=logger)
         # total percent profit
         self.tpprofit = 0
@@ -27,12 +28,8 @@ class OrderHandler(object):
             self.trade_db_init("trade.db")
             self.notify = Email()
 
-        self.initial_btc = 0
         self.update_initial_btc()
-        self.actual_initial_btc = self.initial_btc
-
-        self.logger.info("Initial BTC value = {}".format(self.initial_btc))
-
+        self.logger.info("Initial BTC value = {}".format(self.accnt.initial_btc))
 
     def trade_db_init(self, filename):
         if self.accnt.simulate:
@@ -63,19 +60,26 @@ class OrderHandler(object):
         self.logger.info("Resetting initial BTC...")
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            self.initial_btc = self.accnt.get_account_total_btc_value()
+            self.accnt.initial_btc = self.accnt.get_account_total_btc_value()
         else:
-            self.initial_btc = self.accnt.get_total_btc_value()
-
+            self.accnt.initial_btc = self.accnt.get_total_btc_value()
 
     def get_stored_trades(self):
         return self.trades
 
+    def stored_trades_update(self, kline):
+        if self.store_trades:
+            if kline.symbol not in self.counters:
+                self.counters[kline.symbol] = 1
+            else:
+                self.counters[kline.symbol] += 1
 
     def get_total_percent_profit(self):
         result = self.tpprofit
         return result
 
+    def process_limit_order(self, kline):
+        self.limit_handler.process_limit_order(kline)
 
     def process_order_messages(self):
         received = False
@@ -116,14 +120,6 @@ class OrderHandler(object):
                     self.place_sell_stop_loss_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_BUY_REPLACE:
-                    self.replace_buy_order(msg)
-                    msg.mark_read()
-                    received = True
-                elif msg.cmd == Message.MSG_SELL_REPLACE:
-                    self.replace_sell_order(msg)
-                    msg.mark_read()
-                    received = True
                 elif msg.cmd == Message.MSG_BUY_DISABLE:
                     self.buy_disabled = True
                     self.logger.info("BUY_DISABLE")
@@ -138,156 +134,31 @@ class OrderHandler(object):
 
         return received
 
-
-    def process_limit_order(self, kline):
-        if self.store_trades:
-            if kline.symbol not in self.counters:
-                self.counters[kline.symbol] = 1
-            else:
-                self.counters[kline.symbol] += 1
-
-        if kline.symbol not in self.open_orders.keys():
-            return
-
-        order = self.open_orders[kline.symbol]
-        close = kline.close
-        if ((order.type == Message.MSG_STOP_LOSS_BUY and close > order.price) or
-            (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
-            bought = False
-
-            order_type = order.type
-            if order.type == Message.MSG_STOP_LOSS_BUY:
-                order_type = Message.TYPE_STOP_LOSS
-            elif order.type == Message.MSG_LIMIT_BUY:
-                order_type = Message.TYPE_LIMIT
-
-            if self.accnt.simulate:
-                self.send_buy_complete(ticker_id=kline.symbol,
-                                              sig_id=order.sig_id,
-                                              price=order.price,
-                                              size=order.size,
-                                              order_type=order_type)
-                self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
-                bought = True
-            else:
-                result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
-                if ('status' in result and result['status'] == 'FILLED'):
-                    self.send_buy_complete(ticker_id=kline.symbol,
-                                           sig_id=order.sig_id,
-                                           price=order.price,
-                                           size=order.size,
-                                           order_type=order_type)
-                    self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
-                    bought = True
-            if bought:
-                self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-                del self.open_orders[kline.symbol]
-        elif ((order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
-              (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
-            sold = False
-
-            order_type = order.type
-            if order.type == Message.MSG_STOP_LOSS_SELL:
-                order_type = Message.TYPE_STOP_LOSS
-            elif order.type == Message.MSG_LIMIT_SELL:
-                order_type = Message.TYPE_LIMIT
-
-            if self.accnt.simulate:
-                self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
-                self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
-                                        order.sig_id, order_type=order_type)
-                sold = True
-            else:
-                result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
-                if ('status' in result and result['status'] == 'FILLED'):
-                    self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
-                    message = self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
-                                                      order.sig_id, order_type=order_type)
-                    sold = True
-
-            if not sold:
-                return
-
-            del self.open_orders[kline.symbol]
-
-
-    def replace_buy_order(self, msg):
-        ticker_id = msg.src_id
-        price = msg.price
-        size = msg.size
-        sig_id = msg.sig_id
-        if ticker_id not in self.open_orders.keys():
-            return
-
-        order = self.open_orders[ticker_id]
-        orderid = order.orderid
-        if not self.accnt.simulate:
-            result = self.accnt.cancel_order(orderid=orderid)
-            self.logger.info(result)
-
-        self.logger.info("cancel_buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-
-        del self.open_orders[ticker_id]
-
-        if order.type == Message.MSG_STOP_LOSS_BUY:
-            self.place_buy_stop_loss_order(msg)
-        elif order.type == Message.MSG_LIMIT_BUY:
-            self.place_buy_limit_order(msg)
-        else:
-            self.logger.warn("unknown order type {} for {}".format(order.type, ticker_id))
-
-
-    def replace_sell_order(self, msg):
-        ticker_id = msg.src_id
-        price = msg.price
-        buy_price = msg.buy_price
-        size = msg.size
-        sig_id = msg.sig_id
-        if ticker_id not in self.open_orders.keys():
-            return
-
-        order = self.open_orders[ticker_id]
-        orderid = order.orderid
-        if not self.accnt.simulate:
-            result = self.accnt.cancel_order(orderid=orderid)
-            self.logger.info(result)
-
-        self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
-        del self.open_orders[ticker_id]
-
-        if order.type == Message.MSG_STOP_LOSS_SELL:
-            self.place_sell_stop_loss_order(msg)
-        elif order.type == Message.MSG_LIMIT_SELL:
-            self.place_sell_limit_order(msg)
-        else:
-            self.logger.warn("unknown order type {} for {}".format(order.type, ticker_id))
-
-
     def place_cancel_buy_order(self, msg):
         ticker_id = msg.src_id
         self.cancel_buy_order(ticker_id)
 
     def cancel_buy_order(self, symbol):
-        if symbol not in self.open_orders.keys():
+        if symbol not in self.limit_handler.open_orders.keys():
             return
 
-        order = self.open_orders[symbol]
+        order = self.limit_handler.open_orders[symbol]
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
 
         self.logger.info("cancel_buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-        del self.open_orders[symbol]
+        del self.limit_handler.open_orders[symbol]
 
     def place_cancel_sell_order(self, msg):
         ticker_id = msg.src_id
         self.cancel_sell_order(ticker_id)
 
     def cancel_sell_order(self, symbol):
-        if symbol not in self.open_orders.keys():
+        if symbol not in self.limit_handler.open_orders.keys():
             return
 
-        order = self.open_orders[symbol]
+        order = self.limit_handler.open_orders[symbol]
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
@@ -295,14 +166,14 @@ class OrderHandler(object):
             self.accnt.cancel_sell_limit_complete(order.size, symbol)
 
         self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
-        del self.open_orders[symbol]
+        del self.limit_handler.open_orders[symbol]
 
     def place_buy_limit_order(self, msg):
         ticker_id = msg.src_id
         price = msg.price
         size = msg.size
         sig_id = msg.sig_id
-        if ticker_id in self.open_orders.keys():
+        if ticker_id in self.limit_handler.open_orders.keys():
             return
 
         result = self.accnt.buy_limit(price=price, size=size, ticker_id=ticker_id)
@@ -310,7 +181,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_LIMIT_BUY)
-        self.open_orders[ticker_id] = order
+        self.limit_handler.open_orders[ticker_id] = order
         self.logger.info("place_buy_limit({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
@@ -320,7 +191,7 @@ class OrderHandler(object):
         buy_price = msg.buy_price
         size = msg.size
         sig_id = msg.sig_id
-        if ticker_id in self.open_orders.keys():
+        if ticker_id in self.limit_handler.open_orders.keys():
             return
 
         result = self.accnt.sell_limit(price=price, size=size, ticker_id=ticker_id)
@@ -328,7 +199,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
-        self.open_orders[ticker_id] = order
+        self.limit_handler.open_orders[ticker_id] = order
         self.logger.info("place_sell_limit({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
@@ -337,7 +208,7 @@ class OrderHandler(object):
         price = msg.price
         size = msg.size
         sig_id = msg.sig_id
-        if ticker_id in self.open_orders.keys():
+        if ticker_id in self.limit_handler.open_orders.keys():
             return
 
         result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
@@ -345,7 +216,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
-        self.open_orders[ticker_id] = order
+        self.limit_handler.open_orders[ticker_id] = order
         self.logger.info("place_buy_stop({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
@@ -355,7 +226,7 @@ class OrderHandler(object):
         buy_price = msg.buy_price
         size = msg.size
         sig_id = msg.sig_id
-        if ticker_id in self.open_orders.keys():
+        if ticker_id in self.limit_handler.open_orders.keys():
             return
 
         result = self.accnt.sell_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
@@ -368,10 +239,15 @@ class OrderHandler(object):
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
-        self.open_orders[ticker_id] = order
+        self.limit_handler.open_orders[ticker_id] = order
 
         self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
+    def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
+        return self.limit_handler.send_buy_complete(ticker_id, price, size, sig_id, order_type)
+
+    def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
+        return self.limit_handler.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type)
 
     def place_buy_market_order(self, msg):
         ticker_id = msg.src_id
@@ -509,64 +385,6 @@ class OrderHandler(object):
                 order_size = self.trade_balance_handler.get_balance(currency)
                 symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
                 self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
-
-    def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
-        buy_type="buy_unknown"
-        if order_type == Message.TYPE_MARKET:
-            buy_type = "buy_market"
-        elif order_type == Message.TYPE_STOP_LOSS:
-            buy_type = "buy_stop_loss"
-        elif order_type == Message.TYPE_LIMIT:
-            buy_type = "buy_limit"
-        elif order_type == Message.MSG_STOP_LOSS_BUY:
-            buy_type = "buy_stop_loss"
-        elif order_type == Message.MSG_MARKET_BUY:
-            buy_type = "buy_market"
-        elif order_type == Message.MSG_LIMIT_BUY:
-            buy_type = "buy_limit"
-
-        message = "{}({}, {}, {}) @ {}".format(buy_type, sig_id, ticker_id, size, price)
-        self.msg_handler.buy_complete(ticker_id, price, size, sig_id, order_type=order_type)
-        return message
-
-    def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
-        sell_type="sell_unknown"
-        if order_type == Message.TYPE_MARKET:
-            sell_type = "sell_market"
-        elif order_type == Message.TYPE_STOP_LOSS:
-            sell_type = "sell_stop_loss"
-        elif order_type == Message.TYPE_LIMIT:
-            sell_type = "sell_limit"
-        elif order_type == Message.MSG_STOP_LOSS_SELL:
-            sell_type = "sell_stop_loss"
-        elif order_type == Message.MSG_MARKET_SELL:
-            sell_type = "sell_market"
-        elif order_type == Message.MSG_LIMIT_SELL:
-            sell_type = "sell_limit"
-
-        pprofit = 100.0 * (price - buy_price) / buy_price
-        if self.accnt.total_btc_available() and self.initial_btc:
-            current_btc = self.accnt.get_total_btc_value()
-            self.tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-            message = "{}({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sell_type,
-                                                                           sig_id,
-                                                                           ticker_id,
-                                                                           size,
-                                                                           price,
-                                                                           buy_price,
-                                                                           round(pprofit, 2),
-                                                                           round(self.tpprofit, 2))
-        else:
-            message = "{}({}, {}, {}) @ {} (bought @ {}, {}%)".format(sell_type,
-                                                                      sig_id,
-                                                                      ticker_id,
-                                                                      size,
-                                                                      price,
-                                                                      buy_price,
-                                                                      round(pprofit, 2))
-        self.logger.info(message)
-        self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=order_type)
-        return message
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0, trade_type=0):

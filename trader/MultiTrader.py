@@ -173,6 +173,7 @@ class MultiTrader(object):
         if self.global_strategy:
             self.global_strategy.run_update(kline)
 
+        self.order_handler.stored_trades_update(kline)
         self.order_handler.process_limit_order(kline)
 
         # print alive check message once every 4 hours
