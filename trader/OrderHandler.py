@@ -194,7 +194,7 @@ class OrderHandler(object):
                 order_type = Message.TYPE_LIMIT
 
             if self.accnt.simulate:
-                self.msg_handler.sell_complete(ticker_id=kline.symbol,
+                self.send_sell_complete(ticker_id=kline.symbol,
                                                sig_id=order.sig_id,
                                                price=order.price,
                                                size=order.size,
@@ -500,26 +500,6 @@ class OrderHandler(object):
                 self.logger.info("update_sell_price({}, {} -> {})".format(ticker_id, price, order.price))
                 price = float(order.price)
 
-            pprofit = 100.0 * (price - buy_price) / buy_price
-            if self.accnt.total_btc_available() and self.initial_btc:
-                current_btc = self.accnt.get_total_btc_value()
-                self.tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sig_id,
-                                                                         ticker_id,
-                                                                         size,
-                                                                         price,
-                                                                         buy_price,
-                                                                         round(pprofit, 2),
-                                                                         round(self.tpprofit, 2))
-            else:
-                message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)".format(sig_id,
-                                                                    ticker_id,
-                                                                    size,
-                                                                    price,
-                                                                    buy_price,
-                                                                    round(pprofit, 2))
-
-            self.logger.info(message)
             if self.store_trades:
                 self.store_trade_json(ticker_id, price, size, 'sell', buy_price, trade_type=msg.sell_type)
 
@@ -527,11 +507,12 @@ class OrderHandler(object):
                 self.accnt.get_account_balances()
                 # remove from trade db since it has been sold
                 self.trader_db.remove_trade(ticker_id, sig_id)
-                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+                message = self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
             else:
-                self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+                self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
         elif not self.accnt.simulate:
             self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
             # remove from trade db since it failed to be sold
@@ -552,6 +533,28 @@ class OrderHandler(object):
                 symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
                 self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
 
+    def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
+        pprofit = 100.0 * (price - buy_price) / buy_price
+        if self.accnt.total_btc_available() and self.initial_btc:
+            current_btc = self.accnt.get_total_btc_value()
+            self.tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
+            message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sig_id,
+                                                                             ticker_id,
+                                                                             size,
+                                                                             price,
+                                                                             buy_price,
+                                                                             round(pprofit, 2),
+                                                                             round(self.tpprofit, 2))
+        else:
+            message = "sell({}, {}, {}) @ {} (bought @ {}, {}%)".format(sig_id,
+                                                                        ticker_id,
+                                                                        size,
+                                                                        price,
+                                                                        buy_price,
+                                                                        round(pprofit, 2))
+        self.logger.info(message)
+        self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=order_type)
+        return message
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0, trade_type=0):
