@@ -194,48 +194,47 @@ class OrderHandler(object):
                 order_type = Message.TYPE_LIMIT
 
             if self.accnt.simulate:
-                self.send_sell_complete(ticker_id=kline.symbol,
-                                               sig_id=order.sig_id,
-                                               price=order.price,
-                                               size=order.size,
-                                               buy_price=order.buy_price,
-                                               order_type=order_type)
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
+                self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
+                                        order.sig_id, order_type=order_type)
                 sold = True
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
-                    self.msg_handler.add_message(Message.ID_MULTI,
-                                                 kline.symbol,
-                                                 Message.MSG_SELL_COMPLETE,
-                                                 order.price,
-                                                 order.size,
-                                                 order_type=order_type)
+                    # self.msg_handler.add_message(Message.ID_MULTI,
+                    #                              kline.symbol,
+                    #                              Message.MSG_SELL_COMPLETE,
+                    #                              order.price,
+                    #                              order.size,
+                    #                              order_type=order_type)
                     self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
+                    message = self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
+                                                      order.sig_id, order_type=order_type)
                     sold = True
 
             if not sold:
                 return
 
-            pprofit = 100.0 * (order.price - order.buy_price) / order.buy_price
 
-            if self.accnt.total_btc_available() and self.initial_btc:
-                current_btc = self.accnt.get_total_btc_value()
-                tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
-                message = "sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(order.symbol,
-                                                                         order.size,
-                                                                         order.price,
-                                                                         order.buy_price,
-                                                                         round(pprofit, 2),
-                                                                         round(tpprofit, 2))
-            else:
-                message = "sell({}, {}) @ {} (bought @ {}, {}%)".format(order.symbol,
-                                                                    order.size,
-                                                                    order.price,
-                                                                    order.buy_price,
-                                                                    round(pprofit, 2))
 
-            self.logger.info(message)
+            # pprofit = 100.0 * (order.price - order.buy_price) / order.buy_price
+            #
+            # if self.accnt.total_btc_available() and self.initial_btc:
+            #     current_btc = self.accnt.get_total_btc_value()
+            #     tpprofit = 100.0 * (current_btc - self.initial_btc) / self.initial_btc
+            #     message = "sell({}, {}) @ {} (bought @ {}, {}%)\t{}%".format(order.symbol,
+            #                                                              order.size,
+            #                                                              order.price,
+            #                                                              order.buy_price,
+            #                                                              round(pprofit, 2),
+            #                                                              round(tpprofit, 2))
+            # else:
+            #     message = "sell({}, {}) @ {} (bought @ {}, {}%)".format(order.symbol,
+            #                                                         order.size,
+            #                                                         order.price,
+            #                                                         order.buy_price,
+            #                                                         round(pprofit, 2))
+
             del self.open_orders[kline.symbol]
 
 
