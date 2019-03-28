@@ -815,10 +815,11 @@ class AccountBinance(AccountBase):
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
             usd_value = float(price) * float(size) #self.round_quote(price * size)
-            if usd_value > cbalance: return
+            if usd_value > cbalance: return False
             #print("buy_market({}, {}, {}".format(size, price, ticker_id))
             self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
             self.update_asset_balance(currency, cbalance - usd_value, cavailable)
+            return True
         else:
             self.get_account_balances()
 
@@ -830,13 +831,15 @@ class AccountBinance(AccountBase):
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
 
-            if float(size) > bbalance: return
+            if float(size) > bbalance: return False
 
             usd_value = float(price) * float(size)
             self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable))
             self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
+            return True
         else:
             self.get_account_balances()
+
 
     def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
         if self.simulate:
@@ -844,9 +847,10 @@ class AccountBinance(AccountBase):
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
             usd_value = float(price) * float(size)  # self.round_quote(price * size)
 
-            if usd_value > cavailable: return
+            if usd_value > cavailable: return False
 
             self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+            return True
         else:
             timeInForce = Client.TIME_IN_FORCE_GTC
             return self.client.order_limit_buy(timeInForce=timeInForce,
@@ -861,9 +865,10 @@ class AccountBinance(AccountBase):
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
 
-            if float(size) > bavailable: return
+            if float(size) > bavailable: return False
 
             self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+            return True
         else:
             timeInForce = Client.TIME_IN_FORCE_GTC
             return self.client.order_limit_sell(timeInForce=timeInForce,

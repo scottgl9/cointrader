@@ -155,7 +155,7 @@ class OrderHandler(object):
             (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
             bought = False
 
-            order_type = Message.TYPE_NONE
+            order_type = order.type
             if order.type == Message.MSG_STOP_LOSS_BUY:
                 order_type = Message.TYPE_STOP_LOSS
             elif order.type == Message.MSG_LIMIT_BUY:
@@ -186,7 +186,7 @@ class OrderHandler(object):
               (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
             sold = False
 
-            order_type = Message.TYPE_NONE
+            order_type = order.type
             if order.type == Message.MSG_STOP_LOSS_SELL:
                 order_type = Message.TYPE_STOP_LOSS
             elif order.type == Message.MSG_LIMIT_SELL:
@@ -294,7 +294,7 @@ class OrderHandler(object):
         else:
             self.accnt.cancel_sell_limit_complete(order.size, symbol)
 
-        #self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
         del self.open_orders[symbol]
 
     def place_buy_limit_order(self, msg):
@@ -359,13 +359,18 @@ class OrderHandler(object):
             return
 
         result = self.accnt.sell_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
+
         if not self.accnt.simulate:
             self.logger.info(result)
+
+        if not result:
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_STOP_LOSS)
+            return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
         self.open_orders[ticker_id] = order
 
-        #self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
     def place_buy_market_order(self, msg):
