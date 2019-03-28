@@ -316,7 +316,7 @@ class AccountBinance(AccountBase):
         return result
 
     # parse json response to binance API order, then use to create Order object
-    def parse_order_result(self, result, symbol=None):
+    def parse_order_result(self, result, symbol=None, sigid=0):
         fills = None
         orderid = None
         order_type = None
@@ -357,7 +357,7 @@ class AccountBinance(AccountBase):
             if 'symbol' in fill: symbol = fill['symbol']
             if 'commission' in fill: commission = fill['commission']
 
-        if not symbol or status != 'FILLED':
+        if not symbol or (status != 'FILLED' and status != 'CANCELED'):
             return None
 
         if not side or not order_type:
@@ -370,16 +370,29 @@ class AccountBinance(AccountBase):
             elif side == 'SELL':
                 price = min(prices)
 
-        if order_type == 'MARKET' and side == 'BUY':
-            type = Message.MSG_MARKET_BUY
-        elif order_type == 'MARKET' and side == 'SELL':
-            type = Message.MSG_MARKET_SELL
-        elif order_type == 'LIMIT' and side == 'BUY':
-            type = Message.MSG_LIMIT_BUY
-        elif order_type == 'LIMIT' and side == 'SELL':
-            type = Message.MSG_LIMIT_SELL
-        else:
-            return None
+        if status == 'FILLED':
+            if order_type == 'MARKET' and side == 'BUY':
+                type = Message.MSG_MARKET_BUY
+            elif order_type == 'MARKET' and side == 'SELL':
+                type = Message.MSG_MARKET_SELL
+            elif order_type == 'LIMIT' and side == 'BUY':
+                type = Message.MSG_LIMIT_BUY
+            elif order_type == 'LIMIT' and side == 'SELL':
+                type = Message.MSG_LIMIT_SELL
+            elif order_type == "STOP_LOSS" and side == 'BUY':
+                type = Message.MSG_STOP_LOSS_BUY
+            elif order_type == "STOP_LOSS" and side == 'SELL':
+                type = Message.MSG_STOP_LOSS_SELL
+            elif order_type == "STOP_LOSS_LIMIT" and side == "BUY":
+                type = Message.MSG_STOP_LOSS_BUY
+            elif order_type == "STOP_LOSS_LIMIT" and side == "SELL":
+                type = Message.MSG_STOP_LOSS_SELL
+            else:
+                return None
+        elif status == 'CANCELED' and side == 'BUY':
+            type = Message.MSG_BUY_CANCEL
+        elif status == 'CANCELED' and side == 'SELL':
+            type = Message.MSG_SELL_CANCEL
 
         order = Order(symbol=symbol,
                       price=price,
@@ -387,7 +400,8 @@ class AccountBinance(AccountBase):
                       type=type,
                       orderid=orderid,
                       quote_size=quoteqty,
-                      commission=commission)
+                      commission=commission,
+                      sig_id=sigid)
 
         self.logger.info("order: {}".format(str(order)))
         return order
@@ -884,6 +898,15 @@ class AccountBinance(AccountBase):
         else:
             timeInForce = Client.TIME_IN_FORCE_GTC
             return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+
+    # for handling a canceled sell order during simulation
+    def cancel_sell_limit_complete(self, size, ticker_id=None):
+        if not self.simulate:
+            return
+
+        base, currency = self.split_ticker_id(ticker_id)
+        bbalance, bavailable = self.get_asset_balance_tuple(base)
+        self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
 
     def cancel_order(self, orderid, ticker_id=None):
         if not ticker_id:

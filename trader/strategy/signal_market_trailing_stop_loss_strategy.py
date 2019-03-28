@@ -340,14 +340,16 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             self.sell_market(signal, price)
             return
 
-        if signal.buy_price and not self.stop_loss_set:
+        if signal.buy_price == 0 or signal.buy_size == 0:
+            return
+
+        if not self.stop_loss_set:
             if not self.stop_loss_price:
                 self.stop_loss_price = signal.buy_price
             if StrategyBase.percent_p2_gt_p1(self.stop_loss_price, price, 1.0):
                 self.set_sell_stop_loss(signal, self.stop_loss_price)
                 self.next_stop_loss_price = price
-        elif signal.buy_price:
-            if StrategyBase.percent_p2_gt_p1(self.next_stop_loss_price, price, 1.0):
+        elif StrategyBase.percent_p2_gt_p1(self.next_stop_loss_price, price, 1.0):
                 self.cancel_sell_stop_loss(signal)
                 self.stop_loss_price = self.next_stop_loss_price
                 self.set_sell_stop_loss(signal, self.stop_loss_price)
