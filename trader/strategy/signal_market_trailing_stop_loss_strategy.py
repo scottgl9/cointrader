@@ -88,6 +88,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         self.stop_loss_set = False
         self.stop_loss_price = 0
         self.next_stop_loss_price = 0
+        self.prev_stop_loss_price = 0
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -219,10 +220,10 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     signal.last_buy_ts = self.timestamp
 
                     # set stop loss 2% under buy price
-                    if not self.stop_loss_set and not self.stop_loss_price:
-                        self.stop_loss_price = self.round_base(0.98 * msg.price)
-                        self.next_stop_loss_price = msg.price
-                        self.set_sell_stop_loss(signal, self.stop_loss_price)
+                    #if not self.stop_loss_set and not self.stop_loss_price:
+                    #    self.stop_loss_price = self.round_base(0.98 * msg.price)
+                    #    self.next_stop_loss_price = msg.price
+                    #    #self.set_sell_stop_loss(signal, self.stop_loss_price)
 
                     msg.mark_read()
                     completed = True
@@ -359,6 +360,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             if StrategyBase.percent_p2_gt_p1(self.stop_loss_price, price, 1.0):
                 self.set_sell_stop_loss(signal, self.stop_loss_price)
                 self.next_stop_loss_price = price
+        #if not self.prev_stop_loss_price and not self.stop_loss_set:
+        #    self.set_sell_stop_loss(signal, self.stop_loss_price)
+        #    self.prev_stop_loss_price = self.stop_loss_price
         elif StrategyBase.percent_p2_gt_p1(self.next_stop_loss_price, price, 1.0):
                 self.cancel_sell_stop_loss(signal)
                 self.stop_loss_price = self.next_stop_loss_price
@@ -396,7 +400,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.min_trade_size_qty != 1.0:
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-        # signal.buy_price = price
+        signal.buy_price = price
         signal.buy_size = min_trade_size
         # signal.buy_timestamp = self.timestamp
         # signal.last_buy_ts = self.timestamp
