@@ -214,6 +214,8 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     #                                                             msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.buy_price = msg.price
+                    signal.buy_timestamp = self.timestamp
+                    signal.last_buy_ts = self.timestamp
                     msg.mark_read()
                     completed = True
                     #if msg.order_type == Message.TYPE_MARKET:
@@ -228,6 +230,17 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     signal.last_sell_price = msg.price
                     if msg.order_type == Message.TYPE_MARKET:
                         self.cancel_sell_stop_loss(signal)
+
+                    if self.min_trade_size_qty != 1.0:
+                        self.min_trade_size_qty = 1.0
+
+                    signal.last_buy_price = signal.buy_price
+                    signal.buy_price = 0.0
+                    signal.buy_size = 0.0
+                    signal.last_sell_price = msg.price
+                    signal.buy_timestamp = 0
+                    signal.last_sell_ts = self.timestamp
+
                     self.stop_loss_set = False
                     self.stop_loss_price = 0
                     self.next_stop_loss_price = 0
@@ -298,26 +311,14 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
     def run_update_signal(self, signal, price, signal_completed=False):
         # handle delayed buy/sell message
         if self.accnt.simulate and self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
-            signal.buy_price = price
             self.delayed_buy_msg.price = signal.buy_price
             self.msg_handler.add(self.delayed_buy_msg)
             self.delayed_buy_msg = None
-            signal.buy_timestamp = self.timestamp
-            signal.last_buy_ts = self.timestamp
 
         if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
             self.delayed_sell_msg.price = price
             self.msg_handler.add(self.delayed_sell_msg)
             self.delayed_sell_msg = None
-            if self.min_trade_size_qty != 1.0:
-                self.min_trade_size_qty = 1.0
-
-            signal.last_buy_price = signal.buy_price
-            signal.buy_price = 0.0
-            signal.buy_size = 0.0
-            signal.last_sell_price = price
-            signal.buy_timestamp = 0
-            signal.last_sell_ts = self.timestamp
 
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
