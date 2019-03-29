@@ -329,15 +329,14 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                 self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
 
         if not signal_completed and self.buy_signal(signal, price):
-            if self.stop_loss_set:
-                self.cancel_sell_stop_loss(signal)
-
             self.buy_market(signal, price)
             return
 
         if not signal_completed and self.sell_signal(signal, price):
             if self.stop_loss_set:
                 self.cancel_sell_stop_loss(signal)
+                self.stop_loss_price = 0
+                self.next_stop_loss_price = 0
 
             self.sell_market(signal, price)
             return
