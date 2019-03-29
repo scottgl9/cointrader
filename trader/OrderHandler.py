@@ -21,8 +21,6 @@ class OrderHandler(object):
         self.buy_disabled = False
         self.limit_handler = OrderLimitHandler(accnt, msg_handler, logger)
         self.trade_balance_handler = TradeBalanceHandler(self.accnt, logger=logger)
-        # total percent profit
-        self.tpprofit = 0
 
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
@@ -75,8 +73,7 @@ class OrderHandler(object):
                 self.counters[kline.symbol] += 1
 
     def get_total_percent_profit(self):
-        result = self.tpprofit
-        return result
+        return self.accnt.get_total_percent_profit()
 
     def process_limit_order(self, kline):
         self.limit_handler.process_limit_order(kline)

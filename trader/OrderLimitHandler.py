@@ -140,7 +140,8 @@ class OrderLimitHandler(object):
         pprofit = 100.0 * (price - buy_price) / buy_price
         if self.accnt.total_btc_available() and self.accnt.initial_btc:
             current_btc = self.accnt.get_total_btc_value()
-            self.tpprofit = 100.0 * (current_btc - self.accnt.initial_btc) / self.accnt.initial_btc
+            tpprofit = 100.0 * (current_btc - self.accnt.initial_btc) / self.accnt.initial_btc
+            self.accnt.set_total_percent_profit(tpprofit)
             message = "{}({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sell_type,
                                                                            sig_id,
                                                                            ticker_id,
@@ -148,7 +149,7 @@ class OrderLimitHandler(object):
                                                                            price,
                                                                            buy_price,
                                                                            round(pprofit, 2),
-                                                                           round(self.tpprofit, 2))
+                                                                           round(tpprofit, 2))
         else:
             message = "{}({}, {}, {}) @ {} (bought @ {}, {}%)".format(sell_type,
                                                                       sig_id,

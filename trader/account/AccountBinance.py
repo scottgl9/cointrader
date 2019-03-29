@@ -35,6 +35,7 @@ class AccountBinance(AccountBase):
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
+        self._tpprofit = 0
         self.initial_btc = 0
         self.actual_initial_btc = 0
         self._sell_only = False
@@ -92,6 +93,12 @@ class AccountBinance(AccountBase):
 
     def set_market_price(self, price):
         pass
+
+    def set_total_percent_profit(self, tpprofit):
+        self._tpprofit = tpprofit
+
+    def get_total_percent_profit(self):
+        return self._tpprofit
 
     def set_sell_only(self, sell_only):
         self.logger.info("set_sell_only({})".format(sell_only))
