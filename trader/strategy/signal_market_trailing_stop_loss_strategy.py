@@ -80,8 +80,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         # for more accurate simulation
         self.delayed_buy_msg = None
         self.delayed_sell_msg = None
-        self.update_buy_price = False
-        self.update_sell_price = False
         self.enable_buy = False
         self.disable_buy = False
         self.simulate = self.accnt.simulate
@@ -213,9 +211,19 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     #                                                             msg.price,
                     #                                                             msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
+
+                    # signal.buy_price = price
+                    signal.buy_size = msg.size
                     signal.buy_price = msg.price
                     signal.buy_timestamp = self.timestamp
                     signal.last_buy_ts = self.timestamp
+
+                    # set stop loss 2% under buy price
+                    if not self.stop_loss_set and not self.stop_loss_price:
+                        self.stop_loss_price = self.round_base(0.98 * msg.price)
+                        self.next_stop_loss_price = msg.price
+                        self.set_sell_stop_loss(signal, self.stop_loss_price)
+
                     msg.mark_read()
                     completed = True
                     #if msg.order_type == Message.TYPE_MARKET:
@@ -388,11 +396,11 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.min_trade_size_qty != 1.0:
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-        signal.buy_price = price
+        # signal.buy_price = price
         signal.buy_size = min_trade_size
-        signal.buy_timestamp = self.timestamp
-        signal.last_buy_ts = self.timestamp
-        signal.sell_timestamp = 0
+        # signal.buy_timestamp = self.timestamp
+        # signal.last_buy_ts = self.timestamp
+        # signal.sell_timestamp = 0
 
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
@@ -408,9 +416,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         else:
             self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size,
                                         sig_id=signal.id, asset_info=self.asset_info, buy_type=signal.buy_type)
-            # for trader running live. Delay setting buy_price until next price
-            self.update_buy_price = True
-
 
     def sell_market(self, signal, price):
         if float(signal.buy_price) == 0:
@@ -434,16 +439,13 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price,
                                          sig_id=signal.id, asset_info=self.asset_info, sell_type=signal.sell_type)
 
-            if self.min_trade_size_qty != 1.0:
-                self.min_trade_size_qty = 1.0
-
-            signal.last_buy_price = signal.buy_price
-            signal.buy_price = 0.0
-            signal.buy_size = 0.0
-            signal.last_sell_price = sell_price
-            signal.last_sell_ts = self.timestamp
-            signal.buy_timestamp = 0
-            signal.sell_timestamp = self.timestamp
-
-            # for trader running live. Delay setting sell_price until next price
-            self.update_sell_price = True
+            # if self.min_trade_size_qty != 1.0:
+            #     self.min_trade_size_qty = 1.0
+            #
+            # signal.last_buy_price = signal.buy_price
+            # signal.buy_price = 0.0
+            # signal.buy_size = 0.0
+            # signal.last_sell_price = sell_price
+            # signal.last_sell_ts = self.timestamp
+            # signal.buy_timestamp = 0
+            # signal.sell_timestamp = self.timestamp
