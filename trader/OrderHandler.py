@@ -162,7 +162,7 @@ class OrderHandler(object):
         else:
             self.accnt.cancel_sell_limit_complete(order.size, symbol)
 
-        self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        #self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
         self.limit_handler.remove_open_order(symbol)
 
     def place_buy_limit_order(self, msg):
@@ -177,9 +177,13 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.logger.info(result)
 
+        if not result:
+            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_LIMIT)
+            return
+
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_LIMIT_BUY)
         self.limit_handler.add_open_order(ticker_id, order)
-        self.logger.info("place_buy_limit({}, {}) @ {}".format(order.symbol, order.size, order.price))
+        #self.logger.info("place_buy_limit({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
     def place_sell_limit_order(self, msg):
@@ -195,9 +199,13 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.logger.info(result)
 
+        if not result:
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_LIMIT)
+            return
+
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
         self.limit_handler.add_open_order(ticker_id, order)
-        self.logger.info("place_sell_limit({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        #self.logger.info("place_sell_limit({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
     def place_buy_stop_loss_order(self, msg):
@@ -212,9 +220,13 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.logger.info(result)
 
+        if not result:
+            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_STOP_LOSS)
+            return
+
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
         self.limit_handler.add_open_order(ticker_id, order)
-        self.logger.info("place_buy_stop({}, {}) @ {}".format(order.symbol, order.size, order.price))
+        #self.logger.info("place_buy_stop({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
     def place_sell_stop_loss_order(self, msg):
@@ -237,8 +249,7 @@ class OrderHandler(object):
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
         self.limit_handler.add_open_order(ticker_id, order)
-
-        self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
+        #self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
     def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
         return self.limit_handler.send_buy_complete(ticker_id, price, size, sig_id, order_type)
@@ -255,7 +266,7 @@ class OrderHandler(object):
         currency = msg.asset_info.currency
 
         if self.buy_disabled:
-            self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
+            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
             return
 
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
@@ -263,7 +274,7 @@ class OrderHandler(object):
         #    self.logger.info(result)
 
         if not result:
-            self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
+            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
             return
 
         if self.accnt.simulate:
@@ -279,7 +290,7 @@ class OrderHandler(object):
                 self.logger.info(message)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
-                self.msg_handler.buy_failed(ticker_id, price, size, sig_id)
+                self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
                 return
             else:
                 self.logger.info("buy_order: {}".format(str(order)))
@@ -296,19 +307,19 @@ class OrderHandler(object):
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
 
-        self.trade_balance_handler.update_for_buy(price, size, asset_info=msg.asset_info, symbol=ticker_id)
-
-        if msg.asset_info.is_currency_pair:
-            if not self.trade_balance_handler.is_zero_balance(base):
-                # send update message to strategy that buy size has changed
-                order_size = self.trade_balance_handler.get_balance(base)
-                self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
-
-            if not self.trade_balance_handler.is_zero_balance(currency):
-                # send update message to strategy that buy size has changed
-                order_size = self.trade_balance_handler.get_balance(currency)
-                symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
-                self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
+        # self.trade_balance_handler.update_for_buy(price, size, asset_info=msg.asset_info, symbol=ticker_id)
+        #
+        # if msg.asset_info.is_currency_pair:
+        #     if not self.trade_balance_handler.is_zero_balance(base):
+        #         # send update message to strategy that buy size has changed
+        #         order_size = self.trade_balance_handler.get_balance(base)
+        #         self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
+        #
+        #     if not self.trade_balance_handler.is_zero_balance(currency):
+        #         # send update message to strategy that buy size has changed
+        #         order_size = self.trade_balance_handler.get_balance(currency)
+        #         symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
+        #         self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
 
 
     def place_sell_market_order(self, msg):
@@ -327,7 +338,7 @@ class OrderHandler(object):
             available_size = self.accnt.round_base(self.accnt.get_asset_balance(base)['available'])
             if available_size == 0:
                 self.trader_db.remove_trade(ticker_id, sig_id)
-                self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
+                self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
                 return
             #if available_size < size:
             #    return
@@ -335,7 +346,7 @@ class OrderHandler(object):
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
 
         if not result:
-            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
             if not self.accnt.simulate:
                 # remove from trade db since it failed to be sold
                 self.trader_db.remove_trade(ticker_id, sig_id)
@@ -364,24 +375,24 @@ class OrderHandler(object):
             else:
                 self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
         elif not self.accnt.simulate:
-            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id)
+            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
             # remove from trade db since it failed to be sold
             self.trader_db.remove_trade(ticker_id, sig_id)
             return
 
-        self.trade_balance_handler.update_for_sell(price, size, asset_info=msg.asset_info, symbol=ticker_id)
-
-        if msg.asset_info.is_currency_pair:
-            if not self.trade_balance_handler.is_zero_balance(base):
-                # send update message to strategy that buy size has changed
-                order_size = self.trade_balance_handler.get_balance(base)
-                self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
-
-            if not self.trade_balance_handler.is_zero_balance(currency):
-                # send update message to strategy that buy size has changed
-                order_size = self.trade_balance_handler.get_balance(currency)
-                symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
-                self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
+        # self.trade_balance_handler.update_for_sell(price, size, asset_info=msg.asset_info, symbol=ticker_id)
+        #
+        # if msg.asset_info.is_currency_pair:
+        #     if not self.trade_balance_handler.is_zero_balance(base):
+        #         # send update message to strategy that buy size has changed
+        #         order_size = self.trade_balance_handler.get_balance(base)
+        #         self.msg_handler.order_size_update(ticker_id, price, order_size, sig_id)
+        #
+        #     if not self.trade_balance_handler.is_zero_balance(currency):
+        #         # send update message to strategy that buy size has changed
+        #         order_size = self.trade_balance_handler.get_balance(currency)
+        #         symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
+        #         self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0, trade_type=0):
