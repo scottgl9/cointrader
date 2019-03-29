@@ -230,6 +230,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                         self.cancel_sell_stop_loss(signal)
                     self.stop_loss_set = False
                     self.stop_loss_price = 0
+                    self.next_stop_loss_price = 0
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
@@ -258,6 +259,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                         self.cancel_sell_stop_loss(signal)
                         self.stop_loss_set = False
                         self.stop_loss_price = 0
+                        self.next_stop_loss_price = 0
 
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_ORDER_SIZE_UPDATE:
