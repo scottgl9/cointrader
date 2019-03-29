@@ -13,6 +13,31 @@ class OrderLimitHandler(object):
         self.logger = logger
         self.open_orders = {}
 
+    def get_open_order(self, symbol):
+        try:
+            result = self.open_orders[symbol]
+            return result
+        except KeyError:
+            return None
+
+    def add_open_order(self, symbol, order):
+        try:
+            result = self.open_orders[symbol]
+            if result:
+                return False
+        except KeyError:
+            pass
+
+        self.open_orders[symbol] = order
+        return True
+
+    def remove_open_order(self, symbol):
+        try:
+            del self.open_orders[symbol]
+            return True
+        except KeyError:
+            return False
+
     def process_limit_order(self, kline):
         if kline.symbol not in self.open_orders.keys():
             return

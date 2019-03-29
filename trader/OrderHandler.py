@@ -142,13 +142,13 @@ class OrderHandler(object):
         if symbol not in self.limit_handler.open_orders.keys():
             return
 
-        order = self.limit_handler.open_orders[symbol]
+        order = self.limit_handler.get_open_order(symbol)
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
 
         self.logger.info("cancel_buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-        del self.limit_handler.open_orders[symbol]
+        self.limit_handler.remove_open_order(symbol)
 
     def place_cancel_sell_order(self, msg):
         ticker_id = msg.src_id
@@ -158,7 +158,7 @@ class OrderHandler(object):
         if symbol not in self.limit_handler.open_orders.keys():
             return
 
-        order = self.limit_handler.open_orders[symbol]
+        order = self.limit_handler.get_open_order(symbol)
         if not self.accnt.simulate:
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
@@ -166,7 +166,7 @@ class OrderHandler(object):
             self.accnt.cancel_sell_limit_complete(order.size, symbol)
 
         self.logger.info("cancel_sell({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
-        del self.limit_handler.open_orders[symbol]
+        self.limit_handler.remove_open_order(symbol)
 
     def place_buy_limit_order(self, msg):
         ticker_id = msg.src_id
@@ -181,7 +181,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_LIMIT_BUY)
-        self.limit_handler.open_orders[ticker_id] = order
+        self.limit_handler.add_open_order(ticker_id, order)
         self.logger.info("place_buy_limit({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
@@ -199,7 +199,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
-        self.limit_handler.open_orders[ticker_id] = order
+        self.limit_handler.add_open_order(ticker_id, order)
         self.logger.info("place_sell_limit({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
 
@@ -216,7 +216,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
-        self.limit_handler.open_orders[ticker_id] = order
+        self.limit_handler.add_open_order(ticker_id, order)
         self.logger.info("place_buy_stop({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
 
@@ -239,7 +239,7 @@ class OrderHandler(object):
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
-        self.limit_handler.open_orders[ticker_id] = order
+        self.limit_handler.add_open_order(ticker_id, order)
 
         self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
