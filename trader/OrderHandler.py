@@ -141,6 +141,8 @@ class OrderHandler(object):
 
         order = self.limit_handler.get_open_order(symbol)
         if not self.accnt.simulate:
+            if not order.orderid:
+                self.logger.error("ERROR cancel_buy_order({}) failed".format(symbol))
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
 
@@ -157,6 +159,8 @@ class OrderHandler(object):
 
         order = self.limit_handler.get_open_order(symbol)
         if not self.accnt.simulate:
+            if not order.orderid:
+                self.logger.error("ERROR cancel_sell_order({}) failed".format(symbol))
             result = self.accnt.cancel_order(orderid=order.orderid)
             self.logger.info(result)
         else:
@@ -182,6 +186,13 @@ class OrderHandler(object):
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_LIMIT_BUY)
+
+        # add orderid for live trading
+        if not self.accnt.simulate:
+            order_result = self.accnt.parse_order_result(result, ticker_id, sig_id)
+            if order_result:
+                order.orderid = order_result.orderid
+
         self.limit_handler.add_open_order(ticker_id, order)
         #self.logger.info("place_buy_limit({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
@@ -204,6 +215,13 @@ class OrderHandler(object):
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
+
+        # add orderid for live trading
+        if not self.accnt.simulate:
+            order_result = self.accnt.parse_order_result(result, ticker_id, sig_id)
+            if order_result:
+                order.orderid = order_result.orderid
+
         self.limit_handler.add_open_order(ticker_id, order)
         #self.logger.info("place_sell_limit({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
@@ -225,6 +243,13 @@ class OrderHandler(object):
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
+
+        # add orderid for live trading
+        if not self.accnt.simulate:
+            order_result = self.accnt.parse_order_result(result, ticker_id, sig_id)
+            if order_result:
+                order.orderid = order_result.orderid
+
         self.limit_handler.add_open_order(ticker_id, order)
         #self.logger.info("place_buy_stop({}, {}) @ {}".format(order.symbol, order.size, order.price))
 
@@ -248,6 +273,13 @@ class OrderHandler(object):
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
+
+        # add orderid for live trading
+        if not self.accnt.simulate:
+            order_result = self.accnt.parse_order_result(result, ticker_id, sig_id)
+            if order_result:
+                order.orderid = order_result.orderid
+
         self.limit_handler.add_open_order(ticker_id, order)
         #self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
