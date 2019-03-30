@@ -801,7 +801,9 @@ class AccountBinance(AccountBase):
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
 
-            if float(size) > bavailable: return False
+            if float(size) > bavailable:
+                self.logger.warning("{}: {} > {}".format(ticker_id, float(size), bavailable))
+                return False
 
             amount = self.round_quote_symbol(ticker_id, float(price) * float(size))
             self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable) - float(size))

@@ -176,8 +176,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     #                                                             msg.price,
                     #                                                             msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
-
-                    # signal.buy_price = price
                     signal.buy_size = msg.size
                     signal.buy_price = msg.price
                     signal.buy_timestamp = self.timestamp
@@ -191,9 +189,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
 
                     msg.mark_read()
                     completed = True
-                    #if msg.order_type == Message.TYPE_MARKET:
-                    #    # Also place trailing stop loss
-                    #    self.set_sell_stop_loss(signal, close)
                 elif msg.cmd == Message.MSG_SELL_COMPLETE:
                     #self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
                     #                                                                           msg.price,
@@ -207,7 +202,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
 
-                    signal.last_buy_price = signal.buy_price
+                    signal.last_buy_price = msg.buy_price
                     signal.buy_price = 0.0
                     signal.buy_size = 0.0
                     signal.last_sell_price = msg.price
@@ -304,12 +299,15 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
     def run_update_signal(self, signal, price, signal_completed=False):
         # handle delayed buy/sell message
         if self.accnt.simulate and self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
+            signal.buy_price = price
             self.delayed_buy_msg.price = signal.buy_price
             self.msg_handler.add(self.delayed_buy_msg)
             self.delayed_buy_msg = None
 
         if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
             self.delayed_sell_msg.price = price
+            signal.buy_price = 0
+            signal.buy_size = 0
             self.msg_handler.add(self.delayed_sell_msg)
             self.delayed_sell_msg = None
 
@@ -426,3 +424,4 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         else:
             self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price,
                                          sig_id=signal.id, asset_info=self.asset_info, sell_type=signal.sell_type)
+

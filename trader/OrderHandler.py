@@ -270,8 +270,6 @@ class OrderHandler(object):
             return
 
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
-        #if not self.accnt.simulate:
-        #    self.logger.info(result)
 
         if not result:
             self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
@@ -340,8 +338,6 @@ class OrderHandler(object):
                 self.trader_db.remove_trade(ticker_id, sig_id)
                 self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
                 return
-            #if available_size < size:
-            #    return
 
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
 
@@ -352,33 +348,34 @@ class OrderHandler(object):
                 self.trader_db.remove_trade(ticker_id, sig_id)
             return
 
-        order = self.accnt.parse_order_result(result, symbol=ticker_id)
-        if self.accnt.simulate or order:
+        if not self.accnt.simulate:
+            order = self.accnt.parse_order_result(result, symbol=ticker_id)
             if order:
                 self.logger.info("sell_order: {}".format(str(order)))
+            else:
+                self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+                # remove from trade db since it failed to be sold
+                self.trader_db.remove_trade(ticker_id, sig_id)
+                return
+
             # update price from actual sell price for live trading
-            if not self.accnt.simulate and float(order.price) != 0 and float(price) != float(order.price):
+            if float(order.price) != 0 and float(price) != float(order.price):
                 self.logger.info("update_sell_price({}, {} -> {})".format(ticker_id, price, order.price))
                 price = float(order.price)
 
+            self.accnt.get_account_balances()
+            # remove from trade db since it has been sold
+            self.trader_db.remove_trade(ticker_id, sig_id)
+            message = self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+
+            if self.notify:
+                self.notify.send(subject="MultiTrader", text=message)
+
+        else:
+            # self.accnt.simulate is true
             if self.store_trades:
                 self.store_trade_json(ticker_id, price, size, 'sell', buy_price, trade_type=msg.sell_type)
-
-            if not self.accnt.simulate:
-                self.accnt.get_account_balances()
-                # remove from trade db since it has been sold
-                self.trader_db.remove_trade(ticker_id, sig_id)
-                message = self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
-
-                if self.notify:
-                    self.notify.send(subject="MultiTrader", text=message)
-            else:
-                self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
-        elif not self.accnt.simulate:
-            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
-            # remove from trade db since it failed to be sold
-            self.trader_db.remove_trade(ticker_id, sig_id)
-            return
+            self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
 
         # self.trade_balance_handler.update_for_sell(price, size, asset_info=msg.asset_info, symbol=ticker_id)
         #
