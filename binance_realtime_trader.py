@@ -52,6 +52,10 @@ class BinanceTrader:
         if self.multitrader and self.multitrader.accnt:
             self.multitrader.accnt.set_btc_only(True)
 
+    def set_trades_disabled(self):
+        if self.multitrader and self.multitrader.accnt:
+            self.multitrader.accnt.set_trades_disabled(True)
+
     # process message about user account update
     def process_user_message(self, msg):
         try:
@@ -242,6 +246,10 @@ if __name__ == '__main__':
                         default=False,
                         help='Only buy/sell BTC currency trade pairs')
 
+    parser.add_argument('--trades-disabled', action='store_true', dest='trades_disabled',
+                        default=False,
+                        help='Disable buy/sell trading')
+
     results = parser.parse_args()
 
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
@@ -268,4 +276,7 @@ if __name__ == '__main__':
     if results.sell_only:
         logger.info("Setting SELL ONLY mode")
         bt.set_sell_only()
+    if results.trades_disabled:
+        logger.info("Setting TRADES DISABLED mode")
+        bt.set_trades_disabled()
     bt.run()

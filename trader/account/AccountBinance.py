@@ -40,6 +40,7 @@ class AccountBinance(AccountBase):
         self.actual_initial_btc = 0
         self._sell_only = False
         self._btc_only = False
+        self._trades_disabled = False
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
@@ -113,6 +114,13 @@ class AccountBinance(AccountBase):
 
     def btc_only(self):
         return self._btc_only
+
+    def set_trades_disabled(self, trades_disabled):
+        self.logger.info("set_trades_disabled({})".format(trades_disabled))
+        self._trades_disabled = trades_disabled
+
+    def trades_disabled(self):
+        return self._trades_disabled
 
     def get_currencies(self):
         return self.currencies

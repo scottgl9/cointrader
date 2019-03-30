@@ -86,6 +86,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
 
 
     def buy_signal(self, signal, price):
+        if self.accnt.trades_disabled():
+            return False
+
         if self.accnt.sell_only():
             return False
 
@@ -119,6 +122,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
 
 
     def sell_signal(self, signal, price):
+        if self.accnt.trades_disabled():
+            return False
+
         if float(signal.buy_price) == 0.0 or float(signal.buy_size) == 0.0:
             return False
 
