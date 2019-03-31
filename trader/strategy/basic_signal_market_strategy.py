@@ -94,6 +94,11 @@ class basic_signal_market_strategy(StrategyBase):
         if float(signal.buy_price) != 0.0 or self.disable_buy:
             return False
 
+        # limit number of market buy orders without corresponding market sell orders
+        max_market_buy = self.accnt.max_market_buy()
+        if max_market_buy != 0 and self.order_handler.open_market_buy_count >= max_market_buy:
+            return False
+
         # check USDT value of base by calculating (base_currency) * (currency_usdt)
         # verify that USDT value >= $0.02, if less do not buy
         usdt_symbol = self.accnt.make_ticker_id(self.currency, 'USDT')

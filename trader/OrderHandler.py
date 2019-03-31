@@ -19,6 +19,7 @@ class OrderHandler(object):
         self.trades = {}
         self.counters = {}
         self.buy_disabled = False
+        self.open_market_buy_count = 0
         self.limit_handler = OrderLimitHandler(accnt, msg_handler, logger)
         self.trade_balance_handler = TradeBalanceHandler(self.accnt, logger=logger)
 
@@ -333,6 +334,7 @@ class OrderHandler(object):
                 # add to trader db for tracking
                 self.trader_db.insert_trade(int(time.time()), ticker_id, price, size, sig_id)
                 message = self.send_buy_complete(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
+                self.open_market_buy_count += 1
                 self.logger.info(message)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
@@ -399,6 +401,9 @@ class OrderHandler(object):
             # remove from trade db since it has been sold
             self.trader_db.remove_trade(ticker_id, sig_id)
             message = self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+
+            if self.open_market_buy_count > 0:
+                self.open_market_buy_count -= 1
 
             if self.notify:
                 self.notify.send(subject="MultiTrader", text=message)

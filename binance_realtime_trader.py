@@ -56,6 +56,10 @@ class BinanceTrader:
         if self.multitrader and self.multitrader.accnt:
             self.multitrader.accnt.set_trades_disabled(True)
 
+    def set_max_market_buy(self, max_market_buy):
+        if self.multitrader and self.multitrader.accnt:
+            self.multitrader.accnt.set_max_market_buy(max_market_buy)
+
     # process message about user account update
     def process_user_message(self, msg):
         try:
@@ -250,6 +254,10 @@ if __name__ == '__main__':
                         default=False,
                         help='Disable buy/sell trading')
 
+    parser.add_argument('--max-market-buy', action='store', dest='max_market_buy',
+                        default=0,
+                        help='Maxmimum number of open market buys without matching sells')
+
     results = parser.parse_args()
 
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
@@ -279,4 +287,5 @@ if __name__ == '__main__':
     if results.trades_disabled:
         logger.info("Setting TRADES DISABLED mode")
         bt.set_trades_disabled()
+    bt.set_max_market_buy(int(results.max_market_buy))
     bt.run()

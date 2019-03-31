@@ -41,6 +41,7 @@ class AccountBinance(AccountBase):
         self._sell_only = False
         self._btc_only = False
         self._trades_disabled = False
+        self._max_market_buy = 0
         #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
         #self.update_24hr_stats()
 
@@ -121,6 +122,13 @@ class AccountBinance(AccountBase):
 
     def trades_disabled(self):
         return self._trades_disabled
+
+    def set_max_market_buy(self, max_market_buy):
+        self.logger.info("set_max_market_buy({})".format(max_market_buy))
+        self._max_market_buy = max_market_buy
+
+    def max_market_buy(self):
+        return self._max_market_buy
 
     def get_currencies(self):
         return self.currencies
