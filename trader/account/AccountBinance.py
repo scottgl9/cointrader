@@ -358,6 +358,8 @@ class AccountBinance(AccountBase):
         if self.simulate:
             return None
 
+        self.logger.info("parse_order_update={}".format(result))
+
         if 'c' in result: order_id = result['c']
         if 'C' in result: orig_id = result['C']
         if 's' in result: symbol = result['s']
@@ -369,6 +371,9 @@ class AccountBinance(AccountBase):
         if 'X' in result: order_status = result['X']
         if 'x' in result: exec_type = result['x']
         if 'T' in result: ts = result['T']
+
+        if not symbol:
+            return None
 
         order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type,
                                    exec_type, side, ts, order_id, orig_id, order_status)
@@ -394,7 +399,7 @@ class AccountBinance(AccountBase):
         if self.simulate:
             return None
 
-        self.logger.info("result={}".format(result))
+        self.logger.info("parse_order_result={}".format(result))
 
         if 'orderId' in result: orderid = result['orderId']
         if 'origQty' in result: origqty = result['origQty']
@@ -465,6 +470,7 @@ class AccountBinance(AccountBase):
 
         self.logger.info("order: {}".format(str(order)))
         return order
+
 
     # determine if asset has disabled deposits, if so don't trade
     def deposit_asset_disabled(self, name):

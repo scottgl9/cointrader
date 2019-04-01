@@ -200,28 +200,17 @@ class MultiTrader(object):
 
     # process message from user event socket
     # cmd: NEW, PARTIALLY_FILLED, FILLED, CANCELED
-    # types: MARKET, LIMIT
+    # types: MARKET, LIMIT, STOP_LOSS_LIMIT
     # side: BUY, SELL
     # other fields: price, size
     def process_user_message(self, msg):
         if self.last_ts == 0 or self.current_ts == 0:
             return
 
-
-        # *TODO* handle external completed sells
-        #if msg['X'] == 'FILLED' and msg['S'] == 'SELL':
-        #    symbol = msg['s']
-        #    price = float(msg['p'])
-        #    size = float(msg['q'])
-        #    self.msg_handler.sell_complete(symbol, price, size, buy_price=0, sig_id=0)
+        order_update = self.accnt.parse_order_update(msg)
 
         if (self.current_ts - self.last_ts) > self.check_ts_min:
             self.accnt.get_account_balances()
             self.last_ts = self.current_ts
             timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
             self.logger.info("MultiTrader running {}".format(timestr))
-
-    def update_tickers(self, tickers):
-        self.tickers = tickers
-        if self.order_handler:
-            self.order_handler.update_tickers(self.tickers)

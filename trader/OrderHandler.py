@@ -284,11 +284,14 @@ class OrderHandler(object):
         self.limit_handler.add_open_order(ticker_id, order)
         #self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
 
+
     def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
         return self.limit_handler.send_buy_complete(ticker_id, price, size, sig_id, order_type)
 
+
     def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
         return self.limit_handler.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type)
+
 
     def place_buy_market_order(self, msg):
         ticker_id = msg.src_id
@@ -427,6 +430,7 @@ class OrderHandler(object):
         #         order_size = self.trade_balance_handler.get_balance(currency)
         #         symbol = self.trade_balance_handler.get_currency_pair_symbol(currency)
         #         self.msg_handler.order_size_update(symbol, price, order_size, sig_id)
+
 
     # store trade into json trade cache
     def store_trade_json(self, ticker_id, price, size, type, buy_price=0, trade_type=0):
