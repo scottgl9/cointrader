@@ -2,6 +2,7 @@ from trader.account.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
 from trader.lib.Message import Message
 from trader.lib.Order import Order
+from trader.lib.OrderUpdate import OrderUpdate
 from trader.lib.AssetInfo import AssetInfo
 import json
 import os
@@ -339,6 +340,40 @@ class AccountBinance(AccountBase):
                            is_currency_pair=is_currency_pair
                            )
         return result
+
+
+    def parse_order_update(self, result):
+        symbol = None
+        orig_id = None
+        order_id = None
+        side = None
+        order_type = None
+        order_price = 0
+        stop_price = 0
+        order_size = 0
+        order_status = None
+        exec_type = None
+        ts = 0
+
+        if self.simulate:
+            return None
+
+        if 'c' in result: order_id = result['c']
+        if 'C' in result: orig_id = result['C']
+        if 's' in result: symbol = result['s']
+        if 'S' in result: side = result['S']
+        if 'o' in result: order_type = result['o']
+        if 'q' in result: order_size = result['q']
+        if 'p' in result: order_price = result['p']
+        if 'P' in result: stop_price = result['P']
+        if 'X' in result: order_status = result['X']
+        if 'x' in result: exec_type = result['x']
+        if 'T' in result: ts = result['T']
+
+        order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type,
+                                   exec_type, side, ts, order_id, orig_id, order_status)
+        return order_update
+
 
     # parse json response to binance API order, then use to create Order object
     def parse_order_result(self, result, symbol=None, sigid=0):
