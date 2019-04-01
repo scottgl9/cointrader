@@ -46,7 +46,6 @@ class OrderLimitHandler(object):
         close = kline.close
         if ((order.type == Message.MSG_STOP_LOSS_BUY and close > order.price) or
             (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
-            bought = False
 
             order_type = order.type
             if order.type == Message.MSG_STOP_LOSS_BUY:
@@ -61,7 +60,7 @@ class OrderLimitHandler(object):
                                               size=order.size,
                                               order_type=order_type)
                 self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
-                bought = True
+                self.remove_open_order(kline.symbol)
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
@@ -71,13 +70,9 @@ class OrderLimitHandler(object):
                                            size=order.size,
                                            order_type=order_type)
                     self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
-                    bought = True
-            if bought:
-                self.logger.info("buy({}, {}) @ {}".format(order.symbol, order.size, order.price))
-                del self.open_orders[kline.symbol]
+                    self.remove_open_order(kline.symbol)
         elif ((order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
               (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
-            sold = False
 
             order_type = order.type
             if order.type == Message.MSG_STOP_LOSS_SELL:
@@ -89,19 +84,15 @@ class OrderLimitHandler(object):
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
                 self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
                                         order.sig_id, order_type=order_type)
-                sold = True
+                self.remove_open_order(kline.symbol)
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
                     self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
-                    message = self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
+                    self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
                                                       order.sig_id, order_type=order_type)
-                    sold = True
+                    self.remove_open_order(kline.symbol)
 
-            if not sold:
-                return
-
-            del self.open_orders[kline.symbol]
 
     def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
         buy_type="buy_unknown"
