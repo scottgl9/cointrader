@@ -27,17 +27,19 @@ from trader.config import *
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 class BinanceTrader:
-    def __init__(self, client, logger=None):
+    def __init__(self, client, strategy, signal_name, logger=None):
         self.client = client
         self.found = False
         self.logger = logger
         self.kline = None
         self.tickers = {}
         self.multitrader = MultiTrader(client,
-                                       'basic_signal_market_strategy',
-                                       signal_names=["Hybrid_Crossover_Test"],
+                                       strategy,
+                                       signal_names=[signal_name],
                                        simulate=False,
                                        logger=logger)
+
+        logger.info("Started live trading strategy: {} signal: {}".format(strategy, signal_name))
 
         # start the Web API
         self.thread = threading.Thread(target=WebThread, args=(self.multitrader,))
@@ -242,6 +244,15 @@ def filter_by_balances(assets, balances):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('-s', action='store', dest='strategy',
+                        default='basic_signal_market_strategy',
+                        help='name of strategy to use')
+
+    parser.add_argument('-g', action='store', dest='signal_name',
+                        default='Hybrid_Crossover_Test',
+                        help='name of signal to use')
+
     parser.add_argument('--sell-only', action='store_true', dest='sell_only',
                         default=False,
                         help='Set to sell only mode')
@@ -280,7 +291,7 @@ if __name__ == '__main__':
     sell_list = []
     currency_list = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
 
-    bt = BinanceTrader(client, logger=logger)
+    bt = BinanceTrader(client, strategy=results.strategy, signal_name=results.signal_name, logger=logger)
     if results.sell_only:
         logger.info("Setting SELL ONLY mode")
         bt.set_sell_only()
