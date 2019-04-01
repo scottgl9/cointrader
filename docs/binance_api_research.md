@@ -1,5 +1,55 @@
 User stream websocket - updates on binance account changes
 
+## Order Update
+Orders are updated with the `executionReport` event. Check the API documentation and below for relevant enum definitions.
+Average price can be found by doing `Z` divided by `z`.
+
+**Payload:**
+```javascript
+{
+  "e": "executionReport",        // Event type
+  "E": 1499405658658,            // Event time
+  "s": "ETHBTC",                 // Symbol
+  "c": "mUvoqJxFIILMdfAW5iGSOW", // Client order ID
+  "S": "BUY",                    // Side
+  "o": "LIMIT",                  // Order type
+  "f": "GTC",                    // Time in force
+  "q": "1.00000000",             // Order quantity
+  "p": "0.10264410",             // Order price
+  "P": "0.00000000",             // Stop price
+  "F": "0.00000000",             // Iceberg quantity
+  "g": -1,                       // Ignore
+  "C": "null",                   // Original client order ID; This is the ID of the order being canceled
+  "x": "NEW",                    // Current execution type
+  "X": "NEW",                    // Current order status
+  "r": "NONE",                   // Order reject reason; will be an error code.
+  "i": 4293153,                  // Order ID
+  "l": "0.00000000",             // Last executed quantity
+  "z": "0.00000000",             // Cumulative filled quantity
+  "L": "0.00000000",             // Last executed price
+  "n": "0",                      // Commission amount
+  "N": null,                     // Commission asset
+  "T": 1499405658657,            // Transaction time
+  "t": -1,                       // Trade ID
+  "I": 8641984,                  // Ignore
+  "w": true,                     // Is the order working? Stops will have
+  "m": false,                    // Is this trade the maker side?
+  "M": false,                    // Ignore
+  "O": 1499405658657,            // Order creation time
+  "Z": "0.00000000",             // Cumulative quote asset transacted quantity
+  "Y": "0.00000000"              // Last quote asset transacted quantity (i.e. lastPrice * lastQty)
+}
+```
+
+**Execution types:**
+
+* NEW
+* CANCELED
+* REPLACED (currently unused)
+* REJECTED
+* TRADE
+* EXPIRED
+
 ##### set new limit order example:
 ```
 {u'C': u'null',
