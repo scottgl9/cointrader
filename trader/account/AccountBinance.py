@@ -920,12 +920,13 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(currency, cbalance, cavailable - usd_value)
             return True
         else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_buy(timeInForce=timeInForce,
-                                               symbol=ticker_id,
-                                               quantity=size,
-                                               price=price,
-                                               stopPrice=stop_price)
+            return self.client.create_order(symbol=ticker_id,
+                                     timeInForce=Client.TIME_IN_FORCE_GTC,
+                                     side=Client.SIDE_BUY,
+                                     type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
+                                     quantity=size,
+                                     price=price,
+                                     stopPrice=stop_price)
 
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
@@ -938,12 +939,13 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
             return True
         else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_sell(timeInForce=timeInForce,
-                                               symbol=ticker_id,
-                                               quantity=size,
-                                               price=price,
-                                               stopPrice=stop_price)
+            return self.client.create_order(symbol=ticker_id,
+                                     timeInForce=Client.TIME_IN_FORCE_GTC,
+                                     side=Client.SIDE_SELL,
+                                     type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
+                                     quantity=size,
+                                     price=price,
+                                     stopPrice=stop_price)
 
 
     def buy_limit(self, price, size, post_only=True, ticker_id=None):
