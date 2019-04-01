@@ -193,10 +193,10 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     signal.last_buy_ts = self.timestamp
 
                     # set stop loss 2% under buy price
-                    if not self.stop_loss_set and not self.stop_loss_price:
-                        self.stop_loss_price = self.round_base(0.98 * msg.price)
-                        self.next_stop_loss_price = msg.price
-                        self.set_sell_stop_loss(signal, self.stop_loss_price)
+                    #if not self.stop_loss_set and not self.stop_loss_price:
+                    #    self.stop_loss_price = self.round_base(0.98 * msg.price)
+                    #    self.next_stop_loss_price = msg.price
+                    #    self.set_sell_stop_loss(signal, self.stop_loss_price)
 
                     msg.mark_read()
                     completed = True
@@ -367,7 +367,8 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.stop_loss_set:
             return False
         #self.logger.info("set_sell_stop_loss({}, {}, {})".format(self.ticker_id, price, signal.buy_size))
-        self.msg_handler.sell_stop_loss(self.ticker_id, price, signal.buy_size, signal.buy_price, signal.id)
+        sell_price = self.my_float(price)
+        self.msg_handler.sell_stop_loss(self.ticker_id, sell_price, signal.buy_size, signal.buy_price, signal.id)
         self.stop_loss_set = True
         return True
 

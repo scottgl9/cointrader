@@ -920,6 +920,7 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(currency, cbalance, cavailable - usd_value)
             return True
         else:
+            self.logger.info("buy_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
             return self.client.create_order(symbol=ticker_id,
                                      timeInForce=Client.TIME_IN_FORCE_GTC,
                                      side=Client.SIDE_BUY,
@@ -930,7 +931,9 @@ class AccountBinance(AccountBase):
 
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
+
         if self.simulate:
+            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
 
@@ -939,6 +942,7 @@ class AccountBinance(AccountBase):
             self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
             return True
         else:
+            self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
             return self.client.create_order(symbol=ticker_id,
                                      timeInForce=Client.TIME_IN_FORCE_GTC,
                                      side=Client.SIDE_SELL,
