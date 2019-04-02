@@ -2,8 +2,8 @@
 
 
 class Kline(object):
-    def __init__(self, symbol=None, open=None, close=None, low=None, high=None,
-                 volume_base=None, volume_quote=None, ts=None):
+    def __init__(self, symbol=None, open=0, close=0, low=0, high=0,
+                 volume_base=0, volume_quote=0, ts=0):
         self.symbol = symbol
         self.open = open
         self.close = close
@@ -23,6 +23,16 @@ class Kline(object):
             'ts': int(self.ts)
         }
 
+    def reset(self):
+        self.symbol = None
+        self.open = 0
+        self.close = 0
+        self.low = 0
+        self.high = 0
+        self.volume_base = 0
+        self.volume_quote = 0
+        self.volume = 0
+        self.ts = 0
 
 # class KlineList(collections.MutableSequence):
 #     def __init__(self, *args):

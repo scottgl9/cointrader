@@ -30,7 +30,7 @@ Kline_init(Kline *self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {"symbol", "open", "close", "low", "high", "volume_base", "volume_quote", "ts", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Uddddddl", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Uddddddl", kwlist,
                                      &self->symbol, &self->open, &self->close, &self->low, &self->high,
                                      &self->volume_base, &self->volume_quote, &self->ts))
         return -1;
@@ -38,6 +38,21 @@ Kline_init(Kline *self, PyObject *args, PyObject *kwds)
     self->volume = self->volume_quote;
 
     return 0;
+}
+
+static PyObject *Kline_reset(Kline *self, PyObject *args)
+{
+    self->open = 0;
+    self->close = 0;
+    self->low = 0;
+    self->high = 0;
+    self->volume_base = 0;
+    self->volume_quote = 0;
+    self->volume = 0;
+    self->ts = 0;
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject* Kline_Repr(PyObject *o)

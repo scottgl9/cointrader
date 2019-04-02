@@ -19,6 +19,7 @@ static void Kline_dealloc(Kline* self);
 static PyObject *Kline_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 static int Kline_init(Kline *self, PyObject *args, PyObject *kwds);
 static PyObject* Kline_Repr(PyObject *o);
+static PyObject *Kline_reset(Kline *self, PyObject *args);
 
 static PyMemberDef Kline_members[] = {
     {"symbol", T_OBJECT, offsetof(Kline, symbol), 0, "klineobj symbol"},
@@ -34,6 +35,9 @@ static PyMemberDef Kline_members[] = {
 };
 
 static PyMethodDef Kline_methods[] = {
+    {"reset", (PyCFunction)Kline_reset, METH_NOARGS,
+     "reset Kline",
+    },
     {NULL}  /* Sentinel */
 };
 
