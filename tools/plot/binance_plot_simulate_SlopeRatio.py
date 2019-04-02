@@ -29,7 +29,7 @@ def get_rows_as_msgs(c):
     return msgs
 
 
-def simulate(conn, client, base, currency, type="channel"):
+def simulate(conn, client, base, currency):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
@@ -133,5 +133,5 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    simulate(conn, client, base, currency, type="MACD")
+    simulate(conn, client, base, currency)
     conn.close()
