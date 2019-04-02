@@ -87,19 +87,19 @@ class StrategyBase(object):
 
     def round_base(self, price):
         if self.base_min_size != 0.0:
-            return round(price, '{:.9f}'.format(self.base_min_size).index('1') - 1)
+            return round(price, '{:.8f}'.format(self.base_min_size).index('1') - 1)
         return price
 
     def round_quote(self, price):
         if self.quote_increment != 0.0:
-            return round(price, '{:.9f}'.format(self.quote_increment).index('1') - 1)
+            return round(price, '{:.8f}'.format(self.quote_increment).index('1') - 1)
         return price
 
     def my_float(self, value):
         if float(value) >= 0.1:
             return "{}".format(float(value))
         else:
-            return "{:.9f}".format(float(value))
+            return "{:.8f}".format(float(value))
 
     def reset(self):
         pass

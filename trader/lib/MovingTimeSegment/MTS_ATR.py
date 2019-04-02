@@ -35,7 +35,7 @@ class MTS_ATR(object):
         elif self.atr == 0:
             self.trs.append(tr)
             self._tr_sum += tr
-            self.atr = self._tr_sum / len(self.trs)
+            self.atr = self._tr_sum / self.window
             self.trs[self.age] = self.atr
         else:
             self.atr = ((self.prior_atr * (self.window-1.0)) + tr) / self.window
