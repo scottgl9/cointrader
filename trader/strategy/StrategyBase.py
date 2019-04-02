@@ -22,14 +22,24 @@ from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
 
 class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 base_min_size=0.0, tick_size=0.0, logger=None):
+                 base_min_size=0.0, tick_size=0.0, asset_info=None, logger=None):
         self.strategy_name = None
         self.logger = logger
         self.tickers = None
         self.base = base
         self.currency = currency
         self.ticker_id = None
-        self.asset_info = None
+        self.asset_info = asset_info
+        self.base_precision = 8
+        self.quote_precision = 8
+
+        if self.asset_info:
+            self.base_precision = self.asset_info.baseAssetPrecision
+            self.quote_precision = self.asset_info.quotePrecision
+
+        self.base_fmt = "{:." + str(self.base_precision) + "f}"
+        self.quote_fmt = "{:." + str(self.quote_precision) + "f}"
+
         self.base_min_size = float(base_min_size)
         self.quote_increment = float(tick_size)
         self.client = client
@@ -87,29 +97,25 @@ class StrategyBase(object):
 
     def round_base(self, price):
         if self.base_min_size != 0.0:
-            return round(price, '{:.8f}'.format(self.base_min_size).index('1') - 1)
+            return round(price, self.base_fmt.format(self.base_min_size).index('1') - 1)
         return price
 
     def round_quote(self, price):
         if self.quote_increment != 0.0:
-            return round(price, '{:.8f}'.format(self.quote_increment).index('1') - 1)
+            return round(price, self.quote_fmt.format(self.quote_increment).index('1') - 1)
         return price
 
-    def my_float(self, value):
+    # is_base == False: quote value, is_base == True: base value
+    def my_float(self, value, is_base=True):
         if float(value) >= 0.1:
             return "{}".format(float(value))
         else:
-            return "{:.8f}".format(float(value))
+            if is_base:
+                return self.base_fmt.format(float(value))
+            return self.quote_fmt.format(float(value))
 
     def reset(self):
         pass
-
-    def update_last_50_prices(self, price):
-        self.last_50_prices.append(price)
-        if len(self.last_50_prices) > 50:
-            diff_size = len(self.last_50_prices) - 50
-            self.last_50_prices = self.last_50_prices[diff_size:]
-        #self.count_prices_added += 1
 
     def buy_signal(self, signal, price):
         pass

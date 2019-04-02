@@ -18,6 +18,7 @@ class basic_signal_stop_loss_strategy(StrategyBase):
                                                                order_handler,
                                                                base_min_size,
                                                                tick_size,
+                                                               asset_info,
                                                                logger)
         self.strategy_name = 'basic_signal_stop_loss_strategy'
         self.last_price = self.price = 0.0

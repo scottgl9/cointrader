@@ -19,6 +19,7 @@ class null_strategy(StrategyBase):
                                             order_handler,
                                             base_min_size,
                                             tick_size,
+                                            asset_info,
                                             logger)
         self.strategy_name = 'null_strategy'
         self.last_price = self.price = 0.0

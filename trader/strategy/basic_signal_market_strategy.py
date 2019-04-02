@@ -17,6 +17,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                             order_handler,
                                                             base_min_size,
                                                             tick_size,
+                                                            asset_info,
                                                             logger)
         self.strategy_name = 'hybrid_signal_market_strategy'
         self.trade_size_handler = fixed_trade_size(self.accnt,
