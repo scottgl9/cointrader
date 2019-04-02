@@ -215,6 +215,7 @@ class AccountBinance(AccountBase):
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
 
+
     def split_symbol(self, symbol):
         return self.split_ticker_id(symbol)
 
@@ -237,6 +238,14 @@ class AccountBinance(AccountBase):
                 tickSize = ''
                 stepSize = ''
                 commissionAsset = ''
+                baseAssetPrecision = 8
+                quotePrecision = 8
+
+                if 'baseAssetPrecision' in asset:
+                    baseAssetPrecision = asset['baseAssetPrecision']
+                if 'quotePrecision' in asset:
+                    quotePrecision = asset['quotePrecision']
+
                 for filter in asset['filters']:
                     if 'minQty' in filter:
                         minQty = filter['minQty']
@@ -256,10 +265,13 @@ class AccountBinance(AccountBase):
                                            'tickSize': tickSize,
                                            'stepSize': stepSize,
                                            'minNotional': minNotional,
-                                           'commissionAsset': commissionAsset
+                                           'commissionAsset': commissionAsset,
+                                           'baseAssetPrecision': baseAssetPrecision,
+                                           'quotePrecision': quotePrecision
                                            }
 
         return assets
+
 
     # use get_info_all_assets to load asset info into self.info_all_assets
     def load_info_all_assets(self):
@@ -275,6 +287,7 @@ class AccountBinance(AccountBase):
             assets_info = json.loads(open('asset_info.json').read())
         self.info_all_assets = self.get_info_all_assets(assets_info)
 
+
     # use get_info_all_assets to load asset info into self.info_all_assets
     def load_detail_all_assets(self):
         if not self.simulate:
@@ -288,6 +301,7 @@ class AccountBinance(AccountBase):
         else:
             self.details_all_assets = json.loads(open('asset_detail.json').read())
 
+
     def get_asset_status(self, name=None):
         if not self.details_all_assets:
             self.load_detail_all_assets()
@@ -300,6 +314,7 @@ class AccountBinance(AccountBase):
             return self.details_all_assets[name]
 
         return None
+
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:
@@ -316,6 +331,7 @@ class AccountBinance(AccountBase):
             return self.info_all_assets[symbol][field]
         return self.info_all_assets[symbol]
 
+
     # return asset info in AssetInfo class object
     def get_asset_info(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
@@ -330,6 +346,8 @@ class AccountBinance(AccountBase):
         base_step_size=info['stepSize']
         currency_step_size=info['tickSize']
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
+        baseAssetPrecision = info['baseAssetPrecision']
+        quotePrecision = info['quotePrecision']
 
         result = AssetInfo(base=base,
                            currency=currency,
@@ -337,7 +355,9 @@ class AccountBinance(AccountBase):
                            min_price=min_price,
                            base_step_size=base_step_size,
                            currency_step_size=currency_step_size,
-                           is_currency_pair=is_currency_pair
+                           is_currency_pair=is_currency_pair,
+                           baseAssetPrecision=baseAssetPrecision,
+                           quotePrecision=quotePrecision
                            )
         return result
 
