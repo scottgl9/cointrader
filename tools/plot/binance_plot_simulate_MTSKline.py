@@ -40,7 +40,7 @@ def simulate(conn, client, base, currency, type="channel"):
     kline_x_values = []
 
     aema12 = AEMA(12, scale_interval_secs=60)
-    kline = MTSKline(win_size_secs=300)
+    kline = MTSKline(win_size_secs=60)
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -51,7 +51,7 @@ def simulate(conn, client, base, currency, type="channel"):
 
         aema12.update(close, ts)
         if aema12.ready():
-            result = kline.update(aema12.result, ts)
+            result = kline.update(close, ts)
             if result and kline.ready():
                 open_prices.append(result.open)
                 close_prices.append(result.close)

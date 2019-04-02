@@ -24,6 +24,10 @@ class MTSKline(object):
         self.kline.close = self.mts_array.last_value()
         self.kline.high = self.mts_array.max()
         self.kline.low = self.mts_array.min()
+        if self.kline.close < self.kline.low:
+            self.kline.low = self.kline.close
+        elif self.kline.close > self.kline.high:
+            self.kline.high = self.kline.close
         self.kline.ts = ts
 
         return self.kline
