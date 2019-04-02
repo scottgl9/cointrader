@@ -1,5 +1,6 @@
 from sklearn import tree
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
+from trader.lib.LargestPriceChange import LargestPriceChange
 from trader.indicator.AEMA import AEMA
 
 class DecisionTreeLearning(object):
@@ -7,6 +8,7 @@ class DecisionTreeLearning(object):
         self.clf = tree.DecisionTreeClassifier()
         self.aema12 = AEMA(12, scale_interval_secs=60)
         self.mts = MovingTimeSegment(win_secs, disable_fmm=False)
+        self.lpc = LargestPriceChange()
 
     def ready(self):
         return self.mts.ready()
@@ -26,3 +28,6 @@ class DecisionTreeLearning(object):
 
         # *TODO* determine features before running self.clf.fit()
         # determine peaks / valleys / uptrend / downtrend
+        self.lpc.reset(values, timestamps)
+        self.lpc.divide_price_segments()
+        segments = self.lpc.get_price_segments_percent_sorted()
