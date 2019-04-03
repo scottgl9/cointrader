@@ -1,10 +1,11 @@
+import numpy as np
 from sklearn import tree
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 from trader.lib.LargestPriceChange import LargestPriceChange
 from trader.indicator.AEMA import AEMA
 
-class DecisionTreeLearning(object):
-    def __init__(self, win_secs=3600, lpc_update_secs=300, clf_update_secs=1800):
+class DecisionTree(object):
+    def __init__(self, win_secs=3600*4, lpc_update_secs=1800, clf_update_secs=1800):
         self.win_secs = win_secs
         self.lpc_update_secs = lpc_update_secs
         self.clf_update_secs = clf_update_secs
@@ -37,6 +38,7 @@ class DecisionTreeLearning(object):
         if not self.clf_update_ts or (ts - self.clf_update_ts) > 1000 * self.clf_update_secs:
             self.lpc_process_features()
             self.clf_fit_labels()
+            self.clf_update_ts = ts
 
     def lpc_update_segments(self):
         timestamps = self.mts.get_timestamps()
@@ -44,7 +46,7 @@ class DecisionTreeLearning(object):
 
         self.lpc.reset(values, timestamps)
         self.lpc.divide_price_segments()
-        self.segments = self.lpc.get_price_segments_percent_sorted()
+        self.segments = self.lpc.get_price_segments_percent_sorted(leaves_only=True)
 
     def lpc_process_features(self):
         timestamps = self.mts.get_timestamps()
@@ -57,9 +59,13 @@ class DecisionTreeLearning(object):
         self.dtfl.sort()
 
     def clf_fit_labels(self):
-        values = self.mts.get_values()
-        labels = self.dtfl.labels()
-        self.clf.fit(values, labels)
+        labels, end_index = self.dtfl.labels()
+        if not labels:
+            return
+
+        values_raw = self.mts.get_values()[:end_index]
+        values = np.array(values_raw).reshape(-1, 1)
+        self.clf.fit(values, labels[:end_index])
 
 
 class DecisionTreeFeatureList(object):
@@ -78,12 +84,23 @@ class DecisionTreeFeatureList(object):
         self._labels = len(self.timestamps) * [DecisionTreeFeature.CLASS_NONE]
 
     def labels(self):
+        count = 0
+        start_index = -1
+        end_index = -1
         for f in self.feature_list:
-            start_index = self.timestamps.index(f.start_ts)
-            end_index = self.timestamps.index(f.end_ts)
+            try:
+                start_index = self.timestamps.index(f.start_ts)
+                end_index = self.timestamps.index(f.end_ts)
+            except ValueError:
+                continue
             for i in range(start_index, end_index):
                 self._labels[i] = f.class_type
-        return self._labels
+            count += 1
+
+        if not count:
+            return None, 0
+
+        return self._labels, end_index
 
     def sort(self):
         self.feature_list.sort(key=lambda x: x.start_ts)
