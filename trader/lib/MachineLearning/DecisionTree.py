@@ -4,11 +4,17 @@ from trader.lib.LargestPriceChange import LargestPriceChange
 from trader.indicator.AEMA import AEMA
 
 class DecisionTreeLearning(object):
-    def __init__(self, win_secs=3600):
+    def __init__(self, win_secs=3600, lpc_update_secs=300, clf_update_secs=1800):
+        self.win_secs = win_secs
+        self.lpc_update_secs = lpc_update_secs
+        self.clf_update_secs = clf_update_secs
+        self.lpc_update_ts = 0
+        self.clf_update_ts = 0
         self.clf = tree.DecisionTreeClassifier()
         self.aema12 = AEMA(12, scale_interval_secs=60)
         self.mts = MovingTimeSegment(win_secs, disable_fmm=False)
         self.lpc = LargestPriceChange()
+        self.dtfl = None
         self.segments = None
 
     def ready(self):
@@ -24,28 +30,60 @@ class DecisionTreeLearning(object):
         if not self.mts.ready():
             return
 
-    def lpc_process_features(self):
+        if not self.lpc_update_ts or (ts - self.lpc_update_ts) > 1000 * self.lpc_update_secs:
+            self.lpc_update_segments()
+            self.lpc_update_ts = ts
+
+        if not self.clf_update_ts or (ts - self.clf_update_ts) > 1000 * self.clf_update_secs:
+            self.lpc_process_features()
+            self.clf_fit_labels()
+
+    def lpc_update_segments(self):
         timestamps = self.mts.get_timestamps()
-        start_ts = timestamps[0]
-        end_ts = timestamps[-1]
         values = self.mts.get_values()
 
-        # *TODO* determine features before running self.clf.fit()
-        # determine peaks / valleys / uptrend / downtrend
         self.lpc.reset(values, timestamps)
         self.lpc.divide_price_segments()
         self.segments = self.lpc.get_price_segments_percent_sorted()
 
-        dtfl = DecisionTreeFeatureList(start_ts, end_ts, len(timestamps))
+    def lpc_process_features(self):
+        timestamps = self.mts.get_timestamps()
+        start_ts = timestamps[0]
+        end_ts = timestamps[-1]
+
+        self.dtfl = DecisionTreeFeatureList(start_ts, end_ts, timestamps)
         for segment in self.segments:
-            dtfl.process(segment.start_ts, segment.end_ts, segment.start_price, segment.end_price, segment.percent)
+            self.dtfl.process(segment.start_ts, segment.end_ts, segment.start_price, segment.end_price, segment.percent)
+        self.dtfl.sort()
+
+    def clf_fit_labels(self):
+        values = self.mts.get_values()
+        labels = self.dtfl.labels()
+        self.clf.fit(values, labels)
+
 
 class DecisionTreeFeatureList(object):
-    def __init__(self, start_ts, end_ts, size):
+    def __init__(self, start_ts, end_ts, timestamps):
         self.start_ts = start_ts
         self.end_ts = end_ts
-        self.size = size
+        self.timestamps = timestamps
         self.feature_list = []
+        self._labels = len(self.timestamps) * [DecisionTreeFeature.CLASS_NONE]
+
+    def reset(self, start_ts, end_ts, timestamps):
+        self.start_ts = start_ts
+        self.end_ts = end_ts
+        self.timestamps = timestamps
+        self.feature_list = []
+        self._labels = len(self.timestamps) * [DecisionTreeFeature.CLASS_NONE]
+
+    def labels(self):
+        for f in self.feature_list:
+            start_index = self.timestamps.index(f.start_ts)
+            end_index = self.timestamps.index(f.end_ts)
+            for i in range(start_index, end_index):
+                self._labels[i] = f.class_type
+        return self._labels
 
     def sort(self):
         self.feature_list.sort(key=lambda x: x.start_ts)
@@ -108,10 +146,11 @@ class DecisionTreeFeatureList(object):
 
 class DecisionTreeFeature(object):
     CLASS_NONE = 0
-    CLASS_SLOW_DOWN = 1
-    CLASS_SLOW_UP = 2
-    CLASS_FAST_DOWN = 3
-    CLASS_FAST_UP = 4
+    CLASS_FLAT = 1
+    CLASS_SLOW_DOWN = 2
+    CLASS_SLOW_UP = 3
+    CLASS_FAST_DOWN = 4
+    CLASS_FAST_UP = 5
     def __init__(self, start_ts, end_ts, start_price, end_price, percent):
         self.start_ts = start_ts
         self.end_ts = end_ts
@@ -135,9 +174,11 @@ class DecisionTreeFeature(object):
     def update_class_type(self):
         if self.percent < -1.0:
             self.class_type = DecisionTreeFeature.CLASS_FAST_DOWN
-        elif -1.0 < self.percent < 0.0:
+        elif -1.0 < self.percent < 0.2:
             self.class_type = DecisionTreeFeature.CLASS_SLOW_DOWN
-        elif 0.0 <= self.percent < 1.0:
+        elif -0.2 <= self.percent < 0.2:
+            self.class_type = DecisionTreeFeature.CLASS_FLAT
+        elif 0.2 <= self.percent < 1.0:
             self.class_type = DecisionTreeFeature.CLASS_SLOW_UP
         elif self.percent > 1.0:
             self.class_type = DecisionTreeFeature.CLASS_FAST_UP
