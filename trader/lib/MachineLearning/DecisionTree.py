@@ -11,15 +11,16 @@ class DecisionTree(object):
         self.clf_update_secs = clf_update_secs
         self.lpc_update_ts = 0
         self.clf_update_ts = 0
-        self.clf = tree.DecisionTreeClassifier()
+        self.clf = None
         self.aema12 = AEMA(12, scale_interval_secs=60)
-        self.mts = MovingTimeSegment(win_secs, disable_fmm=False)
+        self.mts = MovingTimeSegment(win_secs, disable_fmm=False, enable_volume=True)
         self.lpc = LargestPriceChange()
         self.dtfl = None
         self.segments = None
+        self.prediction = DecisionTreeFeature.CLASS_NONE
 
     def ready(self):
-        return self.mts.ready()
+        return self.mts.ready() and self.clf
 
     def update(self, close, volume, ts):
         self.aema12.update(close, ts)
@@ -39,6 +40,10 @@ class DecisionTree(object):
             self.lpc_process_features()
             self.clf_fit_labels()
             self.clf_update_ts = ts
+        elif self.clf:
+            self.prediction = self.clf.predict([[self.aema12.result, volume]])[0]
+            if self.prediction:
+                print(self.prediction)
 
     def lpc_update_segments(self):
         timestamps = self.mts.get_timestamps()
@@ -63,9 +68,16 @@ class DecisionTree(object):
         if not labels:
             return
 
-        values_raw = self.mts.get_values()[:end_index]
-        values = np.array(values_raw).reshape(-1, 1)
-        self.clf.fit(values, labels[:end_index])
+        features = []
+        values = self.mts.get_values()
+        volumes = self.mts.get_volumes()
+        for i in range(0, len(values)):
+            features.append([values[i], volumes[i]])
+
+        #values_raw = self.mts.get_values()[:end_index]
+        #values = np.array(values_raw).reshape(-1, 1)
+        self.clf = tree.DecisionTreeClassifier()
+        self.clf.fit(features[:end_index], labels[:end_index])
 
 
 class DecisionTreeFeatureList(object):
@@ -168,6 +180,8 @@ class DecisionTreeFeature(object):
     CLASS_SLOW_UP = 3
     CLASS_FAST_DOWN = 4
     CLASS_FAST_UP = 5
+    CLASS_FASTER_DOWN = 6
+    CLASS_FASTER_UP = 7
     def __init__(self, start_ts, end_ts, start_price, end_price, percent):
         self.start_ts = start_ts
         self.end_ts = end_ts
@@ -189,13 +203,17 @@ class DecisionTreeFeature(object):
         return self.percent
 
     def update_class_type(self):
-        if self.percent < -1.0:
+        if self.percent <= -5.0:
+          self.class_type = DecisionTreeFeature.CLASS_FASTER_DOWN
+        elif -5.0 < self.percent < -1.0:
             self.class_type = DecisionTreeFeature.CLASS_FAST_DOWN
-        elif -1.0 < self.percent < 0.2:
+        elif -1.0 < self.percent < 0.5:
             self.class_type = DecisionTreeFeature.CLASS_SLOW_DOWN
-        elif -0.2 <= self.percent < 0.2:
+        elif -0.5 <= self.percent < 0.5:
             self.class_type = DecisionTreeFeature.CLASS_FLAT
-        elif 0.2 <= self.percent < 1.0:
+        elif 0.5 <= self.percent < 1.0:
             self.class_type = DecisionTreeFeature.CLASS_SLOW_UP
-        elif self.percent > 1.0:
+        elif 5.0 > self.percent > 1.0:
             self.class_type = DecisionTreeFeature.CLASS_FAST_UP
+        elif self.percent >= 5.0:
+            self.class_type = DecisionTreeFeature.CLASS_FASTER_UP

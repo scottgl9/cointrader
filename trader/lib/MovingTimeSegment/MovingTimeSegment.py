@@ -42,6 +42,8 @@ class MovingTimeSegment(object):
         else:
             svalue = value
 
+        if self.enable_volume:
+            self.volumes.append(volume)
         self.values.append(svalue)
         self.timestamps.append(ts)
 
