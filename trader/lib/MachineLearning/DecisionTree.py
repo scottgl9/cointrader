@@ -21,12 +21,12 @@ class DecisionTree(object):
     def ready(self):
         return self.mts.ready()
 
-    def update(self, close, ts):
+    def update(self, close, volume, ts):
         self.aema12.update(close, ts)
         if not self.aema12.ready():
             return
 
-        self.mts.update(self.aema12.result, ts)
+        self.mts.update(self.aema12.result, ts, volume=volume)
 
         if not self.mts.ready():
             return

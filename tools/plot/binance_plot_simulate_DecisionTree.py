@@ -73,7 +73,7 @@ def simulate(conn, client, base, currency):
         aema26_values.append(aema26.update(close, ts))
         aema50_values.append(aema50.update(close, ts))
 
-        dt.update(close, ts)
+        dt.update(close, volume_base, ts)
 
         close_prices.append(close)
         open_prices.append(open)

@@ -3,15 +3,20 @@ from trader.lib.FastMinMax import FastMinMax
 
 
 class MovingTimeSegment(object):
-    def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None, disable_fmm=False):
+    def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None,
+                 disable_fmm=False, enable_volume=False):
         self.seconds = seconds
         if minutes != 0:
             self.seconds += minutes * 60
         self.seconds_ts = 1000 * self.seconds
         self.values = []
+        self.volumes = None
         self.timestamps = []
         self.fmm = FastMinMax()
         self.full = False
+        self.enable_volume = enable_volume
+        if self.enable_volume:
+            self.volumes = []
         self.disable_fmm = disable_fmm
         self.value_smoother = value_smoother
         self.percent_smoother = percent_smoother
@@ -31,18 +36,17 @@ class MovingTimeSegment(object):
     def ready(self):
         return self.full
 
-    def update(self, value, ts):
+    def update(self, value, ts, volume=0):
         if self.value_smoother:
             svalue = self.value_smoother.update(value)
-            self.values.append(svalue)
-            self.timestamps.append(ts)
         else:
             svalue = value
-            self.values.append(svalue)
-            self.timestamps.append(ts)
 
-            self._sum += svalue
-            self._sum_count += 1
+        self.values.append(svalue)
+        self.timestamps.append(ts)
+
+        self._sum += svalue
+        self._sum_count += 1
 
         cnt = 0
         while (ts - self.timestamps[cnt]) > self.seconds_ts:
@@ -61,6 +65,8 @@ class MovingTimeSegment(object):
 
             self.timestamps = self.timestamps[cnt:]
             self.values = self.values[cnt:]
+            if self.enable_volume:
+                self.volumes = self.volumes[cnt:]
             if not self.full:
                 self.full = True
 
@@ -81,6 +87,8 @@ class MovingTimeSegment(object):
 
         self.timestamps = self.timestamps[cnt:]
         self.values = self.values[cnt:]
+        if self.enable_volume:
+            self.volumes = self.volumes[cnt:]
 
         if not self.disable_fmm:
             self.min_value = self.fmm.min()
@@ -106,6 +114,9 @@ class MovingTimeSegment(object):
 
     def get_values(self):
         return self.values
+
+    def get_volumes(self):
+        return self.volumes
 
     def get_timestamps(self):
         return self.timestamps
