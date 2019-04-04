@@ -42,12 +42,16 @@ def simulate(conn, client, base, currency):
     obv_aema12_values = []
     aema12 = AEMA(12, scale_interval_secs=60)
     aema12_values = []
-    aema12_300 = AEMA(12, scale_interval_secs=300)
-    aema12_300_values = []
-    aema26 = AEMA(26, scale_interval_secs=60)
-    aema26_values = []
+    #aema12_300 = AEMA(12, scale_interval_secs=300)
+    #aema12_300_values = []
+    #aema26 = AEMA(26, scale_interval_secs=60)
+    #aema26_values = []
     aema50 = AEMA(50, scale_interval_secs=60)
     aema50_values = []
+    aema100 = AEMA(100, scale_interval_secs=60)
+    aema100_values = []
+    aema200 = AEMA(200, scale_interval_secs=60)
+    aema200_values = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -66,10 +70,11 @@ def simulate(conn, client, base, currency):
         obv_aema12.update(obv.result, ts)
         obv_aema12_values.append(obv_aema12.result)
         aema12_values.append(aema12.update(close, ts))
-        aema12_300_values.append(aema12_300.update(close, ts))
-        aema26_values.append(aema26.update(close, ts))
+        #aema12_300_values.append(aema12_300.update(close, ts))
+        #aema26_values.append(aema26.update(close, ts))
         aema50_values.append(aema50.update(close, ts))
-
+        aema100_values.append(aema100.update(close, ts))
+        aema200_values.append(aema200.update(close, ts))
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -82,11 +87,12 @@ def simulate(conn, client, base, currency):
     fig1, = plt.plot(aema12_values, label='AEMA12')
     #fig2, = plt.plot(aema26_values, label='AEMA26')
     fig3, = plt.plot(aema50_values, label='AEMA50')
-    #fig4, = plt.plot(aema12_300_values, label='AEMA12_300')
+    fig4, = plt.plot(aema100_values, label='AEMA100')
+    fig5, = plt.plot(aema200_values, label='AEMA200')
     #plt.plot(low_prices)
     #plt.plot(high_prices)
 
-    plt.legend(handles=[symprice, fig1, fig3])
+    plt.legend(handles=[symprice, fig1, fig3, fig4, fig5])
     plt.subplot(212)
     plt.plot(obv_aema12_values)
     plt.show()

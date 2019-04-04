@@ -74,6 +74,9 @@ class BinanceTrader:
         except KeyError:
             return
 
+        # log json response
+        self.logger.info(msg)
+
         self.multitrader.process_user_message(msg)
 
         self.logger.info("{}: cmd={} type={} side={} price={} size={}".format(

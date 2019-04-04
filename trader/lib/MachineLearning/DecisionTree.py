@@ -3,6 +3,7 @@ from sklearn import tree
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 from trader.lib.LargestPriceChange import LargestPriceChange
 from trader.indicator.AEMA import AEMA
+from trader.indicator.EMA import EMA
 
 class DecisionTree(object):
     def __init__(self, win_secs=3600*4, lpc_update_secs=1800, clf_update_secs=1800):
@@ -182,18 +183,20 @@ class DecisionTreeFeatureList(object):
 class DecisionTreeFeature(object):
     CLASS_NONE = 0
     CLASS_FLAT = 0.5
-    CLASS_DOWN6 = -6
-    CLASS_DOWN5 = -5
-    CLASS_DOWN4 = -4
-    CLASS_DOWN3 = -3
-    CLASS_DOWN2 = -2
-    CLASS_DOWN1 = -1
-    CLASS_UP1 = 1
-    CLASS_UP2 = 2
-    CLASS_UP3 = 3
-    CLASS_UP4 = 4
-    CLASS_UP5 = 5
-    CLASS_UP6 = 6
+    CLASS_DOWN6 = -7
+    CLASS_DOWN5 = -6
+    CLASS_DOWN4 = -5
+    CLASS_DOWN3 = -4
+    CLASS_DOWN2 = -3
+    CLASS_DOWN1 = -2
+    CLASS_DOWN0 = -1
+    CLASS_UP0 = 1
+    CLASS_UP1 = 2
+    CLASS_UP2 = 3
+    CLASS_UP3 = 4
+    CLASS_UP4 = 5
+    CLASS_UP5 = 6
+    CLASS_UP6 = 7
     def __init__(self, start_ts, end_ts, start_price, end_price, percent):
         self.start_ts = start_ts
         self.end_ts = end_ts
@@ -227,8 +230,12 @@ class DecisionTreeFeature(object):
             self.class_type = DecisionTreeFeature.CLASS_DOWN2
         elif -1.0 <= self.percent < 0.5:
             self.class_type = DecisionTreeFeature.CLASS_DOWN1
-        elif -0.5 <= self.percent < 0.5:
+        elif -0.5 <= self.percent < 0.1:
+            self.class_type = DecisionTreeFeature.CLASS_DOWN0
+        elif -0.1 <= self.percent < 0.1:
             self.class_type = DecisionTreeFeature.CLASS_FLAT
+        elif 0.1 <= self.percent < 0.5:
+            self.class_type = DecisionTreeFeature.CLASS_UP0
         elif 0.5 <= self.percent < 1.0:
             self.class_type = DecisionTreeFeature.CLASS_UP1
         elif 2.0 > self.percent >= 1.0:
