@@ -18,6 +18,7 @@ class DecisionTree(object):
         self.dtfl = None
         self.segments = None
         self.prediction = DecisionTreeFeature.CLASS_NONE
+        self.data = []
 
     def ready(self):
         return self.mts.ready() and self.clf
@@ -37,13 +38,18 @@ class DecisionTree(object):
             self.lpc_update_ts = ts
 
         if not self.clf_update_ts or (ts - self.clf_update_ts) > 1000 * self.clf_update_secs:
+            self.data = []
             self.lpc_process_features()
             self.clf_fit_labels()
             self.clf_update_ts = ts
         elif self.clf:
-            self.prediction = self.clf.predict([[self.aema12.result, volume]])[0]
+            self.data.append([self.aema12.result, volume])
+            self.prediction = self.clf.predict(self.data)[0]
             if self.prediction:
                 print(self.prediction)
+
+    def get_prediction(self):
+        return self.prediction
 
     def lpc_update_segments(self):
         timestamps = self.mts.get_timestamps()
@@ -175,13 +181,19 @@ class DecisionTreeFeatureList(object):
 
 class DecisionTreeFeature(object):
     CLASS_NONE = 0
-    CLASS_FLAT = 1
-    CLASS_SLOW_DOWN = 2
-    CLASS_SLOW_UP = 3
-    CLASS_FAST_DOWN = 4
-    CLASS_FAST_UP = 5
-    CLASS_FASTER_DOWN = 6
-    CLASS_FASTER_UP = 7
+    CLASS_FLAT = 0.5
+    CLASS_DOWN6 = -6
+    CLASS_DOWN5 = -5
+    CLASS_DOWN4 = -4
+    CLASS_DOWN3 = -3
+    CLASS_DOWN2 = -2
+    CLASS_DOWN1 = -1
+    CLASS_UP1 = 1
+    CLASS_UP2 = 2
+    CLASS_UP3 = 3
+    CLASS_UP4 = 4
+    CLASS_UP5 = 5
+    CLASS_UP6 = 6
     def __init__(self, start_ts, end_ts, start_price, end_price, percent):
         self.start_ts = start_ts
         self.end_ts = end_ts
@@ -203,17 +215,29 @@ class DecisionTreeFeature(object):
         return self.percent
 
     def update_class_type(self):
-        if self.percent <= -5.0:
-          self.class_type = DecisionTreeFeature.CLASS_FASTER_DOWN
-        elif -5.0 < self.percent < -1.0:
-            self.class_type = DecisionTreeFeature.CLASS_FAST_DOWN
-        elif -1.0 < self.percent < 0.5:
-            self.class_type = DecisionTreeFeature.CLASS_SLOW_DOWN
+        if self.percent < -5.0:
+          self.class_type = DecisionTreeFeature.CLASS_DOWN6
+        elif -5.0 <= self.percent < -4.0:
+            self.class_type = DecisionTreeFeature.CLASS_DOWN5
+        elif -4.0 <= self.percent < -3.0:
+            self.class_type = DecisionTreeFeature.CLASS_DOWN4
+        elif -3.0 <= self.percent < -2.0:
+            self.class_type = DecisionTreeFeature.CLASS_DOWN3
+        elif -2.0 <= self.percent < -1.0:
+            self.class_type = DecisionTreeFeature.CLASS_DOWN2
+        elif -1.0 <= self.percent < 0.5:
+            self.class_type = DecisionTreeFeature.CLASS_DOWN1
         elif -0.5 <= self.percent < 0.5:
             self.class_type = DecisionTreeFeature.CLASS_FLAT
         elif 0.5 <= self.percent < 1.0:
-            self.class_type = DecisionTreeFeature.CLASS_SLOW_UP
-        elif 5.0 > self.percent > 1.0:
-            self.class_type = DecisionTreeFeature.CLASS_FAST_UP
+            self.class_type = DecisionTreeFeature.CLASS_UP1
+        elif 2.0 > self.percent >= 1.0:
+            self.class_type = DecisionTreeFeature.CLASS_UP2
+        elif 3.0 > self.percent >= 2.0:
+            self.class_type = DecisionTreeFeature.CLASS_UP3
+        elif 4.0 > self.percent >= 3.0:
+            self.class_type = DecisionTreeFeature.CLASS_UP4
+        elif 5.0 > self.percent >= 4.0:
+            self.class_type = DecisionTreeFeature.CLASS_UP5
         elif self.percent >= 5.0:
-            self.class_type = DecisionTreeFeature.CLASS_FASTER_UP
+            self.class_type = DecisionTreeFeature.CLASS_UP6

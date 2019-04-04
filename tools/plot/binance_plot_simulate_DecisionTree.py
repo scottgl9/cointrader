@@ -49,6 +49,7 @@ def simulate(conn, client, base, currency):
     aema26_values = []
     aema50 = AEMA(50, scale_interval_secs=60)
     aema50_values = []
+    predictions = []
 
     dt = DecisionTree()
 
@@ -74,6 +75,7 @@ def simulate(conn, client, base, currency):
         aema50_values.append(aema50.update(close, ts))
 
         dt.update(close, volume_base, ts)
+        predictions.append(dt.prediction)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -93,7 +95,7 @@ def simulate(conn, client, base, currency):
 
     plt.legend(handles=[symprice, fig1, fig3])
     plt.subplot(212)
-    plt.plot(obv_aema12_values)
+    plt.plot(predictions) #obv_aema12_values)
     plt.show()
 
 if __name__ == '__main__':
