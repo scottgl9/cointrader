@@ -208,6 +208,14 @@ class MultiTrader(object):
             return
 
         order_update = self.accnt.parse_order_update(msg)
+        if order_update.msg_status == Message.MSG_SELL_COMPLETE:
+            if (order_update.msg_type == Message.TYPE_LIMIT or
+                order_update.msg_type == Message.TYPE_STOP_LOSS or
+                order_update.msg_type == Message.TYPE_STOP_LOSS_LIMIT or
+                order_update.msg_type == Message.TYPE_PROFIT_LIMIT):
+                pass
+                #if self.order_handler.limit_handler.remove_open_order(order_update.symbol):
+                #    self.order_handler.send_sell_complete()
 
         if (self.current_ts - self.last_ts) > self.check_ts_min:
             self.accnt.get_account_balances()

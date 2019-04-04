@@ -52,6 +52,10 @@ class OrderLimitHandler(object):
                 order_type = Message.TYPE_STOP_LOSS
             elif order.type == Message.MSG_LIMIT_BUY:
                 order_type = Message.TYPE_LIMIT
+            elif order.type == Message.MSG_STOP_LOSS_LIMIT_BUY:
+                order_type = Message.TYPE_STOP_LOSS_LIMIT
+            elif order.type == Message.MSG_PROFIT_LIMIT_BUY:
+                order_type = Message.TYPE_PROFIT_LIMIT
 
             if self.accnt.simulate:
                 self.send_buy_complete(ticker_id=kline.symbol,
@@ -79,6 +83,10 @@ class OrderLimitHandler(object):
                 order_type = Message.TYPE_STOP_LOSS
             elif order.type == Message.MSG_LIMIT_SELL:
                 order_type = Message.TYPE_LIMIT
+            elif order.type == Message.MSG_STOP_LOSS_LIMIT_SELL:
+                order_type = Message.TYPE_STOP_LOSS_LIMIT
+            elif order.type == Message.MSG_PROFIT_LIMIT_SELL:
+                order_type = Message.TYPE_PROFIT_LIMIT
 
             if self.accnt.simulate:
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
