@@ -395,17 +395,34 @@ class AccountBinance(AccountBase):
         if not symbol:
             return None
 
+        msg_type = Message.TYPE_NONE
+        msg_status = Message.MSG_NONE
+
+        if exec_type == 'TRADE' and order_status == 'FILLED':
+            if side == 'BUY':
+                msg_status = Message.MSG_BUY_COMPLETE
+            elif side == 'SELL':
+                msg_status = Message.MSG_SELL_COMPLETE
+
+            if order_type == 'MARKET':
+                msg_type = Message.TYPE_MARKET
+            elif order_type == 'LIMIT':
+                msg_type = Message.TYPE_LIMIT
+            elif order_type == "STOP_LOSS":
+                msg_type = Message.TYPE_STOP_LOSS
+            elif order_type == "STOP_LOSS_LIMIT":
+                msg_type = Message.TYPE_STOP_LOSS_LIMIT
+            elif order_type == "TAKE_PROFIT_LIMIT":
+                msg_type = Message.TYPE_PROFIT_LIMIT
+
         order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type,
-                                   exec_type, side, ts, order_id, orig_id, order_status)
+                                   exec_type, side, ts, order_id, orig_id, order_status, msg_type, msg_status)
         return order_update
 
 
     # parse json response to binance API order, then use to create Order object
     def parse_order_result(self, result, symbol=None, sigid=0):
-        fills = None
         orderid = None
-        order_type = None
-        type = None
         origqty = 0
         quoteqty = 0
         side = None
@@ -469,9 +486,13 @@ class AccountBinance(AccountBase):
             elif order_type == "STOP_LOSS" and side == 'SELL':
                 type = Message.MSG_STOP_LOSS_SELL
             elif order_type == "STOP_LOSS_LIMIT" and side == "BUY":
-                type = Message.MSG_STOP_LOSS_BUY
+                type = Message.MSG_STOP_LOSS_LIMIT_BUY
             elif order_type == "STOP_LOSS_LIMIT" and side == "SELL":
-                type = Message.MSG_STOP_LOSS_SELL
+                type = Message.MSG_STOP_LOSS_LIMIT_SELL
+            elif order_type == "TAKE_PROFIT_LIMIT" and side == "BUY":
+                type = Message.MSG_PROFIT_LIMIT_BUY
+            elif order_type == "TAKE_PROFIT_LIMIT" and side == "SELL":
+                type = Message.MSG_PROFIT_LIMIT_SELL
             else:
                 return None
         elif status == 'CANCELED' and side == 'BUY':

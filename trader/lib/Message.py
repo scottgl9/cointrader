@@ -8,6 +8,10 @@ class Message(object):
     MSG_LIMIT_SELL = 5
     MSG_STOP_LOSS_BUY = 6
     MSG_STOP_LOSS_SELL = 7
+    MSG_PROFIT_LIMIT_BUY = 30
+    MSG_PROFIT_LIMIT_SELL = 31
+    MSG_STOP_LOSS_LIMIT_BUY = 32
+    MSG_STOP_LOSS_LIMIT_SELL = 33
     MSG_BUY_COMPLETE = 8
     MSG_SELL_COMPLETE = 9
     MSG_BUY_REPLACE = 10
@@ -23,10 +27,13 @@ class Message(object):
     MSG_BUY_ENABLE = 20
     MSG_SELL_ENABLE = 21
     MSG_ORDER_SIZE_UPDATE = 22
-    TYPE_MARKET = 23
-    TYPE_LIMIT = 24
-    TYPE_STOP_LOSS = 25
-    TYPE_NONE = 26
+    MSG_NONE = 23
+    TYPE_MARKET = 24
+    TYPE_LIMIT = 25
+    TYPE_STOP_LOSS = 26
+    TYPE_STOP_LOSS_LIMIT = 27
+    TYPE_PROFIT_LIMIT = 28
+    TYPE_NONE = 29
 
     def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0,
                  asset_info=None, order_type=TYPE_MARKET, buy_type=0, sell_type=0):
