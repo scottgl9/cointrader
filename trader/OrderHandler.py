@@ -79,6 +79,22 @@ class OrderHandler(object):
     def process_limit_order(self, kline):
         self.limit_handler.process_limit_order(kline)
 
+    def get_open_order(self, symbol):
+        return self.limit_handler.get_open_order(symbol)
+
+    def add_open_order(self, symbol, order):
+        return self.limit_handler.add_open_order(symbol, order)
+
+    def remove_open_order(self, symbol):
+        return self.limit_handler.remove_open_order(symbol)
+
+    def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
+        return self.limit_handler.send_buy_complete(ticker_id, price, size, sig_id, order_type)
+
+    def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
+        return self.limit_handler.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type)
+
+
     def process_order_messages(self):
         received = False
         # handle incoming messages
@@ -283,14 +299,6 @@ class OrderHandler(object):
 
         self.limit_handler.add_open_order(ticker_id, order)
         #self.logger.info("place_sell_stop({}, {}) @ {} (bought @ {})".format(order.symbol, order.size, order.price, order.buy_price))
-
-
-    def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
-        return self.limit_handler.send_buy_complete(ticker_id, price, size, sig_id, order_type)
-
-
-    def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
-        return self.limit_handler.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type)
 
 
     def place_buy_market_order(self, msg):
