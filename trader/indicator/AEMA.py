@@ -4,7 +4,7 @@ from trader.lib.ValueLag import ValueLag
 
 
 class AEMA(object):
-    def __init__(self, win=26, scale_interval_secs=60, lag_window=3):
+    def __init__(self, win=1, scale_interval_secs=60, lag_window=3):
         self.result = 0.0
         self.last_result = 0.0
         self.win = float(win)
@@ -51,7 +51,10 @@ class AEMA(object):
         last_result = self.result
 
         if self.esf == 0.0 or self.scale != self.last_scale:
-            self.esf = 2.0 / (self.win * self.scale + 1.0)
+            if self.win == 1:
+                self.esf = 2.0 / (self.scale + 1.0)
+            else:
+                self.esf = 2.0 / (self.win * self.scale + 1.0)
             self.last_scale = self.scale
 
         if self.lag_window != 0:
