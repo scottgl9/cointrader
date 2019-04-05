@@ -348,20 +348,30 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if signal.buy_price == 0 or signal.buy_size == 0:
             return
 
+        # if (self.timestamp - signal.last_buy_ts) < 1000 * 3600:
+        #     return
+        #
+        # if not self.stop_loss_set and not self.stop_loss_price:
+        #     if 0.95 * signal.buy_price < price < signal.buy_price:
+        #         self.stop_loss_price = self.round_quote(0.95 * signal.buy_price)
+        #         self.set_sell_stop_loss(signal, self.stop_loss_price)
+        #         self.next_stop_loss_price = signal.buy_price
+        #     elif price > 1.01 * signal.buy_price:
+        #         self.stop_loss_price = signal.buy_price
+        #         self.set_sell_stop_loss(signal, self.stop_loss_price)
+        #         self.next_stop_loss_price = signal.buy_price
+
         if not self.stop_loss_set:
             if not self.stop_loss_price:
                 self.stop_loss_price = signal.buy_price
             if StrategyBase.percent_p2_gt_p1(self.stop_loss_price, price, 2.0):
                 self.set_sell_stop_loss(signal, self.stop_loss_price)
                 self.next_stop_loss_price = price
-        #if not self.prev_stop_loss_price and not self.stop_loss_set:
-        #    self.set_sell_stop_loss(signal, self.stop_loss_price)
-        #    self.prev_stop_loss_price = self.stop_loss_price
         elif StrategyBase.percent_p2_gt_p1(self.next_stop_loss_price, price, 2.0):
-                self.cancel_sell_stop_loss(signal)
-                self.stop_loss_price = self.next_stop_loss_price
-                self.set_sell_stop_loss(signal, self.stop_loss_price)
-                self.next_stop_loss_price = price
+            self.cancel_sell_stop_loss(signal)
+            self.stop_loss_price = self.next_stop_loss_price
+            self.set_sell_stop_loss(signal, self.stop_loss_price)
+            self.next_stop_loss_price = price
 
 
     def set_sell_stop_loss(self, signal, price):
