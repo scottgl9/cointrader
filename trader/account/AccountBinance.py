@@ -1049,7 +1049,6 @@ class AccountBinance(AccountBase):
         else:
             self.logger.info("buy_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
             return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
                                      side=Client.SIDE_BUY,
                                      type=Client.ORDER_TYPE_TAKE_PROFIT,
                                      quantity=size,
@@ -1070,9 +1069,47 @@ class AccountBinance(AccountBase):
         else:
             self.logger.info("sell_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
             return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
                                      side=Client.SIDE_SELL,
                                      type=Client.ORDER_TYPE_TAKE_PROFIT,
+                                     quantity=size,
+                                     stopPrice=stop_price)
+
+
+    def buy_market_stop(self, price, size, stop_price, ticker_id=None):
+        if self.simulate:
+            base, currency = self.split_ticker_id(ticker_id)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+            usd_value = float(price) * float(size)  # self.round_quote(price * size)
+
+            if usd_value > cavailable: return False
+
+            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+            return True
+        else:
+            self.logger.info("buy_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+            return self.client.create_order(symbol=ticker_id,
+                                     side=Client.SIDE_BUY,
+                                     type=Client.ORDER_TYPE_STOP_LOSS,
+                                     quantity=size,
+                                     stopPrice=stop_price)
+
+
+    def sell_market_stop(self, price, size, stop_price, ticker_id=None):
+
+        if self.simulate:
+            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+
+            if float(size) > bavailable: return False
+
+            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+            return True
+        else:
+            self.logger.info("sell_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+            return self.client.create_order(symbol=ticker_id,
+                                     side=Client.SIDE_SELL,
+                                     type=Client.ORDER_TYPE_STOP_LOSS,
                                      quantity=size,
                                      stopPrice=stop_price)
 
