@@ -398,22 +398,32 @@ class AccountBinance(AccountBase):
         msg_type = Message.TYPE_NONE
         msg_status = Message.MSG_NONE
 
+        if not order_type:
+            return None
+
+        if order_type == 'MARKET':
+            msg_type = Message.TYPE_MARKET
+        elif order_type == 'LIMIT':
+            msg_type = Message.TYPE_LIMIT
+        elif order_type == "STOP_LOSS":
+            msg_type = Message.TYPE_STOP_LOSS
+        elif order_type == "STOP_LOSS_LIMIT":
+            msg_type = Message.TYPE_STOP_LOSS_LIMIT
+        elif order_type == "TAKE_PROFIT_LIMIT":
+            msg_type = Message.TYPE_PROFIT_LIMIT
+        elif order_type == "TAKE_PROFIT":
+            msg_type = Message.TYPE_TAKE_PROFIT
+
         if exec_type == 'TRADE' and order_status == 'FILLED':
             if side == 'BUY':
                 msg_status = Message.MSG_BUY_COMPLETE
             elif side == 'SELL':
                 msg_status = Message.MSG_SELL_COMPLETE
-
-            if order_type == 'MARKET':
-                msg_type = Message.TYPE_MARKET
-            elif order_type == 'LIMIT':
-                msg_type = Message.TYPE_LIMIT
-            elif order_type == "STOP_LOSS":
-                msg_type = Message.TYPE_STOP_LOSS
-            elif order_type == "STOP_LOSS_LIMIT":
-                msg_type = Message.TYPE_STOP_LOSS_LIMIT
-            elif order_type == "TAKE_PROFIT_LIMIT":
-                msg_type = Message.TYPE_PROFIT_LIMIT
+        elif exec_type == 'REJECTED' and order_status == 'REJECTED':
+            if side == 'BUY':
+                msg_status = Message.MSG_BUY_FAILED
+            elif side == 'SELL':
+                msg_status = Message.MSG_SELL_FAILED
 
         order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type,
                                    exec_type, side, ts, order_id, orig_id, order_status, msg_type, msg_status)
@@ -493,12 +503,20 @@ class AccountBinance(AccountBase):
                 type = Message.MSG_PROFIT_LIMIT_BUY
             elif order_type == "TAKE_PROFIT_LIMIT" and side == "SELL":
                 type = Message.MSG_PROFIT_LIMIT_SELL
+            elif order_type == "TAKE_PROFIT" and side == "BUY":
+                type = Message.MSG_TAKE_PROFIT_BUY
+            elif order_type == "TAKE_PROFIT" and side == "SELL":
+                type = Message.MSG_TAKE_PROFIT_SELL
             else:
                 return None
         elif status == 'CANCELED' and side == 'BUY':
             type = Message.MSG_BUY_CANCEL
         elif status == 'CANCELED' and side == 'SELL':
             type = Message.MSG_SELL_CANCEL
+        elif status == 'REJECTED' and side == 'BUY':
+            type = Message.MSG_BUY_FAILED
+        elif status == 'REJECTED' and side == 'SELL':
+            type = Message.MSG_SELL_FAILED
 
         order = Order(symbol=symbol,
                       price=price,

@@ -215,10 +215,16 @@ class MultiTrader(object):
                 order_update.msg_type == Message.TYPE_PROFIT_LIMIT):
                 o = self.order_handler.get_open_order(order_update.symbol)
                 if o:
-                    self.logger.info("process_user_message({}) SELL_COMPLETE".format(o.symbol))
-                    self.order_handler.remove_open_order(o.symbol)
-                    self.order_handler.send_sell_complete(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
-                                                          order_type=order_update.msg_type)
+                    if order_update.msg_status == Message.MSG_SELL_COMPLETE:
+                        self.logger.info("process_user_message({}) SELL_COMPLETE".format(o.symbol))
+                        self.order_handler.remove_open_order(o.symbol)
+                        self.order_handler.send_sell_complete(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
+                                                              order_type=order_update.msg_type)
+                    elif order_update.msg_status == Message.MSG_SELL_FAILED:
+                        self.logger.info("process_user_message({}) SELL_FAILED".format(o.symbol))
+                        self.order_handler.remove_open_order(o.symnol)
+                        self.order_handler.send_sell_failed(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
+                                                              order_type=order_update.msg_type)
                 #if self.order_handler.limit_handler.remove_open_order(order_update.symbol):
                 #    self.order_handler.send_sell_complete()
 

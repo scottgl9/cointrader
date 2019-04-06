@@ -102,6 +102,14 @@ class OrderLimitHandler(object):
                     self.remove_open_order(kline.symbol)
 
 
+    def send_buy_failed(self, ticker_id, price, size, sig_id, order_type):
+        return self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=order_type)
+
+
+    def send_sell_failed(self, ticker_id, price, size, buy_price, sig_id, order_type):
+        return self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=order_type)
+
+
     def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
         buy_type="buy_unknown"
         if order_type == Message.TYPE_MARKET:

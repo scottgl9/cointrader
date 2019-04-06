@@ -94,6 +94,11 @@ class OrderHandler(object):
     def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
         return self.limit_handler.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type)
 
+    def send_buy_failed(self, ticker_id, price, size, sig_id, order_type):
+        return self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=order_type)
+
+    def send_sell_failed(self, ticker_id, price, size, buy_price, sig_id, order_type):
+        return self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=order_type)
 
     def process_order_messages(self):
         received = False
@@ -248,10 +253,15 @@ class OrderHandler(object):
         price = msg.price
         size = msg.size
         sig_id = msg.sig_id
+        stop_price = price
         if ticker_id in self.limit_handler.open_orders.keys():
             return
 
-        result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
+        if stop_price == price:
+            result = self.accnt.buy_market_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
+        else:
+            result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
+
         if not self.accnt.simulate:
             self.logger.info(result)
 
@@ -277,10 +287,14 @@ class OrderHandler(object):
         buy_price = msg.buy_price
         size = msg.size
         sig_id = msg.sig_id
+        stop_price = price
         if ticker_id in self.limit_handler.open_orders.keys():
             return
 
-        result = self.accnt.sell_limit_stop(price=price, size=size, stop_price=price, ticker_id=ticker_id)
+        if stop_price == price:
+            result = self.accnt.sell_market_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
+        else:
+            result = self.accnt.sell_limit_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
 
         if not self.accnt.simulate:
             self.logger.info(result)
