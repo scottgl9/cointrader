@@ -213,7 +213,7 @@ class MultiTrader(object):
                 order_update.msg_type == Message.TYPE_STOP_LOSS or
                 order_update.msg_type == Message.TYPE_STOP_LOSS_LIMIT or
                 order_update.msg_type == Message.TYPE_PROFIT_LIMIT):
-                o = self.order_handler.get_open_order(msg.symbol)
+                o = self.order_handler.get_open_order(order_update.symbol)
                 if o:
                     self.logger.info("process_user_message({}) SELL_COMPLETE".format(o.symbol))
                     self.order_handler.remove_open_order(o.symbol)
