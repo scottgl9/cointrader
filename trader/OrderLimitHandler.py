@@ -45,17 +45,13 @@ class OrderLimitHandler(object):
         order = self.open_orders[kline.symbol]
         close = kline.close
         if ((order.type == Message.MSG_STOP_LOSS_BUY and close > order.price) or
+            (order.type == Message.MSG_STOP_LOSS_LIMIT_BUY and close > order.price) or
+            (order.type == Message.MSG_TAKE_PROFIT_BUY and close > order.price) or
+            (order.type == Message.MSG_PROFIT_LIMIT_BUY and close > order.price) or
             (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
 
-            order_type = order.type
-            if order.type == Message.MSG_STOP_LOSS_BUY:
-                order_type = Message.TYPE_STOP_LOSS
-            elif order.type == Message.MSG_LIMIT_BUY:
-                order_type = Message.TYPE_LIMIT
-            elif order.type == Message.MSG_STOP_LOSS_LIMIT_BUY:
-                order_type = Message.TYPE_STOP_LOSS_LIMIT
-            elif order.type == Message.MSG_PROFIT_LIMIT_BUY:
-                order_type = Message.TYPE_PROFIT_LIMIT
+            # convert Message.MSG_* to Message.TYPE_* (ex. Message.MSG_STOP_LOSS_BUY -> Message.TYPE_STOP_LOSS)
+            order_type = Message.get_type_from_cmd(order.type)
 
             if self.accnt.simulate:
                 self.send_buy_complete(ticker_id=kline.symbol,
@@ -74,19 +70,17 @@ class OrderLimitHandler(object):
                                            size=order.size,
                                            order_type=order_type)
                     self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
+                    self.send_buy_complete(order.symbol, order.price, order.size,
+                                            order.sig_id, order_type=order_type)
                     self.remove_open_order(kline.symbol)
         elif ((order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
+              (order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
+              (order.type == Message.MSG_TAKE_PROFIT_SELL and close < order.price) or
+              (order.type == Message.MSG_PROFIT_LIMIT_SELL and close < order.price) or
               (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
 
-            order_type = order.type
-            if order.type == Message.MSG_STOP_LOSS_SELL:
-                order_type = Message.TYPE_STOP_LOSS
-            elif order.type == Message.MSG_LIMIT_SELL:
-                order_type = Message.TYPE_LIMIT
-            elif order.type == Message.MSG_STOP_LOSS_LIMIT_SELL:
-                order_type = Message.TYPE_STOP_LOSS_LIMIT
-            elif order.type == Message.MSG_PROFIT_LIMIT_SELL:
-                order_type = Message.TYPE_PROFIT_LIMIT
+            # convert Message.MSG_* to Message.TYPE_* (ex. Message.MSG_STOP_LOSS_SELL -> Message.TYPE_STOP_LOSS)
+            order_type = Message.get_type_from_cmd(order.type)
 
             if self.accnt.simulate:
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
