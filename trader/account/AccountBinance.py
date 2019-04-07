@@ -373,6 +373,7 @@ class AccountBinance(AccountBase):
         order_size = 0
         order_status = None
         exec_type = None
+        reject_reason = None
         ts = 0
 
         if self.simulate:
@@ -382,6 +383,7 @@ class AccountBinance(AccountBase):
 
         if 'c' in result: order_id = result['c']
         if 'C' in result: orig_id = result['C']
+        if 'r' in result: reject_reason = result['r']
         if 's' in result: symbol = result['s']
         if 'S' in result: side = result['S']
         if 'o' in result: order_type = result['o']
@@ -425,8 +427,9 @@ class AccountBinance(AccountBase):
             elif side == 'SELL':
                 msg_status = Message.MSG_SELL_FAILED
 
-        order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type,
-                                   exec_type, side, ts, order_id, orig_id, order_status, msg_type, msg_status)
+        order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type, exec_type,
+                                   side, ts, order_id, orig_id, order_status, reject_reason, msg_type, msg_status)
+        
         return order_update
 
 
