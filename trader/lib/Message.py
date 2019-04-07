@@ -60,3 +60,34 @@ class Message(object):
 
     def is_read(self):
         return self.read
+
+    @staticmethod
+    def get_type_from_cmd(cmd):
+        if cmd == Message.MSG_MARKET_BUY:
+            msg_type = Message.TYPE_MARKET
+        elif cmd == Message.MSG_MARKET_SELL:
+            msg_type = Message.TYPE_MARKET
+        elif cmd == Message.MSG_LIMIT_BUY:
+            msg_type = Message.TYPE_LIMIT
+        elif cmd == Message.MSG_LIMIT_SELL:
+            msg_type = Message.TYPE_LIMIT
+        elif cmd == Message.MSG_STOP_LOSS_BUY:
+            msg_type = Message.TYPE_STOP_LOSS
+        elif cmd == Message.MSG_STOP_LOSS_SELL:
+            msg_type = Message.TYPE_STOP_LOSS
+        elif cmd == Message.MSG_STOP_LOSS_LIMIT_BUY:
+            msg_type = Message.TYPE_STOP_LOSS_LIMIT
+        elif cmd == Message.MSG_STOP_LOSS_LIMIT_SELL:
+            msg_type = Message.TYPE_STOP_LOSS_LIMIT
+        elif cmd == Message.MSG_PROFIT_LIMIT_BUY:
+            msg_type = Message.TYPE_PROFIT_LIMIT
+        elif cmd == Message.MSG_PROFIT_LIMIT_SELL:
+            msg_type = Message.TYPE_PROFIT_LIMIT
+        elif cmd == Message.MSG_TAKE_PROFIT_BUY:
+            msg_type = Message.TYPE_TAKE_PROFIT
+        elif cmd == Message.MSG_TAKE_PROFIT_SELL:
+            msg_type = Message.TYPE_TAKE_PROFIT
+        else:
+            msg_type = Message.TYPE_NONE
+
+        return msg_type
