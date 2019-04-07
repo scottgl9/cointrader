@@ -204,7 +204,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         if not result:
-            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_LIMIT)
+            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_LIMIT)
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_LIMIT_BUY)
@@ -233,7 +233,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         if not result:
-            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_LIMIT)
+            self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_LIMIT)
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
@@ -266,7 +266,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         if not result:
-            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_STOP_LOSS)
+            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_STOP_LOSS)
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
@@ -300,7 +300,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         if not result:
-            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_STOP_LOSS)
+            self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_STOP_LOSS)
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
@@ -324,13 +324,13 @@ class OrderHandler(object):
         currency = msg.asset_info.currency
 
         if self.buy_disabled:
-            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
+            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
             return
 
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
 
         if not result:
-            self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
+            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
             return
 
         if self.accnt.simulate:
@@ -346,7 +346,7 @@ class OrderHandler(object):
                 self.logger.info(message)
                 if self.notify:
                     self.notify.send(subject="MultiTrader", text=message)
-                self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
+                self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET)
                 return
             else:
                 self.logger.info("buy_order: {}".format(str(order)))
@@ -395,13 +395,13 @@ class OrderHandler(object):
             available_size = self.accnt.round_base(self.accnt.get_asset_balance(base)['available'])
             if available_size == 0:
                 self.trader_db.remove_trade(ticker_id, sig_id)
-                self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+                self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
                 return
 
         result = self.accnt.sell_market(size=size, price=price, ticker_id=ticker_id)
 
         if not result:
-            self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+            self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
             if not self.accnt.simulate:
                 # remove from trade db since it failed to be sold
                 self.trader_db.remove_trade(ticker_id, sig_id)
@@ -412,7 +412,7 @@ class OrderHandler(object):
             if order:
                 self.logger.info("sell_order: {}".format(str(order)))
             else:
-                self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
+                self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET)
                 # remove from trade db since it failed to be sold
                 self.trader_db.remove_trade(ticker_id, sig_id)
                 return
