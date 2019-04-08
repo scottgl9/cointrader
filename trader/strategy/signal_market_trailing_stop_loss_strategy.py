@@ -20,14 +20,25 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                             asset_info,
                                                             logger)
         self.strategy_name = 'signal_market_trailing_stop_loss_strategy'
-        self.trade_size_handler = fixed_trade_size(self.accnt,
-                                                   asset_info,
-                                                   btc=0.004,
-                                                   eth=0.1,
-                                                   bnb=3,
-                                                   pax=10.0,
-                                                   usdt=10.0,
-                                                   multiplier=5.0)
+        if not self.simulate:
+            self.trade_size_handler = fixed_trade_size(self.accnt,
+                                                       asset_info,
+                                                       btc=0.003,
+                                                       eth=0.1,
+                                                       bnb=3,
+                                                       pax=10.0,
+                                                       usdt=10.0,
+                                                       multiplier=5.0)
+        else:
+            self.trade_size_handler = fixed_trade_size(self.accnt,
+                                                       asset_info,
+                                                       btc=0.004,
+                                                       eth=0.1,
+                                                       bnb=3,
+                                                       pax=10.0,
+                                                       usdt=10.0,
+                                                       multiplier=5.0)
+
         if signal_names:
             for name in signal_names:
                 if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
@@ -182,6 +193,8 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if not self.msg_handler.empty():
             for msg in self.msg_handler.get_messages(src_id=Message.ID_MULTI, dst_id=self.ticker_id):
                 if not msg:
+                    continue
+                if msg.is_read():
                     continue
                 if msg.cmd == Message.MSG_BUY_COMPLETE:
                     if not self.simulate:
@@ -361,7 +374,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.accnt.test_stop_loss() and (self.timestamp - signal.last_buy_ts) < 1000 * 600:
             return
 
-        if self.accnt.test_stop_loss() and not self.stop_loss_set and not self.stop_loss_price:
+        if self.accnt.test_stop_loss() and not self.stop_loss_set and not self.next_stop_loss_price:
             if 0.98 * signal.buy_price < price < signal.buy_price:
                 balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
                 if signal.buy_size == balance_available:
