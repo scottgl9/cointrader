@@ -58,6 +58,10 @@ class BinanceTrader:
         if self.multitrader and self.multitrader.accnt:
             self.multitrader.accnt.set_trades_disabled(True)
 
+    def set_test_stop_loss(self):
+        if self.multitrader and self.multitrader.accnt:
+            self.multitrader.accnt.set_test_stop_loss(True)
+
     def set_max_market_buy(self, max_market_buy):
         if self.multitrader and self.multitrader.accnt:
             self.multitrader.accnt.set_max_market_buy(max_market_buy)
@@ -272,6 +276,10 @@ if __name__ == '__main__':
                         default=0,
                         help='Maxmimum number of open market buys without matching sells')
 
+    parser.add_argument('--test-stop-loss', action='store_true', dest='test_stop_loss',
+                        default=False,
+                        help='Test stop loss orders')
+
     results = parser.parse_args()
 
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
@@ -301,5 +309,8 @@ if __name__ == '__main__':
     if results.trades_disabled:
         logger.info("Setting TRADES DISABLED mode")
         bt.set_trades_disabled()
+    if results.test_stop_loss:
+        logger.info("Setting TEST_STOP_LOSS mode")
+        bt.set_test_stop_loss()
     bt.set_max_market_buy(int(results.max_market_buy))
     bt.run()
