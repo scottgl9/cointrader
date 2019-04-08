@@ -8,12 +8,12 @@ class Message(object):
     MSG_LIMIT_SELL = 5
     MSG_STOP_LOSS_BUY = 6
     MSG_STOP_LOSS_SELL = 7
-    MSG_PROFIT_LIMIT_BUY = 31
-    MSG_PROFIT_LIMIT_SELL = 32
-    MSG_STOP_LOSS_LIMIT_BUY = 33
-    MSG_STOP_LOSS_LIMIT_SELL = 34
-    MSG_TAKE_PROFIT_BUY = 35
-    MSG_TAKE_PROFIT_SELL = 36
+    MSG_PROFIT_LIMIT_BUY = 32
+    MSG_PROFIT_LIMIT_SELL = 33
+    MSG_STOP_LOSS_LIMIT_BUY = 34
+    MSG_STOP_LOSS_LIMIT_SELL = 35
+    MSG_TAKE_PROFIT_BUY = 36
+    MSG_TAKE_PROFIT_SELL = 37
     MSG_BUY_COMPLETE = 8
     MSG_SELL_COMPLETE = 9
     MSG_BUY_REPLACE = 10
@@ -36,7 +36,8 @@ class Message(object):
     TYPE_STOP_LOSS_LIMIT = 27
     TYPE_PROFIT_LIMIT = 28
     TYPE_TAKE_PROFIT = 29
-    TYPE_NONE = 30
+    TYPE_LIMIT_MAKER = 30
+    TYPE_NONE = 31
 
     def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0,
                  asset_info=None, order_type=TYPE_MARKET, buy_type=0, sell_type=0):
@@ -131,7 +132,8 @@ class Message(object):
         elif msg_type == Message.TYPE_LIMIT: return 'LIMIT'
         elif msg_type == Message.TYPE_STOP_LOSS: return 'STOP_LOSS'
         elif msg_type == Message.TYPE_STOP_LOSS_LIMIT: return 'STOP_LOSS_LIMIT'
-        elif msg_type == Message.TYPE_PROFIT_LIMIT: return 'PROFIT_LIMIT'
+        elif msg_type == Message.TYPE_PROFIT_LIMIT: return 'TAKE_PROFIT_LIMIT'
         elif msg_type == Message.TYPE_TAKE_PROFIT: return 'TAKE_PROFIT'
+        elif msg_type == Message.TYPE_LIMIT_MAKER: return 'LIMIT_MAKER'
         elif msg_type == Message.TYPE_NONE: return 'NONE'
         return None

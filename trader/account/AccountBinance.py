@@ -248,6 +248,7 @@ class AccountBinance(AccountBase):
                 commissionAsset = ''
                 baseAssetPrecision = 8
                 quotePrecision = 8
+                orderTypes = ''
 
                 if 'baseAssetPrecision' in asset:
                     baseAssetPrecision = asset['baseAssetPrecision']
@@ -268,6 +269,9 @@ class AccountBinance(AccountBase):
                     if 'commissionAsset' in filter:
                         commissionAsset = filter['commissionAsset']
 
+                if 'orderTypes' in asset:
+                    orderTypes = ','.join(asset['orderTypes'])
+
                 assets[asset['symbol']] = {'minQty': minQty,
                                            'minPrice': minPrice,
                                            'tickSize': tickSize,
@@ -275,7 +279,8 @@ class AccountBinance(AccountBase):
                                            'minNotional': minNotional,
                                            'commissionAsset': commissionAsset,
                                            'baseAssetPrecision': baseAssetPrecision,
-                                           'quotePrecision': quotePrecision
+                                           'quotePrecision': quotePrecision,
+                                           'orderTypes': orderTypes
                                            }
 
         return assets
@@ -356,6 +361,7 @@ class AccountBinance(AccountBase):
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
         baseAssetPrecision = info['baseAssetPrecision']
         quotePrecision = info['quotePrecision']
+        orderTypes = info['orderTypes']
 
         result = AssetInfo(base=base,
                            currency=currency,
@@ -365,7 +371,8 @@ class AccountBinance(AccountBase):
                            currency_step_size=currency_step_size,
                            is_currency_pair=is_currency_pair,
                            baseAssetPrecision=baseAssetPrecision,
-                           quotePrecision=quotePrecision
+                           quotePrecision=quotePrecision,
+                           orderTypes=orderTypes
                            )
         return result
 
