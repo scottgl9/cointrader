@@ -61,19 +61,19 @@ class OrderLimitHandler(object):
                                               order_type=order_type)
                 self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
                 self.remove_open_order(kline.symbol)
-            else:
-                result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
-                if ('status' in result and result['status'] == 'FILLED'):
-                    self.send_buy_complete(ticker_id=kline.symbol,
-                                           sig_id=order.sig_id,
-                                           price=order.price,
-                                           size=order.size,
-                                           order_type=order_type)
-                    self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
-                    self.send_buy_complete(order.symbol, order.price, order.size,
-                                            order.sig_id, order_type=order_type)
-                    self.remove_open_order(kline.symbol)
-        elif ((order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
+            # else:
+            #     result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
+            #     if ('status' in result and result['status'] == 'FILLED'):
+            #         self.send_buy_complete(ticker_id=kline.symbol,
+            #                                sig_id=order.sig_id,
+            #                                price=order.price,
+            #                                size=order.size,
+            #                                order_type=order_type)
+            #         self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
+            #         self.send_buy_complete(order.symbol, order.price, order.size,
+            #                                 order.sig_id, order_type=order_type)
+            #         self.remove_open_order(kline.symbol)
+        elif ((order.type == Message.MSG_STOP_LOSS_LIMIT_SELL and close < order.price) or
               (order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
               (order.type == Message.MSG_TAKE_PROFIT_SELL and close < order.price) or
               (order.type == Message.MSG_PROFIT_LIMIT_SELL and close < order.price) or
@@ -87,13 +87,13 @@ class OrderLimitHandler(object):
                 self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
                                         order.sig_id, order_type=order_type)
                 self.remove_open_order(kline.symbol)
-            else:
-                result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
-                if ('status' in result and result['status'] == 'FILLED'):
-                    self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
-                    self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
-                                                      order.sig_id, order_type=order_type)
-                    self.remove_open_order(kline.symbol)
+            # else:
+            #     result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
+            #     if ('status' in result and result['status'] == 'FILLED'):
+            #         self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
+            #         self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
+            #                                           order.sig_id, order_type=order_type)
+            #         self.remove_open_order(kline.symbol)
 
 
     def send_buy_failed(self, ticker_id, price, size, sig_id, order_type):
