@@ -257,10 +257,11 @@ class OrderHandler(object):
         if ticker_id in self.limit_handler.open_orders.keys():
             return
 
-        if stop_price == price:
-            result = self.accnt.buy_market_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
-        else:
-            result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
+        if msg.asset_info:
+            base_step_size = msg.asset_info.base_step_size
+            stop_price = price - base_step_size
+
+        result = self.accnt.buy_limit_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
 
         if not self.accnt.simulate:
             self.logger.info(result)
@@ -291,10 +292,11 @@ class OrderHandler(object):
         if ticker_id in self.limit_handler.open_orders.keys():
             return
 
-        if stop_price == price:
-            result = self.accnt.sell_market_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
-        else:
-            result = self.accnt.sell_limit_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
+        if msg.asset_info:
+            quote_step_size = msg.asset_info.quote_step_size
+            stop_price = price + quote_step_size
+
+        result = self.accnt.sell_limit_stop(price=price, size=size, stop_price=stop_price, ticker_id=ticker_id)
 
         if not self.accnt.simulate:
             self.logger.info(result)
