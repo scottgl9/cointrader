@@ -361,7 +361,9 @@ class AccountBinance(AccountBase):
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
         baseAssetPrecision = info['baseAssetPrecision']
         quotePrecision = info['quotePrecision']
-        orderTypes = info['orderTypes']
+        orderTypes = []
+        for order_type in info['orderTypes']:
+            orderTypes.append(self.get_order_msg_type(order_type))
 
         result = AssetInfo(base=base,
                            currency=currency,
@@ -382,6 +384,8 @@ class AccountBinance(AccountBase):
             msg_type = Message.TYPE_MARKET
         elif order_type == 'LIMIT':
             msg_type = Message.TYPE_LIMIT
+        elif order_type == 'LIMIT_MAKER':
+            msg_type = Message.TYPE_LIMIT_MAKER
         elif order_type == "STOP_LOSS":
             msg_type = Message.TYPE_STOP_LOSS
         elif order_type == "STOP_LOSS_LIMIT":

@@ -15,3 +15,5 @@ class AssetInfo(object):
         self.quotePrecision = quotePrecision
         self.orderTypes = orderTypes
 
+    def get_order_types(self):
+        return self.orderTypes
