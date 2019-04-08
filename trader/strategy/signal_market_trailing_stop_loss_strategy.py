@@ -20,7 +20,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                             asset_info,
                                                             logger)
         self.strategy_name = 'signal_market_trailing_stop_loss_strategy'
-        if not self.simulate:
+        if not self.accnt.simulate:
             self.trade_size_handler = fixed_trade_size(self.accnt,
                                                        asset_info,
                                                        btc=0.003,
