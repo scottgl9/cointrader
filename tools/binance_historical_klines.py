@@ -43,14 +43,46 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    start_ts = int(time.mktime(time.strptime(results.start_date, "%d/%m/%Y"))) * 1000
-    end_ts = int(time.mktime(time.strptime(results.end_date, "%d/%m/%Y"))) * 1000
-    print(start_ts, end_ts)
+    start_ts = int(time.mktime(time.strptime(results.start_date, "%d/%m/%Y")))
+    end_ts = int(time.mktime(time.strptime(results.end_date, "%d/%m/%Y")))
     client = Client(MY_API_KEY, MY_API_SECRET)
     print("Getting klines from {} to {} for {}".format(results.start_date, results.end_date, results.symbol))
+
+    filename = "{}_klines.csv".format(results.symbol)
+    f = open(filename, "wt")
+    f.write("timestamp,open,high,low,close,base_volume,quote_volume,trade_count,taker_buy_base_volume,taker_buy_quote_volume,\n")
+
+    cur_start_ts = start_ts
+    cur_end_ts = cur_start_ts + 3600 * 500
+
+    # while cur_end_ts <= end_ts:
+    #     klines = client.get_historical_klines(
+    #         symbol=results.symbol,
+    #         interval=Client.KLINE_INTERVAL_1HOUR,
+    #         start_str=cur_start_ts * 1000,
+    #         end_str=cur_end_ts * 1000,
+    #     )
+    #
+    #     for kline in klines:
+    #         f.write(",".join(map(str, kline)))
+    #         f.write(",\n")
+    #
+    #     cur_start_ts = cur_end_ts
+    #     cur_end_ts = cur_start_ts + 3600 * 500
+    #     time.sleep(1)
+
     klines = client.get_historical_klines_generator(
-        symbol=results.symbol,
-        interval=Client.KLINE_INTERVAL_1HOUR,
-        start_str=start_ts,
-        end_str=end_ts,
+             symbol=results.symbol,
+             interval=Client.KLINE_INTERVAL_1HOUR,
+             start_str=start_ts * 1000,
+             end_str=end_ts * 1000,
     )
+
+    for kline in klines:
+        #kline[0] /= 1000
+        del kline[6]
+        kline = kline[:-1]
+        f.write(",".join(map(str, kline)))
+        f.write(",\n")
+
+    f.close()
