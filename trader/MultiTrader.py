@@ -209,25 +209,19 @@ class MultiTrader(object):
 
         order_update = self.accnt.parse_order_update(msg)
         if order_update.msg_status == Message.MSG_SELL_COMPLETE:
-            if (order_update.msg_type == Message.TYPE_LIMIT or
-                order_update.msg_type == Message.TYPE_STOP_LOSS or
-                order_update.msg_type == Message.TYPE_STOP_LOSS_LIMIT or
-                order_update.msg_type == Message.TYPE_PROFIT_LIMIT or
-                order_update.msg_type == Message.TYPE_TAKE_PROFIT):
-                o = self.order_handler.get_open_order(order_update.symbol)
-                if o:
-                    if order_update.msg_status == Message.MSG_SELL_COMPLETE:
-                        self.logger.info("process_user_message({}) SELL_COMPLETE".format(o.symbol))
-                        self.order_handler.remove_open_order(o.symbol)
-                        self.order_handler.send_sell_complete(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
-                                                              order_type=order_update.msg_type)
-                    elif order_update.msg_status == Message.MSG_SELL_FAILED:
-                        self.logger.info("process_user_message({}) SELL_FAILED".format(o.symbol))
-                        self.order_handler.remove_open_order(o.symnol)
-                        self.order_handler.send_sell_failed(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
-                                                              order_type=order_update.msg_type)
-                #if self.order_handler.limit_handler.remove_open_order(order_update.symbol):
-                #    self.order_handler.send_sell_complete()
+            o = self.order_handler.get_open_order(order_update.symbol)
+            if o:
+                self.logger.info("process_user_message({}) SELL_COMPLETE".format(o.symbol))
+                self.order_handler.remove_open_order(o.symbol)
+                self.order_handler.send_sell_complete(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
+                                                      order_type=order_update.msg_type)
+        elif order_update.msg_status == Message.MSG_SELL_FAILED:
+            o = self.order_handler.get_open_order(order_update.symbol)
+            if o:
+                self.logger.info("process_user_message({}) SELL_FAILED".format(o.symbol))
+                self.order_handler.remove_open_order(o.symnol)
+                self.order_handler.send_sell_failed(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
+                                                      order_type=order_update.msg_type)
 
         if (self.current_ts - self.last_ts) > self.check_ts_min:
             self.accnt.get_account_balances()
