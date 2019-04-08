@@ -35,8 +35,8 @@ class MultiTrader(object):
         self.notify = None
         self.current_ts = 0
         self.last_ts = 0
-        self.check_ts_min = 60 * 1000   # 1 minute
-        self.check_ts = 3600 * 1000     # 1 hour
+        self.check_ts_min = self.accnt.seconds_to_ts(60)   # 1 minute
+        self.check_ts = self.accnt.seconds_to_ts(3600)     # 1 hour
         self.check_count = 0
         self.stopped = False
         self.running = True
@@ -136,13 +136,10 @@ class MultiTrader(object):
         return self.order_handler.get_stored_trades()
 
     def get_trader(self, symbol):
-        #if symbol not in self.trade_pairs.keys():
-        #    self.add_trade_pair(symbol)
         try:
             result = self.trade_pairs[symbol]
         except KeyError:
             result = self.add_trade_pair(symbol)
-            #result = self.trade_pairs[symbol]
         return result
 
     def process_message(self, kline, cache_db=None):

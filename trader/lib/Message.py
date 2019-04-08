@@ -91,3 +91,47 @@ class Message(object):
             msg_type = Message.TYPE_NONE
 
         return msg_type
+
+    @staticmethod
+    def get_msg_cmd_string(cmd):
+        if cmd == Message.MSG_MARKET_SELL_ALL: return 'MARKET_SELL_ALL'
+        elif cmd == Message.MSG_MARKET_BUY: return 'MARKET_BUY'
+        elif cmd == Message.MSG_MARKET_SELL: return 'MARKET_SELL'
+        elif cmd == Message.MSG_LIMIT_BUY: return 'LIMIT_BUY'
+        elif cmd == Message.MSG_LIMIT_SELL: return 'LIMIT_SELL'
+        elif cmd == Message.MSG_STOP_LOSS_BUY: return 'STOP_LOSS_BUY'
+        elif cmd == Message.MSG_STOP_LOSS_SELL: return 'STOP_LOSS_SELL'
+        elif cmd == Message.MSG_PROFIT_LIMIT_BUY: return 'PROFIT_LIMIT_BUY'
+        elif cmd == Message.MSG_PROFIT_LIMIT_SELL: return 'PROFIT_LIMIT_SELL'
+        elif cmd == Message.MSG_STOP_LOSS_LIMIT_BUY: return 'STOP_LOSS_LIMIT_BUY'
+        elif cmd == Message.MSG_STOP_LOSS_LIMIT_SELL: return 'STOP_LOSS_LIMIT_SELL'
+        elif cmd == Message.MSG_TAKE_PROFIT_BUY: return 'TAKE_PROFIT_BUY'
+        elif cmd == Message.MSG_TAKE_PROFIT_SELL: return 'TAKE_PROFIT_SELL'
+        elif cmd == Message.MSG_BUY_COMPLETE: return 'BUY_COMPLETE'
+        elif cmd == Message.MSG_SELL_COMPLETE: return 'SELL_COMPLETE'
+        elif cmd == Message.MSG_BUY_REPLACE: return 'BUY_REPLACE'
+        elif cmd == Message.MSG_SELL_REPLACE: return 'SELL_REPLACE'
+        elif cmd == Message.MSG_BUY_FAILED: return 'BUY_FAILED'
+        elif cmd == Message.MSG_SELL_FAILED: return 'SELL_FAILED'
+        elif cmd == Message.MSG_BUY_UPDATE: return 'BUY_UPDATE'
+        elif cmd == Message.MSG_SELL_UPDATE: return 'SELL_UPDATE'
+        elif cmd == Message.MSG_BUY_CANCEL: return 'BUY_CANCEL'
+        elif cmd == Message.MSG_SELL_CANCEL: return 'SELL_CANCEL'
+        elif cmd == Message.MSG_BUY_DISABLE: return 'BUY_DISABLE'
+        elif cmd == Message.MSG_SELL_DISABLE: return 'SELL_DISABLE'
+        elif cmd == Message.MSG_BUY_ENABLE: return 'BUY_ENABLE'
+        elif cmd == Message.MSG_SELL_ENABLE: return 'SELL_ENABLE'
+        elif cmd == Message.MSG_ORDER_SIZE_UPDATE: return 'ORDER_SIZE_UPDATE'
+        elif cmd == Message.MSG_NONE: return 'NONE'
+        return None
+
+    @staticmethod
+    def get_msg_type_string(msg_type):
+        if msg_type == Message.TYPE_MARKET: return 'MARKET'
+        elif msg_type == Message.TYPE_LIMIT: return 'LIMIT'
+        elif msg_type == Message.TYPE_STOP_LOSS: return 'STOP_LOSS'
+        elif msg_type == Message.TYPE_STOP_LOSS_LIMIT: return 'STOP_LOSS_LIMIT'
+        elif msg_type == Message.TYPE_PROFIT_LIMIT: return 'PROFIT_LIMIT'
+        elif msg_type == Message.TYPE_TAKE_PROFIT: return 'TAKE_PROFIT'
+        elif msg_type == Message.TYPE_NONE: return 'NONE'
+        return None
