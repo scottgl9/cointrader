@@ -371,7 +371,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if signal.buy_price == 0 or signal.buy_size == 0:
             return
 
-        if self.accnt.test_stop_loss() and (self.timestamp - signal.last_buy_ts) < 1000 * 600:
+        if self.accnt.test_stop_loss() and (self.timestamp - signal.last_buy_ts) < self.accnt.seconds_to_ts(60):
             return
 
         if self.accnt.test_stop_loss() and not self.stop_loss_set and not self.next_stop_loss_price:
@@ -381,10 +381,10 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     self.stop_loss_price = self.round_quote(0.98 * signal.buy_price)
                     self.set_sell_stop_loss(signal, self.stop_loss_price)
                     self.next_stop_loss_price = signal.buy_price
-            #elif price > 1.01 * signal.buy_price:
-            #    self.stop_loss_price = signal.buy_price
-            #    self.set_sell_stop_loss(signal, self.stop_loss_price)
-            #    self.next_stop_loss_price = signal.buy_price
+            elif price > 1.01 * signal.buy_price:
+                self.stop_loss_price = signal.buy_price
+                self.set_sell_stop_loss(signal, self.stop_loss_price)
+                self.next_stop_loss_price = signal.buy_price
 
         if not self.stop_loss_set and not self.accnt.test_stop_loss():
             if not self.stop_loss_price:
