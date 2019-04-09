@@ -67,8 +67,6 @@ def simulate(conn, client, base, currency):
             pred_values = pred_values + values
         i += 1
 
-    print(pred_values)
-
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 

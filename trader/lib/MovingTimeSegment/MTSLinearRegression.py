@@ -3,7 +3,7 @@ import numpy as np
 from sklearn import linear_model
 
 class MTSLinearRegression(object):
-    def __init__(self, win_secs=3600, lr_update_secs=300):
+    def __init__(self, win_secs=900, lr_update_secs=900):
         self.win_secs = win_secs
         self.lr_update_secs = lr_update_secs
         self.lr_current_ts = 0
