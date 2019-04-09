@@ -155,33 +155,6 @@ class Hybrid_Crossover_Test2(SignalBase):
         return False
 
     def sell_long_signal(self):
-        if self.buy_price == 0 or self.last_buy_ts == 0:
-            return False
-
-        if self.is_currency_pair:
-            return False
-
-        # don't do sell long unless price has fallen at least 10%
-        if (self.last_close - self.buy_price) / self.buy_price >= -0.1:
-            return False
-
-        if self.ema_cross_50_200.cross_down and self.ema_cross_50_200.ma2_trend_down():
-            # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
-            if (self.last_close - self.buy_price) / self.buy_price < -0.05:
-                self.disabled = True
-                self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
-                self.sell_type = "LONG:EMA50_200"
-            return True
-
-        if (self.ema_cross_12_200.ma1_trend_down() and self.ema_cross_12_200.ma2_trend_down() and
-                self.ema_cross_26_100.ma1_trend_down()) and self.ema_cross_26_100.ma2_trend_down():
-            # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
-            if (self.last_close - self.buy_price) / self.buy_price < -0.05:
-                self.disabled = True
-                self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
-                self.sell_type = "LONG:EMA12_200|EMA26_200"
-            return True
-
         return False
 
     def sell_signal(self):

@@ -103,7 +103,7 @@ class MACross(object):
     # ma1 and ma2 allow to pass in an indicator from another MACross
     # that is already being updated, so that we don't have to compute
     # for example, EMA50(value) twice, instead we can re-use from another MACross instance
-    def update(self, value, ts, ma1=None, ma2=None, ma1_result=0, ma2_result=0):
+    def update(self, value=0, ts=0, ma1=None, ma2=None, ma1_result=0, ma2_result=0):
         if self.ma1 and not ma1 and ma1_result == 0:
             self.ma1.update(value)
             self.ma1_result = self.ma1.result
