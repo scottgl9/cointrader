@@ -152,6 +152,7 @@ class Hybrid_Crossover_Test(SignalBase):
         if self.ema_cross_12_200.is_near_post_crossup_max(percent=1.0):
             return False
 
+        # TODO remove, doesn't work
         state = self.tst.get_trend_state()
         if (state == TrendStateInfo.STATE_INIT or
             state == TrendStateInfo.STATE_NON_TREND_NO_DIRECTION or
