@@ -205,7 +205,9 @@ class MultiTrader(object):
             return
 
         order_update = self.accnt.parse_order_update(msg)
+
         if order_update.msg_status == Message.MSG_SELL_COMPLETE:
+
             o = self.order_handler.get_open_order(order_update.symbol)
             if o:
                 self.logger.info("process_user_message({}) SELL_COMPLETE".format(o.symbol))
@@ -214,6 +216,19 @@ class MultiTrader(object):
                                                       order_type=order_update.msg_type)
                 self.order_handler.trader_db.remove_trade(o.symbol, o.sig_id)
                 self.order_handler.remove_open_order(o.symbol)
+            else:
+                # order placed by user
+                o = order_update
+                self.logger.info("process_user_message({}) MANUAL_SELL_COMPLETE".format(o.symbol))
+                self.accnt.get_account_balances()
+                self.order_handler.send_sell_complete(o.symbol,
+                                                      o.price,
+                                                      o.size,
+                                                      buy_price=0,
+                                                      sig_id=0,
+                                                      order_type=o.msg_type)
+                self.order_handler.trader_db.remove_trade(o.symbol, 0)
+
         elif order_update.msg_status == Message.MSG_SELL_FAILED:
             o = self.order_handler.get_open_order(order_update.symbol)
             if o:
