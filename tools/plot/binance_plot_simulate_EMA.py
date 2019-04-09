@@ -15,7 +15,10 @@ from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
-from trader.indicator.ZLEMA import *
+try:
+    from trader.indicator.native.EMA import EMA
+except ImportError:
+    from trader.indicator.EMA import EMA
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -56,8 +59,6 @@ def simulate(conn, client, base, currency):
     close_prices = []
     open_prices = []
     low_prices = []
-    diff_values = []
-    signal_values = []
     high_prices = []
     volumes = []
 
@@ -68,11 +69,6 @@ def simulate(conn, client, base, currency):
         high = float(msg['h'])
         open = float(msg['o'])
         volume = float(msg['v'])
-        #sar_value = sar.update(close=close, low=low, high=high)
-        #if sar.bull:
-        #    sar_x_values.append(i)
-        #    sar_values.append(sar_value)
-
         volumes.append(volume)
 
         obv_value = obv.update(close=close, volume=volume)
@@ -98,29 +94,21 @@ def simulate(conn, client, base, currency):
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
-        #lstsqs_x_values.append(i)
         i += 1
 
-    #plt.subplot(211)
-    fig = plt.figure()
-    ax = fig.add_subplot(2,1,1)
-
+    plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.plot(low_prices)
-    plt.plot(high_prices)
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')
     fig23, = plt.plot(obv_ema50_values, label='OBV50')
     plt.legend(handles=[fig21, fig22, fig23])
-    #plt.plot(signal_values)
-    #plt.plot(tsi_values)
     plt.show()
 
 if __name__ == '__main__':
