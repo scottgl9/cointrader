@@ -212,6 +212,7 @@ class MultiTrader(object):
                 self.accnt.get_account_balances()
                 self.order_handler.send_sell_complete(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
                                                       order_type=order_update.msg_type)
+                self.order_handler.trader_db.remove_trade(o.symbol, o.sig_id)
                 self.order_handler.remove_open_order(o.symbol)
         elif order_update.msg_status == Message.MSG_SELL_FAILED:
             o = self.order_handler.get_open_order(order_update.symbol)
@@ -220,8 +221,8 @@ class MultiTrader(object):
                 self.accnt.get_account_balances()
                 self.order_handler.send_sell_failed(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
                                                       order_type=order_update.msg_type)
-                self.order_handler.trader_db.remove_trade(o.symbol, 0)
-                self.order_handler.remove_open_order(o.symnol)
+                self.order_handler.trader_db.remove_trade(o.symbol, o.sig_id)
+                self.order_handler.remove_open_order(o.symbol)
 
         if (self.current_ts - self.last_ts) > self.check_ts_min:
             self.accnt.get_account_balances()
