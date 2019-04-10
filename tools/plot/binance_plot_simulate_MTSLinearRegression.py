@@ -40,6 +40,8 @@ def simulate(conn, client, base, currency):
     quote_volumes = []
     kline_x_values = []
     pred_values = []
+    fitted_values = []
+    pred_x_values = []
     prev_values = None
     values = None
 
@@ -48,6 +50,7 @@ def simulate(conn, client, base, currency):
 
     count=0
     i=0
+
     for msg in get_rows_as_msgs(c):
         close = float(msg['c'])
         volume_base = float(msg['v'])
@@ -56,15 +59,11 @@ def simulate(conn, client, base, currency):
 
         close_prices.append(close)
 
-        aema6.update(close, ts)
-        if not aema6.ready():
-            i += 1
-            continue
-
-        mtslr.update(aema6.result, ts)
+        mtslr.update(close, ts)
         if mtslr.updated():
-            values = mtslr.pred_values
+            values = mtslr.get_pred_values()
             pred_values = pred_values + values
+
         i += 1
 
     plt.subplot(211)
@@ -74,7 +73,8 @@ def simulate(conn, client, base, currency):
     #fig2, = plt.plot(close_prices, label='close')
     #fig3, = plt.plot(kline_x_values, low_prices, label='low')
     #fig4, = plt.plot(kline_x_values, high_prices, label='high')
-    plt.plot(pred_values)
+    pred_x_values = range(len(close_prices) - len(pred_values), len(close_prices))
+    plt.plot(pred_x_values, pred_values)
     #plt.plot(low_prices)
     #plt.plot(high_prices)
 
