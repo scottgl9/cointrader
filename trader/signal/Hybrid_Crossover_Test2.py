@@ -1,12 +1,16 @@
 try:
+    from trader.indicator.native.AEMA import AEMA
     from trader.indicator.native.EMA import EMA
 except ImportError:
+    from trader.indicator.AEMA import AEMA
     from trader.indicator.EMA import EMA
 
 from trader.indicator.OBV import OBV
 from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff
+from trader.lib.MovingTimeSegment.MTSCrossover import MTSCrossover
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
+from trader.lib.MovingTimeSegment.MTS_LSMA import MTS_LSMA
 from trader.signal.SignalBase import SignalBase
 
 
@@ -22,7 +26,10 @@ class Hybrid_Crossover_Test2(SignalBase):
 
         self.tspc = MTSPriceChannel(minutes=60)
         self.obv = OBV()
-        self.EMA = EMA
+
+        self.lsma = MTS_LSMA(3600)
+        self.lsma_obv = MTS_LSMA(3600)
+        self.aema12 = AEMA(12, scale_interval_secs=60)
 
         self.ema12 = EMA(12, scale=24)
         self.ema26 = EMA(26, scale=24, lag_window=5)
@@ -37,25 +44,9 @@ class Hybrid_Crossover_Test2(SignalBase):
         #self.tspc_roc = MTSPercentChangeROC(tspc_seconds=3600, roc_seconds=300, smoother=EMA(50, scale=24))
 
         ctimeout = 1000 * 3600
-        #self.ema_cross_12_26 = MACross(cross_timeout=ctimeout)
-        #self.ema_cross_26_50 = MACross(cross_timeout=ctimeout)
-        self.ema_cross_50_100 = MACross(cross_timeout=ctimeout)
-
-        self.ema_cross_12_200 = MACross(cross_timeout=ctimeout * 2)
-        self.ema_cross_26_200 = MACross(cross_timeout=ctimeout * 2)
-        self.ema_cross_50_200 = MACross(cross_timeout=ctimeout * 2)
-        self.ema_cross_100_200 = MACross(cross_timeout=ctimeout * 2)
-
-        # reuse MACross from above for extended detection
-        self.ema_cross_12_100 = MACross(cross_timeout=ctimeout * 2)
-        self.ema_cross_26_100 = MACross(cross_timeout=ctimeout * 2)
-
-        self.obv_ema_cross_12_26 = MACross(cross_timeout=ctimeout)
-        self.obv_ema_cross_26_50 = MACross(cross_timeout=ctimeout)
-
-        self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
-
-        self.diff_ema_12_200 = MADiff()
+        self.lsma_cross_aema12 = MTSCrossover(result_secs=60)
+        self.lsma_slope_cross_zero = MTSCrossover(result_secs=60)
+        self.lsma_obv_cross_zero = MTSCrossover(result_secs=60)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -79,37 +70,17 @@ class Hybrid_Crossover_Test2(SignalBase):
         self.last_close = close
         self.last_volume = volume
 
+        self.lsma.update(close, ts)
+        self.aema12.update(close, ts)
         self.obv.update(close=close, volume=volume)
-        obv12_result = self.obv_ema12.update(self.obv.result)
-        obv26_result = self.obv_ema26.update(self.obv.result)
-        obv50_result = self.obv_ema50.update(self.obv.result)
+        self.lsma_obv.update(self.obv.result, ts)
 
-        ema12_result = self.ema12.update(close)
-        ema26_result = self.ema26.update(close)
-        ema50_result = self.ema50.update(close)
-        ema100_result = self.ema100.update(close)
-        ema200_result = self.ema200.update(close)
+        if self.lsma_obv.ready():
+            self.lsma_obv_cross_zero.update(self.lsma_obv.result, 0, ts)
 
-        tspc_result = self.tspc.update(close, ts)
-
-        self.obv_ema_cross_12_26.update(0, ts, ma1_result=obv12_result, ma2_result=obv26_result)
-        self.obv_ema_cross_26_50.update(0, ts, ma1_result=obv26_result, ma2_result=obv50_result)
-
-        #self.ema_cross_12_26.update(close, ts, ma1_result=ema12_result, ma2_result=ema26_result)
-        #self.ema_cross_26_50.update(close, ts, ma1_result=ema26_result, ma2_result=ema50_result)
-
-        self.ema_cross_12_100.update(close, ts, ma1_result=ema12_result, ma2_result=ema100_result)
-        self.ema_cross_26_100.update(close, ts, ma1_result=ema26_result, ma2_result=ema100_result)
-        self.ema_cross_50_100.update(close, ts, ma1_result=ema50_result, ma2_result=ema100_result)
-
-        self.ema_cross_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
-        self.ema_cross_26_200.update(close, ts, ma1_result=ema26_result, ma2_result=ema200_result)
-        self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
-        self.ema_cross_100_200.update(close, ts, ma1_result=ema100_result, ma2_result=ema200_result)
-
-        self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema12_result, ma2_result=tspc_result)
-
-        self.diff_ema_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
+        if self.lsma.ready():
+            self.lsma_cross_aema12.update(self.lsma.result, self.aema12.result, ts)
+            self.lsma_slope_cross_zero.update(self.lsma.m, 0, ts)
 
     def buy_signal(self):
         if self.is_currency_pair:
@@ -126,30 +97,10 @@ class Hybrid_Crossover_Test2(SignalBase):
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
 
-        if self.diff_ema_12_200.is_near_current_max(percent=1.0):
+        if self.lsma_obv_cross_zero.crossdown_detected():
             return False
 
-        if self.ema_cross_12_200.is_near_post_crossup_max(percent=1.0):
-            return False
-
-        if (self.ema_cross_26_200.cross_up and self.ema_cross_50_200.cross_up and
-                self.ema_cross_50_200.ma1_trend_up() and self.ema_cross_50_200.ma2_trend_up()):
-            #if self.mts_flat_line.is_flat_line():
-            #    return False
-            self.buy_type = 'EMA26_200|EMA50_200'
-            return True
-
-        if (self.ema_cross_12_200.cross_up and self.ema_cross_26_200.cross_up and
-                self.ema_cross_26_200.ma1_trend_up() and self.ema_cross_26_200.ma2_trend_up()):
-            #if self.mts_flat_line.is_flat_line():
-            #    return False
-            self.buy_type = 'EMA12_200|EMA26_200'
-            return True
-
-        if self.ema_12_cross_tpsc.cross_up: # and self.tspc.median_trend_up():
-            #if self.mts_flat_line.is_flat_line():
-            #    return False
-            self.buy_type = 'TPSC12'
+        if self.lsma_cross_aema12.crossup_detected():# and self.lsma_slope_cross_zero.crossup_detected():
             return True
 
         return False
@@ -158,28 +109,7 @@ class Hybrid_Crossover_Test2(SignalBase):
         return False
 
     def sell_signal(self):
-        if self.ema_cross_12_200.cross_down and self.ema_cross_26_200.cross_down and self.ema_cross_50_200.cross_down:
-            self.sell_type = "EMA12_26_50_200"
-            return True
-
-        if self.ema_cross_50_100.cross_down:
-            self.sell_type = 'EMA50_100'
-            return True
-
-        if self.ema_cross_12_200.cross_down:
-            self.sell_type = 'EMA12_200'
-            return True
-
-        if self.ema_cross_26_200.cross_down:
-            self.sell_type = 'EMA26_200'
-            return True
-
-        if self.ema_12_cross_tpsc.cross_down:
-            self.sell_type = 'TPSC12'
-            return True
-
-        if self.ema_12_cross_tpsc.is_past_current_max(seconds=300, percent=2.0, cutoff=0.03):
-            self.sell_type = 'TPSC12_MAX'
+        if self.lsma_cross_aema12.crossdown_detected():
             return True
 
         return False

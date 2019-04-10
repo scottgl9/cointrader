@@ -12,9 +12,10 @@ from trader.lib.MovingTimeSegment.MTSCircularArray import MTSCircularArray
 
 
 class MTSCrossover(object):
-    def __init__(self, pre_win_secs=0, win_secs=60, check_expand=False):
+    def __init__(self, pre_win_secs=0, win_secs=60, check_expand=False, result_secs=0):
         self.pre_win_secs = pre_win_secs
         self.win_secs = win_secs
+        self.result_secs = result_secs
         self.check_expand = check_expand
 
         self.diff = None
@@ -30,8 +31,13 @@ class MTSCrossover(object):
         self.crossup = False
         self.crossdown = False
         self.last_cross_ts = 0
+        self.result_start_ts = 0
+        self.ts = 0
 
     def update(self, value1, value2, ts):
+        if not self.ts:
+            self.ts = ts
+
         self.mtsca1.add(value1, ts)
         self.mtsca2.add(value2, ts)
         if self.check_expand:
@@ -47,6 +53,13 @@ class MTSCrossover(object):
             if not self.pre_mtsca1.ready():
                 return
 
+        # put a maximum time on how long crossup / crossdown stays true
+        if self.result_secs and self.result_start_ts:
+            if (ts - self.result_start_ts) > self.result_secs * 1000:
+                self.crossup = False
+                self.crossdown = False
+                self.result_start_ts = 0
+
         if self.values_under and self.mtsca1.min_value() > self.mtsca2.max_value():
             if not self.last_cross_ts or (ts - self.last_cross_ts) > (self.pre_win_secs + self.win_secs) * 1000:
                 # values1 in window were under values2, now all values1 over values2
@@ -54,6 +67,8 @@ class MTSCrossover(object):
                     self.values_under = False
                     self.values_over = False
                     self.crossup = True
+                    if self.result_secs:
+                        self.result_start_ts = ts
                     self.last_cross_ts = ts
         elif self.values_over and self.mtsca1.max_value() < self.mtsca2.min_value():
             if not self.last_cross_ts or (ts - self.last_cross_ts) > (self.pre_win_secs + self.win_secs) * 1000:
@@ -62,6 +77,8 @@ class MTSCrossover(object):
                     self.values_over = False
                     self.values_under = False
                     self.crossdown = True
+                    if self.result_secs:
+                        self.result_start_ts = ts
                     self.last_cross_ts = ts
         elif not self.values_under and not self.values_over:
             if self.mtsca1.max_value() < self.mtsca2.min_value():
@@ -88,7 +105,7 @@ class MTSCrossover(object):
         result = False
         if self.crossup:
             result = True
-            if clear:
+            if clear and not self.result_secs:
                 self.crossup = False
         return result
 
@@ -97,7 +114,7 @@ class MTSCrossover(object):
         result = False
         if self.crossdown:
             result = True
-            if clear:
+            if clear and not self.result_secs:
                 self.crossdown = False
         return result
 

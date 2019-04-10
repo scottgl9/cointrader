@@ -39,8 +39,8 @@ def simulate(conn, client, base, currency):
     base_volumes = []
     quote_volumes = []
     obv = OBV()
-    obv_aema12 = AEMA(12, scale_interval_secs=60)
-    obv_aema12_values = []
+    obv_lsma = MTS_LSMA(3600)
+    obv_lsma_values = []
 
     aema12 = AEMA(50, scale_interval_secs=60)
     lsma1 = MTS_LSMA(3600)
@@ -63,9 +63,9 @@ def simulate(conn, client, base, currency):
         quote_volumes.append(volume_quote)
 
         aema12_values.append(aema12.update(close, ts))
-        obv.update(close, volume_base)
-        obv_aema12.update(obv.result, ts)
-        obv_aema12_values.append(obv_aema12.result)
+        obv.update(close, volume_quote)
+        obv_lsma.update(obv.result, ts)
+        obv_lsma_values.append(obv_lsma.result)
         lsma1_values.append(lsma1.update(close, ts))
         lsma1_slope_values.append(lsma1.m)
 
@@ -87,8 +87,8 @@ def simulate(conn, client, base, currency):
     #plt.plot(aema_diff_6_12)
 
     plt.subplot(212)
-    #plt.plot(obv_aema12_values)
-    plt.plot(lsma1_slope_values)
+    plt.plot(obv_lsma_values)
+    #plt.plot(lsma1_slope_values)
     plt.show()
 
 if __name__ == '__main__':
