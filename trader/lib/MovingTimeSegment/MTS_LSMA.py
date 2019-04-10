@@ -1,0 +1,81 @@
+class MTS_LSMA(object):
+    def __init__(self, win_secs=1800):
+        self.win_secs = win_secs
+        self.win_secs_ts = win_secs * 1000
+        self.values = []
+        self.timestamps = []
+        self.start_ts = 0
+        self._sumx = 0
+        self._sumx2 = 0
+        self._sumxy = 0
+        self._sumy = 0
+        self._sumy2 = 0
+        self._sum_count = 0
+        self.m = 0
+        self.b = 0
+        self.r = 0
+        self.n = 0
+        self.result = 0
+        self.full = False
+
+    def ready(self):
+        return self.full
+
+    def update(self, value, ts):
+        self.values.append(value)
+        self.timestamps.append(ts)
+
+        self._sumx += ts
+        self._sumx2 += ts * ts
+        self._sumxy += ts * value
+        self._sumy += value
+        self._sumy2 += value * value
+        self._sum_count += 1
+
+        cnt = 0
+        while (ts - self.timestamps[cnt]) > self.win_secs_ts:
+            cnt += 1
+
+        if cnt != 0:
+            for i in range(0, cnt):
+                last_x = self.timestamps[i]
+                last_y = self.values[i]
+                self._sumx -= last_x
+                self._sumx2 -= last_x * last_x
+                self._sumxy -= last_x * last_y
+                self._sumy -= last_y
+                self._sumy2 -= last_y * last_y
+                self._sum_count -= 1
+
+            self.timestamps = self.timestamps[cnt:]
+            self.values = self.values[cnt:]
+            if not self.full:
+                self.full = True
+
+        if not self.full:
+            self.result = float(value)
+            return self.result
+
+        self.n = self._sum_count
+
+        m2 = (self._sumx*self._sumx - self.n * self._sumx2)
+        if m2 == 0:
+            # singular matrix, can't solve problem
+            self.m = 0
+            self.b = 0
+            self.r = 0
+            self.result = float(value)
+            return self.result
+
+        m1 = (self._sumx * self._sumy - self.n * self._sumxy)
+
+        self.m = m1 / m2
+        self.b = (self._sumy - self.m * self._sumx) / self.n
+
+        # compute r
+        #r1 = self._sumxy - (self._sumx * self._sumy) / self.window
+        #r2 = np.sqrt((self._sumx2 - (self._sumx * self._sumx) / self.window) * (self._sumy2 - (self._sumy * self._sumy) / self.window))
+        #self.r = r1 / r2
+
+        self.result = self.m * float(ts) + self.b
+        return self.result
