@@ -42,13 +42,12 @@ def simulate(conn, client, base, currency):
     obv_aema12 = AEMA(12, scale_interval_secs=60)
     obv_aema12_values = []
 
-    lsma50 = MTS_LSMA(1800)
-    lsma100 = MTS_LSMA(3600)
-    lsma200 = MTS_LSMA(3600*2)
+    aema12 = AEMA(50, scale_interval_secs=60)
+    lsma1 = MTS_LSMA(3600)
 
-    lsma50_values = []
-    lsma100_values = []
-    lsma200_values = []
+    aema12_values = []
+    lsma1_values = []
+    lsma1_slope_values = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -63,12 +62,12 @@ def simulate(conn, client, base, currency):
         base_volumes.append(volume_base)
         quote_volumes.append(volume_quote)
 
+        aema12_values.append(aema12.update(close, ts))
         obv.update(close, volume_base)
         obv_aema12.update(obv.result, ts)
         obv_aema12_values.append(obv_aema12.result)
-        lsma50_values.append(lsma50.update(close, ts))
-        lsma100_values.append(lsma100.update(close, ts))
-        lsma200_values.append(lsma200.update(close, ts))
+        lsma1_values.append(lsma1.update(close, ts))
+        lsma1_slope_values.append(lsma1.m)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -80,16 +79,16 @@ def simulate(conn, client, base, currency):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 
-    fig1, = plt.plot(lsma50_values, label='LSMA50')
-    fig2, = plt.plot(lsma100_values, label='LSMA100')
-    fig3, = plt.plot(lsma200_values, label='LSMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3])
+    fig1, = plt.plot(lsma1_values, label='LSMA1')
+    fig2, = plt.plot(aema12_values, label='AEMA12')
+    plt.legend(handles=[symprice, fig1, fig2])
 
     #plt.subplot(312)
     #plt.plot(aema_diff_6_12)
 
     plt.subplot(212)
-    plt.plot(obv_aema12_values)
+    #plt.plot(obv_aema12_values)
+    plt.plot(lsma1_slope_values)
     plt.show()
 
 if __name__ == '__main__':
