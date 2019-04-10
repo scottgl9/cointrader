@@ -26,7 +26,7 @@ class LSMA(object):
     def update(self, value, ts):
         if not self.start_ts:
             self.start_ts = ts
-        #ts = float(ts - self.start_ts) / 1000.0
+        ts = float(ts - self.start_ts) / 1000.0
 
         if len(self.values) < self.window:
             self.values.append(float(value))
@@ -58,8 +58,8 @@ class LSMA(object):
 
             self.n = self.window #max(self.timestamps) - min(self.timestamps)
 
-            denom = (self.n * self._sumx2 - self._sumx * self._sumx)
-            if denom == 0:
+            m2 = (self._sumx*self._sumx - self.n * self._sumx2)
+            if m2 == 0:
                 # singular matrix, can't solve problem
                 self.m = 0
                 self.b = 0
@@ -67,10 +67,11 @@ class LSMA(object):
                 self.result = float(value)
                 return self.result
 
-            self.m = (self.n * self._sumxy - self._sumx * self._sumy) / denom
-            self.b = (self._sumy * self._sumx2 - self._sumx - self._sumxy) / denom
-            # *m = (n * sumxy - sumx * sumy) / denom;
-            # *b = (sumy * sumx2 - sumx * sumxy) / denom;
+            m1 = (self._sumx * self._sumy - self.n * self._sumxy)
+
+            self.m = m1 / m2
+            self.b = (self._sumy - self.m * self._sumx) / self.n
+
             # compute r
             #r1 = self._sumxy - (self._sumx * self._sumy) / self.window
             #r2 = np.sqrt((self._sumx2 - (self._sumx * self._sumx) / self.window) * (self._sumy2 - (self._sumy * self._sumy) / self.window))

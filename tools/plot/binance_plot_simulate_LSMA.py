@@ -42,13 +42,13 @@ def simulate(conn, client, base, currency):
     obv_aema12 = AEMA(12, scale_interval_secs=60)
     obv_aema12_values = []
 
-    lsma12 = LSMA(12)
-    lsma26 = LSMA(26)
     lsma50 = LSMA(50)
+    lsma100 = LSMA(100)
+    lsma200 = LSMA(200)
 
-    lsma12_values = []
-    lsma26_values = []
     lsma50_values = []
+    lsma100_values = []
+    lsma200_values = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -66,9 +66,9 @@ def simulate(conn, client, base, currency):
         obv.update(close, volume_base)
         obv_aema12.update(obv.result, ts)
         obv_aema12_values.append(obv_aema12.result)
-        lsma12_values.append(lsma12.update(close, ts))
-        lsma26_values.append(lsma26.update(close, ts))
         lsma50_values.append(lsma50.update(close, ts))
+        lsma100_values.append(lsma100.update(close, ts))
+        lsma200_values.append(lsma200.update(close, ts))
 
         close_prices.append(close)
         open_prices.append(open)
@@ -80,9 +80,9 @@ def simulate(conn, client, base, currency):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 
-    fig1, = plt.plot(lsma12_values, label='LSMA12')
-    fig2, = plt.plot(lsma26_values, label='LSMA26')
-    fig3, = plt.plot(lsma50_values, label='LSMA50')
+    fig1, = plt.plot(lsma50_values, label='LSMA50')
+    fig2, = plt.plot(lsma100_values, label='LSMA100')
+    fig3, = plt.plot(lsma200_values, label='LSMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3])
 
     #plt.subplot(312)
