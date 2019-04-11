@@ -47,6 +47,7 @@ class Hybrid_Crossover_Test2(SignalBase):
         self.lsma_cross_aema12 = MTSCrossover(result_secs=60)
         self.lsma_slope_cross_zero = MTSCrossover(result_secs=60)
         self.lsma_obv_cross_zero = MTSCrossover(result_secs=3600)
+        self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -82,6 +83,10 @@ class Hybrid_Crossover_Test2(SignalBase):
             self.lsma_cross_aema12.update(self.lsma.result, self.aema12.result, ts)
             self.lsma_slope_cross_zero.update(self.lsma.m, 0, ts)
 
+        ema12_result = self.ema12.update(close)
+        tspc_result = self.tspc.update(close, ts)
+        self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema12_result, ma2_result=tspc_result)
+
     def buy_signal(self):
         if self.is_currency_pair:
             return False
@@ -100,11 +105,21 @@ class Hybrid_Crossover_Test2(SignalBase):
         if self.lsma_obv_cross_zero.crossdown_detected():
             return False
 
+        if self.ema_12_cross_tpsc.cross_down:
+            return False
+
+        if self.ema_12_cross_tpsc.is_past_current_max(seconds=300, percent=2.0, cutoff=0.03):
+            return False
+
         #if self.lsma_obv_cross_zero.no_cross_detected():
         #    return False
 
         if self.lsma_cross_aema12.crossup_detected():# and self.lsma_slope_cross_zero.crossup_detected():
             return True
+
+        #if self.ema_12_cross_tpsc.cross_up:
+        #    self.buy_type = 'TPSC12'
+        #    return True
 
         return False
 
@@ -114,5 +129,13 @@ class Hybrid_Crossover_Test2(SignalBase):
     def sell_signal(self):
         if self.lsma_cross_aema12.crossdown_detected():
             return True
+
+        #if self.ema_12_cross_tpsc.cross_down:
+        #    self.sell_type = 'TPSC12'
+        #    return True
+
+        #if self.ema_12_cross_tpsc.is_past_current_max(seconds=300, percent=2.0, cutoff=0.03):
+        #    self.sell_type = 'TPSC12_MAX'
+        #    return True
 
         return False
