@@ -106,12 +106,7 @@ class MTS_LSMA(object):
                     self.neg_slope_cnt = 1
                 else:
                     # negative slope started without ending positive slope, so reset all vars
-                    self.pos_slope_start_ts = 0
-                    self.pos_slope_end_ts = 0
-                    self.pos_slope_cnt = 0
-                    self.neg_slope_start_ts = 0
-                    self.neg_slope_end_ts = 0
-                    self.neg_slope_cnt = 0
+                    self.reset_slope_detection()
         elif self.m > 0:
             # if negative slope hasn't started or ended
             if not self.neg_slope_start_ts and not self.neg_slope_end_ts:
@@ -131,12 +126,7 @@ class MTS_LSMA(object):
                     self.pos_slope_cnt = 1
                 else:
                     # positive slope started without ending negative slope, so reset all vars
-                    self.pos_slope_start_ts = 0
-                    self.pos_slope_end_ts = 0
-                    self.pos_slope_cnt = 0
-                    self.neg_slope_start_ts = 0
-                    self.neg_slope_end_ts = 0
-                    self.neg_slope_cnt = 0
+                    self.reset_slope_detection()
 
         # compute r
         #r1 = self._sumxy - (self._sumx * self._sumy) / self.window
@@ -145,3 +135,29 @@ class MTS_LSMA(object):
 
         self.result = self.m * float(ts) + self.b
         return self.result
+
+
+    def peak_detected(self):
+        result = False
+        if (self.pos_slope_start_ts and self.pos_slope_end_ts and self.pos_slope_cnt and
+            self.neg_slope_start_ts and self.neg_slope_cnt):
+            result = True
+        self.reset_slope_detection()
+        return result
+
+
+    def valley_detected(self):
+        result = False
+        if (self.neg_slope_start_ts and self.neg_slope_end_ts and self.neg_slope_cnt and
+            self.pos_slope_start_ts and self.pos_slope_cnt):
+            result = True
+        self.reset_slope_detection()
+        return result
+
+    def reset_slope_detection(self):
+        self.pos_slope_start_ts = 0
+        self.pos_slope_end_ts = 0
+        self.pos_slope_cnt = 0
+        self.neg_slope_start_ts = 0
+        self.neg_slope_end_ts = 0
+        self.neg_slope_cnt = 0
