@@ -20,6 +20,12 @@ class MTS_LSMA(object):
         self.result = 0
         self.full = False
         self.start_ts = 0
+        self.neg_slope_start_ts = 0
+        self.pos_slope_start_ts = 0
+        self.neg_slope_end_ts = 0
+        self.pos_slope_end_ts = 0
+        self.neg_slope_cnt = 0
+        self.pos_slope_cnt = 0
 
     def ready(self):
         return self.full
@@ -80,6 +86,57 @@ class MTS_LSMA(object):
 
         self.m = self.m1 / self.m2
         self.b = (self._sumy - self.m * self._sumx) / self.n
+
+        if self.m < 0:
+            # if positive slope hasn't started or ended
+            if not self.pos_slope_start_ts and not self.pos_slope_end_ts:
+                # if also negative slope hasn't started or ended
+                if not self.neg_slope_start_ts and not self.neg_slope_end_ts:
+                    self.neg_slope_start_ts = ts
+                    self.neg_slope_cnt = 1
+                elif self.neg_slope_start_ts and not self.neg_slope_end_ts:
+                    self.neg_slope_cnt += 1
+            # if positive slope has started but hasn't ended
+            elif self.pos_slope_start_ts and not self.pos_slope_end_ts:
+                # negative slope has started but hasn't ended, so end positive slope, and begin negative slope
+                if not self.neg_slope_start_ts and not self.neg_slope_end_ts:
+                    # set as end of positive slope, and start of negative slope
+                    self.pos_slope_end_ts = ts
+                    self.neg_slope_start_ts = ts
+                    self.neg_slope_cnt = 1
+                else:
+                    # negative slope started without ending positive slope, so reset all vars
+                    self.pos_slope_start_ts = 0
+                    self.pos_slope_end_ts = 0
+                    self.pos_slope_cnt = 0
+                    self.neg_slope_start_ts = 0
+                    self.neg_slope_end_ts = 0
+                    self.neg_slope_cnt = 0
+        elif self.m > 0:
+            # if negative slope hasn't started or ended
+            if not self.neg_slope_start_ts and not self.neg_slope_end_ts:
+                # if also positive slope hasn't started or ended
+                if not self.pos_slope_start_ts and not self.neg_slope_end_ts:
+                    self.pos_slope_start_ts = ts
+                    self.pos_slope_cnt = 1
+                elif self.pos_slope_start_ts and not self.pos_slope_end_ts:
+                    self.pos_slope_cnt += 1
+            # if negative slope has started but not ended
+            elif self.neg_slope_start_ts and not self.neg_slope_end_ts:
+                # positive slope has started but hasn't ended, so end negative slope, and begin positive slope
+                if not self.pos_slope_start_ts and not self.pos_slope_end_ts:
+                    # set as end of negative slope, and start of positive slope
+                    self.neg_slope_end_ts = ts
+                    self.pos_slope_start_ts = ts
+                    self.pos_slope_cnt = 1
+                else:
+                    # positive slope started without ending negative slope, so reset all vars
+                    self.pos_slope_start_ts = 0
+                    self.pos_slope_end_ts = 0
+                    self.pos_slope_cnt = 0
+                    self.neg_slope_start_ts = 0
+                    self.neg_slope_end_ts = 0
+                    self.neg_slope_cnt = 0
 
         # compute r
         #r1 = self._sumxy - (self._sumx * self._sumy) / self.window
