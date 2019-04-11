@@ -52,6 +52,7 @@ class OrderHandler(object):
 
         for trade in trades:
             if trade_pair:
+                self.open_market_buy_count += 1
                 trade_pair.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'], sig_id=trade['sigid'])
 
 
