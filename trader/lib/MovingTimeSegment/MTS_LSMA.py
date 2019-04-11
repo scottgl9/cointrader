@@ -1,7 +1,7 @@
 class MTS_LSMA(object):
     def __init__(self, win_secs=1800):
         self.win_secs = win_secs
-        self.win_secs_ts = win_secs * 1000
+        self.win_secs_ts = win_secs #* 1000
         self.values = []
         self.timestamps = []
         self.start_ts = 0
@@ -11,17 +11,26 @@ class MTS_LSMA(object):
         self._sumy = 0
         self._sumy2 = 0
         self._sum_count = 0
+        self.m1 = 0
+        self.m2 = 0
         self.m = 0
         self.b = 0
         self.r = 0
         self.n = 0
         self.result = 0
         self.full = False
+        self.start_ts = 0
 
     def ready(self):
         return self.full
 
     def update(self, value, ts):
+        if not self.start_ts:
+            self.start_ts = ts
+
+        # adjust ts to seconds from start for correct slope value for m
+        ts = float(ts - self.start_ts) / 1000.0
+
         self.values.append(value)
         self.timestamps.append(ts)
 
@@ -58,8 +67,8 @@ class MTS_LSMA(object):
 
         self.n = self._sum_count
 
-        m2 = (self._sumx*self._sumx - self.n * self._sumx2)
-        if m2 == 0:
+        self.m2 = (self._sumx*self._sumx - self.n * self._sumx2)
+        if self.m2 == 0:
             # singular matrix, can't solve problem
             self.m = 0
             self.b = 0
@@ -67,9 +76,9 @@ class MTS_LSMA(object):
             self.result = float(value)
             return self.result
 
-        m1 = (self._sumx * self._sumy - self.n * self._sumxy)
+        self.m1 = (self._sumx * self._sumy - self.n * self._sumxy)
 
-        self.m = m1 / m2
+        self.m = self.m1 / self.m2
         self.b = (self._sumy - self.m * self._sumx) / self.n
 
         # compute r

@@ -64,10 +64,13 @@ def simulate(conn, client, base, currency):
 
         aema12_values.append(aema12.update(close, ts))
         obv.update(close, volume_quote)
-        obv_lsma.update(obv.result, ts)
-        obv_lsma_values.append(obv_lsma.result)
+        #obv_lsma.update(obv.result, ts)
+        #obv_lsma_values.append(obv_lsma.result)
         lsma1_values.append(lsma1.update(close, ts))
         lsma1_slope_values.append(lsma1.m)
+
+        if lsma1.m != 0 and lsma1.b != 0:
+            print(lsma1.m, lsma1.b, lsma1.m1, lsma1.m2)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -87,8 +90,8 @@ def simulate(conn, client, base, currency):
     #plt.plot(aema_diff_6_12)
 
     plt.subplot(212)
-    plt.plot(obv_lsma_values)
-    #plt.plot(lsma1_slope_values)
+    #plt.plot(obv_lsma_values)
+    plt.plot(lsma1_slope_values)
     plt.show()
 
 if __name__ == '__main__':
