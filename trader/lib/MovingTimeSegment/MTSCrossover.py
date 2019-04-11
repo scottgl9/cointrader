@@ -30,6 +30,7 @@ class MTSCrossover(object):
         self.values_over = False
         self.crossup = False
         self.crossdown = False
+        self._no_cross = True
         self.last_cross_ts = 0
         self.result_start_ts = 0
         self.ts = 0
@@ -67,6 +68,8 @@ class MTSCrossover(object):
                     self.values_under = False
                     self.values_over = False
                     self.crossup = True
+                    self.crossdown = False
+                    self._no_cross = False
                     if self.result_secs:
                         self.result_start_ts = ts
                     self.last_cross_ts = ts
@@ -77,6 +80,8 @@ class MTSCrossover(object):
                     self.values_over = False
                     self.values_under = False
                     self.crossdown = True
+                    self.crossup = False
+                    self._no_cross = False
                     if self.result_secs:
                         self.result_start_ts = ts
                     self.last_cross_ts = ts
@@ -99,6 +104,9 @@ class MTSCrossover(object):
                     # all of values1 over values2
                     self.values_over = True
                     self.values_under = False
+
+    def no_cross_detected(self):
+        return self._no_cross
 
     # detect if value1 crosses up over value2
     def crossup_detected(self, clear=True):

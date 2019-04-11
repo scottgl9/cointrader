@@ -46,7 +46,7 @@ class Hybrid_Crossover_Test2(SignalBase):
         ctimeout = 1000 * 3600
         self.lsma_cross_aema12 = MTSCrossover(result_secs=60)
         self.lsma_slope_cross_zero = MTSCrossover(result_secs=60)
-        self.lsma_obv_cross_zero = MTSCrossover(result_secs=60)
+        self.lsma_obv_cross_zero = MTSCrossover(result_secs=3600)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -99,6 +99,9 @@ class Hybrid_Crossover_Test2(SignalBase):
 
         if self.lsma_obv_cross_zero.crossdown_detected():
             return False
+
+        #if self.lsma_obv_cross_zero.no_cross_detected():
+        #    return False
 
         if self.lsma_cross_aema12.crossup_detected():# and self.lsma_slope_cross_zero.crossup_detected():
             return True
