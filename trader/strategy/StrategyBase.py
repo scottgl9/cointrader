@@ -57,6 +57,9 @@ class StrategyBase(object):
         self.kline = None
         self.tpprofit = 0
         self.last_tpprofit = 0
+        self.start_ts = 0
+        # buy information loaded from trade.db
+        self.buy_loaded = False
 
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None):

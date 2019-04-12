@@ -216,7 +216,7 @@ class MultiTrader(object):
                                                       order_type=order_update.msg_type)
                 self.order_handler.trader_db.remove_trade(o.symbol, o.sig_id)
                 self.order_handler.remove_open_order(o.symbol)
-            else:
+            elif order_update.msg_type != Message.TYPE_MARKET:
                 # order placed by user
                 o = order_update
                 self.logger.info("process_user_message({}) MANUAL_SELL_COMPLETE".format(o.symbol))
@@ -226,7 +226,7 @@ class MultiTrader(object):
                                                       o.size,
                                                       buy_price=0,
                                                       sig_id=0,
-                                                      order_type=o.msg_type)
+                                                      order_type=order_update.msg_type)
                 self.order_handler.trader_db.remove_trade(o.symbol, 0)
 
         elif order_update.msg_status == Message.MSG_SELL_FAILED:

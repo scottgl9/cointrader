@@ -64,6 +64,9 @@ class OrderHandler(object):
         else:
             self.accnt.initial_btc = self.accnt.get_total_btc_value()
 
+    def get_open_market_buy_count(self):
+        return self.open_market_buy_count
+
     def get_stored_trades(self):
         return self.trades
 
