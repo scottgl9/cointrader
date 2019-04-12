@@ -12,7 +12,6 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.MovingTimeSegment.MTSMoveRate import MTSMoveRate
 from trader.indicator.EMA import EMA
 from trader.indicator.AEMA import AEMA
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
@@ -40,9 +39,6 @@ def simulate(conn, client, base, currency):
     aema200 = AEMA(200, scale_interval_secs=60)
 
     tst = TrendStateTrack()#smoother=EMA(12, scale=24))
-
-    mts_moverate = MTSMoveRate(small_seg_seconds=180, large_seg_seconds=900)
-    mts_moverate_values = []
 
     aema12_values = []
     aema26_values = []
@@ -82,8 +78,6 @@ def simulate(conn, client, base, currency):
             print("LONG:" + tst.get_trend_string())
             last_trend_string = tst.get_trend_string()
 
-        mts_moverate.update(aema12_value, ts)
-        mts_moverate_values.append(mts_moverate.result)
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
