@@ -1,7 +1,8 @@
 class MTS_LSMA(object):
-    def __init__(self, win_secs=1800):
+    def __init__(self, win_secs=1800, calc_rsquare=False):
         self.win_secs = win_secs
         self.win_secs_ts = win_secs #* 1000
+        self.calc_rsquare = calc_rsquare
         self.values = []
         self.timestamps = []
         self.start_ts = 0
@@ -15,7 +16,7 @@ class MTS_LSMA(object):
         self.m2 = 0
         self.m = 0
         self.b = 0
-        self.r = 0
+        self.rsquare = 0
         self.n = 0
         self.result = 0
         self.full = False
@@ -78,7 +79,7 @@ class MTS_LSMA(object):
             # singular matrix, can't solve problem
             self.m = 0
             self.b = 0
-            self.r = 0
+            self.rsquare = 0
             self.result = float(value)
             return self.result
 
@@ -128,10 +129,11 @@ class MTS_LSMA(object):
                     # positive slope started without ending negative slope, so reset all vars
                     self.reset_slope_detection()
 
-        # compute r
-        #r1 = self._sumxy - (self._sumx * self._sumy) / self.window
-        #r2 = np.sqrt((self._sumx2 - (self._sumx * self._sumx) / self.window) * (self._sumy2 - (self._sumy * self._sumy) / self.window))
-        #self.r = r1 / r2
+        # compute rsquare
+        if self.calc_rsquare:
+            r1 = self._sumxy - (self._sumx * self._sumy) / self.n
+            r2 = (self._sumx2 - (self._sumx * self._sumx) / self.n) * (self._sumy2 - (self._sumy * self._sumy) / self.n)
+            self.rsquare = (r1 * r1) / r2
 
         self.result = self.m * float(ts) + self.b
         return self.result

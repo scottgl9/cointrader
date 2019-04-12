@@ -191,6 +191,8 @@ class basic_signal_market_strategy(StrategyBase):
             for msg in self.msg_handler.get_messages(src_id=Message.ID_MULTI, dst_id=self.ticker_id):
                 if not msg:
                     continue
+                if msg.is_read():
+                    continue
                 if msg.cmd == Message.MSG_BUY_COMPLETE:
                     #self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
                     #                                                             msg.price,
