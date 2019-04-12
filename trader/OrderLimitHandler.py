@@ -138,7 +138,11 @@ class OrderLimitHandler(object):
         elif order_type == Message.MSG_LIMIT_SELL:
             sell_type = "sell_limit"
 
-        pprofit = 100.0 * (float(price) - float(buy_price)) / float(buy_price)
+        pprofit = 0
+
+        if float(buy_price) != 0:
+            pprofit = 100.0 * (float(price) - float(buy_price)) / float(buy_price)
+
         if self.accnt.total_btc_available() and self.accnt.initial_btc:
             current_btc = self.accnt.get_total_btc_value()
             tpprofit = 100.0 * (current_btc - self.accnt.initial_btc) / self.accnt.initial_btc
