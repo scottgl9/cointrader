@@ -1,7 +1,7 @@
 # Moving Time Segment version of ROC (Rate of Change)
 
 class MTS_ROC(object):
-    def __init__(self, win_secs=60):
+    def __init__(self, win_secs=3600):
         self.win_secs = win_secs
         self.values = []
         self.seconds = []
@@ -36,11 +36,8 @@ class MTS_ROC(object):
         if not self.full:
             return self.result
 
-        delta_secs = self.seconds[-1] - self.seconds[0]
-        if not delta_secs or not self.values[0]:
-            return self.result
-
+        # this gives percent change per win_secs, by default percent change per hour
         pchange = 100.0 * (self.values[-1] - self.values[0]) / self.values[0]
-        self.result = pchange / delta_secs
+        self.result = pchange
 
         return self.result
