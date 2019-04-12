@@ -167,6 +167,10 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.disable_buy:
             return True
 
+        # if buy price was loaded from trade.db, don't want for signal to sell
+        if self.buy_loaded:
+            return True
+
         if signal.sell_signal():
             return True
 
@@ -184,6 +188,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         #if signal.buy_price == 0 and signal.buy_size == 0:
         signal.buy_price = buy_price
         signal.buy_size = buy_size
+        self.buy_loaded = True
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
 
@@ -243,6 +248,10 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                     self.stop_loss_set = False
                     self.stop_loss_price = 0
                     self.next_stop_loss_price = 0
+
+                    # if buy price was loaded from trade.db, mark buy_loaded as fail since it was sold
+                    self.buy_loaded = False
+
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:

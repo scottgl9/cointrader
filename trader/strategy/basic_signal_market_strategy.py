@@ -221,6 +221,9 @@ class basic_signal_market_strategy(StrategyBase):
                     signal.buy_timestamp = 0
                     signal.last_sell_ts = self.timestamp
 
+                    # if buy price was loaded from trade.db, mark buy_loaded as fail since it was sold
+                    self.buy_loaded = False
+
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
