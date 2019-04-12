@@ -12,6 +12,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 from trader.indicator.native.AEMA import AEMA
+from trader.indicator.native.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.lib.MovingTimeSegment.MTS_LSMA import MTS_LSMA
 from trader.lib.MovingTimeSegment.MTS_ROC import MTS_ROC
@@ -40,13 +41,17 @@ def simulate(conn, client, base, currency):
     base_volumes = []
     quote_volumes = []
 
+    ema12 = AEMA(12, scale_interval_secs=60)
     aema12 = AEMA(50, scale_interval_secs=60)
     lsma1 = MTS_LSMA(3600)
     aema12_values = []
     lsma1_values = []
+    ema12_values = []
 
+    ema12_roc = MTS_ROC(win_secs=3600)
     aema12_roc = MTS_ROC(win_secs=3600)
     lsma1_roc = MTS_ROC(win_secs=3600)
+    ema12_roc_values = []
     aema12_roc_values = []
     lsma1_roc_values = []
 
@@ -63,8 +68,11 @@ def simulate(conn, client, base, currency):
         base_volumes.append(volume_base)
         quote_volumes.append(volume_quote)
 
+        ema12_values.append(ema12.update(close, ts))
         aema12_values.append(aema12.update(close, ts))
         lsma1_values.append(lsma1.update(close, ts))
+
+        ema12_roc_values.append(ema12_roc.update(ema12.result, ts))
 
         if not aema12.ready():
             aema12_roc_values.append(0)
@@ -87,8 +95,9 @@ def simulate(conn, client, base, currency):
     symprice, = plt.plot(close_prices, label=ticker_id)
 
     fig1, = plt.plot(lsma1_values, label='LSMA1')
-    fig2, = plt.plot(aema12_values, label='AEMA12')
-    plt.legend(handles=[symprice, fig1, fig2])
+    fig2, = plt.plot(aema12_values, label='AEMA50')
+    fig3, = plt.plot(ema12_values, label='AEMA12')
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
 
     #plt.subplot(312)
     #plt.plot(aema_diff_6_12)
@@ -96,6 +105,7 @@ def simulate(conn, client, base, currency):
     plt.subplot(212)
     plt.plot(aema12_roc_values)
     plt.plot(lsma1_roc_values)
+    plt.plot(ema12_roc_values)
     plt.show()
 
 if __name__ == '__main__':
