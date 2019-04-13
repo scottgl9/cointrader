@@ -57,6 +57,8 @@ class AccountBinance(AccountBase):
         return float(hours * 3600 * 1000)
 
     def get_ticker(self, symbol):
+        if not self.simulate and len(self._tickers) == 0:
+            self._tickers = self.get_all_tickers()
         try:
             price = self._tickers[symbol]
         except KeyError:
@@ -696,6 +698,19 @@ class AccountBinance(AccountBase):
     def get_account_status(self):
         return self.client.get_account_status()
 
+    # get USDT value of base by calculating (base_currency) * (currency_usdt)
+    def get_usdt_value_symbol(self, symbol):
+        currency = self.split_ticker_id(symbol)[1]
+        usdt_symbol = self.make_ticker_id(currency, 'USDT')
+        currency_price = float(self.get_ticker(usdt_symbol))
+        if not currency_price:
+            return 0
+        price = float(self.get_ticker(symbol))
+        if not price:
+            return 0
+
+        return currency_price * price
+
     def update_asset_balance(self, name, balance, available):
         if self.simulate:
             if name in self.balances.keys() and balance == 0.0 and available == 0.0:
@@ -740,11 +755,14 @@ class AccountBinance(AccountBase):
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
 
-    def get_all_ticker_symbols(self):
+    def get_all_ticker_symbols(self, currency=None):
         result = []
         if not self.simulate:
             for ticker in self.client.get_all_tickers():
-                result.append(ticker['symbol'])
+                if currency and ticker['symbol'].endswith(currency):
+                    result.append(ticker['symbol'])
+                elif not currency:
+                    result.append(ticker['symbol'])
         else:
             result = self.info_all_assets.keys()
         return result
