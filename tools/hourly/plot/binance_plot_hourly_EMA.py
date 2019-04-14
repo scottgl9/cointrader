@@ -120,8 +120,12 @@ if __name__ == '__main__':
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='symbol',
-                        default='BTCUSDT',
+                        default='',
                         help='trade symbol')
+
+    parser.add_argument('-l', action='store_true', dest='list_table_names',
+                        default=False,
+                        help='List table names in db')
 
     results = parser.parse_args()
 
@@ -135,5 +139,11 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    simulate(conn, symbol)
+    if results.list_table_names:
+        res = conn.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        for name in res:
+            print name[0]
+
+    if symbol:
+        simulate(conn, symbol)
     conn.close()
