@@ -51,6 +51,10 @@ class MultiTrader(object):
         if self.global_en:
             self.global_strategy = global_obv_strategy()
 
+        if not self.simulate and self.accnt.hourly_klines_handler:
+            self.logger.info("Updating hourly klines in {}...".format(self.hourly_klines_db_file))
+            self.accnt.hourly_klines_handler.update_all_tables()
+
         sigstr = None
 
         if self.signal_names:
