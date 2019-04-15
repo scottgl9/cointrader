@@ -1,25 +1,64 @@
+# Manage hourly klines sqlite DB
+
 import sqlite3
+import time
+from datetime import datetime
 from trader.lib.Kline import Kline
+from trader.account.binance.client import Client
+
 
 class HourlyKlinesDB(object):
-    def __init__(self, client, filename):
+    def __init__(self, client, filename, logger=None):
         self.client = client
         self.filename = filename
+        self.logger = logger
         self.conn = sqlite3.connect(filename)
         # column names
         self.cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"
+        # short list column names
         self.scnames = "ts, open, high, low, close, base_volume, quote_volume"
 
     def close(self):
         if self.conn:
             self.conn.close()
 
+    def update_all_tables(self, end_ts=0):
+        if not end_ts:
+            end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
+
+        for symbol in self.get_table_list():
+            self.update_table(symbol, end_ts)
+
+    # get list of tables named by trading symbol
     def get_table_list(self):
         result = []
         res = self.conn.execute("SELECT name FROM sqlite_master WHERE type='table';")
         for name in res:
             result.append(name[0])
         return result
+
+    def update_table(self, symbol, end_ts):
+        cur = self.conn.cursor()
+        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+        result = cur.fetchone()
+        start_ts = result[0]
+        klines = self.client.get_historical_klines_generator(
+            symbol=symbol,
+            interval=Client.KLINE_INTERVAL_1HOUR,
+            start_str=start_ts,
+            end_str=end_ts,
+        )
+
+        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, self.cnames)
+
+        for k in klines:
+            if k[0] == start_ts:
+                continue
+            del k[6]
+            k = k[:-1]
+            cur = self.conn.cursor()
+            cur.execute(sql, k)
+        self.conn.commit()
 
     def get_kline_values_by_column(self, symbol, column='close', end_ts=0):
         result = []
