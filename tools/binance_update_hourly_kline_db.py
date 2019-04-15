@@ -26,6 +26,19 @@ def get_table_list(c):
         result.append(name[0])
     return result
 
+def list_table_dates(c, symbol):
+    cur = conn.cursor()
+    cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+    result = cur.fetchone()
+    end_ts = int(result[0] / 1000)
+    cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
+    result = cur.fetchone()
+    start_ts = int(result[0] / 1000)
+
+    start_date = time.ctime(start_ts)
+    end_date = time.ctime(end_ts)
+    print("{}: \t{} \t{}".format(symbol, start_date, end_date))
+
 def update_table(conn, client, symbol, end_ts):
     cur = conn.cursor()
     cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
@@ -61,6 +74,10 @@ if __name__ == '__main__':
                         default=False,
                         help='Update tables in hourly kline sqlite db with most recent klines')
 
+    parser.add_argument('--list-dates', action='store_true', dest='list_table_dates',
+                        default=False,
+                        help='List table names with date ranges in db')
+
     parser.add_argument('-l', action='store_true', dest='list_table_names',
                         default=False,
                         help='List table names in db')
@@ -73,14 +90,6 @@ if __name__ == '__main__':
 
     filename = results.filename
 
-    print("Loading {}".format(filename))
-    conn = sqlite3.connect(filename)
-
-    if results.list_table_names:
-        for symbol in get_table_list(conn):
-            print(symbol)
-        sys.exit(0)
-
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
@@ -89,15 +98,28 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
+    print("Loading {}".format(filename))
+    conn = sqlite3.connect(filename)
+
+    if results.list_table_names:
+        for symbol in get_table_list(conn):
+            print(symbol)
+        conn.close()
+        sys.exit(0)
+
+    if results.list_table_dates:
+        for symbol in get_table_list(conn):
+            list_table_dates(conn, symbol)
+        conn.close()
+        sys.exit(0)
+
     client = Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client, logger=logger)
     accnt.load_info_all_assets()
     accnt.load_detail_all_assets()
 
-    end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
-    print(end_ts)
-
     if results.update:
+        end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
         for symbol in get_table_list(conn):
             update_table(conn, client, symbol, end_ts)
 
