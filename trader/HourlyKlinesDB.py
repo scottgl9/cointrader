@@ -18,10 +18,13 @@ class HourlyKlinesDB(object):
         # short list column names
         self.scnames = "ts, open, high, low, close, base_volume, quote_volume"
 
+    # close connection to db
     def close(self):
         if self.conn:
             self.conn.close()
 
+    # update all tables' hourly values ending in end_ts,
+    # or if end_ts is zero, through the current time
     def update_all_tables(self, end_ts=0):
         if not end_ts:
             end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
@@ -37,7 +40,10 @@ class HourlyKlinesDB(object):
             result.append(name[0])
         return result
 
+    # update hourly values missing in table through end_ts
     def update_table(self, symbol, end_ts):
+        if not self.accnt:
+            return
         cur = self.conn.cursor()
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
         result = cur.fetchone()
@@ -61,6 +67,7 @@ class HourlyKlinesDB(object):
             cur.execute(sql, k)
         self.conn.commit()
 
+    # return list of specific kline column by specifying which column to select
     def get_kline_values_by_column(self, symbol, column='close', end_ts=0):
         result = []
         cindex = self.cnames.index(column)
@@ -72,6 +79,7 @@ class HourlyKlinesDB(object):
                 break
         return result
 
+    # get range of timestamps for table with name symbol
     def get_table_ts_range(self, symbol):
         cur = self.conn.cursor()
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
@@ -82,6 +90,7 @@ class HourlyKlinesDB(object):
         start_ts = int(result[0])
         return start_ts, end_ts
 
+    # get klines as list of rows from db table
     def get_raw_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
@@ -92,6 +101,7 @@ class HourlyKlinesDB(object):
                 break
         return result
 
+    # get klines as list of dicts from db table
     def get_dict_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
@@ -105,6 +115,7 @@ class HourlyKlinesDB(object):
                 break
         return result
 
+    # get klines as list of Kline class from db table
     def get_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
