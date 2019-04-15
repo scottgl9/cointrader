@@ -21,6 +21,17 @@ class HourlyKlinesDB(object):
             result.append(name[0])
         return result
 
+    def get_kline_values_by_column(self, symbol, column='close', end_ts=0):
+        result = []
+        cindex = self.cnames.index(column)
+        cur = self.conn.cursor()
+        cur.execute("SELECT {} from {}".format(self.scnames, symbol))
+        for row in cur:
+            result.append(row[cindex])
+            if end_ts and row[0] >= end_ts:
+                break
+        return result
+
     def get_table_ts_range(self, symbol):
         cur = self.conn.cursor()
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
@@ -31,17 +42,17 @@ class HourlyKlinesDB(object):
         start_ts = int(result[0])
         return start_ts, end_ts
 
-    def get_raw_klines_through_ts(self, symbol, end_ts):
+    def get_raw_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
         cur.execute("SELECT {} from {}".format(self.scnames, symbol))
         for row in cur:
             result.append(row)
-            if row[0] >= end_ts:
+            if end_ts and row[0] >= end_ts:
                 break
         return result
 
-    def get_dict_klines_through_ts(self, symbol, end_ts):
+    def get_dict_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
         cur.execute("SELECT {} from {}".format(self.scnames, symbol))
@@ -50,11 +61,11 @@ class HourlyKlinesDB(object):
             for i in range(0, len(self.scnames)):
                 msg[self.scnames[i]] = row[i]
             result.append(msg)
-            if row[0] >= end_ts:
+            if end_ts and row[0] >= end_ts:
                 break
         return result
 
-    def get_klines_through_ts(self, symbol, end_ts):
+    def get_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
         cur.execute("SELECT {} from {}".format(self.scnames, symbol))
@@ -68,6 +79,6 @@ class HourlyKlinesDB(object):
             kline.volume_base = row[5]
             kline.volume_quote = row[6]
             result.append(kline)
-            if row[0] >= end_ts:
+            if end_ts and row[0] >= end_ts:
                 break
         return result
