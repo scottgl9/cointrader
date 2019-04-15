@@ -12,11 +12,11 @@ import os
 
 class AccountBinance(AccountBase):
     def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None,
-                 hourly_klines_db_filename=None):
+                 hourly_klines_db_file=None):
         self.account_type = 'Binance'
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
-        self.hourly_klines_db_filename = hourly_klines_db_filename
+        self.hourly_klines_db_file = hourly_klines_db_file
         self.client = client
         self.simulate = simulation
         self.info_all_assets = {}
@@ -36,10 +36,10 @@ class AccountBinance(AccountBase):
 
         self.client = client
         try:
-            self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_filename, self.logger)
-            self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_filename))
+            self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_file, self.logger)
+            self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
         except IOError:
-            self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_filename))
+            self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
             self.hourly_klines_handler = None
 
         self._tickers = {}

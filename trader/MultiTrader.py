@@ -30,7 +30,7 @@ class MultiTrader(object):
             self.accnt = AccountBinance(self.client,
                                         simulation=simulate,
                                         logger=logger,
-                                        hourly_klines_db_filename=hourly_klines_db_file)
+                                        hourly_klines_db_file=hourly_klines_db_file)
         self.assets_info = assets_info
         self.tickers = None
         self.msg_handler = MessageHandler()

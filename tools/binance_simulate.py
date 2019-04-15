@@ -104,7 +104,7 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None, hou
                            simulation=True,
                            logger=logger,
                            simulate_db_filename=simulate_db_filename,
-                           hourly_klines_db_filename=hourly_klines_db_file)
+                           hourly_klines_db_file=hourly_klines_db_file)
 
     accnt.update_asset_balance('BTC', 0.2, 0.2)
     #accnt.update_asset_balance('ETH', 4.0, 4.0)
