@@ -1,5 +1,6 @@
 # Manage hourly klines sqlite DB
 
+import os
 import sqlite3
 import time
 from datetime import datetime
@@ -12,6 +13,8 @@ class HourlyKlinesDB(object):
         self.accnt = accnt
         self.filename = filename
         self.logger = logger
+        if not filename or not os.path.exists(filename):
+            raise IOError
         self.conn = sqlite3.connect(filename)
         # column names
         self.cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"

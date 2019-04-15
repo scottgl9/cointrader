@@ -89,7 +89,7 @@ def process_trade_cache(trades, end_tickers):
     return trade_info
 
 
-def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
+def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None, hourly_klines_db_file=None):
     start_time = time.time()
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
@@ -100,7 +100,12 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None):
         client = None
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
-    accnt = AccountBinance(client, simulation=True, logger=logger, simulate_db_filename=simulate_db_filename)
+    accnt = AccountBinance(client,
+                           simulation=True,
+                           logger=logger,
+                           simulate_db_filename=simulate_db_filename,
+                           hourly_klines_db_filename=hourly_klines_db_file)
+
     accnt.update_asset_balance('BTC', 0.2, 0.2)
     #accnt.update_asset_balance('ETH', 4.0, 4.0)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)
@@ -269,6 +274,10 @@ if __name__ == '__main__':
                         default='cache',
                         help='simulation cache directory')
 
+    parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
+                        default='binance_hourly_klines.db',
+                        help='binance hourly klines DB file')
+
     results = parser.parse_args()
 
     if not os.path.exists(results.filename):
@@ -321,10 +330,13 @@ if __name__ == '__main__':
 
     logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
 
+    hourly_kline_db_file = results.hourly_klines_db_file
+
     try:
         simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
         print(simulate_db_filename)
-        trades, end_tickers, min_tickers, max_tickers, total_pprofit = simulate(conn, results.strategy, results.signal_name, logger, simulate_db_filename)
+        trades, end_tickers, min_tickers, max_tickers, total_pprofit = simulate(conn, results.strategy, results.signal_name,
+                                                                                logger, simulate_db_filename, hourly_kline_db_file)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()

@@ -15,18 +15,22 @@ from datetime import datetime
 # handle incoming websocket messages for all symbols, and create new tradepairs
 # for those that do not yet exist
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None,
-                 simulate=False, accnt=None, logger=None, global_en=True, store_trades=False):
+    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None, simulate=False,
+                 accnt=None, logger=None, global_en=True, store_trades=False, hourly_klines_db_file=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.simulate = simulate
         self.strategy_name = strategy_name
         self.signal_names = signal_names
+        self.hourly_klines_db_file = hourly_klines_db_file
         if accnt:
             self.accnt = accnt
         else:
-            self.accnt = AccountBinance(self.client, simulation=simulate, logger=logger)
+            self.accnt = AccountBinance(self.client,
+                                        simulation=simulate,
+                                        logger=logger,
+                                        hourly_klines_db_filename=hourly_klines_db_file)
         self.assets_info = assets_info
         self.tickers = None
         self.msg_handler = MessageHandler()

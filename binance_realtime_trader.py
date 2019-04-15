@@ -27,7 +27,7 @@ from trader.config import *
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 class BinanceTrader:
-    def __init__(self, client, strategy, signal_name, logger=None):
+    def __init__(self, client, strategy, signal_name, logger=None, hourly_klines_db_file=None):
         self.client = client
         self.found = False
         self.logger = logger
@@ -37,7 +37,8 @@ class BinanceTrader:
                                        strategy,
                                        signal_names=[signal_name],
                                        simulate=False,
-                                       logger=logger)
+                                       logger=logger,
+                                       hourly_klines_db_file=hourly_klines_db_file)
 
         logger.info("Started live trading strategy: {} signal: {}".format(strategy, signal_name))
 
@@ -260,6 +261,10 @@ if __name__ == '__main__':
                         default='Hybrid_Crossover_Test',
                         help='name of signal to use')
 
+    parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
+                        default='binance_hourly_klines.db',
+                        help='binance hourly klines DB file')
+
     parser.add_argument('--sell-only', action='store_true', dest='sell_only',
                         default=False,
                         help='Set to sell only mode')
@@ -302,7 +307,8 @@ if __name__ == '__main__':
     sell_list = []
     currency_list = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
 
-    bt = BinanceTrader(client, strategy=results.strategy, signal_name=results.signal_name, logger=logger)
+    bt = BinanceTrader(client, strategy=results.strategy, signal_name=results.signal_name, logger=logger,
+                       hourly_klines_db_file=results.hourly_klines_db_file)
     if results.sell_only:
         logger.info("Setting SELL ONLY mode")
         bt.set_sell_only()

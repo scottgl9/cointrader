@@ -4,16 +4,19 @@ from trader.lib.Message import Message
 from trader.lib.Order import Order
 from trader.lib.OrderUpdate import OrderUpdate
 from trader.lib.AssetInfo import AssetInfo
+from trader.HourlyKlinesDB import HourlyKlinesDB
 import json
 import os
 
 #logger = logging.getLogger(__name__)
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, name='BTC', asset='USD', simulation=False, logger=None, simulate_db_filename=None):
+    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None,
+                 hourly_klines_db_filename=None):
         self.account_type = 'Binance'
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
+        self.hourly_klines_db_filename = hourly_klines_db_filename
         self.client = client
         self.simulate = simulation
         self.info_all_assets = {}
@@ -32,7 +35,13 @@ class AccountBinance(AccountBase):
             self._currency_buy_size[currency] = 0
 
         self.client = client
-        self.ticker_id = '{}{}'.format(name, asset)
+        try:
+            self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_filename, self.logger)
+            self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_filename))
+        except IOError:
+            self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_filename))
+            self.hourly_klines_handler = None
+
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
@@ -44,8 +53,6 @@ class AccountBinance(AccountBase):
         self._trades_disabled = False
         self._test_stop_loss = False
         self._max_market_buy = 0
-        #self.info = self.client.get_symbol_info(symbol=self.ticker_id)
-        #self.update_24hr_stats()
 
     def ts_to_seconds(self, ts):
         return float(ts / 1000.0)
