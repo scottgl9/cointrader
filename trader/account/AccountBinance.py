@@ -1258,3 +1258,14 @@ class AccountBinance(AccountBase):
             klines.append([ts, k[3], k[2], k[1], k[4], k[5]])
 
         return klines
+
+    def get_hourly_klines(self, symbol, start_ts, end_ts):
+        klines = self.client.get_historical_klines_generator(
+            symbol=symbol,
+            interval=Client.KLINE_INTERVAL_1HOUR,
+            start_str=start_ts,
+            end_str=end_ts,
+        )
+
+        return klines
+

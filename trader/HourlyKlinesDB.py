@@ -4,12 +4,12 @@ import sqlite3
 import time
 from datetime import datetime
 from trader.lib.Kline import Kline
-from trader.account.binance.client import Client
+#from trader.account.binance.client import Client
 
 
 class HourlyKlinesDB(object):
-    def __init__(self, client, filename, logger=None):
-        self.client = client
+    def __init__(self, accnt, filename, logger=None):
+        self.accnt = accnt
         self.filename = filename
         self.logger = logger
         self.conn = sqlite3.connect(filename)
@@ -42,12 +42,13 @@ class HourlyKlinesDB(object):
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
         result = cur.fetchone()
         start_ts = result[0]
-        klines = self.client.get_historical_klines_generator(
-            symbol=symbol,
-            interval=Client.KLINE_INTERVAL_1HOUR,
-            start_str=start_ts,
-            end_str=end_ts,
-        )
+        # klines = self.client.get_historical_klines_generator(
+        #     symbol=symbol,
+        #     interval=Client.KLINE_INTERVAL_1HOUR,
+        #     start_str=start_ts,
+        #     end_str=end_ts,
+        # )
+        klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
         sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, self.cnames)
 
