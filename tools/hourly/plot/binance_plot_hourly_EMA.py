@@ -20,6 +20,13 @@ try:
 except ImportError:
     from trader.indicator.EMA import EMA
 
+def get_table_list(c):
+    result = []
+    res = c.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    for name in res:
+        result.append(name[0])
+    return result
+
 def get_rows_as_msgs(c):
     msgs = []
     cnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
@@ -140,9 +147,8 @@ if __name__ == '__main__':
     conn = sqlite3.connect(filename)
 
     if results.list_table_names:
-        res = conn.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        for name in res:
-            print name[0]
+        for symbol in get_table_list(conn):
+            print(symbol)
 
     if symbol:
         simulate(conn, symbol)

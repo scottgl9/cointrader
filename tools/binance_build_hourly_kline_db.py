@@ -38,9 +38,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--symbol', action='store', dest='symbol',
-                        default='',
-                        help='Symbol for which to capture hourly klines')
+    parser.add_argument('-f', action='store', dest='filename',
+                        default='binance_hourly_klines.db',
+                        help='filename of hourly kline sqlite db')
 
     parser.add_argument('--start-date', action='store', dest='start_date',
                         default=date_one_year_ago,
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    db_file = "binance_hourly_klines.db"
+    db_file = results.filename
     if os.path.exists(db_file):
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
@@ -71,6 +71,16 @@ if __name__ == '__main__':
 
     symbol_table_list = []
     for symbol in sorted(accnt.get_all_ticker_symbols('BTC')):
+        if accnt.get_usdt_value_symbol(symbol) < 0.02:
+            continue
+        base_name, currency_name = accnt.split_symbol(symbol)
+        if not base_name or not currency_name: continue
+        if accnt.deposit_asset_disabled(base_name):
+            continue
+
+        symbol_table_list.append(symbol)
+
+    for symbol in sorted(accnt.get_all_ticker_symbols('USDT')):
         if accnt.get_usdt_value_symbol(symbol) < 0.02:
             continue
         base_name, currency_name = accnt.split_symbol(symbol)
