@@ -5,6 +5,7 @@ import sqlite3
 import time
 from datetime import datetime
 from trader.lib.Kline import Kline
+import pandas as pd
 #from trader.account.binance.client import Client
 
 
@@ -80,7 +81,7 @@ class HourlyKlinesDB(object):
         result = []
         cindex = self.cnames.index(column)
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {}".format(self.scnames, symbol))
+        cur.execute("SELECT {} from {} ORDER by ts ASC".format(self.scnames, symbol))
         for row in cur:
             result.append(row[cindex])
             if end_ts and row[0] >= end_ts:
@@ -102,7 +103,7 @@ class HourlyKlinesDB(object):
     def get_raw_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {}".format(self.scnames, symbol))
+        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol))
         for row in cur:
             result.append(row)
             if end_ts and row[0] >= end_ts:
@@ -113,21 +114,35 @@ class HourlyKlinesDB(object):
     def get_dict_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {}".format(self.scnames, symbol))
+        if end_ts:
+            sql = "SELECT {} from {} WHERE ts <= {} ORDER BY ts ASC".format(self.scnames, symbol, end_ts)
+        else:
+            sql = "SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol)
+
+        cur.execute(sql)
         for row in cur:
             msg = {}
             for i in range(0, len(self.scname_list)):
                 msg[self.scnames[i]] = row[i]
             result.append(msg)
-            if end_ts and row[0] >= end_ts:
-                break
+            #if end_ts and row[0] >= end_ts:
+            #    break
+        return result
+
+    # load hourly klines in pandas dataframe
+    def get_pandas_klines_through_ts(self, symbol, end_ts=0):
+        if end_ts:
+            sql = "SELECT {} FROM {} WHERE ts <= {} ORDER BY ts ASC".format(self.scnames, symbol, end_ts)
+        else:
+            sql = "SELECT {} FROM {} ORDER BY ts ASC".format(self.scnames, symbol, end_ts)
+        result = pd.read_sql_query(sql, self.conn)
         return result
 
     # get klines as list of Kline class from db table
     def get_klines_through_ts(self, symbol, end_ts=0):
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {}".format(self.scnames, symbol))
+        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol))
         for row in cur:
             kline = Kline()
             kline.ts = row[0]

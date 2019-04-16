@@ -37,7 +37,10 @@ def list_table_dates(c, symbol):
 
     start_date = time.ctime(start_ts)
     end_date = time.ctime(end_ts)
-    print("{}: \t{} \t{}".format(symbol, start_date, end_date))
+    if len(symbol) <= 5:
+        print("{}: \t\t{} \t{}".format(symbol, start_date, end_date))
+    else:
+        print("{}: \t{} \t{}".format(symbol, start_date, end_date))
 
 def update_table(conn, client, symbol, end_ts):
     cur = conn.cursor()
