@@ -51,29 +51,6 @@ class basic_signal_market_strategy(StrategyBase):
                                                                     self.ticker_id,
                                                                     asset_info))
 
-        self.last_price = self.price = 0.0
-        self.last_close = 0.0
-        self.low = 0
-        self.last_low = 0
-        self.high = 0
-        self.last_high = 0
-        self.timestamp = 0
-        self.last_timestamp = 0
-        self.interval_price = 0.0
-
-        self.last_price = 0.0
-        self.min_trade_size = 0.0
-        self.min_trade_size_qty = 1.0
-        self.min_price = 0.0
-        self.max_price = 0.0
-        self.asset_info = asset_info
-
-        # for more accurate simulation
-        self.delayed_buy_msg = None
-        self.delayed_sell_msg = None
-        self.enable_buy = False
-        self.disable_buy = False
-        self.simulate = self.accnt.simulate
 
     # clear pending sell trades which have been bought
     def reset(self):
@@ -274,6 +251,10 @@ class basic_signal_market_strategy(StrategyBase):
         self.low = kline.low
         self.high = kline.high
         volume = kline.volume_quote
+
+        if not self.timestamp:
+            pass
+
         self.timestamp = kline.ts
 
         if close == 0 or volume == 0:

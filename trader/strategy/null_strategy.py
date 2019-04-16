@@ -39,8 +39,6 @@ class null_strategy(StrategyBase):
         self.interval_price = 0.0
         self.last_buy_price = 0.0
         self.last_sell_price = 0.0
-        self.last_50_prices = []
-        self.prev_last_50_prices = []
         self.count_prices_added = 0
 
         self.trend_upward_count = 0
@@ -51,7 +49,7 @@ class null_strategy(StrategyBase):
         self.buy_price_list = []
         self.buy_price = 0.0
         if not self.accnt.simulate:
-            self.buy_price_list = self.accnt.load_buy_price_list(name, currency)
+            self.buy_price_list = self.accnt.load_buy_price_list(base, currency)
             if len(self.buy_price_list) > 0:
                 self.buy_price = self.buy_price_list[-1]
         self.min_trade_size = self.base_min_size * 30.0
@@ -68,4 +66,4 @@ class null_strategy(StrategyBase):
 
     ## mmkline is kline from MarketManager which is filtered and resampled
     def run_update(self, kline, mmkline=None, cache_db=None):
-        self.update_last_50_prices(float(kline['c']))
+        pass

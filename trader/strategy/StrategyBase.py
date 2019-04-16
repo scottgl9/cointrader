@@ -50,17 +50,40 @@ class StrategyBase(object):
 
         self.msg_handler = MessageHandler()
         self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
+        self.simulate = self.accnt.simulate
         self.trade_size_handler = None
-        self.last_50_prices = []
-        self.prev_last_50_prices = []
         self.count_prices_added = 0
         self.mm_enabled = False
         self.kline = None
         self.tpprofit = 0
         self.last_tpprofit = 0
         self.start_ts = 0
+        self.timestamp = 0
+        self.last_timestamp = 0
+
+        self.last_price = 0.0
+        self.price = 0.0
+        self.last_close = 0.0
+        self.low = 0
+        self.last_low = 0
+        self.high = 0
+        self.last_high = 0
+
+        self.min_trade_size = 0.0
+        self.min_trade_size_qty = 1.0
+        self.min_price = 0.0
+        self.max_price = 0.0
+
+        # for more accurate simulation
+        self.delayed_buy_msg = None
+        self.delayed_sell_msg = None
+        self.enable_buy = False
+        self.disable_buy = False
+
         # buy information loaded from trade.db
         self.buy_loaded = False
+        self.hourly_klines_processed = False
+        self.hourly_klines_loaded = False
 
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None):
@@ -69,8 +92,6 @@ class StrategyBase(object):
         elif name == "Currency_Long_EMA": return Currency_EMA_Long(accnt)
         elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal(accnt, symbol)
         elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover(accnt, symbol)
-        #elif name == "Hybrid_Crossover": return Hybrid_Crossover(accnt, symbol)
-        #elif name == "Hybrid_Crossover_MM": return Hybrid_Crossover_MM(accnt, symbol)
         elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test(accnt, symbol, asset_info)
         elif name == "Hybrid_Crossover_Test2": return Hybrid_Crossover_Test2(accnt, symbol, asset_info)
         elif name == "KST_Crossover": return KST_Crossover(accnt, symbol)

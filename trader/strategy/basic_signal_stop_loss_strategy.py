@@ -39,8 +39,6 @@ class basic_signal_stop_loss_strategy(StrategyBase):
 
         self.high_24hr = self.low_24hr = 0.0
         self.open_24hr = self.close_24hr = self.volume_24hr = 0.0
-        self.timestamp = 0
-        self.last_timestamp = 0
         self.last_high_24hr = 0.0
         self.last_low_24hr = 0.0
         self.interval_price = 0.0
