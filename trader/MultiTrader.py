@@ -3,7 +3,6 @@ from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
 
 from trader.TradePair import TradePair
-from trader.MarketManager import MarketManager
 from trader.lib.Kline import Kline
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
@@ -34,7 +33,7 @@ class MultiTrader(object):
         self.assets_info = assets_info
         self.tickers = None
         self.msg_handler = MessageHandler()
-        self.market_manager = MarketManager()
+        #self.market_manager = MarketManager()
         self.logger = logger
         self.notify = None
         self.current_ts = 0
@@ -166,14 +165,14 @@ class MultiTrader(object):
             symbol_trader.update_total_percent_profit(tpprofit)
 
         # use market manager
-        if symbol_trader.mm_enabled():
-            self.market_manager.update(kline.symbol, kline)
-            if self.market_manager.ready():
-                for k in self.market_manager.get_klines():
-                    self.trade_pairs[k.symbol].run_update(kline, mmkline=k)
-                self.market_manager.reset()
-        else:
-            symbol_trader.run_update(kline, cache_db=cache_db)
+        #if symbol_trader.mm_enabled():
+        #    self.market_manager.update(kline.symbol, kline)
+        #    if self.market_manager.ready():
+        #        for k in self.market_manager.get_klines():
+        #            self.trade_pairs[k.symbol].run_update(kline, mmkline=k)
+        #        self.market_manager.reset()
+        #else:
+        symbol_trader.run_update(kline, cache_db=cache_db)
 
         if self.global_strategy:
             self.global_strategy.run_update(kline)
