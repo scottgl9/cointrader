@@ -103,8 +103,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None, hou
     accnt = AccountBinance(client,
                            simulation=True,
                            logger=logger,
-                           simulate_db_filename=simulate_db_filename,
-                           hourly_klines_db_file=hourly_klines_db_file)
+                           simulate_db_filename=simulate_db_filename)
+
 
     accnt.update_asset_balance('BTC', 0.2, 0.2)
     #accnt.update_asset_balance('ETH', 4.0, 4.0)
@@ -118,7 +118,8 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None, hou
                               simulate=True,
                               accnt=accnt,
                               logger=logger,
-                              store_trades=True)
+                              store_trades=True,
+                              hourly_klines_db_file=hourly_klines_db_file)
 
     print(multitrader.accnt.balances)
 

@@ -4,6 +4,7 @@ from trader.OrderHandler import OrderHandler
 
 from trader.TradePair import TradePair
 from trader.lib.Kline import Kline
+from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from datetime import datetime
@@ -28,13 +29,21 @@ class MultiTrader(object):
         else:
             self.accnt = AccountBinance(self.client,
                                         simulation=simulate,
-                                        logger=logger,
-                                        hourly_klines_db_file=hourly_klines_db_file)
+                                        logger=logger)
         self.assets_info = assets_info
         self.tickers = None
         self.msg_handler = MessageHandler()
-        #self.market_manager = MarketManager()
         self.logger = logger
+
+        try:
+            self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_file, self.logger)
+            self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
+        except IOError:
+            self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
+            self.hourly_klines_handler = None
+
+        #self.market_manager = MarketManager()
+
         self.notify = None
         self.current_ts = 0
         self.last_ts = 0
