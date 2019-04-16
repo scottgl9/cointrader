@@ -34,7 +34,7 @@ def create_db_connection(db_file):
 
 if __name__ == '__main__':
     date_today = datetime.today().strftime('%m/%d/%Y')
-    date_one_year_ago = (datetime.now() - relativedelta(years=1)).strftime('%m/%d/%Y')
+    date_two_years_ago = (datetime.now() - relativedelta(years=2)).strftime('%m/%d/%Y')
 
     parser = argparse.ArgumentParser()
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('--start-date', action='store', dest='start_date',
-                        default=date_one_year_ago,
+                        default=date_two_years_ago,
                         help='Start date from which to capture hourly klines (month/day/year)')
 
     parser.add_argument('--end-date', action='store', dest='end_date',
@@ -80,14 +80,7 @@ if __name__ == '__main__':
 
         symbol_table_list.append(symbol)
 
-    for symbol in sorted(accnt.get_all_ticker_symbols('USDT')):
-        if accnt.get_usdt_value_symbol(symbol) < 0.02:
-            continue
-        base_name, currency_name = accnt.split_symbol(symbol)
-        if not base_name or not currency_name: continue
-        if accnt.deposit_asset_disabled(base_name):
-            continue
-
+    for symbol in ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'PAXUSDT', 'XRPUSDT']: #sorted(accnt.get_all_ticker_symbols('USDT')):
         symbol_table_list.append(symbol)
 
     db_conn = create_db_connection(db_file)
