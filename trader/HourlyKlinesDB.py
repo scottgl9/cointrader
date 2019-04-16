@@ -17,9 +17,14 @@ class HourlyKlinesDB(object):
             raise IOError
         self.conn = sqlite3.connect(filename)
         # column names
-        self.cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"
+        self.cnames_list = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
+                            'trade_count', 'taker_buy_base_volume', 'taker_buy_quote_volume']
+        self.cnames = ','.join(self.cnames_list)
+
         # short list column names
-        self.scnames = "ts, open, high, low, close, base_volume, quote_volume"
+        self.scname_list = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
+        self.scnames = ','.join(self.scname_list)
+        self.table_symbols = self.get_table_list()
 
     # close connection to db
     def close(self):
@@ -111,7 +116,7 @@ class HourlyKlinesDB(object):
         cur.execute("SELECT {} from {}".format(self.scnames, symbol))
         for row in cur:
             msg = {}
-            for i in range(0, len(self.scnames)):
+            for i in range(0, len(self.scname_list)):
                 msg[self.scnames[i]] = row[i]
             result.append(msg)
             if end_ts and row[0] >= end_ts:

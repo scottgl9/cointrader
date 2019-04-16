@@ -55,6 +55,7 @@ class StrategyBase(object):
         self.count_prices_added = 0
         self.mm_enabled = False
         self.kline = None
+        self.hourly_klines = None
         self.tpprofit = 0
         self.last_tpprofit = 0
         self.start_ts = 0

@@ -5,6 +5,8 @@ from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_siz
 from trader.strategy.trade_size_strategy.percent_balance_trade_size import percent_balance_trade_size
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
+import time
+from datetime import datetime
 
 
 class basic_signal_market_strategy(StrategyBase):
@@ -245,6 +247,13 @@ class basic_signal_market_strategy(StrategyBase):
 
         return completed
 
+    def load_hourly_klines(self, end_ts):
+        if self.ticker_id not in self.hourly_klines_handler.table_symbols:
+            return
+        if self.simulate:
+            # end_ts is first ts for simulation, so adjust ts to 1 hour ago:
+            end_ts -= self.accnt.hours_to_ts(1)
+            self.hourly_klines = self.hourly_klines_handler.get_dict_klines_through_ts(self.ticker_id, end_ts)
 
     def run_update(self, kline, mmkline=None, cache_db=None):
         close = kline.close
@@ -253,7 +262,8 @@ class basic_signal_market_strategy(StrategyBase):
         volume = kline.volume_quote
 
         if not self.timestamp:
-            pass
+            if self.simulate and not self.hourly_klines_loaded:
+                self.load_hourly_klines(kline.ts)
 
         self.timestamp = kline.ts
 
