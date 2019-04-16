@@ -14,34 +14,15 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
+from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
 try:
     from trader.indicator.native.EMA import EMA
 except ImportError:
     from trader.indicator.EMA import EMA
 
-def get_table_list(c):
-    result = []
-    res = c.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    for name in res:
-        result.append(name[0])
-    return result
-
-def get_rows_as_msgs(c):
-    msgs = []
-    cnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
-              'trade_count', 'taker_buy_base_volume', 'taker_buy_quote_volume']
-    for row in c:
-        msg = {}
-        for i in range(0, len(cnames)):
-            msg[cnames[i]] = row[i]
-        msgs.append(msg)
-    return msgs
-
-
-def simulate(conn, symbol):
-    c = conn.cursor()
-    c.execute("SELECT * FROM {} ORDER BY ts ASC".format(symbol))
+def simulate(hkdb, symbol):
+    msgs = hkdb.get_dict_klines_through_ts(symbol)
 
     obv = OBV()
     ema12 = EMA(12, scale=24)
@@ -71,7 +52,7 @@ def simulate(conn, symbol):
     volumes = []
 
     i=0
-    for msg in get_rows_as_msgs(c):
+    for msg in msgs: #get_rows_as_msgs(c):
         ts = int(msg['ts'])
         close = float(msg['close'])
         low = float(msg['low'])
@@ -143,13 +124,13 @@ if __name__ == '__main__':
     filename = results.filename
     symbol = results.symbol
 
+    hkdb = HourlyKlinesDB(None, filename, None)
     print("Loading {}".format(filename))
-    conn = sqlite3.connect(filename)
 
     if results.list_table_names:
-        for symbol in get_table_list(conn):
+        for symbol in hkdb.get_table_list():
             print(symbol)
 
     if symbol:
-        simulate(conn, symbol)
-    conn.close()
+        simulate(hkdb, symbol)
+    hkdb.close()

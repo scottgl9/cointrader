@@ -93,7 +93,7 @@ class HourlyKlinesDB(object):
         cur = self.conn.cursor()
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
         result = cur.fetchone()
-        end_ts = int(result[0] / 1000)
+        end_ts = int(result[0])
         cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
         result = cur.fetchone()
         start_ts = int(result[0])
@@ -123,7 +123,7 @@ class HourlyKlinesDB(object):
         for row in cur:
             msg = {}
             for i in range(0, len(self.scname_list)):
-                msg[self.scnames[i]] = row[i]
+                msg[self.scname_list[i]] = row[i]
             result.append(msg)
             #if end_ts and row[0] >= end_ts:
             #    break
