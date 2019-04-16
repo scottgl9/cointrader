@@ -1,15 +1,63 @@
 # handle multiple TraiePairs, one for each base / currency we want to trade
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
-
-from trader.TradePair import TradePair
 from trader.lib.Kline import Kline
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from datetime import datetime
 
+from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
+from trader.strategy.basic_signal_stop_loss_strategy import basic_signal_stop_loss_strategy
+from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
+from trader.strategy.null_strategy import null_strategy
 
+
+def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, account_handler=None,
+                    order_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, logger=None):
+    if sname == 'basic_signal_market_strategy':
+        return basic_signal_market_strategy(client,
+                                            base,
+                                            currency,
+                                            signal_names,
+                                            account_handler,
+                                            order_handler=order_handler,
+                                            asset_info=asset_info,
+                                            base_min_size=base_min_size,
+                                            tick_size=tick_size,
+                                            logger=logger)
+    elif sname == 'basic_signal_stop_loss_strategy':
+        return basic_signal_stop_loss_strategy(client,
+                                               base,
+                                               currency,
+                                               signal_names,
+                                               account_handler,
+                                               order_handler=order_handler,
+                                               base_min_size=base_min_size,
+                                               tick_size=tick_size,
+                                               logger=logger)
+    elif sname == 'signal_market_trailing_stop_loss_strategy':
+        return signal_market_trailing_stop_loss_strategy(client,
+                                                         base,
+                                                         currency,
+                                                         signal_names,
+                                                         account_handler,
+                                                         order_handler=order_handler,
+                                                         asset_info=asset_info,
+                                                         base_min_size=base_min_size,
+                                                         tick_size=tick_size,
+                                                         logger=logger)
+    elif sname == 'null_strategy':
+        return null_strategy(client,
+                             base,
+                             currency,
+                             signal_names,
+                             account_handler,
+                             order_handler=order_handler,
+                             asset_info=asset_info,
+                             base_min_size=base_min_size,
+                             tick_size=tick_size,
+                             logger=logger)
 
 
 # handle incoming websocket messages for all symbols, and create new tradepairs
@@ -120,17 +168,17 @@ class MultiTrader(object):
         #    if balance < minqty:
         #        return
 
-        trade_pair = TradePair(self.client,
-                               self.accnt,
-                               order_handler=self.order_handler,
-                               strategy_name=self.strategy_name,
-                               signal_names=self.signal_names,
-                               base=base_name,
-                               currency=currency_name,
-                               asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
-                               base_min_size=base_min_size,
-                               tick_size=tick_size,
-                               logger=self.logger)
+        trade_pair = select_strategy(self.strategy_name,
+                                     self.client,
+                                     base_name,
+                                     currency_name,
+                                     signal_names=self.signal_names,
+                                     account_handler=self.accnt,
+                                     order_handler=self.order_handler,
+                                     base_min_size=base_min_size,
+                                     tick_size=tick_size,
+                                     asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
+                                     logger=self.logger)
 
         self.trade_pairs[symbol] = trade_pair
 
