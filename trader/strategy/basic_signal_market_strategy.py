@@ -195,9 +195,10 @@ class basic_signal_market_strategy(StrategyBase):
                 if msg.is_read():
                     continue
                 if msg.cmd == Message.MSG_BUY_COMPLETE:
-                    #self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
-                    #                                                             msg.price,
-                    #                                                             msg.size))
+                    if not self.simulate:
+                        self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
+                                                                                       msg.price,
+                                                                                       msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.buy_size = msg.size
                     signal.buy_price = msg.price
@@ -206,10 +207,11 @@ class basic_signal_market_strategy(StrategyBase):
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_SELL_COMPLETE:
-                    #self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
-                    #                                                                           msg.price,
-                    #                                                                           msg.buy_price,
-                    #                                                                           msg.size))
+                    if not self.simulate:
+                        self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
+                                                                                                     msg.price,
+                                                                                                     msg.buy_price,
+                                                                                                     msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
                     if self.min_trade_size_qty != 1.0:
