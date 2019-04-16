@@ -10,13 +10,14 @@ def datetime_to_float(d):
 
 
 class null_strategy(StrategyBase):
-    def __init__(self, client, name='BTC', currency='USD', signal_names=None, account_handler=None,
-                 order_handler=None, asset_info=None, base_min_size=0.0, tick_size=0.0, logger=None):
+    def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, order_handler=None,
+                 hourly_klines_handler=None, asset_info=None, base_min_size=0.0, tick_size=0.0, logger=None):
         super(null_strategy, self).__init__(client,
-                                            name,
+                                            base,
                                             currency,
                                             account_handler,
                                             order_handler,
+                                            hourly_klines_handler,
                                             base_min_size,
                                             tick_size,
                                             asset_info,
@@ -27,7 +28,7 @@ class null_strategy(StrategyBase):
         self.last_rsi_result = 0.0
         #self.trend_tsi = MeasureTrend(window=20, detect_width=8, use_ema=False)
 
-        self.base = name
+        self.base = base
         self.currency = currency
 
         self.buy_signal_count = self.sell_signal_count = 0

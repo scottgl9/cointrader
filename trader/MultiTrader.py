@@ -14,7 +14,8 @@ from trader.strategy.null_strategy import null_strategy
 
 
 def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, account_handler=None,
-                    order_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, logger=None):
+                    order_handler=None, hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0,
+                    asset_info=None, logger=None):
     if sname == 'basic_signal_market_strategy':
         return basic_signal_market_strategy(client,
                                             base,
@@ -22,6 +23,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
                                             signal_names,
                                             account_handler,
                                             order_handler=order_handler,
+                                            hourly_klines_handler=hourly_klines_handler,
                                             asset_info=asset_info,
                                             base_min_size=base_min_size,
                                             tick_size=tick_size,
@@ -33,6 +35,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
                                                signal_names,
                                                account_handler,
                                                order_handler=order_handler,
+                                               hourly_klines_handler=hourly_klines_handler,
                                                base_min_size=base_min_size,
                                                tick_size=tick_size,
                                                logger=logger)
@@ -43,6 +46,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
                                                          signal_names,
                                                          account_handler,
                                                          order_handler=order_handler,
+                                                         hourly_klines_handler=hourly_klines_handler,
                                                          asset_info=asset_info,
                                                          base_min_size=base_min_size,
                                                          tick_size=tick_size,
@@ -54,6 +58,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
                              signal_names,
                              account_handler,
                              order_handler=order_handler,
+                             hourly_klines_handler=hourly_klines_handler,
                              asset_info=asset_info,
                              base_min_size=base_min_size,
                              tick_size=tick_size,
@@ -175,6 +180,7 @@ class MultiTrader(object):
                                      signal_names=self.signal_names,
                                      account_handler=self.accnt,
                                      order_handler=self.order_handler,
+                                     hourly_klines_handler=self.hourly_klines_handler,
                                      base_min_size=base_min_size,
                                      tick_size=tick_size,
                                      asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
