@@ -16,53 +16,25 @@ from trader.strategy.null_strategy import null_strategy
 def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, account_handler=None,
                     order_handler=None, hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0,
                     asset_info=None, logger=None):
-    if sname == 'basic_signal_market_strategy':
-        return basic_signal_market_strategy(client,
-                                            base,
-                                            currency,
-                                            signal_names,
-                                            account_handler,
-                                            order_handler=order_handler,
-                                            hourly_klines_handler=hourly_klines_handler,
-                                            asset_info=asset_info,
-                                            base_min_size=base_min_size,
-                                            tick_size=tick_size,
-                                            logger=logger)
-    elif sname == 'basic_signal_stop_loss_strategy':
-        return basic_signal_stop_loss_strategy(client,
-                                               base,
-                                               currency,
-                                               signal_names,
-                                               account_handler,
-                                               order_handler=order_handler,
-                                               hourly_klines_handler=hourly_klines_handler,
-                                               base_min_size=base_min_size,
-                                               tick_size=tick_size,
-                                               logger=logger)
-    elif sname == 'signal_market_trailing_stop_loss_strategy':
-        return signal_market_trailing_stop_loss_strategy(client,
-                                                         base,
-                                                         currency,
-                                                         signal_names,
-                                                         account_handler,
-                                                         order_handler=order_handler,
-                                                         hourly_klines_handler=hourly_klines_handler,
-                                                         asset_info=asset_info,
-                                                         base_min_size=base_min_size,
-                                                         tick_size=tick_size,
-                                                         logger=logger)
-    elif sname == 'null_strategy':
-        return null_strategy(client,
-                             base,
-                             currency,
-                             signal_names,
-                             account_handler,
-                             order_handler=order_handler,
-                             hourly_klines_handler=hourly_klines_handler,
-                             asset_info=asset_info,
-                             base_min_size=base_min_size,
-                             tick_size=tick_size,
-                             logger=logger)
+    strategy = None
+    if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
+    elif sname == 'basic_signal_stop_loss_strategy': strategy = basic_signal_stop_loss_strategy
+    elif sname == 'signal_market_trailing_stop_loss_strategy': strategy = signal_market_trailing_stop_loss_strategy
+    elif sname == 'null_strategy': strategy = null_strategy
+    if not strategy:
+        return None
+
+    return strategy(client,
+                    base,
+                    currency,
+                    signal_names,
+                    account_handler,
+                    order_handler=order_handler,
+                    hourly_klines_handler=hourly_klines_handler,
+                    asset_info=asset_info,
+                    base_min_size=base_min_size,
+                    tick_size=tick_size,
+                    logger=logger)
 
 
 # handle incoming websocket messages for all symbols, and create new tradepairs
