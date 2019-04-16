@@ -198,11 +198,11 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None, hou
     final_btc_total = multitrader.accnt.get_total_btc_value()
     total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
     for pair in multitrader.trade_pairs.values():
-        for signal in pair.strategy.get_signals():
+        for signal in pair.get_signals():
             if signal.buy_price != 0.0:
                 buy_price = float(signal.buy_price)
-                last_price = float(pair.strategy.last_price)
-                symbol = pair.strategy.ticker_id
+                last_price = float(pair.last_price)
+                symbol = pair.ticker_id
                 pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
                 logger.info("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
