@@ -21,6 +21,7 @@ class TraderConfig(object):
         self.config.set(section, 'sell_only', 'False')
         self.config.set(section, 'trades_disabled', 'False')
         self.config.set(section, 'max_market_buy', '0')
+        self.config.set(section, 'init_max_buy_count', '0')
 
         section = 'binance.simulate'
         self.config.add_section(section)
@@ -32,6 +33,8 @@ class TraderConfig(object):
         self.config.set(section, 'BTC', '0.2')
         self.config.set(section, 'ETH', '0.0')
         self.config.set(section, 'BNB', '0.0')
+        self.config.set(section, 'btc_only', 'False')
+        self.config.set(section, 'init_max_buy_count', '0')
 
     def load(self):
         if os.path.exists(self.filename):
