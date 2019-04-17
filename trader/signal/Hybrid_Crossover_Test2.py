@@ -48,6 +48,9 @@ class Hybrid_Crossover_Test2(SignalBase):
         self.lsma_slope_cross_zero = MTSCrossover(result_secs=60)
         self.lsma_obv_cross_zero = MTSCrossover(result_secs=3600)
         self.ema_12_cross_tpsc = MACross(cross_timeout=ctimeout)
+        self.ema_cross_12_200 = MACross(cross_timeout=ctimeout * 2)
+        self.ema_cross_50_200 = MACross(cross_timeout=ctimeout * 2)
+        self.ema_cross_26_100 = MACross(cross_timeout=ctimeout * 2)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -84,8 +87,16 @@ class Hybrid_Crossover_Test2(SignalBase):
             self.lsma_slope_cross_zero.update(self.lsma.m, 0, ts)
 
         ema12_result = self.ema12.update(close)
+        ema26_result = self.ema26.update(close)
+        ema50_result = self.ema50.update(close)
+        ema100_result = self.ema100.update(close)
+        ema200_result = self.ema200.update(close)
         tspc_result = self.tspc.update(close, ts)
+
         self.ema_12_cross_tpsc.update(close, ts, ma1_result=ema12_result, ma2_result=tspc_result)
+        self.ema_cross_26_100.update(close, ts, ma1_result=ema26_result, ma2_result=ema100_result)
+        self.ema_cross_12_200.update(close, ts, ma1_result=ema12_result, ma2_result=ema200_result)
+        self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
 
     def buy_signal(self):
         if self.is_currency_pair:
@@ -111,31 +122,43 @@ class Hybrid_Crossover_Test2(SignalBase):
         if self.ema_12_cross_tpsc.is_past_current_max(seconds=300, percent=2.0, cutoff=0.03):
             return False
 
-        #if self.lsma_obv_cross_zero.no_cross_detected():
-        #    return False
-
-        if self.lsma_cross_aema12.crossup_detected():# and self.lsma_slope_cross_zero.crossup_detected():
+        if self.lsma_cross_aema12.crossup_detected():
             return True
-
-        #if self.ema_12_cross_tpsc.cross_up:
-        #    self.buy_type = 'TPSC12'
-        #    return True
 
         return False
 
     def sell_long_signal(self):
+        if self.buy_price == 0 or self.last_buy_ts == 0:
+            return False
+
+        if self.is_currency_pair:
+            return False
+
+        # don't do sell long unless price has fallen at least 10%
+        if (self.last_close - self.buy_price) / self.buy_price >= -0.1:
+            return False
+
+        if self.ema_cross_50_200.cross_down and self.ema_cross_50_200.ma2_trend_down():
+            # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
+            if (self.last_close - self.buy_price) / self.buy_price < -0.05:
+                self.disabled = True
+                self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
+                self.sell_type = "LONG:EMA50_200"
+            return True
+
+        if (self.ema_cross_12_200.ma1_trend_down() and self.ema_cross_12_200.ma2_trend_down() and
+                self.ema_cross_26_100.ma1_trend_down()) and self.ema_cross_26_100.ma2_trend_down():
+            # don't buy back for at least 6 hours after selling at a 5 percent or greater loss
+            if (self.last_close - self.buy_price) / self.buy_price < -0.05:
+                self.disabled = True
+                self.disabled_end_ts = self.timestamp + 1000 * 8 * 3600
+                self.sell_type = "LONG:EMA12_200|EMA26_200"
+            return True
+
         return False
 
     def sell_signal(self):
         if self.lsma_cross_aema12.crossdown_detected():
             return True
-
-        #if self.ema_12_cross_tpsc.cross_down:
-        #    self.sell_type = 'TPSC12'
-        #    return True
-
-        #if self.ema_12_cross_tpsc.is_past_current_max(seconds=300, percent=2.0, cutoff=0.03):
-        #    self.sell_type = 'TPSC12_MAX'
-        #    return True
 
         return False

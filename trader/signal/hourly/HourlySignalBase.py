@@ -7,3 +7,6 @@ class HourlySignalBase(object):
 
     def load(self, klines):
         pass
+
+    def process(self):
+        pass

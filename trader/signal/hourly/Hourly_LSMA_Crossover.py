@@ -5,4 +5,7 @@ class Hourly_LSMA_Crossover(HourlySignalBase):
         super(Hourly_LSMA_Crossover).__init__(accnt, symbol, asset_info)
 
     def load(self, klines):
+        self.klines = klines
+
+    def process(self):
         pass

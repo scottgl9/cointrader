@@ -275,11 +275,11 @@ if __name__ == '__main__':
                         help='filename of kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='strategy',
-                        default='basic_signal_market_strategy',
+                        default='',
                         help='name of strategy to use')
 
     parser.add_argument('-g', action='store', dest='signal_name',
-                        default='Hybrid_Crossover_Test',
+                        default='',
                         help='name of signal to use')
 
     parser.add_argument('-c', action='store', dest='cache_dir',

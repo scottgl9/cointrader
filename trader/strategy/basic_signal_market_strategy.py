@@ -261,9 +261,9 @@ class basic_signal_market_strategy(StrategyBase):
         self.high = kline.high
         volume = kline.volume_quote
 
-        if not self.timestamp:
-            if self.simulate and not self.hourly_klines_loaded:
-                self.load_hourly_klines(kline.ts)
+        #if not self.timestamp:
+        #    if self.simulate and not self.hourly_klines_loaded:
+        #        self.load_hourly_klines(kline.ts)
 
         self.timestamp = kline.ts
 
