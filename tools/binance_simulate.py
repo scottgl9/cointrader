@@ -22,6 +22,7 @@ from trader.MultiTrader import MultiTrader
 from trader.lib.Kline import Kline
 
 from trader.account.AccountBinance import AccountBinance
+from trader.TraderConfig import TraderConfig
 from trader.config import *
 import argparse
 import logging
@@ -89,7 +90,7 @@ def process_trade_cache(trades, end_tickers):
     return trade_info
 
 
-def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None, hourly_klines_db_file=None):
+def simulate(conn, config, logger, simulate_db_filename=None, hourly_klines_db_file=None):
     start_time = time.time()
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
@@ -99,16 +100,25 @@ def simulate(conn, strategy, signal_name, logger, simulate_db_filename=None, hou
     else:
         client = None
 
-    #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     accnt = AccountBinance(client,
                            simulation=True,
                            logger=logger,
                            simulate_db_filename=simulate_db_filename)
 
+    strategy = config.get('strategy')
+    signal_name = config.get('signals')
+    btc_balance = config.get('BTC')
+    eth_balance = config.get('ETH')
+    bnb_balance = config.get('BNB')
 
-    accnt.update_asset_balance('BTC', 0.2, 0.2)
-    #accnt.update_asset_balance('ETH', 4.0, 4.0)
-    #accnt.update_asset_balance('BNB', 15.0, 15.0)
+    if btc_balance:
+        accnt.update_asset_balance('BTC', float(btc_balance), float(btc_balance))
+
+    if eth_balance:
+        accnt.update_asset_balance('ETH', float(eth_balance), float(eth_balance))
+
+    if bnb_balance:
+        accnt.update_asset_balance('BNB', float(bnb_balance), float(bnb_balance))
 
     signal_names = [signal_name] #, "BTC_USDT_Signal"]
 
@@ -292,9 +302,21 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(message)s")
     logger = logging.getLogger()
 
+    config = TraderConfig("trader.ini")
+    config.select_section('binance.simulate')
+
+    if results.strategy:
+        config.set('strategy', results.strategy)
+
+    if results.signal_name:
+        config.set('signals', results.signal_name)
+
+    strategy = config.get('strategy')
+    signal_name = config.get('signals')
+
     trade_cache = {}
 
-    trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
+    trade_cache_name = "{}-{}".format(strategy, signal_name)
 
     trade_log_filename = results.filename.replace(".db", "_{}.log".format(trade_cache_name))
     trade_log_filepath = os.path.join(results.cache_dir, trade_log_filename)
@@ -336,8 +358,8 @@ if __name__ == '__main__':
     try:
         simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
         print(simulate_db_filename)
-        trades, end_tickers, min_tickers, max_tickers, total_pprofit = simulate(conn, results.strategy, results.signal_name,
-                                                                                logger, simulate_db_filename, hourly_kline_db_file)
+        trades, end_tickers, min_tickers, max_tickers, total_pprofit = simulate(conn, config, logger,
+                                                                                simulate_db_filename, hourly_kline_db_file)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
