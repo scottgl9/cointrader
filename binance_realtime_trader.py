@@ -9,6 +9,7 @@ except ImportError:
 from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
+from trader.TraderConfig import TraderConfig
 from trader.lib.Kline import Kline
 import argparse
 import collections
@@ -27,12 +28,17 @@ from trader.config import *
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 class BinanceTrader:
-    def __init__(self, client, strategy, signal_name, logger=None, hourly_klines_db_file=None):
+    def __init__(self, client, config, logger=None):
         self.client = client
         self.found = False
         self.logger = logger
         self.kline = None
         self.tickers = {}
+
+        strategy = config.get('strategy')
+        signal_name = config.get('signals')
+        hourly_klines_db_file = config.get('hourly_kline_db_file')
+
         self.multitrader = MultiTrader(client,
                                        strategy,
                                        signal_names=[signal_name],
@@ -254,15 +260,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-s', action='store', dest='strategy',
-                        default='basic_signal_market_strategy',
+                        default='',
                         help='name of strategy to use')
 
     parser.add_argument('-g', action='store', dest='signal_name',
-                        default='Hybrid_Crossover_Test',
+                        default='',
                         help='name of signal to use')
 
     parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
-                        default='binance_hourly_klines.db',
+                        default='',
                         help='binance hourly klines DB file')
 
     parser.add_argument('--sell-only', action='store_true', dest='sell_only',
@@ -287,6 +293,18 @@ if __name__ == '__main__':
 
     results = parser.parse_args()
 
+    config = TraderConfig("trader.ini")
+    config.select_section('binance.live')
+
+    if results.strategy:
+        config.set('strategy', results.strategy)
+
+    if results.signal_name:
+        config.set('signals', results.signal_name)
+
+    if results.hourly_klines_db_file:
+        config.set('hourly_kline_db_file', results.hourly_klines_db_file)
+
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
 
@@ -307,8 +325,7 @@ if __name__ == '__main__':
     sell_list = []
     currency_list = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
 
-    bt = BinanceTrader(client, strategy=results.strategy, signal_name=results.signal_name, logger=logger,
-                       hourly_klines_db_file=results.hourly_klines_db_file)
+    bt = BinanceTrader(client, config, logger=logger)
     if results.sell_only:
         logger.info("Setting SELL ONLY mode")
         bt.set_sell_only()
