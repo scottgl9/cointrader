@@ -3,8 +3,9 @@
 import numpy as np
 
 class LSMA(object):
-    def __init__(self, window):
+    def __init__(self, window, calc_rsquare=False):
         self.window = window
+        self.calc_rsquare = calc_rsquare
         self.timestamps = []
         self.values = []
         self.age = 0
@@ -16,7 +17,7 @@ class LSMA(object):
         self._sumy2 = 0
         self.m = 0
         self.b = 0
-        self.r = 0
+        self.rsquare = 0
         self.n = 0
         self.result = 0
 
@@ -63,7 +64,7 @@ class LSMA(object):
                 # singular matrix, can't solve problem
                 self.m = 0
                 self.b = 0
-                self.r = 0
+                self.rsquare = 0
                 self.result = float(value)
                 return self.result
 
@@ -72,10 +73,12 @@ class LSMA(object):
             self.m = m1 / m2
             self.b = (self._sumy - self.m * self._sumx) / self.n
 
-            # compute r
-            #r1 = self._sumxy - (self._sumx * self._sumy) / self.window
-            #r2 = np.sqrt((self._sumx2 - (self._sumx * self._sumx) / self.window) * (self._sumy2 - (self._sumy * self._sumy) / self.window))
-            #self.r = r1 / r2
+            # compute rsquare
+            if self.calc_rsquare:
+                r1 = self._sumxy - (self._sumx * self._sumy) / self.n
+                r2 = (self._sumx2 - (self._sumx * self._sumx) / self.n) * (
+                            self._sumy2 - (self._sumy * self._sumy) / self.n)
+                self.rsquare = (r1 * r1) / r2
 
         self.age = (self.age + 1) % self.window
         self.result = self.m * float(ts) + self.b
