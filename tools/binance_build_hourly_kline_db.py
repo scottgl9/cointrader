@@ -71,8 +71,8 @@ if __name__ == '__main__':
 
     symbol_table_list = []
     for symbol in sorted(accnt.get_all_ticker_symbols('BTC')):
-        if accnt.get_usdt_value_symbol(symbol) < 0.02:
-            continue
+        #if accnt.get_usdt_value_symbol(symbol) < 0.02:
+        #    continue
         base_name, currency_name = accnt.split_symbol(symbol)
         if not base_name or not currency_name: continue
         if accnt.deposit_asset_disabled(base_name):
