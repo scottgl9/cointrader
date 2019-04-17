@@ -90,7 +90,7 @@ def process_trade_cache(trades, end_tickers):
     return trade_info
 
 
-def simulate(conn, config, logger, simulate_db_filename=None, hourly_klines_db_file=None):
+def simulate(conn, config, logger, simulate_db_filename=None):
     start_time = time.time()
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
@@ -107,6 +107,7 @@ def simulate(conn, config, logger, simulate_db_filename=None, hourly_klines_db_f
 
     strategy = config.get('strategy')
     signal_name = config.get('signals')
+    hourly_klines_db_file = config.get('hourly_kline_db_file')
     btc_balance = config.get('BTC')
     eth_balance = config.get('ETH')
     bnb_balance = config.get('BNB')
@@ -358,8 +359,7 @@ if __name__ == '__main__':
     try:
         simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
         print(simulate_db_filename)
-        trades, end_tickers, min_tickers, max_tickers, total_pprofit = simulate(conn, config, logger,
-                                                                                simulate_db_filename, hourly_kline_db_file)
+        trades, end_tickers, min_tickers, max_tickers, total_pprofit = simulate(conn, config, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
