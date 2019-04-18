@@ -140,8 +140,8 @@ class HourlyKlinesDB(object):
             for i in range(0, len(self.scname_list)):
                 msg[self.scname_list[i]] = row[i]
             result.append(msg)
-            #if end_ts and row[0] >= end_ts:
-            #    break
+            if end_ts and row[0] >= end_ts:
+                break
         return result
 
     # load hourly klines in pandas dataframe
