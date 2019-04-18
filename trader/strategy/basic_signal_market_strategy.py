@@ -255,8 +255,10 @@ class basic_signal_market_strategy(StrategyBase):
         if self.simulate:
             # end_ts is first ts for simulation, so adjust ts to 1 hour ago:
             end_ts -= self.accnt.hours_to_ts(1)
-            self.hourly_klines = self.hourly_klines_handler.get_dict_klines(self.ticker_id, end_ts)
+            start_ts = end_ts - self.accnt.hours_to_ts(24)
+            self.hourly_klines = self.hourly_klines_handler.get_dict_klines(self.ticker_id, start_ts=start_ts, end_ts=end_ts)
             self.hourly_klines_signal.load(self.hourly_klines)
+            self.hourly_klines_signal.process()
 
     def run_update(self, kline, mmkline=None, cache_db=None):
         close = kline.close
