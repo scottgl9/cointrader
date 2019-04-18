@@ -49,7 +49,7 @@ def remove_outdated_tables(conn, end_ts):
             cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
             result = cur.fetchone()
             end_ts_table = int(result[0])
-            if end_ts_table < end_ts:
+            if end_ts_table < (end_ts - 1000 * 3600 * 24):
                 table_remove_list.append(symbol)
     for symbol in table_remove_list:
         print("Removing table {}".format(symbol))
