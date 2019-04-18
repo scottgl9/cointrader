@@ -22,7 +22,7 @@ except ImportError:
     from trader.indicator.EMA import EMA
 
 def simulate(hkdb, symbol):
-    msgs = hkdb.get_dict_klines_through_ts(symbol)
+    msgs = hkdb.get_dict_klines(symbol)
 
     obv = OBV()
     ema12 = EMA(12, scale=24)

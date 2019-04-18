@@ -99,28 +99,43 @@ class HourlyKlinesDB(object):
         start_ts = int(result[0])
         return start_ts, end_ts
 
+    def build_sql_select_query(self, symbol, start_ts, end_ts):
+        sql = "SELECT {} FROM {} ".format(self.scnames, symbol)
+
+        if start_ts and end_ts:
+            sql += "WHERE {} <= ts <= {} ".format(start_ts, end_ts)
+        elif not start_ts and end_ts:
+            sql += "WHERE ts <= {} ".format(end_ts)
+        elif start_ts and not end_ts:
+            sql += "WHERE {} <= ts ".format(start_ts)
+
+        sql += "ORDER BY ts ASC"
+        return sql
+
     # get klines as list of rows from db table
-    def get_raw_klines_through_ts(self, symbol, end_ts=0):
+    def get_raw_klines(self, symbol, start_ts=0, end_ts=0):
         result = []
         cur = self.conn.cursor()
         cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol))
         for row in cur:
+            if start_ts and row[0] < start_ts:
+                continue
             result.append(row)
             if end_ts and row[0] >= end_ts:
                 break
         return result
 
     # get klines as list of dicts from db table
-    def get_dict_klines_through_ts(self, symbol, end_ts=0):
+    def get_dict_klines(self, symbol, start_ts=0, end_ts=0):
         result = []
         cur = self.conn.cursor()
-        if end_ts:
-            sql = "SELECT {} from {} WHERE ts <= {} ORDER BY ts ASC".format(self.scnames, symbol, end_ts)
-        else:
-            sql = "SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol)
+
+        sql = self.build_sql_select_query(symbol, start_ts, end_ts)
 
         cur.execute(sql)
         for row in cur:
+            if start_ts and row[0] < start_ts:
+                continue
             msg = {}
             for i in range(0, len(self.scname_list)):
                 msg[self.scname_list[i]] = row[i]
@@ -130,20 +145,20 @@ class HourlyKlinesDB(object):
         return result
 
     # load hourly klines in pandas dataframe
-    def get_pandas_klines_through_ts(self, symbol, end_ts=0):
-        if end_ts:
-            sql = "SELECT {} FROM {} WHERE ts <= {} ORDER BY ts ASC".format(self.scnames, symbol, end_ts)
-        else:
-            sql = "SELECT {} FROM {} ORDER BY ts ASC".format(self.scnames, symbol, end_ts)
+    def get_pandas_klines(self, symbol, start_ts=0, end_ts=0):
+        sql = self.build_sql_select_query(symbol, start_ts, end_ts)
+
         result = pd.read_sql_query(sql, self.conn)
         return result
 
     # get klines as list of Kline class from db table
-    def get_klines_through_ts(self, symbol, end_ts=0):
+    def get_klines(self, symbol, start_ts=0, end_ts=0):
         result = []
         cur = self.conn.cursor()
         cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol))
         for row in cur:
+            if start_ts and row[0] < start_ts:
+                continue
             kline = Kline()
             kline.ts = row[0]
             kline.open = row[1]

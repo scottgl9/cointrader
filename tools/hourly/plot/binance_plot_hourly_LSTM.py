@@ -68,7 +68,7 @@ def train_model(X_train, Y_train):
 
 
 def simulate(hkdb, symbol):
-    df = hkdb.get_pandas_klines_through_ts(symbol)
+    df = hkdb.get_pandas_klines(symbol)
 
     df = scale_dataset(df)
 

@@ -24,7 +24,7 @@ except ImportError:
 from trader.indicator.LSMA import LSMA
 
 def simulate(hkdb, symbol):
-    msgs = hkdb.get_dict_klines_through_ts(symbol)
+    msgs = hkdb.get_dict_klines(symbol)
 
     obv = OBV()
     lsma6_obv = LSMA(6)

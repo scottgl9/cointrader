@@ -3,6 +3,7 @@ from trader.lib.MessageHandler import MessageHandler
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
 from trader.strategy.trade_size_strategy.percent_balance_trade_size import percent_balance_trade_size
+from trader.signal.hourly.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalBase import SignalBase
 import time
@@ -32,6 +33,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                    usdt=10.0,
                                                    multiplier=5.0)
 
+        self.hourly_klines_signal = Hourly_LSMA_Crossover(account_handler, self.ticker_id, asset_info)
         #signal_names.append("BTC_USDT_Signal")
 
         if signal_names:
@@ -253,7 +255,8 @@ class basic_signal_market_strategy(StrategyBase):
         if self.simulate:
             # end_ts is first ts for simulation, so adjust ts to 1 hour ago:
             end_ts -= self.accnt.hours_to_ts(1)
-            self.hourly_klines = self.hourly_klines_handler.get_dict_klines_through_ts(self.ticker_id, end_ts)
+            self.hourly_klines = self.hourly_klines_handler.get_dict_klines(self.ticker_id, end_ts)
+            self.hourly_klines_signal.load(self.hourly_klines)
 
     def run_update(self, kline, mmkline=None, cache_db=None):
         close = kline.close
@@ -261,9 +264,9 @@ class basic_signal_market_strategy(StrategyBase):
         self.high = kline.high
         volume = kline.volume_quote
 
-        #if not self.timestamp:
-        #    if self.simulate and not self.hourly_klines_loaded:
-        #        self.load_hourly_klines(kline.ts)
+        if not self.timestamp:
+            if self.simulate and not self.hourly_klines_loaded:
+                self.load_hourly_klines(kline.ts)
 
         self.timestamp = kline.ts
 
