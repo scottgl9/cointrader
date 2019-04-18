@@ -67,7 +67,7 @@ def train_model(X_train, Y_train):
     model.fit(X_train, Y_train, epochs=100, batch_size=32)
 
 
-def simulate(hkdb, symbol):
+def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
 
     df = scale_dataset(df)
@@ -97,9 +97,26 @@ def simulate(hkdb, symbol):
     #plt.legend(handles=[fig21, fig22, fig23])
     #plt.show()
 
+# get first timestamp from kline sqlite db
+def get_first_timestamp(filename, symbol):
+    conn = sqlite3.connect(filename)
+    c = conn.cursor()
+    c.execute("SELECT E FROM miniticker WHERE s='{}' ORDER BY E ASC LIMIT 1".format(symbol))
+    result = c.fetchone()
+    return int(result[0])
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    # used to get first timestamp for symbol from precaptured live market data
     parser.add_argument('-f', action='store', dest='filename',
+                        default='', #'cryptocurrency_database.miniticker_collection_04092018.db',
+                        help='filename of kline sqlite db')
+
+    parser.add_argument('--hours', action='store', dest='hours',
+                        default=48,
+                        help='Hours before first ts in db specified by -f')
+
+    parser.add_argument('-k', action='store', dest='hourly_filename',
                         default='binance_hourly_klines.db',
                         help='filename of hourly kline sqlite db')
 
@@ -113,20 +130,33 @@ if __name__ == '__main__':
 
     results = parser.parse_args()
 
-    if not os.path.exists(results.filename):
+
+    hourly_filename = results.hourly_filename
+    symbol = results.symbol
+    start_ts = 0
+    end_ts = 0
+
+    if results.filename:
+        if not os.path.exists(results.filename):
+            print("file {} doesn't exist, exiting...".format(results.filename))
+            sys.exit(-1)
+        else:
+            end_ts = get_first_timestamp(results.filename, symbol)
+            start_ts = end_ts - 1000 * 3600 * int(results.hours)
+            print(start_ts, end_ts)
+
+
+    if not os.path.exists(results.hourly_filename):
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    filename = results.filename
-    symbol = results.symbol
-
-    hkdb = HourlyKlinesDB(None, filename, None)
-    print("Loading {}".format(filename))
+    hkdb = HourlyKlinesDB(None, hourly_filename, None)
+    print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
         for symbol in hkdb.get_table_list():
             print(symbol)
 
     if symbol:
-        simulate(hkdb, symbol)
+        simulate(hkdb, symbol, start_ts, end_ts)
     hkdb.close()
