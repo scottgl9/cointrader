@@ -42,6 +42,20 @@ def list_table_dates(c, symbol):
     else:
         print("{}: \t{} \t{}".format(symbol, start_date, end_date))
 
+def remove_outdated_tables(conn, end_ts):
+    table_remove_list = []
+    cur = conn.cursor()
+    for symbol in get_table_list(conn):
+            cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+            result = cur.fetchone()
+            end_ts_table = int(result[0])
+            if end_ts_table < end_ts:
+                table_remove_list.append(symbol)
+    for symbol in table_remove_list:
+        print("Removing table {}".format(symbol))
+        cur.execute("DROP TABLE {}".format(symbol))
+    conn.commit()
+
 def update_table(conn, client, symbol, end_ts):
     cur = conn.cursor()
     cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
@@ -85,6 +99,11 @@ if __name__ == '__main__':
                         default=False,
                         help='List table names in db')
 
+    parser.add_argument('-r', action='store_true', dest='remove_outdated_tables',
+                        default=False,
+                        help='Remove outdated tables on update')
+
+
     results = parser.parse_args()
 
     if not os.path.exists(results.filename):
@@ -125,5 +144,7 @@ if __name__ == '__main__':
         end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
         for symbol in get_table_list(conn):
             update_table(conn, client, symbol, end_ts)
+        if results.remove_outdated_tables:
+            remove_outdated_tables(conn, end_ts)
 
     conn.close()
