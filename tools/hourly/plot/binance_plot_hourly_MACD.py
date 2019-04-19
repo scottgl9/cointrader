@@ -21,6 +21,8 @@ try:
 except ImportError:
     from trader.indicator.EMA import EMA
 
+from trader.indicator.MACD import MACD
+
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
@@ -28,26 +30,15 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     scale = 24
     if start_ts and end_ts:
         scale = 1
-    ema12 = EMA(12, scale=scale)
-    ema26 = EMA(26, scale=scale)
-    ema50 = EMA(50, scale=scale)
-    ema100 = EMA(100, scale=scale)
-    ema200 = EMA(200, scale=scale)
-    ema300 = EMA(300, scale=scale)
-    ema500 = EMA(500, scale=scale)
+    macd = MACD(scale=scale)
+    macd_values = []
+    macd_signal_values = []
     obv_ema12 = EMA(12)
     obv_ema26 = EMA(26)
     obv_ema50 = EMA(50)
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
-    ema12_values = []
-    ema26_values = []
-    ema50_values = []
-    ema100_values = []
-    ema200_values = []
-    ema300_values = []
-    ema500_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -69,19 +60,9 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
 
-        ema12_value = ema12.update(close)
-        ema12_values.append(ema12_value)
-        ema26_values.append(ema26.update(close))
-        ema50_value = ema50.update(close)
-        ema50_values.append(ema50_value)
-        ema100.update(close)
-        ema100_values.append(ema100.result)
-        ema200.update(close)
-        ema200_values.append(ema200.result)
-        ema300.update(close)
-        ema300_values.append(ema300.result)
-        ema500.update(close)
-        ema500_values.append(ema500.result)
+        macd.update(close, ts)
+        macd_values.append(macd.result)
+        macd_signal_values.append(macd.signal.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -91,17 +72,11 @@ def simulate(hkdb, symbol, start_ts, end_ts):
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
-
-    fig1, = plt.plot(ema12_values, label='EMA12')
-    fig2, = plt.plot(ema26_values, label='EMA26')
-    fig3, = plt.plot(ema50_values, label='EMA50')
-    fig4, = plt.plot(ema200_values, label='EMA200')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    plt.legend(handles=[symprice])
     plt.subplot(212)
-    fig21, = plt.plot(obv_ema12_values, label='OBV12')
-    fig22, = plt.plot(obv_ema26_values, label='OBV26')
-    fig23, = plt.plot(obv_ema50_values, label='OBV50')
-    plt.legend(handles=[fig21, fig22, fig23])
+    fig21, = plt.plot(macd_values, label='MACD')
+    fig22, = plt.plot(macd_signal_values, label='MACD_SIGNAL')
+    plt.legend(handles=[fig21, fig22])
     plt.show()
 
 # get first timestamp from kline sqlite db
