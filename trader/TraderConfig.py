@@ -63,4 +63,4 @@ class TraderConfig(object):
         if not self.section:
             return
         self.config.set(self.section, option, value)
-        self.save()
+        #self.save()
