@@ -10,8 +10,9 @@ def datetime_to_float(d):
 
 
 class null_strategy(StrategyBase):
-    def __init__(self, client, base='BTC', currency='USD', signal_names=None, account_handler=None, order_handler=None,
-                 hourly_klines_handler=None, asset_info=None, base_min_size=0.0, tick_size=0.0, logger=None):
+    def __init__(self, client, base='BTC', currency='USD', signal_names=None, hourly_signal_name=None,
+                 account_handler=None, order_handler=None, hourly_klines_handler=None, asset_info=None,
+                 base_min_size=0.0, tick_size=0.0, logger=None):
         super(null_strategy, self).__init__(client,
                                             base,
                                             currency,

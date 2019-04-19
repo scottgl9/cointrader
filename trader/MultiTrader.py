@@ -13,9 +13,9 @@ from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_mar
 from trader.strategy.null_strategy import null_strategy
 
 
-def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, account_handler=None,
-                    order_handler=None, hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0,
-                    asset_info=None, logger=None):
+def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, hourly_signal_name=None,
+                    account_handler=None, order_handler=None, hourly_klines_handler=None,
+                    base_min_size=0.0, tick_size=0.0, asset_info=None, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
     elif sname == 'basic_signal_stop_loss_strategy': strategy = basic_signal_stop_loss_strategy
@@ -28,6 +28,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
                     base,
                     currency,
                     signal_names,
+                    hourly_signal_name,
                     account_handler,
                     order_handler=order_handler,
                     hourly_klines_handler=hourly_klines_handler,
@@ -40,14 +41,16 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
 # handle incoming websocket messages for all symbols, and create new tradepairs
 # for those that do not yet exist
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', signal_names=None, assets_info=None, simulate=False,
-                 accnt=None, logger=None, global_en=True, store_trades=False, hourly_klines_db_file=None):
+    def __init__(self, client, strategy_name='', signal_names=None, hourly_signal_name=None, assets_info=None,
+                 simulate=False, accnt=None, logger=None, global_en=True, store_trades=False,
+                 hourly_klines_db_file=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.simulate = simulate
         self.strategy_name = strategy_name
         self.signal_names = signal_names
+        self.hourly_signal_name = hourly_signal_name
         self.hourly_klines_db_file = hourly_klines_db_file
         if accnt:
             self.accnt = accnt
@@ -84,9 +87,9 @@ class MultiTrader(object):
         if self.global_en:
             self.global_strategy = global_obv_strategy()
 
-        if not self.simulate and self.accnt.hourly_klines_handler:
-            self.logger.info("Updating hourly klines in {}...".format(self.hourly_klines_db_file))
-            self.accnt.hourly_klines_handler.update_all_tables()
+        #if not self.simulate and self.accnt.hourly_klines_handler:
+        #    self.logger.info("Updating hourly klines in {}...".format(self.hourly_klines_db_file))
+        #    self.accnt.hourly_klines_handler.update_all_tables()
 
         sigstr = None
 
@@ -142,6 +145,7 @@ class MultiTrader(object):
                                      base_name,
                                      currency_name,
                                      signal_names=self.signal_names,
+                                     hourly_signal_name=self.hourly_signal_name,
                                      account_handler=self.accnt,
                                      order_handler=self.order_handler,
                                      hourly_klines_handler=self.hourly_klines_handler,

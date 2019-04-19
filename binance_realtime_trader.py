@@ -37,11 +37,13 @@ class BinanceTrader:
 
         strategy = config.get('strategy')
         signal_name = config.get('signals')
+        hourly_signal_name = config.get('hourly_signal')
         hourly_klines_db_file = config.get('hourly_kline_db_file')
 
         self.multitrader = MultiTrader(client,
                                        strategy,
                                        signal_names=[signal_name],
+                                       hourly_signal_name=hourly_signal_name,
                                        simulate=False,
                                        logger=logger,
                                        hourly_klines_db_file=hourly_klines_db_file)
@@ -267,6 +269,10 @@ if __name__ == '__main__':
                         default='',
                         help='name of signal to use')
 
+    parser.add_argument('-r', action='store', dest='hourly_signal_name',
+                        default='',
+                        help='name of hourly signal to use')
+
     parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
                         default='',
                         help='binance hourly klines DB file')
@@ -301,6 +307,9 @@ if __name__ == '__main__':
 
     if results.signal_name:
         config.set('signals', results.signal_name)
+
+    if results.hourly_signal_name:
+        config.set('hourly_signal', results.hourly_signal_name)
 
     if results.hourly_klines_db_file:
         config.set('hourly_kline_db_file', results.hourly_klines_db_file)

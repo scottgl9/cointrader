@@ -107,6 +107,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 
     strategy = config.get('strategy')
     signal_name = config.get('signals')
+    hourly_signal_name = config.get('hourly_signal')
     hourly_klines_db_file = config.get('hourly_kline_db_file')
     btc_balance = config.get('BTC')
     eth_balance = config.get('ETH')
@@ -126,6 +127,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     multitrader = MultiTrader(client,
                               strategy,
                               signal_names=signal_names,
+                              hourly_signal_name=hourly_signal_name,
                               simulate=True,
                               accnt=accnt,
                               logger=logger,
@@ -282,6 +284,10 @@ if __name__ == '__main__':
                         default='',
                         help='name of signal to use')
 
+    parser.add_argument('-r', action='store', dest='hourly_signal_name',
+                        default='',
+                        help='name of hourly signal to use')
+
     parser.add_argument('-c', action='store', dest='cache_dir',
                         default='cache',
                         help='simulation cache directory')
@@ -311,6 +317,9 @@ if __name__ == '__main__':
 
     if results.signal_name:
         config.set('signals', results.signal_name)
+
+    if results.hourly_signal_name:
+        config.set('hourly_signal', results.hourly_signal_name)
 
     strategy = config.get('strategy')
     signal_name = config.get('signals')
