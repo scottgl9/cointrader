@@ -64,11 +64,13 @@ def train_model(X_train, Y_train):
 
     model.compile(optimizer='adam', loss='mean_squared_error')
 
-    model.fit(X_train, Y_train, epochs=100, batch_size=32)
+    model.fit(X_train, Y_train, epochs=50, batch_size=32)
 
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
+    # remove ts column from input data
+    df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
 
     df = scale_dataset(df)
 
@@ -77,9 +79,13 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     train, test = df[0:train_size, :], df[train_size:len(df), :]
     trainX, trainY = create_dataset(train, look_back=1)
     testX, testY = create_dataset(test, look_back=1)
+    print(trainX)
+    print(trainY)
 
     trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
     testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+
+    print(testX)
 
     train_model(trainX, trainY)
 

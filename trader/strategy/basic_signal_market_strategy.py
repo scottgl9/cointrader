@@ -71,9 +71,6 @@ class basic_signal_market_strategy(StrategyBase):
         if self.accnt.sell_only():
             return False
 
-        if self.accnt.btc_only() and self.currency != 'BTC':
-            return False
-
         if float(signal.buy_price) != 0.0 or self.disable_buy:
             return False
 
@@ -81,15 +78,6 @@ class basic_signal_market_strategy(StrategyBase):
         max_market_buy = self.accnt.max_market_buy()
         if max_market_buy != 0 and self.order_handler.open_market_buy_count >= max_market_buy:
             return False
-
-        # check USDT value of base by calculating (base_currency) * (currency_usdt)
-        # verify that USDT value >= $0.02, if less do not buy
-        usdt_symbol = self.accnt.make_ticker_id(self.currency, 'USDT')
-        currency_price = float(self.accnt.get_ticker(usdt_symbol))
-        if currency_price:
-            price_usdt = currency_price * price
-            if price_usdt < 0.02:
-                return False
 
         self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
 
@@ -123,13 +111,6 @@ class basic_signal_market_strategy(StrategyBase):
         if price < float(signal.buy_price):
             return False
 
-        #if not signal.sell_marked and signal.sell_signal():
-        #    signal.sell_marked = True
-
-        #if self.base == 'ETH' or self.base == 'BNB':
-        #    if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
-        #        return False
-        #else:
         if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
             return False
 

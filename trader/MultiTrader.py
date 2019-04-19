@@ -123,6 +123,16 @@ class MultiTrader(object):
         if not asset_info:
             return None
 
+        # if set to trade BTC only, do not process add trade pair if not BTC currency
+        if self.accnt.btc_only() and currency_name != 'BTC':
+            return None
+
+        # check USDT value of base by calculating (base_currency) * (currency_usdt)
+        # verify that USDT value >= $0.02, if less do not buy
+        usdt_value = self.accnt.get_usdt_value_symbol(symbol)
+        if usdt_value < 0.02:
+            return None
+
         # *FIXME* use AssetInfo class instead
         base_min_size = float(asset_info['stepSize'])
         tick_size = float(asset_info['tickSize'])
@@ -130,20 +140,6 @@ class MultiTrader(object):
 
         if min_notional > base_min_size:
             base_min_size = min_notional
-
-        # optimization: if balance of ETH or BNB is less than
-        # minimum trade amount, do not process trade pairs with currency
-        # ETH or BNB respectively
-        #if self.simulate and currency_name == "ETH" and "ETHBTC" in self.assets_info:
-        #    minqty = float(self.assets_info["ETHBTC"]['minQty'])
-        #    balance = self.accnt.get_asset_balance("ETH")["balance"]
-        #    if balance < minqty:
-        #        return
-        #if self.simulate and currency_name == "BNB" and "BNBBTC" in self.assets_info:
-        #    minqty = float(self.assets_info["BNBBTC"]['minQty'])
-        #    balance = self.accnt.get_asset_balance("BNB")["balance"]
-        #    if balance < minqty:
-        #        return
 
         trade_pair = select_strategy(self.strategy_name,
                                      self.client,
