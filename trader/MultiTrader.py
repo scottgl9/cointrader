@@ -108,7 +108,7 @@ class MultiTrader(object):
 
 
     # create new tradepair handler and select strategy
-    def add_trade_pair(self, symbol):
+    def add_trade_pair(self, symbol, price=0):
         base_name, currency_name = self.accnt.split_symbol(symbol)
 
         if not base_name or not currency_name: return None
@@ -128,9 +128,10 @@ class MultiTrader(object):
 
         # check USDT value of base by calculating (base_currency) * (currency_usdt)
         # verify that USDT value >= $0.02, if less do not buy
-        usdt_value = self.accnt.get_usdt_value_symbol(symbol)
-        if usdt_value < 0.02:
-            return None
+        usdt_value = self.accnt.get_usdt_value_symbol(symbol, float(price))
+        if usdt_value:
+            if usdt_value < 0.02:
+                return None
 
         # *FIXME* use AssetInfo class instead
         base_min_size = float(asset_info['stepSize'])
@@ -173,17 +174,17 @@ class MultiTrader(object):
     def get_stored_trades(self):
         return self.order_handler.get_stored_trades()
 
-    def get_trader(self, symbol):
+    def get_trader(self, symbol, price):
         try:
             result = self.trade_pairs[symbol]
         except KeyError:
-            result = self.add_trade_pair(symbol)
+            result = self.add_trade_pair(symbol, price)
         return result
 
     def process_message(self, kline, cache_db=None):
         self.current_ts = kline.ts
 
-        symbol_trader = self.get_trader(kline.symbol)
+        symbol_trader = self.get_trader(kline.symbol, kline.close)
         if not symbol_trader:
             return None
 

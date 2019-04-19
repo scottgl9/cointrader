@@ -698,13 +698,16 @@ class AccountBinance(AccountBase):
         return self.client.get_account_status()
 
     # get USDT value of base by calculating (base_currency) * (currency_usdt)
-    def get_usdt_value_symbol(self, symbol):
+    def get_usdt_value_symbol(self, symbol, price=0):
         currency = self.split_ticker_id(symbol)[1]
         usdt_symbol = self.make_ticker_id(currency, 'USDT')
         currency_price = float(self.get_ticker(usdt_symbol))
         if not currency_price:
             return 0
-        price = float(self.get_ticker(symbol))
+
+        if not price:
+            price = float(self.get_ticker(symbol))
+
         if not price:
             return 0
 
