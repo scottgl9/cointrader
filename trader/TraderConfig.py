@@ -12,12 +12,12 @@ class TraderConfig(object):
         section = 'binance.live'
         self.config.add_section(section)
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
-        self.config.set(section, 'signals', 'Hybrid_Crossover_Test')
+        self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
-        self.config.set(section, 'simulate', 'False')
         self.config.set(section, 'balance_update', 'True')
-        # live trading options
-        self.config.set(section, 'btc_only', 'False')
+        self.config.set(section, 'use_hourly_klines', 'True')
+        # live trading specific options
+        self.config.set(section, 'btc_only', 'True')
         self.config.set(section, 'sell_only', 'False')
         self.config.set(section, 'trades_disabled', 'False')
         self.config.set(section, 'max_market_buy', '0')
@@ -26,14 +26,15 @@ class TraderConfig(object):
         section = 'binance.simulate'
         self.config.add_section(section)
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
-        self.config.set(section, 'signals', 'Hybrid_Crossover_Test')
+        self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
-        self.config.set(section, 'simulate', 'True')
         self.config.set(section, 'balance_update', 'False')
+        self.config.set(section, 'use_hourly_klines', 'True')
+        # simulate trading specific options
         self.config.set(section, 'BTC', '0.2')
         self.config.set(section, 'ETH', '0.0')
         self.config.set(section, 'BNB', '0.0')
-        self.config.set(section, 'btc_only', 'False')
+        self.config.set(section, 'btc_only', 'True')
         self.config.set(section, 'init_max_buy_count', '0')
 
     def load(self):
@@ -43,6 +44,11 @@ class TraderConfig(object):
 
         self.set_defaults()
         self.save()
+
+    def reload(self):
+        if not os.path.exists(self.filename):
+            return
+        self.config.read(self.filename)
 
     def save(self):
         with open(self.filename, 'w') as f:

@@ -106,10 +106,6 @@ class MultiTrader(object):
 
     # create new tradepair handler and select strategy
     def add_trade_pair(self, symbol):
-        base_min_size = 0.0
-        tick_size = 0.0
-        min_notional = 0.0
-
         base_name, currency_name = self.accnt.split_symbol(symbol)
 
         if not base_name or not currency_name: return None
@@ -195,14 +191,6 @@ class MultiTrader(object):
         if tpprofit != 0:
             symbol_trader.update_total_percent_profit(tpprofit)
 
-        # use market manager
-        #if symbol_trader.mm_enabled():
-        #    self.market_manager.update(kline.symbol, kline)
-        #    if self.market_manager.ready():
-        #        for k in self.market_manager.get_klines():
-        #            self.trade_pairs[k.symbol].run_update(kline, mmkline=k)
-        #        self.market_manager.reset()
-        #else:
         symbol_trader.run_update(kline, cache_db=cache_db)
 
         if self.global_strategy:
