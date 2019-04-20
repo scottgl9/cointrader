@@ -31,18 +31,23 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 # convert an array of values into a dataset matrix
-def create_dataset(dataset, look_back=1):
+def create_dataset(dataset, column='close'):
     dataX, dataY = [], []
-    for i in range(len(dataset)-look_back-1):
-        a = dataset[i:(i+look_back), 0]
-        dataX.append(a)
-        dataY.append(dataset[i + look_back, 0])
-    return np.array(dataX), np.array(dataY)
+    # get column names
+    names = list(dataset)
+    # get index of column before scaling
+    column_index = names.index(column)
 
-
-def scale_dataset(training_set):
+    # scale dataset
     sc = MinMaxScaler(feature_range = (0, 1))
-    return sc.fit_transform(training_set)
+    sdataset = sc.fit_transform(dataset)
+
+    for i in range(len(sdataset)-1):
+        #dataY.append(dataset[column][i+1])
+        #dataX.append(dataset.iloc[i].values)
+        dataX.append(sdataset[i])
+        dataY.append(sdataset[i+1][column_index])
+    return np.array(dataX), np.array(dataY)
 
 
 def train_model(X_train, Y_train):
@@ -71,21 +76,20 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
     # remove ts column from input data
     df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
-
-    df = scale_dataset(df)
+    #df = scale_dataset(df)
 
     train_size = int(len(df) * 0.80)
     test_size = len(df) - train_size
-    train, test = df[0:train_size, :], df[train_size:len(df), :]
-    trainX, trainY = create_dataset(train, look_back=1)
-    testX, testY = create_dataset(test, look_back=1)
+    train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
+    trainX, trainY = create_dataset(train)
+    testX, testY = create_dataset(test)
+
+    #trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
+    #testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+
     print(trainX)
-    print(trainY)
-
-    trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
-    testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
-
-    print(testX)
+    trainX = np.reshape(trainX, (-1, 4, 1))
+    print(trainX)
 
     train_model(trainX, trainY)
 
