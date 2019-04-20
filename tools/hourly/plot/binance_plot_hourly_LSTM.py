@@ -28,6 +28,7 @@ from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 from sklearn.cross_validation import  train_test_split
 from sklearn.preprocessing import MinMaxScaler
+import talib
 
 
 # convert an array of values into a dataset matrix
@@ -50,7 +51,8 @@ def create_dataset(dataset, column='close'):
     return np.array(dataX), np.array(dataY)
 
 
-def train_model(X_train, Y_train):
+def train_model(symbol, X_train, Y_train):
+    filename = "models/{}.h5".format(symbol)
     model = Sequential()
 
     model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
@@ -67,17 +69,24 @@ def train_model(X_train, Y_train):
 
     model.add(Dense(units=1))
 
+    #if os.path.exists(filename):
+
     model.compile(optimizer='adam', loss='mean_squared_error')
 
     model.fit(X_train, Y_train, epochs=50, batch_size=32)
+    model.save(filename)
 
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
-    # remove ts column from input data
-    df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
-    #df = scale_dataset(df)
+    # remove ts columns from input data
+    #df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
 
+    df['H-L'] = df['high'] - df['low']
+    df['C-O'] = df['close'] - df['open']
+
+    df = pd.DataFrame(df, columns=['close', 'H-L', 'C-O'])
+    print(df)
     train_size = int(len(df) * 0.80)
     test_size = len(df) - train_size
     train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
@@ -87,11 +96,10 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     #trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
     #testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
-    print(trainX)
-    trainX = np.reshape(trainX, (-1, 4, 1))
-    print(trainX)
+    # reshape for training
+    trainX = np.reshape(trainX, (-1, 3, 1))
 
-    train_model(trainX, trainY)
+    train_model(symbol, trainX, trainY)
 
     #plt.subplot(211)
     #symprice, = plt.plot(close_prices, label=symbol)
