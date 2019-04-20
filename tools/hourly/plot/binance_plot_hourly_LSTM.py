@@ -25,34 +25,47 @@ import numpy as np
 import pandas as pd
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from sklearn.cross_validation import  train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import talib
 
 
 # convert an array of values into a dataset matrix
-def create_dataset(dataset, column='close'):
+def create_dataset(dataset, x_scaler, y_scaler, column='close'):
     dataX, dataY = [], []
+
+    #sdataset = scaler.fit_transform(dataset)
+
+    #for i in range(len(dataset)-1):
+    #    dataY.append(dataset[column][i+1])
+    #    dataX.append(dataset.iloc[i].values)
+    #    #dataX.append(sdataset[i])
+    #    #dataY.append(sdataset[i+1][column_index])
+
+    dataX = dataset.shift(1).dropna().values
+    dataY = dataset[column].shift(-1).dropna().values.reshape(-1, 1)
+
+    scaleX = x_scaler.fit_transform(dataX)
+    scaleY = y_scaler.fit_transform(dataY)
+    return np.array(scaleX), np.array(scaleY)
+
+
+# get index of column name
+def get_index_column(dataset, column='close'):
     # get column names
     names = list(dataset)
     # get index of column before scaling
     column_index = names.index(column)
-
-    # scale dataset
-    sc = MinMaxScaler(feature_range = (0, 1))
-    sdataset = sc.fit_transform(dataset)
-
-    for i in range(len(sdataset)-1):
-        #dataY.append(dataset[column][i+1])
-        #dataX.append(dataset.iloc[i].values)
-        dataX.append(sdataset[i])
-        dataY.append(sdataset[i+1][column_index])
-    return np.array(dataX), np.array(dataY)
+    return column_index
 
 
 def train_model(symbol, X_train, Y_train):
     filename = "models/{}.h5".format(symbol)
+    if os.path.exists(filename):
+        model = load_model(filename)
+        return model
+
     model = Sequential()
 
     model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
@@ -69,12 +82,11 @@ def train_model(symbol, X_train, Y_train):
 
     model.add(Dense(units=1))
 
-    #if os.path.exists(filename):
-
     model.compile(optimizer='adam', loss='mean_squared_error')
 
     model.fit(X_train, Y_train, epochs=50, batch_size=32)
     model.save(filename)
+    return model
 
 
 def simulate(hkdb, symbol, start_ts, end_ts):
@@ -86,20 +98,30 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     df['C-O'] = df['close'] - df['open']
 
     df = pd.DataFrame(df, columns=['close', 'H-L', 'C-O'])
-    print(df)
+    index_column = get_index_column(df, column='close')
+
+    # scale dataset
+    x_scaler = MinMaxScaler(feature_range = (0, 1))
+    y_scaler = MinMaxScaler(feature_range = (0, 1))
+
     train_size = int(len(df) * 0.80)
     test_size = len(df) - train_size
     train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
-    trainX, trainY = create_dataset(train)
-    testX, testY = create_dataset(test)
 
-    #trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
-    #testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+    trainX, trainY = create_dataset(train, x_scaler, y_scaler, column='close')
+    testX, testY = create_dataset(test, x_scaler, y_scaler, column='close')
 
     # reshape for training
     trainX = np.reshape(trainX, (-1, 3, 1))
 
-    train_model(symbol, trainX, trainY)
+    model = train_model(symbol, trainX, trainY)
+
+    testX = np.reshape(testX, (-1, 3, 1))
+    predictY = model.predict(testX)
+    predictY = y_scaler.inverse_transform(predictY)
+    print(predictY)
+    scores = model.evaluate(testX, testY, verbose=0)
+    print(scores)
 
     #plt.subplot(211)
     #symprice, = plt.plot(close_prices, label=symbol)
