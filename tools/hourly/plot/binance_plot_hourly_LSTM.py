@@ -119,23 +119,22 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     testX = np.reshape(testX, (-1, 3, 1))
     predictY = model.predict(testX)
     predictY = y_scaler.inverse_transform(predictY)
-    print(predictY)
     scores = model.evaluate(testX, testY, verbose=0)
     print(scores)
 
-    #plt.subplot(211)
-    #symprice, = plt.plot(close_prices, label=symbol)
-    #fig1, = plt.plot(ema12_values, label='EMA12')
-    #fig2, = plt.plot(ema26_values, label='EMA26')
-    #fig3, = plt.plot(ema50_values, label='EMA50')
-    #fig4, = plt.plot(ema200_values, label='EMA200')
-    #plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    #plt.subplot(212)
-    #fig21, = plt.plot(obv_ema12_values, label='OBV12')
-    #fig22, = plt.plot(obv_ema26_values, label='OBV26')
-    #fig23, = plt.plot(obv_ema50_values, label='OBV50')
-    #plt.legend(handles=[fig21, fig22, fig23])
-    #plt.show()
+    plot_predict_y = predictY.reshape(1, -1)[0]
+    plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
+
+    print(plot_predict_y)
+    print(len(plot_predict_y))
+    print(plot_test_y)
+    print(len(plot_test_y))
+
+    plt.subplot(211)
+    fig1, = plt.plot(plot_test_y, label='TESTY')
+    fig2, = plt.plot(plot_predict_y, label='PREDICTY')
+    plt.legend(handles=[fig1, fig2])
+    plt.show()
 
 # get first timestamp from kline sqlite db
 def get_first_timestamp(filename, symbol):
