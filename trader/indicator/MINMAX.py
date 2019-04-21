@@ -1,8 +1,10 @@
+from .IndicatorBase import IndicatorBase
 from trader.lib.CircularArray import CircularArray
 
 
-class MINMAX(object):
+class MINMAX(IndicatorBase):
     def __init__(self, window=50, count=0):
+        IndicatorBase.__init__(self, use_close=True)
         self.values = []
         self.maximums = CircularArray(count)
         self.minimums = CircularArray(count)

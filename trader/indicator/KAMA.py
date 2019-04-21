@@ -1,3 +1,4 @@
+from .IndicatorBase import IndicatorBase
 from trader.lib.ValueLag import ValueLag
 # ER = Change/Volatility
 # Change = ABS(Close - Close (10 periods ago))
@@ -6,8 +7,9 @@ from trader.lib.ValueLag import ValueLag
 
 
 # Kaufman's Adaptive Moving Average (KAMA)
-class KAMA(object):
+class KAMA(IndicatorBase):
     def __init__(self, er_window=10, fast_ema_window=2, slow_ema_window=12, scale=1.0, lagging=False, lag_window=3):
+        IndicatorBase.__init__(self, use_close=True)
         self.last_result = 0.0
         self.age = 0
         self.sum = 0.0

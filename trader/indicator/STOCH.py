@@ -1,9 +1,11 @@
 # Stochastic Oscillator
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 
 
-class STOCH(object):
+class STOCH(IndicatorBase):
     def __init__(self, window=14):
+        IndicatorBase.__init__(self, use_close=True, use_low=True, use_high=True)
         self.values = []
         self.window = window
         self.age = 0

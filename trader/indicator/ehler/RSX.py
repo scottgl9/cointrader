@@ -1,7 +1,11 @@
 # Corrected RSX
 # https://www.prorealcode.com/prorealtime-indicators/corrected-rsx/
-class RSX(object):
+from trader.indicator.IndicatorBase import IndicatorBase
+
+
+class RSX(IndicatorBase):
     def __init__(self, period=14):
+        IndicatorBase.__init__(self, use_close=True)
         self.period = period
         self.f0 = 0
         self.f8 = 0

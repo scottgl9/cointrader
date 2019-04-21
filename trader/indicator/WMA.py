@@ -1,8 +1,10 @@
 # Weighted Moving Average
+from .IndicatorBase import IndicatorBase
 
 
-class WMA(object):
+class WMA(IndicatorBase):
     def __init__(self, window, scale=1.0):
+        IndicatorBase.__init__(self, use_close=True)
         self.values = []
         self.window = window
         self.scale = scale

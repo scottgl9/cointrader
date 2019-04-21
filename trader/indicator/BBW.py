@@ -1,8 +1,10 @@
 # Bollinger BandWidth
+from .IndicatorBase import IndicatorBase
 from trader.indicator.BB import BollingerBands
 
-class BollingerBandwidth(object):
+class BollingerBandwidth(IndicatorBase):
     def __init__(self, weight=20, dev_count=2.0):
+        IndicatorBase.__init__(self, use_close=True)
         self.bb = BollingerBands(weight=weight, dev_count=dev_count)
         self.result = 0
 

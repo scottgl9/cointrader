@@ -4,11 +4,13 @@
 # It accomplishes this adaptation by modifying the alpha term of an EMA byt he amplitude of an oscillator scaled
 # in standard deviations from the mean. The DSMA's responsiveness can be changed by using different values
 # for the input parameter period.
+from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.CircularArray import CircularArray
 
-class DSMA(object):
+class DSMA(IndicatorBase):
     def __init__(self, period=40):
+        IndicatorBase.__init__(self, use_close=True)
         self.period = period
         self.closes = CircularArray(window=3, reverse=True, dne=0)
         self.zeros = CircularArray(window=3, reverse=True, dne=0)

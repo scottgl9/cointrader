@@ -1,8 +1,10 @@
 # Fibonacci pivot points (support / resistance lines)
+from .IndicatorBase import IndicatorBase
 
 
-class Fibonacci(object):
+class Fibonacci(IndicatorBase):
     def __init__(self):
+        IndicatorBase.__init__(self, use_close=True, use_low=True, use_high=True)
         self.high = 0
         self.low = 0
         self.r1 = 0

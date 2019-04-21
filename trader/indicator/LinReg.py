@@ -1,10 +1,12 @@
 # Linear Regression (for moving average)
+from .IndicatorBase import IndicatorBase
 import numpy as np
 from trader.indicator.EMA import EMA
 
 
-class LinReg(object):
+class LinReg(IndicatorBase):
     def __init__(self, window=50):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.result = 0.0
         self.slope = 0.0

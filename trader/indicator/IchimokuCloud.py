@@ -1,7 +1,10 @@
+from .IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
 
-class IchimokuCloud(object):
+
+class IchimokuCloud(IndicatorBase):
     def __init__(self, win_short=9*24*2, win_med=26*24*2, win_long=52*24*2):
+        IndicatorBase.__init__(self, use_close=True, use_low=True, use_high=True)
         self.win_short = win_short
         self.win_med = win_med
         self.win_long = win_long

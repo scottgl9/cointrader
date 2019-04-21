@@ -1,6 +1,10 @@
 # simple moving slope indicator
-class SLOPE(object):
+from .IndicatorBase import IndicatorBase
+
+
+class SLOPE(IndicatorBase):
     def __init__(self, window=50, use_timestamps=False):
+        IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.window = window
         self.use_timestamps = use_timestamps
         self.values = []

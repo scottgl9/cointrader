@@ -1,8 +1,10 @@
 # Arnaud Legoux Moving Average (ALMA)
+from .IndicatorBase import IndicatorBase
 import numpy as np
 
-class ALMA(object):
+class ALMA(IndicatorBase):
     def __init__(self, window=9, sigma=6, offset=0.85):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.sigma = sigma
         self.offset = offset
@@ -10,7 +12,7 @@ class ALMA(object):
         self.age = 0
         self.result = 0
 
-    def update(self, price, ts=0):
+    def update(self, price):
         if len(self.prices) < self.window:
             self.prices.append(float(price))
             return self.result

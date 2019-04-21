@@ -1,9 +1,12 @@
 # Elder's Force Index (EFI)
+from .IndicatorBase import IndicatorBase
 from trader.lib.ValueLag import ValueLag
 from trader.indicator.EMA import EMA
 
-class EFI(object):
+
+class EFI(IndicatorBase):
     def __init__(self, window=13, scale=1):
+        IndicatorBase.__init__(self, use_close=True, use_volume=True)
         self.window = window
         self.scale = scale
         self.lag = ValueLag(window=self.window)

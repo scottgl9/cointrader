@@ -1,10 +1,12 @@
 # Relative Strength Index (RS)
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.indicator.EMA import EMA
 
 
-class RSI:
+class RSI(IndicatorBase):
     def __init__(self, window=14, smoother=None):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
 
         self.avgU = SMA(self.window)

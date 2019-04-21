@@ -1,8 +1,10 @@
 # Compute the rate of change (ROC) from current price and price N values ago
+from .IndicatorBase import IndicatorBase
 
 
-class ROC(object):
+class ROC(IndicatorBase):
     def __init__(self, window=10):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.result = 0.0
         self.age = 0

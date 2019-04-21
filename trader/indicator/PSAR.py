@@ -1,6 +1,9 @@
+from .IndicatorBase import IndicatorBase
 
-class PSAR(object):
+
+class PSAR(IndicatorBase):
     def __init__(self, iaf=0.02, maxaf=0.2, close_only=False):
+        IndicatorBase.__init__(self, use_close=True, use_low=True, use_high=True)
         self.iaf = iaf
         self.maxaf = maxaf
         self.af = 0

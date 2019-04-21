@@ -1,7 +1,7 @@
 # a second order low pass filter
 from trader.lib.CircularArray import CircularArray
 
-class LowPass(object):
+class LowPass:
     def __init__(self, period):
         self.period = period
         self.Price = CircularArray(window=3, dne=0, reverse=True)

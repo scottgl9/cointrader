@@ -1,8 +1,10 @@
+from .IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
 
 
-class DEMA:
+class DEMA(IndicatorBase):
     def __init__(self, weight=12.0):
+        IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.weight = weight
         self.inner = EMA(self.weight)

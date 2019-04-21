@@ -1,9 +1,11 @@
 # Indicator I designed called Delta Time/Timestamp Weighted Moving Average
 from trader.lib.CircularArray import CircularArray
+from .IndicatorBase import IndicatorBase
 
 
-class DTWMA(object):
+class DTWMA(IndicatorBase):
     def __init__(self, window=10, smoother=None):
+        IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.window = window
         self.timestamps = CircularArray(window=window)
         self.ts_deltas = CircularArray(window=window)

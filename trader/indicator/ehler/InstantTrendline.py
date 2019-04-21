@@ -1,11 +1,13 @@
 # John Ehler's Instantaneous Trendline
 # https://c.mql5.com/forextsd/forum/59/023inst.pdf
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-instantaneous-trendline/
+from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.CircularArray import CircularArray
 
-class InstantTrendline(object):
+class InstantTrendline(IndicatorBase):
     def __init__(self, window=40):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.prices = CircularArray(window=8, reverse=True, dne=0)
         self.value3 = CircularArray(window=5, reverse=True, dne=0)

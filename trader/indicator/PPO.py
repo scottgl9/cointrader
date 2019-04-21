@@ -1,8 +1,10 @@
+from .IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
 
 
-class PPO:
+class PPO(IndicatorBase):
     def __init__(self, short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0):
+        IndicatorBase.__init__(self, use_close=True)
         self.last_result = 0.0
         self.result = 0.0
         self.shortEMA = 0.0

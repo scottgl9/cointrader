@@ -1,8 +1,10 @@
+from .IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
 from trader.lib.ValueLag import ValueLag
 
-class ZLEMA(object):
+class ZLEMA(IndicatorBase):
     def __init__(self, window=12, scale=1.0, lag_window=3):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.ema = EMA(weight=window, scale=scale)
         self.values = []
@@ -35,8 +37,9 @@ class ZLEMA(object):
         return self.result
 
 
-class DZLEMA(object):
+class DZLEMA(IndicatorBase):
     def __init__(self, window=12, scale=1.0, lagging=False, lag_window=3):
+        IndicatorBase.__init__(self, use_close=True)
         self.zlema1 = ZLEMA(window=window, scale=scale)
         self.zlema2 = ZLEMA(window=window, scale=scale)
         self.result = 0

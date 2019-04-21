@@ -1,7 +1,10 @@
 # Simple Moving Average (SMA)
+from .IndicatorBase import IndicatorBase
 
-class SMA:
+
+class SMA(IndicatorBase):
     def __init__(self, window):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.prices = []
         self.result = 0.0

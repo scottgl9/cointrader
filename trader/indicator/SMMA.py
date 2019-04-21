@@ -1,7 +1,10 @@
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 
-class SMMA:
+
+class SMMA(IndicatorBase):
     def __init__(self, weight=14, scale=1):
+        IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.weight = weight
         self.scale = scale

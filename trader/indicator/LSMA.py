@@ -1,9 +1,11 @@
 # linear least squares moving average
 # https://stackoverflow.com/questions/5083465/fast-efficient-least-squares-fit-algorithm-in-c
-import numpy as np
+from .IndicatorBase import IndicatorBase
 
-class LSMA(object):
+
+class LSMA(IndicatorBase):
     def __init__(self, window, calc_rsquare=False):
+        IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.window = window
         self.calc_rsquare = calc_rsquare
         self.timestamps = []

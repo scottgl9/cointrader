@@ -1,10 +1,12 @@
 # Forward Reverse EMA (FREMA)
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-forward-reverse-ema/
+from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.CircularArray import CircularArray
 
-class FREMA(object):
+class FREMA(IndicatorBase):
     def __init__(self):
+        IndicatorBase.__init__(self, use_close=True)
         self.AA = 0.1
         self.CC = 1 - self.AA
         self.result = 0

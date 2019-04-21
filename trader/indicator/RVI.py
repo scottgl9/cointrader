@@ -1,10 +1,12 @@
 # Relative Volatility Index (RVI)
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.indicator.STDDEV import STDDEV
 
 
-class RVI:
+class RVI(IndicatorBase):
     def __init__(self, window=20):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.stddev = STDDEV(window=window)
         self.avgU = SMA(self.window)

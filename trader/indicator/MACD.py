@@ -1,11 +1,13 @@
+from .IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
 
 #MACD Line: (12-day EMA - 26-day EMA)
 #Signal Line: 9-day EMA of MACD Line
 
 
-class MACD:
+class MACD(IndicatorBase):
     def __init__(self, short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0, plot_mode=False, smoother=None):
+        IndicatorBase.__init__(self, use_close=True)
         self.last_result = 0.0
         self.result = 0.0
         self.result_signal = 0.0

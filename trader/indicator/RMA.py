@@ -1,7 +1,10 @@
 # my idea of ROC weighted moving average
+from .IndicatorBase import IndicatorBase
 
-class RMA(object):
+
+class RMA(IndicatorBase):
     def __init__(self, window=12):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.last_value = 0
         self.result = 0

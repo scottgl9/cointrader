@@ -1,9 +1,11 @@
 # R-Squared Index
+from .IndicatorBase import IndicatorBase
 import numpy as np
 
 
-class RSQUARE(object):
+class RSQUARE(IndicatorBase):
     def __init__(self, window=100):
+        IndicatorBase.__init__(self, use_close=True)
         self.window = window
         self.values = []
         self.age = 0

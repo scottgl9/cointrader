@@ -1,7 +1,9 @@
 # Standard Deviation (STDDEV) indicator
+from .IndicatorBase import IndicatorBase
 import numpy as np
 
-class STDDEV:
+
+class STDDEV(IndicatorBase):
     def __init__(self, window=20):
         self.result = 0.0
         self.last_result = 0.0

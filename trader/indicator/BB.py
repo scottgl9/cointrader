@@ -1,12 +1,13 @@
 # Bollinger Bands (BB)
-
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.indicator.STDDEV import STDDEV
 from trader.lib.ValueLag import ValueLag
 
 
-class BollingerBands:
+class BollingerBands(IndicatorBase):
     def __init__(self, weight=20, dev_count=2.0, smoother=None):
+        IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.last_result = 0.0
         self.weight = float(weight)

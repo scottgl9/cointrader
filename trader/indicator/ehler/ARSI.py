@@ -1,11 +1,14 @@
 # Adaptive Relative Strength Index (RSI)
 # Rocket Science for Traders: Digital Signal Processing Applications
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-adaptive-rsi/
+from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.CircularArray import CircularArray
 
-class ARSI(object):
+
+class ARSI(IndicatorBase):
     def __init__(self):
+        IndicatorBase.__init__(self, use_close=True)
         self.CycPart = .5
         self.result = 0
         self.Close = CircularArray(26)

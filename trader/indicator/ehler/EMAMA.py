@@ -1,10 +1,12 @@
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-mama-the-mother-of-adaptive-moving-average/
 # Ehler's MESA Adaptive Moving Average
+from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.CircularArray import CircularArray
 
-class EMAMA(object):
+class EMAMA(IndicatorBase):
     def __init__(self, fast_limit=0.5, slow_limit=0.05):
+        IndicatorBase.__init__(self, use_close=True)
         self.FastLimit = fast_limit
         self.SlowLimit = slow_limit
         self.Price = CircularArray(window=5, dne=0, reverse=True)

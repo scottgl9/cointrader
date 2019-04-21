@@ -1,10 +1,12 @@
 # Auto-Scaling Exponential Moving Average (EMA) concept by Scott Glover
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.lib.ValueLag import ValueLag
 
 
-class AEMA(object):
+class AEMA(IndicatorBase):
     def __init__(self, win=1, scale_interval_secs=60, lag_window=3):
+        IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.result = 0.0
         self.last_result = 0.0
         self.win = float(win)

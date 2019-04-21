@@ -1,13 +1,13 @@
 # Exponential Moving Average (EMA)
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SLOPE import SLOPE
 from trader.indicator.SMA import SMA
 from trader.lib.ValueLag import ValueLag
 
-# TODO: Idea to add auto scaling based on number of price updates per time unit
 
-
-class EMA(object):
+class EMA(IndicatorBase):
     def __init__(self, weight=26, scale=1.0, lag_window=3, slope_window=0, custom=False):
+        IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.last_result = 0.0
         self.weight = float(weight)

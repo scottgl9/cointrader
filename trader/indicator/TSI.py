@@ -1,8 +1,10 @@
+from .IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
 
 
-class TSI:
+class TSI(IndicatorBase):
     def __init__(self, weight1=25.0, weight2=13.0):
+        IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.weight1 = weight1
         self.weight2 = weight2

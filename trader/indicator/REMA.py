@@ -1,10 +1,12 @@
 # Regularized Exponential Moving Average (REMA)
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.lib.ValueLag import ValueLag
 
 
-class REMA:
+class REMA(IndicatorBase):
     def __init__(self, weight=1, lamda=20, scale=1.0, lagging=False, lag_window=3):
+        IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.prev_result = 0.0
         self.last_result = 0.0

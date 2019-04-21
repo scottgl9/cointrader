@@ -1,11 +1,13 @@
 # Know Sure Thing (KST) Oscillator indicator
+from .IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.indicator.EMA import EMA
 from trader.indicator.ROC import ROC
 
 
-class KST(object):
+class KST(IndicatorBase):
     def __init__(self, use_ema=False, scale=1.0):
+        IndicatorBase.__init__(self, use_close=True)
         self.roc1 = ROC(window=10)
         self.roc2 = ROC(window=15)
         self.roc3 = ROC(window=20)

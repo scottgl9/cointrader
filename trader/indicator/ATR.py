@@ -1,7 +1,9 @@
 # Average True Range (ATR)
+from .IndicatorBase import IndicatorBase
 
-class ATR:
+class ATR(IndicatorBase):
     def __init__(self, window=14):
+        IndicatorBase.__init__(self, use_close=True, use_low=True, use_high=True)
         self.result = 0.0
         self.window = window
         self.last_close = 0.0

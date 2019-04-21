@@ -1,10 +1,12 @@
 # DecisionPoint Price Momentum Oscillator (PMO)
+from .IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
 from trader.lib.ValueLag import ValueLag
 
 
-class PMO:
+class PMO(IndicatorBase):
     def __init__(self, p1=35, p2=20, p3=10, scale=1.0):
+        IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.last_result = 0.0
         self.last_price = 0.0

@@ -1,6 +1,9 @@
+from .IndicatorBase import IndicatorBase
 
-class OBV(object):
+
+class OBV(IndicatorBase):
     def __init__(self):
+        IndicatorBase.__init__(self, use_close=True, use_volume=True)
         self.result = 0.0
         self.last_result = 0.0
         self.last_close = 0.0
