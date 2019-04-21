@@ -84,6 +84,10 @@ def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
     return model
 
 
+def compute_real_predict(model, last_close, count):
+    pass
+
+
 def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
     # remove ts columns from input data
@@ -95,7 +99,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     df['MACD'] = macd
     df['MACDSIG'] = macdsig
 
-    df = pd.DataFrame(df, columns=['close', 'RSI', 'EMA12', 'EMA50'])
+    df = pd.DataFrame(df, columns=['close', 'RSI', 'MACD', 'MACDSIG'])
     df = df.dropna()
 
     # scale dataset
@@ -123,10 +127,13 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     plot_predict_y = predictY.reshape(1, -1)[0]
     plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
 
-    print(plot_predict_y)
+    #print(plot_predict_y)
     print(len(plot_predict_y))
-    print(plot_test_y)
+    #print(plot_test_y)
     print(len(plot_test_y))
+
+    print(y_scaler.inverse_transform(trainY))
+    #compute_real_predict(model, )
 
     plt.subplot(211)
     fig1, = plt.plot(plot_test_y, label='TESTY')
