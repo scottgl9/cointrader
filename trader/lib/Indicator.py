@@ -6,7 +6,7 @@ from trader.lib.Kline import Kline
 class Indicator(object):
     def __init__(self, iclass,  *args, **kwargs):
         self.iclass = iclass
-        self.indicator = self.iclass(**kwargs)
+        self.indicator = self.iclass(*args, **kwargs)
         # keys used for loading data
         self.close_key = 'close'
         self.open_key = 'open'
@@ -166,7 +166,7 @@ class Indicator(object):
 
     # auto-detect data type, and select appropriate load function
     def load(self, data):
-        if not data or len(data):
+        if not data or not len(data):
             return False
         if isinstance(data[0], dict):
             self.load_dict_list(data)
@@ -183,6 +183,7 @@ class Indicator(object):
     def process(self):
         self._results = []
         self.detect_indicator_type()
+
         for i in range(0, self.count):
             close = self.close_values[i]
             if self.close_only:
