@@ -34,6 +34,78 @@ from trader.indicator.MACD import MACD
 from trader.indicator.LSMA import LSMA
 from trader.lib.Indicator import Indicator
 
+class HourlyLSTM(object):
+    def __init__(self, hkdb, symbol):
+        self.hkdb = hkdb
+        self.symbol = symbol
+        self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
+        self.x_scaler = MinMaxScaler(feature_range=(0, 1))
+        self.y_scaler = MinMaxScaler(feature_range=(0, 1))
+        self.model = None
+        self.df = None
+
+    def load(self):
+        df = self.hkdb.get_pandas_klines(symbol)
+        # process LSMA close values
+        lsma_close = Indicator(LSMA, 12)
+        lsma_close.load_dataframe(df)
+        df['LSMA_CLOSE'] = np.array(lsma_close.results())
+
+        # process OBV values
+        obv = Indicator(OBV)
+        obv.volume_key = 'quote_volume'
+        obv.load_dataframe(df)
+        df['OBV'] = np.array(obv.results())
+
+        df['RSI'] = talib.RSI(df['LSMA_CLOSE'].values, timeperiod=14)
+
+        df = pd.DataFrame(df, columns=self.columns)
+        self.df = df.dropna()
+        train = self.df
+        trainX, trainY = self.create_dataset(train, column='LSMA_CLOSE')
+
+        # reshape for training
+        trainX = np.reshape(trainX, (-1, len(self.columns), 1))
+        self.model = train_model(symbol, trainX, trainY, epoch=15)
+
+    def create_dataset(self, dataset, column='close'):
+        dataX = dataset.shift(1).dropna().values
+        dataY = dataset[column].shift(-1).dropna().values
+
+        dataY = dataY.reshape(-1, 1)
+
+        scaleX = self.x_scaler.fit_transform(dataX)
+        scaleY = self.y_scaler.fit_transform(dataY)
+        return np.array(scaleX), np.array(scaleY)
+
+    def train_model(self, X_train, Y_train, epoch=50, batch_size=32):
+        filename = "models/{}.h5".format(self.symbol)
+        if os.path.exists(filename):
+            model = load_model(filename)
+            return model
+
+        model = Sequential()
+
+        model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
+        model.add(Dropout(0.2))
+
+        model.add(LSTM(units=50, return_sequences=True))
+        model.add(Dropout(0.2))
+
+        model.add(LSTM(units=50, return_sequences=True))
+        model.add(Dropout(0.2))
+
+        model.add(LSTM(units=50))
+        model.add(Dropout(0.2))
+
+        model.add(Dense(units=1))
+
+        model.compile(optimizer='adam', loss='mean_squared_error')
+
+        model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
+        model.save(filename)
+        return model
+
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, x_scaler, y_scaler, column='close'):
     dataX = dataset.shift(1).dropna().values
@@ -87,52 +159,27 @@ def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
     return model
 
 
-def compute_real_predict(model, close_values, count, x_scaler, y_scaler):
-    rsi = RSI(9)
-    macd = MACD()
-
-    for close in close_values:
-        rsi.update(close)
-        macd.update(close)
-
-    last_close = close_values[-1]
-    print(last_close)
-
-    #for i in range(0, count):
-    featureX = np.array([[last_close], [rsi.result], [macd.result], [macd.signal.result]])
-    scaleX = x_scaler.fit_transform(featureX)
-    predictX = np.reshape(scaleX, (-1, 4, 1))
-    print(predictX)
-    predictY = model.predict(predictX)
-    predictY = y_scaler.inverse_transform(predictY)
-    print(predictY)
-
 def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
     # remove ts columns from input data
     #df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
-
-    # process OBV values
-    obv = Indicator(OBV)
-    obv.volume_key = 'quote_volume'
-    obv.load_dataframe(df)
-    df['OBV'] = np.array(obv.results())
 
     # process LSMA close values
     lsma_close = Indicator(LSMA, 12)
     lsma_close.load_dataframe(df)
     df['LSMA_CLOSE'] = np.array(lsma_close.results())
 
-    df['RSI'] = talib.RSI(df['LSMA_CLOSE'].values, timeperiod=9)
-    df['EMA12'] = talib.EMA(df['LSMA_CLOSE'].values, timeperiod=12)
-    df['EMA50'] = talib.EMA(df['LSMA_CLOSE'].values, timeperiod=50)
-    #macd, macdsig, macdhist = talib.MACDFIX(df['LSMA_CLOSE'].values, signalperiod=9)
-    #df['MACD'] = macd
-    #df['MACDSIG'] = macdsig
+    # process OBV values
+    obv = Indicator(OBV)
+    obv.volume_key = 'quote_volume'
+    #obv.close_key='LSMA_CLOSE'
+    obv.load_dataframe(df)
+    df['OBV'] = np.array(obv.results())
 
-    #columns = ['LSMA_CLOSE', 'RSI', 'MACD', 'MACDSIG', 'OBV']
+    df['RSI'] = talib.RSI(df['LSMA_CLOSE'].values, timeperiod=14)
+
     columns = ['LSMA_CLOSE', 'RSI', 'OBV']
-    
+
     df = pd.DataFrame(df, columns=columns)
     df = df.dropna()
 
@@ -150,7 +197,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     # reshape for training
     trainX = np.reshape(trainX, (-1, len(columns), 1))
 
-    model = train_model(symbol, trainX, trainY, epoch=20)
+    model = train_model(symbol, trainX, trainY, epoch=15)
 
     testX = np.reshape(testX, (-1, len(columns), 1))
     predictY = model.predict(testX)
