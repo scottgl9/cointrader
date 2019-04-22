@@ -3,7 +3,7 @@ from pandas import DataFrame
 from trader.lib.Kline import Kline
 
 
-class IndicatorProcess(object):
+class Indicator(object):
     def __init__(self, iclass,  *args, **kwargs):
         self.iclass = iclass
         self.indicator = self.iclass(**kwargs)
@@ -21,7 +21,7 @@ class IndicatorProcess(object):
         self.volume_values = None
         self.ts_values = None
         self.count = 0
-        self.results = None
+        self._results = None
         self.result_count = self.indicator.result_count
         self.close_only = False
         self.close_ts = False
@@ -39,7 +39,7 @@ class IndicatorProcess(object):
         self.high_values = None
         self.volume_values = None
         self.ts_values = None
-        self.results = None
+        self._results = None
 
     # detect type from data available
     def detect_data_type(self):
@@ -168,7 +168,6 @@ class IndicatorProcess(object):
     def load(self, data):
         if not data or len(data):
             return False
-
         if isinstance(data[0], dict):
             self.load_dict_list(data)
             return True
@@ -182,7 +181,7 @@ class IndicatorProcess(object):
 
 
     def process(self):
-        self.results = []
+        self._results = []
         self.detect_indicator_type()
         for i in range(0, self.count):
             close = self.close_values[i]
@@ -221,10 +220,10 @@ class IndicatorProcess(object):
                                       ts=self.ts_values[i])
             else:
                 return None
-            self.results.append(self.indicator.result)
+            self._results.append(self.indicator.result)
 
 
-    def get_results(self):
-        if not self.results or not len(self.results):
+    def results(self):
+        if not self._results or not len(self._results):
             self.process()
-        return self.results
+        return self._results
