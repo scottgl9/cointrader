@@ -7,6 +7,13 @@ class IndicatorProcess(object):
     def __init__(self, iclass,  *args, **kwargs):
         self.iclass = iclass
         self.indicator = self.iclass(**kwargs)
+        # keys used for loading data
+        self.close_key = 'close'
+        self.open_key = 'open'
+        self.low_key = 'low'
+        self.high_key = 'high'
+        self.volume_key = 'volume'
+        self.ts_key = 'ts'
         self.close_values = None
         self.open_values = None
         self.low_values = None
@@ -95,18 +102,18 @@ class IndicatorProcess(object):
     # load from pandas dataframe
     def load_dataframe(self, df):
         keys = list(df)
-        if 'close' in keys:
-            self.close_values = df['close']
-        if 'open' in keys:
-            self.open_values = df['open']
-        if 'low' in keys:
-            self.low_values = df['low']
-        if 'high' in keys:
-            self.high_values = df['high']
-        if 'volume' in keys:
-            self.close_values = df['volume']
-        if 'ts' in keys:
-            self.ts_values = df['ts']
+        if self.close_key in keys:
+            self.close_values = df[self.close_key]
+        if self.open_key in keys:
+            self.open_values = df[self.open_key]
+        if self.low_key in keys:
+            self.low_values = df[self.low_key]
+        if self.high_key in keys:
+            self.high_values = df[self.high_key]
+        if self.volume_key in keys:
+            self.close_values = df[self.volume_key]
+        if self.ts_key in keys:
+            self.ts_values = df[self.ts_key]
 
 
     # load list of dict type items
@@ -115,22 +122,22 @@ class IndicatorProcess(object):
         for d in data:
             if self.indicator.use_close:
                 if not self.close_values: self.close_values = []
-                self.close_values.append(d['close'])
+                self.close_values.append(d[self.close_key])
             if self.indicator.use_ts:
                 if not self.ts_values: self.ts_values = []
-                self.ts_values.append(d['ts'])
+                self.ts_values.append(d[self.ts_key])
             if self.indicator.use_open:
                 if not self.open_values: self.open_values = []
-                self.open_values.append(d['open'])
+                self.open_values.append(d[self.open_key])
             if self.indicator.use_low:
                 if not self.low_values: self.low_values = []
-                self.low_values.append(d['low'])
+                self.low_values.append(d[self.low_key])
             if self.indicator.use_high:
                 if not self.high_values: self.high_values = []
-                self.high_values.append(d['high'])
+                self.high_values.append(d[self.high_key])
             if self.indicator.use_volume:
                 if not self.volume_values: self.volume_values = []
-                self.volume_values.append(d['volume'])
+                self.volume_values.append(d[self.volume_key])
 
 
     # load list of Kline class items
