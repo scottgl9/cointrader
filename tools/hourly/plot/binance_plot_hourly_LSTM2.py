@@ -31,6 +31,7 @@ from sklearn.preprocessing import MinMaxScaler
 import talib
 from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
+from trader.indicator.LSMA import LSMA
 
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, x_scaler, y_scaler, column='close'):
@@ -147,8 +148,8 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     #print(plot_predict_y)
     #print(plot_test_y)
 
-    train_close_values = y_scaler.inverse_transform(trainY).reshape(1, -1)[0]
-    compute_real_predict(model, close_values=train_close_values, count=test_size, x_scaler=x_scaler, y_scaler=y_scaler)
+    #train_close_values = y_scaler.inverse_transform(trainY).reshape(1, -1)[0]
+    #compute_real_predict(model, close_values=train_close_values, count=test_size, x_scaler=x_scaler, y_scaler=y_scaler)
 
     plt.subplot(211)
     fig1, = plt.plot(plot_test_y, label='TESTY')

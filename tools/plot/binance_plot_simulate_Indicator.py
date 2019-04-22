@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
+from trader.indicator.LSMA import LSMA
 from trader.lib.Indicator import Indicator
 
 def get_rows_as_msgs(c):
@@ -41,6 +42,11 @@ def simulate(conn, client, base, currency):
     ema12 = Indicator(EMA, 12, scale=24)
     ema12.load(msgs)
     ema12_values = ema12.results()
+    lsma = Indicator(LSMA, 12)
+    lsma.load(msgs)
+    lsma_values = lsma.results()
+    ema12.load(msgs)
+    ema12_values = ema12.results()
     obv = Indicator(OBV)
     obv.load(msgs)
     obv_values = obv.results()
@@ -48,7 +54,8 @@ def simulate(conn, client, base, currency):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
-    plt.legend(handles=[symprice, fig1])
+    fig2, = plt.plot(lsma_values, label='LSMA12')
+    plt.legend(handles=[symprice, fig1, fig2])
     plt.subplot(212)
     fig21, = plt.plot(obv_values, label='OBV')
     plt.legend(handles=[fig21])

@@ -103,17 +103,17 @@ class Indicator(object):
     def load_dataframe(self, df):
         keys = list(df)
         if self.close_key in keys:
-            self.close_values = df[self.close_key]
+            self.close_values = df[self.close_key].values
         if self.open_key in keys:
-            self.open_values = df[self.open_key]
+            self.open_values = df[self.open_key].values
         if self.low_key in keys:
-            self.low_values = df[self.low_key]
+            self.low_values = df[self.low_key].values
         if self.high_key in keys:
-            self.high_values = df[self.high_key]
+            self.high_values = df[self.high_key].values
         if self.volume_key in keys:
-            self.close_values = df[self.volume_key]
+            self.close_values = df[self.volume_key].values
         if self.ts_key in keys:
-            self.ts_values = df[self.ts_key]
+            self.ts_values = df[self.ts_key].values
 
 
     # load list of dict type items
