@@ -1,4 +1,7 @@
 # use any indicator to process an entire set of data at once, instead of processing it live, and store results
+from pandas import DataFrame
+from trader.lib.Kline import Kline
+
 
 class IndicatorProcess(object):
     def __init__(self, iclass,  *args, **kwargs):
@@ -21,6 +24,15 @@ class IndicatorProcess(object):
         self.close_low_high_ts = False
         self.close_low_high_volume = False
         self.close_low_high_volume_ts = False
+
+    def reset(self):
+        self.close_values = None
+        self.open_values = None
+        self.low_values = None
+        self.high_values = None
+        self.volume_values = None
+        self.ts_values = None
+        self.results = None
 
     # detect type from data available
     def detect_data_type(self):
@@ -143,6 +155,23 @@ class IndicatorProcess(object):
             if self.indicator.use_volume:
                 if not self.volume_values: self.volume_values = []
                 self.volume_values.append(d.volume)
+
+
+    # auto-detect data type, and select appropriate load function
+    def load(self, data):
+        if not data or len(data):
+            return False
+
+        if isinstance(data[0], dict):
+            self.load_dict_list(data)
+            return True
+        elif isinstance(data[0], DataFrame):
+            self.load_dataframe(data)
+            return True
+        elif isinstance(data[0], Kline):
+            self.load_kline_list(data)
+            return True
+        return False
 
 
     def process(self):
