@@ -29,7 +29,8 @@ from keras.models import Sequential, load_model
 from sklearn.cross_validation import  train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import talib
-
+from trader.indicator.RSI import RSI
+from trader.indicator.MACD import MACD
 
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, x_scaler, y_scaler, column='close'):
@@ -84,9 +85,25 @@ def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
     return model
 
 
-def compute_real_predict(model, last_close, count):
-    pass
+def compute_real_predict(model, close_values, count, x_scaler, y_scaler):
+    rsi = RSI(9)
+    macd = MACD()
 
+    for close in close_values:
+        rsi.update(close)
+        macd.update(close)
+
+    last_close = close_values[-1]
+    print(last_close)
+
+    #for i in range(0, count):
+    featureX = np.array([[last_close], [rsi.result], [macd.result], [macd.signal.result]])
+    scaleX = x_scaler.fit_transform(featureX)
+    predictX = np.reshape(scaleX, (-1, 4, 1))
+    print(predictX)
+    predictY = model.predict(predictX)
+    predictY = y_scaler.inverse_transform(predictY)
+    print(predictY)
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
@@ -128,12 +145,10 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
 
     #print(plot_predict_y)
-    print(len(plot_predict_y))
     #print(plot_test_y)
-    print(len(plot_test_y))
 
-    print(y_scaler.inverse_transform(trainY))
-    #compute_real_predict(model, )
+    train_close_values = y_scaler.inverse_transform(trainY).reshape(1, -1)[0]
+    compute_real_predict(model, close_values=train_close_values, count=test_size, x_scaler=x_scaler, y_scaler=y_scaler)
 
     plt.subplot(211)
     fig1, = plt.plot(plot_test_y, label='TESTY')

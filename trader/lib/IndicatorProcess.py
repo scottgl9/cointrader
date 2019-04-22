@@ -11,6 +11,7 @@ class IndicatorProcess(object):
         self.volume_values = None
         self.ts_values = None
         self.count = 0
+        self.results = None
         self.result_count = self.indicator.result_count
         self.close_only = False
         self.close_ts = False
@@ -21,7 +22,8 @@ class IndicatorProcess(object):
         self.close_low_high_volume = False
         self.close_low_high_volume_ts = False
 
-    def detect_type(self):
+    # detect type from data available
+    def detect_data_type(self):
         if not self.low_values and not self.high_values:
             if self.volume_values:
                 if self.ts_values:
@@ -45,6 +47,54 @@ class IndicatorProcess(object):
                 else:
                     self.close_low_high = True
 
+    # detect indictator type from IndicatorBase attributes
+    def detect_indicator_type(self):
+        use_close = self.indicator.use_close
+        use_open = self.indicator.use_open
+        use_low = self.indicator.use_low
+        use_high = self.indicator.use_high
+        use_volume = self.indicator.use_volume
+        use_ts = self.indicator.use_ts
+
+        if not use_low and not use_high:
+            if use_volume:
+                if use_ts:
+                    self.close_volume_ts = True
+                else:
+                    self.close_volume = True
+            else:
+                if use_ts:
+                    self.close_ts = True
+                else:
+                    self.close_only = True
+        else:
+            if use_volume:
+                if use_ts:
+                    self.close_low_high_volume_ts = True
+                else:
+                    self.close_low_high_volume = True
+            else:
+                if use_ts:
+                    self.close_low_high_ts = True
+                else:
+                    self.close_low_high = True
+
+
+    # load from pandas dataframe
+    def load_dataframe(self, df):
+        keys = list(df)
+        if 'close' in keys:
+            self.close_values = df['close']
+        if 'open' in keys:
+            self.open_values = df['open']
+        if 'low' in keys:
+            self.low_values = df['low']
+        if 'high' in keys:
+            self.high_values = df['high']
+        if 'volume' in keys:
+            self.close_values = df['volume']
+        if 'ts' in keys:
+            self.ts_values = df['ts']
 
 
     # load list of dict type items
@@ -96,10 +146,48 @@ class IndicatorProcess(object):
 
 
     def process(self):
-        self.detect_type()
+        self.results = []
+        self.detect_indicator_type()
         for i in range(0, self.count):
-            pass
+            close = self.close_values[i]
+            if self.close_only:
+                self.indicator.update(close)
+            elif self.close_ts:
+                self.indicator.update(close,
+                                      ts=self.ts_values[i])
+            elif self.close_volume:
+                self.indicator.update(close,
+                                      volume=self.volume_values[i])
+            elif self.close_volume_ts:
+                self.indicator.update(close,
+                                      volume=self.volume_values[i],
+                                      ts=self.ts_values[i])
+
+            elif self.close_low_high:
+                self.indicator.update(close,
+                                      low=self.low_values[i],
+                                      high=self.high_values[i])
+            elif self.close_low_high_ts:
+                self.indicator.update(close,
+                                      low=self.low_values[i],
+                                      high=self.high_values[i],
+                                      ts=self.ts_values[i])
+            elif self.close_low_high_volume:
+                self.indicator.update(close,
+                                      low=self.low_values[i],
+                                      high=self.high_values[i],
+                                      volume=self.volume_values[i])
+            elif self.close_low_high_volume_ts:
+                self.indicator.update(close,
+                                      low=self.low_values[i],
+                                      high=self.high_values[i],
+                                      volume=self.volume_values[i],
+                                      ts=self.ts_values[i])
+            else:
+                return None
+            self.results.append(self.indicator.result)
 
 
     def get_results(self):
-        pass
+        self.process()
+        return self.results
