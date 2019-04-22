@@ -32,6 +32,7 @@ import talib
 from trader.indicator.RSI import RSI
 from trader.indicator.MACD import MACD
 from trader.indicator.LSMA import LSMA
+from trader.lib.Indicator import Indicator
 
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, x_scaler, y_scaler, column='close'):
@@ -110,14 +111,29 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     df = hkdb.get_pandas_klines(symbol)
     # remove ts columns from input data
     #df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
-    df['RSI'] = talib.RSI(df['close'].values, timeperiod=9)
-    df['EMA12'] = talib.EMA(df['close'].values, timeperiod=12)
-    df['EMA50'] = talib.EMA(df['close'].values, timeperiod=50)
-    macd, macdsig, macdhist = talib.MACDFIX(df['close'].values, signalperiod=9)
-    df['MACD'] = macd
-    df['MACDSIG'] = macdsig
 
-    df = pd.DataFrame(df, columns=['close', 'RSI', 'MACD', 'MACDSIG'])
+    # process OBV values
+    obv = Indicator(OBV)
+    obv.volume_key = 'quote_volume'
+    obv.load_dataframe(df)
+    df['OBV'] = np.array(obv.results())
+
+    # process LSMA close values
+    lsma_close = Indicator(LSMA, 12)
+    lsma_close.load_dataframe(df)
+    df['LSMA_CLOSE'] = np.array(lsma_close.results())
+
+    df['RSI'] = talib.RSI(df['LSMA_CLOSE'].values, timeperiod=9)
+    df['EMA12'] = talib.EMA(df['LSMA_CLOSE'].values, timeperiod=12)
+    df['EMA50'] = talib.EMA(df['LSMA_CLOSE'].values, timeperiod=50)
+    #macd, macdsig, macdhist = talib.MACDFIX(df['LSMA_CLOSE'].values, signalperiod=9)
+    #df['MACD'] = macd
+    #df['MACDSIG'] = macdsig
+
+    #columns = ['LSMA_CLOSE', 'RSI', 'MACD', 'MACDSIG', 'OBV']
+    columns = ['LSMA_CLOSE', 'RSI', 'OBV']
+    
+    df = pd.DataFrame(df, columns=columns)
     df = df.dropna()
 
     # scale dataset
@@ -128,15 +144,15 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     test_size = len(df) - train_size
     train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 
-    trainX, trainY = create_dataset(train, x_scaler, y_scaler, column='close')
-    testX, testY = create_dataset(test, x_scaler, y_scaler, column='close')
+    trainX, trainY = create_dataset(train, x_scaler, y_scaler, column='LSMA_CLOSE')
+    testX, testY = create_dataset(test, x_scaler, y_scaler, column='LSMA_CLOSE')
 
     # reshape for training
-    trainX = np.reshape(trainX, (-1, 4, 1))
+    trainX = np.reshape(trainX, (-1, len(columns), 1))
 
-    model = train_model(symbol, trainX, trainY, epoch=25)
+    model = train_model(symbol, trainX, trainY, epoch=20)
 
-    testX = np.reshape(testX, (-1, 4, 1))
+    testX = np.reshape(testX, (-1, len(columns), 1))
     predictY = model.predict(testX)
     predictY = y_scaler.inverse_transform(predictY)
     scores = model.evaluate(testX, testY, verbose=0)

@@ -8,7 +8,7 @@ class OBV(IndicatorBase):
         self.last_result = 0.0
         self.last_close = 0.0
 
-    def update(self, close, volume, ts=0):
+    def update(self, close, volume):
         self.last_result = self.result
         if self.result == 0:
             self.result = float(volume)
@@ -23,4 +23,3 @@ class OBV(IndicatorBase):
         self.last_close = close
 
         return self.result
-

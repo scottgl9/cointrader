@@ -101,20 +101,21 @@ class Indicator(object):
 
     # load from pandas dataframe
     def load_dataframe(self, df):
+        self.count = len(df)
+        print(self.count)
         keys = list(df)
         if self.close_key in keys:
-            self.close_values = df[self.close_key].values
+            self.close_values = df[self.close_key].values.tolist()
         if self.open_key in keys:
-            self.open_values = df[self.open_key].values
+            self.open_values = df[self.open_key].values.tolist()
         if self.low_key in keys:
-            self.low_values = df[self.low_key].values
+            self.low_values = df[self.low_key].values.tolist()
         if self.high_key in keys:
-            self.high_values = df[self.high_key].values
+            self.high_values = df[self.high_key].values.tolist()
         if self.volume_key in keys:
-            self.close_values = df[self.volume_key].values
+            self.volume_values = df[self.volume_key].values.tolist()
         if self.ts_key in keys:
-            self.ts_values = df[self.ts_key].values
-
+            self.ts_values = df[self.ts_key].values.tolist()
 
     # load list of dict type items
     def load_dict_list(self, data):
@@ -166,7 +167,7 @@ class Indicator(object):
 
     # auto-detect data type, and select appropriate load function
     def load(self, data):
-        if not data or not len(data):
+        if isinstance(data, type(None)) or not len(data):
             return False
         if isinstance(data[0], dict):
             self.load_dict_list(data)
