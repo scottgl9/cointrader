@@ -7,10 +7,10 @@ from trader.indicator.EMA import EMA
 
 class MACD(IndicatorBase):
     def __init__(self, short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0, plot_mode=False, smoother=None):
-        IndicatorBase.__init__(self, use_close=True)
+        IndicatorBase.__init__(self, use_close=True, result_count=2)
         self.last_result = 0.0
         self.result = 0.0
-        self.result_signal = 0.0
+        self.result2 = 0.0
         self.shortEMA = 0.0
         self.longEMA = 0.0
         self.diff = 0.0
@@ -36,8 +36,9 @@ class MACD(IndicatorBase):
             self.diff = self.shortEMA - self.longEMA
 
         if not self.plot_mode or self.diff != 0:
-            self.result_signal = self.signal.update(self.diff)
+            self.result2 = self.signal.update(self.diff)
 
         self.last_result = self.result
 
         self.result = self.diff
+        self.result2 = self.signal.result

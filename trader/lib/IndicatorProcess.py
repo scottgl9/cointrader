@@ -189,5 +189,6 @@ class IndicatorProcess(object):
 
 
     def get_results(self):
-        self.process()
+        if not self.results or not len(self.results):
+            self.process()
         return self.results
