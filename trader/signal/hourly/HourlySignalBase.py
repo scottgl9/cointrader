@@ -1,5 +1,6 @@
 class HourlySignalBase(object):
-    def __init__(self, accnt=None, symbol=None, asset_info=None):
+    def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
+        self.hkdb = hkdb
         self.accnt = accnt
         self.symbol = symbol
         self.asset_info = asset_info

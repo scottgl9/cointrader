@@ -17,6 +17,20 @@ from trader.signal.TSI_Signal import TSI_Signal
 from trader.signal.TSV_Signal import TSV_Signal
 from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
 
+from trader.signal.hourly.Hourly_EMA_Crossover import Hourly_EMA_Crossover
+from trader.signal.hourly.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
+from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
+
+def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
+    signal = None
+    if sname == 'Hourly_EMA_Crossover': signal = Hourly_EMA_Crossover
+    elif sname == 'Hourly_LSMA_Crossover': signal = Hourly_LSMA_Crossover
+    elif sname == 'Hourly_LSTM_Signal': signal = Hourly_LSTM_Signal
+
+    if not signal:
+        return None
+
+    return signal(hkdb, accnt, symbol, asset_info)
 
 class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
