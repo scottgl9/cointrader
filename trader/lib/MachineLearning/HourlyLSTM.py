@@ -18,6 +18,10 @@ class HourlyLSTM(object):
         self.symbol = symbol
         self.start_ts = start_ts
         self.simulate_db_filename = simulate_db_filename
+        if simulate_db_filename:
+            self.models_path = os.path.join("models", self.simulate_db_filename.replace('.db', ''))
+        else:
+            self.models_path = os.path.join("models", "live")
         self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
         self.x_scaler = MinMaxScaler(feature_range=(0, 1))
         self.y_scaler = MinMaxScaler(feature_range=(0, 1))
@@ -26,13 +30,29 @@ class HourlyLSTM(object):
         self.lsma_close = None
         self.obv = None
         self.rsi = None
+        self.start_ts = 0
+        self.last_ts = 0
+        self.df_update = None
+        self.testX = None
 
     def load(self, start_ts=0, end_ts=0):
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
-        trainX, trainY = self.create_features(df)
+        self.start_ts = df['ts'].values.tolist()[-1]
+        self.df = self.create_features(df)
+        trainX, trainY = self.create_train_dataset(self.df, column='LSMA_CLOSE')
+
+        # reshape for training
+        trainX = np.reshape(trainX, (-1, len(self.columns), 1))
+
         self.model = self.train_model(trainX, trainY, epoch=15)
 
-    def create_dataset(self, dataset, column='close'):
+    def update(self, end_ts):
+        df_update = self.hkdb.get_pandas_klines(self.symbol, self.start_ts, end_ts)
+        self.last_ts = df_update['ts'].values.tolist()[-1]
+        self.df_update = self.create_features(df_update)
+        self.testX = self.create_test_dataset(self.df_update)
+
+    def create_train_dataset(self, dataset, column='close'):
         dataX = dataset.shift(1).dropna().values
         dataY = dataset[column].shift(-1).dropna().values
 
@@ -41,6 +61,12 @@ class HourlyLSTM(object):
         scaleX = self.x_scaler.fit_transform(dataX)
         scaleY = self.y_scaler.fit_transform(dataY)
         return np.array(scaleX), np.array(scaleY)
+
+    def create_test_dataset(self, dataset):
+        dataX = dataset.values
+        scaleX = self.x_scaler.fit_transform(dataX)
+        testX = np.reshape(np.array(scaleX), (-1, len(self.columns), 1))
+        return testX
 
     def create_features(self, df):
         # process LSMA close values
@@ -63,18 +89,16 @@ class HourlyLSTM(object):
         df['RSI'] = rsi_result
 
         df = pd.DataFrame(df, columns=self.columns)
-        self.df = df.dropna()
-        X, Y = self.create_dataset(self.df, column='LSMA_CLOSE')
+        return df.dropna()
 
-        # reshape for training
-        X = np.reshape(X, (-1, len(self.columns), 1))
-        return X, Y
-
-    def train_model(self, X_train, Y_train, epoch=50, batch_size=32):
-        filename = "models/{}.h5".format(self.symbol)
+    def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
+        filename = os.path.join(self.models_path, "{}.h5".format(self.symbol))
         if os.path.exists(filename):
             model = load_model(filename)
             return model
+
+        if not os.path.exists(self.models_path):
+            os.mkdir(self.models_path)
 
         model = Sequential()
 
