@@ -7,6 +7,8 @@ from trader.lib.AssetInfo import AssetInfo
 
 import json
 import os
+from datetime import datetime
+import time
 
 #logger = logging.getLogger(__name__)
 
@@ -48,6 +50,11 @@ class AccountBinance(AccountBase):
 
     def ts_to_seconds(self, ts):
         return float(ts / 1000.0)
+
+    # set minutes and seconds components of timestamp to zero
+    def get_hourly_ts(self, ts):
+        dt = datetime.utcfromtimestamp(int(self.ts_to_seconds(ts))).replace(minute=0, second=0)
+        return int(self.seconds_to_ts(dt.timestamp()))
 
     def seconds_to_ts(self, seconds):
         return float(seconds * 1000)
