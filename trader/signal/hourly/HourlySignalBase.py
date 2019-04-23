@@ -5,9 +5,11 @@ class HourlySignalBase(object):
         self.symbol = symbol
         self.asset_info = asset_info
         self.klines = None
+        self.last_update_ts = 0
+        self.last_hourly_ts = 0
 
-    def load(self, klines):
+    def load(self, start_ts=0, end_ts=0, ts=0):
         pass
 
-    def process(self):
+    def update(self, ts):
         pass

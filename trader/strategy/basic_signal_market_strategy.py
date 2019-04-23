@@ -237,15 +237,14 @@ class basic_signal_market_strategy(StrategyBase):
 
         return completed
 
-    def load_hourly_klines(self, end_ts):
+    def load_hourly_klines(self, ts):
         if self.ticker_id not in self.hourly_klines_handler.table_symbols:
             return
         if self.simulate:
-            # end_ts is first ts for simulation, so adjust ts to 1 hour ago:
-            end_ts -= self.accnt.hours_to_ts(1)
+            # end_ts is first ts for simulation, so adjust ts to 2 hours ago (just to be safe):
+            end_ts = ts - self.accnt.hours_to_ts(2)
             start_ts = end_ts - self.accnt.hours_to_ts(48)
-            self.hourly_klines_signal.load(start_ts, end_ts)
-            self.hourly_klines_signal.process()
+            self.hourly_klines_signal.load(start_ts, end_ts, ts)
 
     def run_update(self, kline, mmkline=None, cache_db=None):
         close = kline.close
@@ -265,6 +264,9 @@ class basic_signal_market_strategy(StrategyBase):
 
         if self.timestamp == self.last_timestamp:
             return
+
+        if self.hourly_klines_signal:
+            self.hourly_klines_signal.update(ts=self.timestamp)
 
         self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
 
