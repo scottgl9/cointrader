@@ -180,11 +180,14 @@ def simulate(hkdb, symbol, start_ts, end_ts):
 
     # process RSI values
     rsi = Indicator(RSI, 14)
+    #rsi.close_key = 'LSMA_CLOSE'
     rsi.load_dataframe(df)
-    df['RSI'] = np.array(rsi.results())
-    print(df['RSI'].values)
-    df['RSI12'] = talib.RSI(df['LSMA_CLOSE'].values, timeperiod=14)
-    print(df['RSI12'].values)
+    rsi_result = np.array(rsi.results())
+    rsi_result[rsi_result == 0] = np.nan
+    df['RSI'] = rsi_result
+    print(df['RSI'].values.tolist()[:100])
+    df['RSI12'] = talib.RSI(df['close'].values, timeperiod=14)
+    print(df['RSI12'].values.tolist()[:100])
 
     columns = ['LSMA_CLOSE', 'RSI', 'OBV']
 
