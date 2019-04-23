@@ -19,7 +19,8 @@ class HourlyLSTM(object):
         self.start_ts = start_ts
         self.simulate_db_filename = simulate_db_filename
         if simulate_db_filename:
-            self.models_path = os.path.join("models", self.simulate_db_filename.replace('.db', ''))
+            name = os.path.basename(self.simulate_db_filename).replace('.db', '')
+            self.models_path = os.path.join("models", name)
         else:
             self.models_path = os.path.join("models", "live")
         self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
@@ -44,7 +45,7 @@ class HourlyLSTM(object):
         # reshape for training
         trainX = np.reshape(trainX, (-1, len(self.columns), 1))
 
-        self.model = self.train_model(trainX, trainY, epoch=15)
+        self.model = self.train_model(trainX, trainY, epoch=20)
 
     def update(self, end_ts):
         df_update = self.hkdb.get_pandas_klines(self.symbol, self.start_ts, end_ts)
