@@ -35,9 +35,11 @@ from trader.indicator.LSMA import LSMA
 from trader.lib.Indicator import Indicator
 
 class HourlyLSTM(object):
-    def __init__(self, hkdb, symbol):
+    def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None):
         self.hkdb = hkdb
         self.symbol = symbol
+        self.start_ts = start_ts
+        self.simulate_db_filename = simulate_db_filename
         self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
         self.x_scaler = MinMaxScaler(feature_range=(0, 1))
         self.y_scaler = MinMaxScaler(feature_range=(0, 1))
@@ -176,7 +178,13 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     obv.load_dataframe(df)
     df['OBV'] = np.array(obv.results())
 
-    df['RSI'] = talib.RSI(df['LSMA_CLOSE'].values, timeperiod=14)
+    # process RSI values
+    rsi = Indicator(RSI, 14)
+    rsi.load_dataframe(df)
+    df['RSI'] = np.array(rsi.results())
+    print(df['RSI'].values)
+    df['RSI12'] = talib.RSI(df['LSMA_CLOSE'].values, timeperiod=14)
+    print(df['RSI12'].values)
 
     columns = ['LSMA_CLOSE', 'RSI', 'OBV']
 
