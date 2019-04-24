@@ -37,6 +37,10 @@ class HourlyLSTM(object):
         self.testX = None
 
     def load(self, start_ts=0, end_ts=0):
+        self.model = self.load_model_exists()
+        if self.model:
+            return
+
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         self.start_ts = df['ts'].values.tolist()[-1]
         self.df = self.create_features(df)
@@ -92,11 +96,16 @@ class HourlyLSTM(object):
         df = pd.DataFrame(df, columns=self.columns)
         return df.dropna()
 
-    def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
+    def load_model_exists(self):
         filename = os.path.join(self.models_path, "{}.h5".format(self.symbol))
         if os.path.exists(filename):
             model = load_model(filename)
+            print("Loaded model {}".format(filename))
             return model
+        return None
+
+    def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
+        filename = os.path.join(self.models_path, "{}.h5".format(self.symbol))
 
         if not os.path.exists(self.models_path):
             os.mkdir(self.models_path)
