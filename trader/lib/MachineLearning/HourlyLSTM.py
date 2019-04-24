@@ -48,6 +48,7 @@ class HourlyLSTM(object):
         with open(arch_file, 'r') as f:
             model = model_from_json(f.read())
         model.load_weights(weights_file)
+        print("Loaded {} model".format(self.symbol))
         return model
 
     def save_model(self, model):
@@ -72,6 +73,7 @@ class HourlyLSTM(object):
 
         self.model = self.train_model(trainX, trainY, epoch=20)
         self.save_model(self.model)
+        print("Saved {} model".format(self.symbol))
 
     def update(self, start_ts, end_ts):
         df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
