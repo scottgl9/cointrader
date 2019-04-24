@@ -102,7 +102,6 @@ class Indicator(object):
     # load from pandas dataframe
     def load_dataframe(self, df):
         self.count = len(df)
-        print(self.count)
         keys = list(df)
         if self.close_key in keys:
             self.close_values = df[self.close_key].values.tolist()

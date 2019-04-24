@@ -9,7 +9,6 @@ class Hourly_EMA_Crossover(HourlySignalBase):
         self.ema50 = EMA(50)
 
     def load(self, start_ts=0, end_ts=0, ts=0):
-        self.last_update_ts = ts
         self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         for kline in self.klines:
             ts = int(kline['ts'])
@@ -17,3 +16,6 @@ class Hourly_EMA_Crossover(HourlySignalBase):
             self.ema12.update(close)
             self.ema26.update(close)
             self.ema50.update(close)
+        self.last_update_ts = ts
+        self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
+        self.last_hourly_ts = self.first_hourly_ts

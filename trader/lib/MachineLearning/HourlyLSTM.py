@@ -47,8 +47,8 @@ class HourlyLSTM(object):
 
         self.model = self.train_model(trainX, trainY, epoch=20)
 
-    def update(self, end_ts):
-        df_update = self.hkdb.get_pandas_klines(self.symbol, self.start_ts, end_ts)
+    def update(self, start_ts, end_ts):
+        df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         self.testX = self.create_test_dataset(self.df_update)

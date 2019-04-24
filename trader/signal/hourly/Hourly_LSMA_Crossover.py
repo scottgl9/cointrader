@@ -11,7 +11,6 @@ class Hourly_LSMA_Crossover(HourlySignalBase):
         self.lsma720 = LSMA(720)
 
     def load(self, start_ts=0, end_ts=0, ts=0):
-        self.last_update_ts = ts
         self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         for kline in self.klines:
             ts = int(kline['ts'])
@@ -19,3 +18,6 @@ class Hourly_LSMA_Crossover(HourlySignalBase):
             self.lsma24.update(close, ts)
             self.lsma168.update(close, ts)
             self.lsma720.update(close, ts)
+        self.last_update_ts = ts
+        self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
+        self.last_hourly_ts = self.first_hourly_ts

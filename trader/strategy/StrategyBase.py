@@ -58,6 +58,7 @@ class StrategyBase(object):
         self.accnt = account_handler
         self.order_handler = order_handler
         self.hourly_klines_handler = hourly_klines_handler
+        self.hourly_klines_disabled = False
         self.make_ticker_id()
         # true if base, and currency are both tradable currencies (ex ETH/BTC)
         self._currency_pair = self.accnt.is_currency_pair(base=self.base, currency=self.currency)

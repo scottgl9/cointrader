@@ -5,6 +5,7 @@ class HourlySignalBase(object):
         self.symbol = symbol
         self.asset_info = asset_info
         self.klines = None
+        self.first_hourly_ts = 0
         self.last_update_ts = 0
         self.last_hourly_ts = 0
 
