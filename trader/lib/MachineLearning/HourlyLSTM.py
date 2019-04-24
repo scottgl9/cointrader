@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
-from keras.models import Sequential, load_model
+from keras.models import Sequential, load_model, model_from_json
 from sklearn.preprocessing import MinMaxScaler
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
@@ -23,6 +23,8 @@ class HourlyLSTM(object):
             self.models_path = os.path.join("models", name)
         else:
             self.models_path = os.path.join("models", "live")
+        if not os.path.exists(self.models_path):
+            os.mkdir(self.models_path)
         self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
         self.x_scaler = MinMaxScaler(feature_range=(0, 1))
         self.y_scaler = MinMaxScaler(feature_range=(0, 1))
@@ -36,8 +38,27 @@ class HourlyLSTM(object):
         self.df_update = None
         self.testX = None
 
+    def load_model(self):
+        weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
+        if not os.path.exists(weights_file):
+            return None
+        arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
+        if not os.path.exists(arch_file):
+            return None
+        with open(arch_file, 'r') as f:
+            model = model_from_json(f.read())
+        model.load_weights(weights_file)
+        return model
+
+    def save_model(self, model):
+        weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
+        arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
+        model.save_weights(weights_file)
+        with open(arch_file, 'w') as f:
+            f.write(model.to_json())
+
     def load(self, start_ts=0, end_ts=0):
-        self.model = self.load_model_exists()
+        self.model = self.load_model()
         if self.model:
             return
 
@@ -50,6 +71,7 @@ class HourlyLSTM(object):
         trainX = np.reshape(trainX, (-1, len(self.columns), 1))
 
         self.model = self.train_model(trainX, trainY, epoch=20)
+        self.save_model(self.model)
 
     def update(self, start_ts, end_ts):
         df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
@@ -96,20 +118,7 @@ class HourlyLSTM(object):
         df = pd.DataFrame(df, columns=self.columns)
         return df.dropna()
 
-    def load_model_exists(self):
-        filename = os.path.join(self.models_path, "{}.h5".format(self.symbol))
-        if os.path.exists(filename):
-            model = load_model(filename)
-            print("Loaded model {}".format(filename))
-            return model
-        return None
-
     def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
-        filename = os.path.join(self.models_path, "{}.h5".format(self.symbol))
-
-        if not os.path.exists(self.models_path):
-            os.mkdir(self.models_path)
-
         model = Sequential()
 
         model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
@@ -129,5 +138,4 @@ class HourlyLSTM(object):
         model.compile(optimizer='adam', loss='mean_squared_error')
 
         model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
-        model.save(filename)
         return model
