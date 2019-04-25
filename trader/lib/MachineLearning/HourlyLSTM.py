@@ -115,8 +115,8 @@ class HourlyLSTM(object):
         if not self.scalers_loaded:
             if not self.load_scaler_model():
                 self.create_scalar_model()
+                self.indicators_loaded = True
             self.scalers_loaded = True
-            self.indicators_loaded = True
 
         # if we loaded the model from files, then self.indicators_loaded will be False
         # we need to run the indicators on a dataset to get them in a good state before
@@ -131,7 +131,6 @@ class HourlyLSTM(object):
         self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         self.testX = self.create_test_dataset(self.df_update)
-        print(self.testX)
 
     def create_train_dataset(self, dataset, column='close'):
         dataX = dataset.shift(1).dropna().values
@@ -148,7 +147,7 @@ class HourlyLSTM(object):
         return np.array(scaleX), np.array(scaleY)
 
     def create_test_dataset(self, dataset):
-        dataX = dataset.values
+        dataX = dataset.dropna().values
         scaleX = self.x_scaler.fit_transform(dataX)
         testX = np.reshape(np.array(scaleX), (-1, len(self.columns), 1))
         return testX
