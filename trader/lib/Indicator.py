@@ -41,6 +41,10 @@ class Indicator(object):
         self.ts_values = None
         self._results = None
 
+    def set_indicator(self, indicator):
+        self.indicator = indicator
+        self.detect_indicator_type()
+
     # detect type from data available
     def detect_data_type(self):
         if not self.low_values and not self.high_values:
