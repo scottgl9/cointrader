@@ -67,6 +67,13 @@ class HourlyLSTM(object):
             f.write(model.to_json())
         self.save_scaler_model()
 
+    def create_scalar_model(self):
+        df = self.hkdb.get_pandas_klines(self.symbol, start_ts=0, end_ts=self.model_end_ts)
+        self.start_ts = df['ts'].values.tolist()[-1]
+        self.df = self.create_features(df)
+        self.create_train_dataset(self.df, column='LSMA_CLOSE')
+        self.save_scaler_model()
+
     def load_scaler_model(self):
         if not os.path.exists(self.xscale_file) or not os.path.exists(self.yscale_file):
             return False
@@ -105,6 +112,12 @@ class HourlyLSTM(object):
         self.df = None
 
     def update(self, start_ts, end_ts):
+        if not self.scalers_loaded:
+            if not self.load_scaler_model():
+                self.create_scalar_model()
+            self.scalers_loaded = True
+            self.indicators_loaded = True
+
         # if we loaded the model from files, then self.indicators_loaded will be False
         # we need to run the indicators on a dataset to get them in a good state before
         # using the indicators to build features for test/predict
@@ -113,9 +126,6 @@ class HourlyLSTM(object):
             init_end_ts = start_ts
             self.init_indicators(init_start_ts, init_end_ts)
             self.indicators_loaded = True
-
-        if not self.scalers_loaded:
-            loaded = self.load_scaler_model()
 
         df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         self.last_ts = df_update['ts'].values.tolist()[-1]
