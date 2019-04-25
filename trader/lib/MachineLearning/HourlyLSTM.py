@@ -7,10 +7,12 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential, load_model, model_from_json
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.externals import joblib
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.LSMA import LSMA
 from trader.lib.Indicator import Indicator
+
 
 class HourlyLSTM(object):
     def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None, hours_preload=72):
@@ -25,11 +27,16 @@ class HourlyLSTM(object):
             self.models_path = os.path.join("models", "live")
         if not os.path.exists(self.models_path):
             os.mkdir(self.models_path)
+
+        self.weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
+        self.arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
+        self.xscale_file = os.path.join(self.models_path, "{}_xscale.skl".format(self.symbol))
+        self.yscale_file = os.path.join(self.models_path, "{}_yscale.skl".format(self.symbol))
         # hours to preload to initialize indicators
         self.hours_preload = hours_preload
         self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
-        self.x_scaler = MinMaxScaler(feature_range=(0, 1))
-        self.y_scaler = MinMaxScaler(feature_range=(0, 1))
+        self.x_scaler = None
+        self.y_scaler = None
         self.model = None
         self.df = None
         self.lsma_close = None
@@ -37,33 +44,47 @@ class HourlyLSTM(object):
         self.rsi = None
         self.start_ts = 0
         self.last_ts = 0
+        self.model_end_ts = 0
         self.df_update = None
         self.testX = None
-        # set to false until update() is run for first time
-        self.updated = False
+        self.scalers_loaded = False
         self.indicators_loaded = False
 
     def load_model(self):
-        weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
-        if not os.path.exists(weights_file):
+        if not os.path.exists(self.weights_file):
             return None
-        arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
-        if not os.path.exists(arch_file):
+        if not os.path.exists(self.arch_file):
             return None
-        with open(arch_file, 'r') as f:
+        with open(self.arch_file, 'r') as f:
             model = model_from_json(f.read())
-        model.load_weights(weights_file)
+        model.load_weights(self.weights_file)
         print("Loaded {} model".format(self.symbol))
         return model
 
     def save_model(self, model):
-        weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
-        arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
-        model.save_weights(weights_file)
-        with open(arch_file, 'w') as f:
+        model.save_weights(self.weights_file)
+        with open(self.arch_file, 'w') as f:
             f.write(model.to_json())
+        self.save_scaler_model()
+
+    def load_scaler_model(self):
+        if not os.path.exists(self.xscale_file) or not os.path.exists(self.yscale_file):
+            return False
+        if not self.x_scaler:
+            self.x_scaler = joblib.load(self.xscale_file)
+        if not self.y_scaler:
+            self.y_scaler = joblib.load(self.yscale_file)
+        return True
+
+    def save_scaler_model(self):
+        # save MinMaxScaler models
+        if self.x_scaler:
+            joblib.dump(self.x_scaler, self.xscale_file)
+        if self.y_scaler:
+            joblib.dump(self.x_scaler, self.yscale_file)
 
     def load(self, start_ts=0, end_ts=0):
+        self.model_end_ts = end_ts
         self.model = self.load_model()
         if self.model:
             return
@@ -88,15 +109,19 @@ class HourlyLSTM(object):
         # we need to run the indicators on a dataset to get them in a good state before
         # using the indicators to build features for test/predict
         if not self.indicators_loaded:
-            init_start_ts = start_ts - self.hkdb.accnt.hours_to_ts(self.hours_preload)
+            init_start_ts = start_ts - self.hours_preload * 3600 * 1000 #self.hkdb.accnt.hours_to_ts(self.hours_preload)
             init_end_ts = start_ts
             self.init_indicators(init_start_ts, init_end_ts)
             self.indicators_loaded = True
+
+        if not self.scalers_loaded:
+            loaded = self.load_scaler_model()
+
         df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         self.testX = self.create_test_dataset(self.df_update)
-        self.updated = True
+        print(self.testX)
 
     def create_train_dataset(self, dataset, column='close'):
         dataX = dataset.shift(1).dropna().values
@@ -104,8 +129,12 @@ class HourlyLSTM(object):
 
         dataY = dataY.reshape(-1, 1)
 
+        self.x_scaler = MinMaxScaler(feature_range=(0, 1))
+        self.y_scaler = MinMaxScaler(feature_range=(0, 1))
+
         scaleX = self.x_scaler.fit_transform(dataX)
         scaleY = self.y_scaler.fit_transform(dataY)
+
         return np.array(scaleX), np.array(scaleY)
 
     def create_test_dataset(self, dataset):
