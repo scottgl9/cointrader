@@ -77,6 +77,7 @@ class HourlyLSTM(object):
 
     def update(self, start_ts, end_ts):
         df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+        print(df_update)
         self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         self.testX = self.create_test_dataset(self.df_update)
@@ -114,6 +115,7 @@ class HourlyLSTM(object):
         self.rsi.close_key = 'LSMA_CLOSE'
         self.rsi.load_dataframe(df)
         rsi_result = np.array(self.rsi.results())
+        print(rsi_result)
         rsi_result[rsi_result == 0] = np.nan
         df['RSI'] = rsi_result
 

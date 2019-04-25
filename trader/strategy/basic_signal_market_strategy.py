@@ -246,6 +246,7 @@ class basic_signal_market_strategy(StrategyBase):
             end_ts = ts - self.accnt.hours_to_ts(2)
             start_ts = end_ts - self.accnt.hours_to_ts(48)
             self.hourly_klines_signal.load(start_ts, end_ts, ts)
+            self.accnt.loaded_model_count += 1
 
     def run_update(self, kline, mmkline=None, cache_db=None):
         close = kline.close
@@ -255,8 +256,11 @@ class basic_signal_market_strategy(StrategyBase):
 
         if not self.timestamp:
             if self.simulate and self.hourly_klines_signal and not self.hourly_klines_loaded:
-                self.load_hourly_klines(kline.ts)
-                self.hourly_klines_loaded = True
+                if self.accnt.loaded_model_count <= 5:
+                    self.load_hourly_klines(kline.ts)
+                    self.hourly_klines_loaded = True
+                else:
+                    self.hourly_klines_disabled = True
 
         self.timestamp = kline.ts
 
@@ -266,8 +270,8 @@ class basic_signal_market_strategy(StrategyBase):
         if self.timestamp == self.last_timestamp:
             return
 
-        #if self.hourly_klines_signal and not self.hourly_klines_disabled:
-        #    self.hourly_klines_signal.update(ts=self.timestamp)
+        if self.hourly_klines_signal and not self.hourly_klines_disabled:
+            self.hourly_klines_signal.update(ts=self.timestamp)
 
         self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
 

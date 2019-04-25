@@ -103,7 +103,7 @@ class HourlyKlinesDB(object):
         sql = "SELECT {} FROM {} ".format(self.scnames, symbol)
 
         if start_ts and end_ts:
-            sql += "WHERE {} <= ts <= {} ".format(start_ts, end_ts)
+            sql += "WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
         elif not start_ts and end_ts:
             sql += "WHERE ts <= {} ".format(end_ts)
         elif start_ts and not end_ts:

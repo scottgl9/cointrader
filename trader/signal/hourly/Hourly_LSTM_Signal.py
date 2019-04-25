@@ -10,12 +10,12 @@ class Hourly_LSTM_Signal(HourlySignalBase):
     def load(self, start_ts=0, end_ts=0, ts=0):
         self.hourly_lstm.load(start_ts=0, end_ts=end_ts)
         self.last_update_ts = ts
-        self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
+        self.first_hourly_ts = self.accnt.get_hourly_ts(end_ts)
         self.last_hourly_ts = self.first_hourly_ts
 
     def update(self, ts):
-        if (ts - self.last_update_ts) < self.accnt.hours_to_ts(1):
-            return
+        #if (ts - self.last_update_ts) < self.accnt.hours_to_ts(1):
+        #    return
 
         hourly_ts = self.accnt.get_hourly_ts(ts)
         if hourly_ts == self.last_hourly_ts:

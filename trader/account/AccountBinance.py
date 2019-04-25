@@ -47,6 +47,7 @@ class AccountBinance(AccountBase):
         self._trades_disabled = False
         self._test_stop_loss = False
         self._max_market_buy = 0
+        self.loaded_model_count = 0
 
     def ts_to_seconds(self, ts):
         return float(ts / 1000.0)
