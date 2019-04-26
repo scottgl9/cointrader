@@ -110,8 +110,12 @@ class HourlyLSTM(object):
             return
 
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+
         self.start_ts = df['ts'].values.tolist()[-1]
         self.df = self.create_features(df)
+        # adjust size to take into account batch_size
+        adjusted_size = int(len(self.df) / self.batch_size) * self.batch_size + 1
+        self.df = self.df.iloc[:adjusted_size]
         trainX, trainY = self.create_train_dataset(self.df, column='LSMA_CLOSE')
 
         # reshape for training
@@ -141,6 +145,7 @@ class HourlyLSTM(object):
             self.indicators_loaded = True
 
         df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+        print(df_update)
         self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         self.testX = self.create_test_dataset(self.df_update)
@@ -174,7 +179,6 @@ class HourlyLSTM(object):
         #    dataX = dataX[offset:]
 
         scaleX = self.x_scaler.fit_transform(dataX)
-        print(scaleX)
         testX = np.reshape(np.array(scaleX), (-1, len(self.columns), 1))
         return testX
 
