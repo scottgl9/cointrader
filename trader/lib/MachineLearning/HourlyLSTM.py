@@ -73,32 +73,12 @@ class HourlyLSTM(object):
         model.save_weights(self.weights_file)
         with open(self.arch_file, 'w') as f:
             f.write(model.to_json())
-        #self.save_scaler_model()
 
 
     def create_scaler_model(self):
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts=0, end_ts=self.model_end_ts)
         self.df = self.create_features(df)
-        self.create_train_dataset(self.df, column='LSMA_CLOSE')
-        #self.save_scaler_model()
-
-
-    # def load_scaler_model(self):
-    #     if not os.path.exists(self.xscale_file) or not os.path.exists(self.yscale_file):
-    #         return False
-    #     if not self.x_scaler:
-    #         self.x_scaler = joblib.load(self.xscale_file)
-    #     if not self.y_scaler:
-    #         self.y_scaler = joblib.load(self.yscale_file)
-    #     return True
-
-
-    # def save_scaler_model(self):
-    #     # save MinMaxScaler models
-    #     if self.x_scaler:
-    #         joblib.dump(self.x_scaler, self.xscale_file)
-    #     if self.y_scaler:
-    #         joblib.dump(self.x_scaler, self.yscale_file)
+        self.create_train_dataset(self.df, column='LSMA_CLOSE', transform=False)
 
 
     def load(self, start_ts=0, end_ts=0):
@@ -118,7 +98,7 @@ class HourlyLSTM(object):
         # adjust size to take into account batch_size
         adjusted_size = int(len(self.df) / self.batch_size) * self.batch_size + 1
         self.df = self.df.iloc[:adjusted_size]
-        trainX, trainY = self.create_train_dataset(self.df, column='LSMA_CLOSE')
+        trainX, trainY = self.create_train_dataset(self.df, column='LSMA_CLOSE', transform=True)
 
         # reshape for training
         trainX = np.reshape(trainX, (-1, len(self.columns), 1))
@@ -155,7 +135,7 @@ class HourlyLSTM(object):
         predictY = self.y_scaler.inverse_transform(predictY)[0][0]
         print("{} = {}".format(self.symbol, predictY))
 
-    def create_train_dataset(self, dataset, column='close'):
+    def create_train_dataset(self, dataset, column='close', transform=True):
         dataX = dataset.shift(1).dropna().values
         dataY = dataset[column].shift(-1).dropna().values
 
@@ -164,8 +144,14 @@ class HourlyLSTM(object):
         self.x_scaler = MinMaxScaler(feature_range=(0, 1))
         self.y_scaler = MinMaxScaler(feature_range=(0, 1))
 
-        scaleX = np.array(self.x_scaler.fit_transform(dataX))
-        scaleY = np.array(self.y_scaler.fit_transform(dataY))
+        if transform:
+            scaleX = np.array(self.x_scaler.fit_transform(dataX))
+            scaleY = np.array(self.y_scaler.fit_transform(dataY))
+        else:
+            self.x_scaler.fit(dataX)
+            self.y_scaler.fit(dataY)
+            scaleX = dataX
+            scaleY = dataY
 
         self.model_columns = 3 #scaleX.shape[1]
         self.model_rows = 1 #scaleX.shape[2]
