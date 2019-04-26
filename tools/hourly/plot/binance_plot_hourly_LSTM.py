@@ -29,22 +29,21 @@ from keras.models import Sequential, load_model
 from sklearn.cross_validation import  train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import talib
+from trader.indicator.RSI import RSI
+from trader.indicator.MACD import MACD
+from trader.indicator.LSMA import LSMA
+from trader.lib.Indicator import Indicator
 
 
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, x_scaler, y_scaler, column='close'):
-    dataX, dataY = [], []
-
-    #sdataset = scaler.fit_transform(dataset)
-
-    #for i in range(len(dataset)-1):
-    #    dataY.append(dataset[column][i+1])
-    #    dataX.append(dataset.iloc[i].values)
-    #    #dataX.append(sdataset[i])
-    #    #dataY.append(sdataset[i+1][column_index])
-
     dataX = dataset.shift(1).dropna().values
-    dataY = dataset[column].shift(-1).dropna().values.reshape(-1, 1)
+    dataY = dataset[column].shift(-1).dropna().values
+
+    #if len(dataY) > len(dataX):
+    #    dataY = dataY[:len(dataX)]
+
+    dataY = dataY.reshape(-1, 1)
 
     scaleX = x_scaler.fit_transform(dataX)
     scaleY = y_scaler.fit_transform(dataY)
@@ -60,7 +59,7 @@ def get_index_column(dataset, column='close'):
     return column_index
 
 
-def train_model(symbol, X_train, Y_train):
+def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
     filename = "models/{}.h5".format(symbol)
     if os.path.exists(filename):
         model = load_model(filename)
@@ -84,7 +83,7 @@ def train_model(symbol, X_train, Y_train):
 
     model.compile(optimizer='adam', loss='mean_squared_error')
 
-    model.fit(X_train, Y_train, epochs=50, batch_size=32)
+    model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
     model.save(filename)
     return model
 
@@ -94,11 +93,33 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     # remove ts columns from input data
     #df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
 
-    df['H-L'] = df['high'] - df['low']
-    df['C-O'] = df['close'] - df['open']
+    # process LSMA close values
+    lsma_close = Indicator(LSMA, 12)
+    lsma_close.load_dataframe(df)
+    df['LSMA_CLOSE'] = np.array(lsma_close.results())
 
-    df = pd.DataFrame(df, columns=['close', 'H-L', 'C-O'])
-    index_column = get_index_column(df, column='close')
+    # process OBV values
+    obv = Indicator(OBV)
+    obv.volume_key = 'quote_volume'
+    #obv.close_key='LSMA_CLOSE'
+    obv.load_dataframe(df)
+    df['OBV'] = np.array(obv.results())
+
+    # process RSI values
+    rsi = Indicator(RSI, 14)
+    #rsi.close_key = 'LSMA_CLOSE'
+    rsi.load_dataframe(df)
+    rsi_result = np.array(rsi.results())
+    rsi_result[rsi_result == 0] = np.nan
+    df['RSI'] = rsi_result
+    print(df['RSI'].values.tolist()[:100])
+    df['RSI12'] = talib.RSI(df['close'].values, timeperiod=14)
+    print(df['RSI12'].values.tolist()[:100])
+
+    columns = ['LSMA_CLOSE', 'RSI', 'OBV']
+
+    df = pd.DataFrame(df, columns=columns)
+    df = df.dropna()
 
     # scale dataset
     x_scaler = MinMaxScaler(feature_range = (0, 1))
@@ -108,15 +129,15 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     test_size = len(df) - train_size
     train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
 
-    trainX, trainY = create_dataset(train, x_scaler, y_scaler, column='close')
-    testX, testY = create_dataset(test, x_scaler, y_scaler, column='close')
+    trainX, trainY = create_dataset(train, x_scaler, y_scaler, column='LSMA_CLOSE')
+    testX, testY = create_dataset(test, x_scaler, y_scaler, column='LSMA_CLOSE')
 
     # reshape for training
-    trainX = np.reshape(trainX, (-1, 3, 1))
+    trainX = np.reshape(trainX, (-1, len(columns), 1))
 
-    model = train_model(symbol, trainX, trainY)
+    model = train_model(symbol, trainX, trainY, epoch=15)
 
-    testX = np.reshape(testX, (-1, 3, 1))
+    testX = np.reshape(testX, (-1, len(columns), 1))
     predictY = model.predict(testX)
     predictY = y_scaler.inverse_transform(predictY)
     scores = model.evaluate(testX, testY, verbose=0)
@@ -125,10 +146,11 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     plot_predict_y = predictY.reshape(1, -1)[0]
     plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
 
-    print(plot_predict_y)
-    print(len(plot_predict_y))
-    print(plot_test_y)
-    print(len(plot_test_y))
+    #print(plot_predict_y)
+    #print(plot_test_y)
+
+    #train_close_values = y_scaler.inverse_transform(trainY).reshape(1, -1)[0]
+    #compute_real_predict(model, close_values=train_close_values, count=test_size, x_scaler=x_scaler, y_scaler=y_scaler)
 
     plt.subplot(211)
     fig1, = plt.plot(plot_test_y, label='TESTY')
