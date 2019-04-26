@@ -15,7 +15,7 @@ from trader.lib.Indicator import Indicator
 
 
 class HourlyLSTM(object):
-    def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None, hours_preload=72):
+    def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
         self.hkdb = hkdb
         self.symbol = symbol
         self.start_ts = start_ts
@@ -33,8 +33,8 @@ class HourlyLSTM(object):
         self.xscale_file = os.path.join(self.models_path, "{}_xscale.skl".format(self.symbol))
         self.yscale_file = os.path.join(self.models_path, "{}_yscale.skl".format(self.symbol))
         # hours to preload to initialize indicators
-        self.hours_preload = hours_preload
         self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
+        self.batch_size=batch_size
         self.x_scaler = None
         self.y_scaler = None
         self.model = None
@@ -50,6 +50,7 @@ class HourlyLSTM(object):
         self.scalers_loaded = False
         self.indicators_loaded = False
 
+
     def load_model(self):
         if not os.path.exists(self.weights_file):
             return None
@@ -61,34 +62,38 @@ class HourlyLSTM(object):
         print("Loaded {} model".format(self.symbol))
         return model
 
+
     def save_model(self, model):
         model.save_weights(self.weights_file)
         with open(self.arch_file, 'w') as f:
             f.write(model.to_json())
-        self.save_scaler_model()
+        #self.save_scaler_model()
 
-    def create_scalar_model(self):
+
+    def create_scaler_model(self):
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts=0, end_ts=self.model_end_ts)
-        self.start_ts = df['ts'].values.tolist()[-1]
         self.df = self.create_features(df)
         self.create_train_dataset(self.df, column='LSMA_CLOSE')
-        self.save_scaler_model()
+        #self.save_scaler_model()
 
-    def load_scaler_model(self):
-        if not os.path.exists(self.xscale_file) or not os.path.exists(self.yscale_file):
-            return False
-        if not self.x_scaler:
-            self.x_scaler = joblib.load(self.xscale_file)
-        if not self.y_scaler:
-            self.y_scaler = joblib.load(self.yscale_file)
-        return True
 
-    def save_scaler_model(self):
-        # save MinMaxScaler models
-        if self.x_scaler:
-            joblib.dump(self.x_scaler, self.xscale_file)
-        if self.y_scaler:
-            joblib.dump(self.x_scaler, self.yscale_file)
+    # def load_scaler_model(self):
+    #     if not os.path.exists(self.xscale_file) or not os.path.exists(self.yscale_file):
+    #         return False
+    #     if not self.x_scaler:
+    #         self.x_scaler = joblib.load(self.xscale_file)
+    #     if not self.y_scaler:
+    #         self.y_scaler = joblib.load(self.yscale_file)
+    #     return True
+
+
+    # def save_scaler_model(self):
+    #     # save MinMaxScaler models
+    #     if self.x_scaler:
+    #         joblib.dump(self.x_scaler, self.xscale_file)
+    #     if self.y_scaler:
+    #         joblib.dump(self.x_scaler, self.yscale_file)
+
 
     def load(self, start_ts=0, end_ts=0):
         self.model_end_ts = end_ts
@@ -104,33 +109,38 @@ class HourlyLSTM(object):
         # reshape for training
         trainX = np.reshape(trainX, (-1, len(self.columns), 1))
 
-        self.model = self.train_model(trainX, trainY, epoch=20)
+        self.model = self.train_model(trainX, trainY, epoch=20, batch_size=self.batch_size)
         self.indicators_loaded = True
         self.save_model(self.model)
         print("Saved {} model".format(self.symbol))
         # free up memory from self.df
         self.df = None
 
+
     def update(self, start_ts, end_ts):
         if not self.scalers_loaded:
-            if not self.load_scaler_model():
-                self.create_scalar_model()
-                self.indicators_loaded = True
+            #if not self.load_scaler_model():
+            self.create_scaler_model()
+            self.indicators_loaded = True
             self.scalers_loaded = True
 
         # if we loaded the model from files, then self.indicators_loaded will be False
         # we need to run the indicators on a dataset to get them in a good state before
         # using the indicators to build features for test/predict
         if not self.indicators_loaded:
-            init_start_ts = start_ts - self.hours_preload * 3600 * 1000 #self.hkdb.accnt.hours_to_ts(self.hours_preload)
-            init_end_ts = start_ts
-            self.init_indicators(init_start_ts, init_end_ts)
+            #init_start_ts = start_ts - self.hours_preload * 3600 * 1000 #self.hkdb.accnt.hours_to_ts(self.hours_preload)
+            #init_end_ts = start_ts
+            self.init_indicators(start_ts=0, end_ts=self.model_end_ts) #init_start_ts, init_end_ts)
             self.indicators_loaded = True
 
         df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         self.testX = self.create_test_dataset(self.df_update)
+        predictY = self.model.predict(self.testX)
+        predictY = self.y_scaler.inverse_transform(predictY).reshape(1, -1)[0]
+        print("{} = {}".format(self.symbol, predictY))
+
 
     def create_train_dataset(self, dataset, column='close'):
         dataX = dataset.shift(1).dropna().values
@@ -146,11 +156,19 @@ class HourlyLSTM(object):
 
         return np.array(scaleX), np.array(scaleY)
 
+
     def create_test_dataset(self, dataset):
         dataX = dataset.dropna().values
+
+        # resize input test data to batch_size used to train model
+        if len(dataX) > self.batch_size:
+            offset = len(dataX) - self.batch_size
+            dataX = dataX[offset:]
+
         scaleX = self.x_scaler.fit_transform(dataX)
         testX = np.reshape(np.array(scaleX), (-1, len(self.columns), 1))
         return testX
+
 
     # initialize indicators if model loaded from file
     def init_indicators(self, start_ts, end_ts):
@@ -172,6 +190,7 @@ class HourlyLSTM(object):
         rsi.load_dataframe(df)
         rsi.process()
         self.rsi = rsi.indicator
+
 
     def create_features(self, df):
         # process LSMA close values
@@ -210,6 +229,7 @@ class HourlyLSTM(object):
 
         df = pd.DataFrame(df, columns=self.columns)
         return df.dropna()
+
 
     def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
         model = Sequential()
