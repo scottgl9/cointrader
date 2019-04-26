@@ -231,7 +231,7 @@ class HourlyLSTM(object):
         return df.dropna()
 
 
-    def create_model(self, columns, rows, batch_size=32, model=None):
+    def create_model(self, columns=3, rows=1, batch_size=32, model=None):
         new_model = Sequential()
 
         new_model.add(LSTM(units=50, return_sequences=True, batch_input_shape=(batch_size, columns, rows)))

@@ -58,7 +58,7 @@ def get_index_column(dataset, column='close'):
     column_index = names.index(column)
     return column_index
 
-def create_model(columns, rows, batch_size=32, model=None):
+def create_model(columns=3, rows=1, batch_size=32, model=None):
     new_model = Sequential()
 
     new_model.add(LSTM(units=50, return_sequences=True, batch_input_shape=(batch_size, columns, rows)))
@@ -135,16 +135,16 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     y_scaler = MinMaxScaler(feature_range = (0, 1))
 
     train_size = int(int(len(df) * 0.80) / 32) * 32 + 1
-    test_size = int(int(len(df) * 0.10) / 32) * 32 + 1
-    validate_size = int(int(len(df) * 0.10) / 32) * 32 + 1
-    validate_start = train_size + test_size
+    test_size = int(int(len(df) * 0.20) / 32) * 32 + 1
+    #validate_size = int(int(len(df) * 0.20) / 32) * 32 + 1
+    #validate_start = train_size + test_size
     train = df.iloc[0:train_size]
     test = df.iloc[train_size:train_size+test_size]
-    validate = df.iloc[validate_start:validate_start+validate_size]
+    #validate = df.iloc[validate_start:validate_start+validate_size]
 
     trainX, trainY = create_dataset(train, x_scaler, y_scaler, column='LSMA_CLOSE')
     testX, testY = create_dataset(test, x_scaler, y_scaler, column='LSMA_CLOSE')
-    validateX, validateY = create_dataset(validate, x_scaler, y_scaler, column='LSMA_CLOSE')
+    #validateX, validateY = create_dataset(validate, x_scaler, y_scaler, column='LSMA_CLOSE')
 
     # reshape for training
     trainX = np.reshape(trainX, (-1, len(columns), 1))
@@ -155,14 +155,16 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     score = model.evaluate(testX, testY, verbose=0, batch_size=32) * 100.0
     print("test score: {}".format(score))
 
-    validateX = np.reshape(validateX, (-1, len(columns), 1))
-    validateY = model.predict(validateX)
-    predictY = y_scaler.inverse_transform(validateY)
-    plot_predict_y = predictY.reshape(1, -1)[0]
-    plot_test_y = y_scaler.inverse_transform(validateY).reshape(1, -1)[0]
+    test_model = create_model(batch_size=1, model=model)
 
-    #print(plot_predict_y)
-    #print(plot_test_y)
+    plot_predict_y = []
+    #validateX = np.reshape(validateX, (-1, len(columns), 1))
+    for X in testX:
+        Y = test_model.predict(np.array( [X,] ))
+        predictY = y_scaler.inverse_transform(Y)
+        plot_predict_y.append(predictY[0][0])
+
+    plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
 
     #train_close_values = y_scaler.inverse_transform(trainY).reshape(1, -1)[0]
     #compute_real_predict(model, close_values=train_close_values, count=test_size, x_scaler=x_scaler, y_scaler=y_scaler)
