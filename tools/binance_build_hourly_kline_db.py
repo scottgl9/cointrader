@@ -34,7 +34,7 @@ def create_db_connection(db_file):
 
 if __name__ == '__main__':
     date_today = datetime.today().strftime('%m/%d/%Y')
-    date_two_years_ago = (datetime.now() - relativedelta(years=2)).strftime('%m/%d/%Y')
+    date_two_years_ago = "01/01/2017" #(datetime.now() - relativedelta(years=2)).strftime('%m/%d/%Y')
 
     parser = argparse.ArgumentParser()
 
@@ -65,14 +65,14 @@ if __name__ == '__main__':
         sys.exit(0)
 
     client = Client(MY_API_KEY, MY_API_SECRET)
-    accnt = AccountBinance(client, logger=logger)
+    accnt = AccountBinance(client, logger=logger, simulation=False)
     accnt.load_info_all_assets()
     accnt.load_detail_all_assets()
 
     symbol_table_list = []
     for symbol in sorted(accnt.get_all_ticker_symbols('BTC')):
-        #if accnt.get_usdt_value_symbol(symbol) < 0.02:
-        #    continue
+        if accnt.get_usdt_value_symbol(symbol) <= 0.02:
+            continue
         base_name, currency_name = accnt.split_symbol(symbol)
         if not base_name or not currency_name: continue
         if accnt.deposit_asset_disabled(base_name):
@@ -91,10 +91,10 @@ if __name__ == '__main__':
     columns = "ts integer,open real,high real,low real,close real,base_volume real,quote_volume real,trade_count integer,taker_buy_base_volume real,taker_buy_quote_volume real"
     cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"
 
+    current_ts = int(time.time()) * 1000
+
     for symbol in symbol_table_list:
         cur = db_conn.cursor()
-        cur.execute("""CREATE TABLE {} ({})""".format(symbol, columns))
-        db_conn.commit()
 
         print("Getting klines from {} to {} for {}".format(results.start_date, results.end_date, symbol))
 
@@ -105,11 +105,22 @@ if __name__ == '__main__':
                  end_str=end_ts * 1000,
         )
 
-        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
-
+        kline_list = []
         for k in klines:
             del k[6]
             k = k[:-1]
+            kline_list.append(k)
+
+        if (current_ts - kline_list[-1][0]) > 3600*24*1000:
+            print("Skipping {}".format(symbol))
+            continue
+
+        cur.execute("""CREATE TABLE {} ({})""".format(symbol, columns))
+        #db_conn.commit()
+
+        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
+
+        for k in kline_list:
             cur = db_conn.cursor()
             cur.execute(sql, k)
         db_conn.commit()
