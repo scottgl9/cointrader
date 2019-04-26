@@ -3,6 +3,9 @@
 import os
 import numpy as np
 import pandas as pd
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential, load_model, model_from_json
@@ -37,7 +40,10 @@ class HourlyLSTM(object):
         self.batch_size=batch_size
         self.x_scaler = None
         self.y_scaler = None
+        self.test_model = None
         self.model = None
+        self.model_columns = 0
+        self.model_rows = 0
         self.df = None
         self.lsma_close = None
         self.obv = None
@@ -99,6 +105,8 @@ class HourlyLSTM(object):
         self.model_end_ts = end_ts
         self.model = self.load_model()
         if self.model:
+            # create test model from original model
+            self.test_model = self.create_model(batch_size=1, model=self.model)
             return
 
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
@@ -115,11 +123,12 @@ class HourlyLSTM(object):
         print("Saved {} model".format(self.symbol))
         # free up memory from self.df
         self.df = None
+        # create test model from original model
+        self.test_model = self.create_model(batch_size=1, model=self.model)
 
 
-    def update(self, start_ts, end_ts):
+    def update(self, hourly_ts):
         if not self.scalers_loaded:
-            #if not self.load_scaler_model():
             self.create_scaler_model()
             self.indicators_loaded = True
             self.scalers_loaded = True
@@ -128,19 +137,16 @@ class HourlyLSTM(object):
         # we need to run the indicators on a dataset to get them in a good state before
         # using the indicators to build features for test/predict
         if not self.indicators_loaded:
-            #init_start_ts = start_ts - self.hours_preload * 3600 * 1000 #self.hkdb.accnt.hours_to_ts(self.hours_preload)
-            #init_end_ts = start_ts
-            self.init_indicators(start_ts=0, end_ts=self.model_end_ts) #init_start_ts, init_end_ts)
+            self.init_indicators(start_ts=0, end_ts=self.model_end_ts)
             self.indicators_loaded = True
 
-        df_update = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+        df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
         self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         self.testX = self.create_test_dataset(self.df_update)
-        predictY = self.model.predict(self.testX)
-        predictY = self.y_scaler.inverse_transform(predictY).reshape(1, -1)[0]
+        predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
+        predictY = self.y_scaler.inverse_transform(predictY)[0][0]
         print("{} = {}".format(self.symbol, predictY))
-
 
     def create_train_dataset(self, dataset, column='close'):
         dataX = dataset.shift(1).dropna().values
@@ -151,21 +157,24 @@ class HourlyLSTM(object):
         self.x_scaler = MinMaxScaler(feature_range=(0, 1))
         self.y_scaler = MinMaxScaler(feature_range=(0, 1))
 
-        scaleX = self.x_scaler.fit_transform(dataX)
-        scaleY = self.y_scaler.fit_transform(dataY)
+        scaleX = np.array(self.x_scaler.fit_transform(dataX))
+        scaleY = np.array(self.y_scaler.fit_transform(dataY))
 
-        return np.array(scaleX), np.array(scaleY)
+        self.model_columns = 3 #scaleX.shape[1]
+        self.model_rows = 1 #scaleX.shape[2]
 
+        return scaleX, scaleY
 
     def create_test_dataset(self, dataset):
         dataX = dataset.dropna().values
 
         # resize input test data to batch_size used to train model
-        if len(dataX) > self.batch_size:
-            offset = len(dataX) - self.batch_size
-            dataX = dataX[offset:]
+        #if len(dataX) > self.batch_size:
+        #    offset = len(dataX) - self.batch_size
+        #    dataX = dataX[offset:]
 
         scaleX = self.x_scaler.fit_transform(dataX)
+        print(scaleX)
         testX = np.reshape(np.array(scaleX), (-1, len(self.columns), 1))
         return testX
 

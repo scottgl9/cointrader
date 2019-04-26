@@ -23,7 +23,7 @@ class Hourly_LSTM_Signal(HourlySignalBase):
         if hourly_ts == self.last_hourly_ts:
             return
 
-        self.hourly_lstm.update(start_ts=self.first_hourly_ts, end_ts=hourly_ts)
+        self.hourly_lstm.update(hourly_ts=hourly_ts)
 
         self.last_update_ts = ts
         self.last_hourly_ts = hourly_ts

@@ -151,6 +151,12 @@ class HourlyKlinesDB(object):
         result = pd.read_sql_query(sql, self.conn)
         return result
 
+    # load single hourly kline in pandas dataframe
+    def get_pandas_kline(self, symbol, hourly_ts=0):
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, hourly_ts)
+        result = pd.read_sql_query(sql, self.conn)
+        return result
+
     # get klines as list of Kline class from db table
     def get_klines(self, symbol, start_ts=0, end_ts=0):
         result = []
