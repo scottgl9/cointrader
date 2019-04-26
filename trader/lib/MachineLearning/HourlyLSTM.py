@@ -231,24 +231,33 @@ class HourlyLSTM(object):
         return df.dropna()
 
 
+    def create_model(self, columns, rows, batch_size=32, model=None):
+        new_model = Sequential()
+
+        new_model.add(LSTM(units=50, return_sequences=True, batch_input_shape=(batch_size, columns, rows)))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(LSTM(units=50, return_sequences=True))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(LSTM(units=50, return_sequences=True))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(LSTM(units=50))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(Dense(units=1))
+
+        # for reshaping batch_size from a previously created model
+        if model:
+            weights = model.get_weights()
+            new_model.set_weights(weights)
+
+        new_model.compile(optimizer='adam', loss='mean_squared_error')
+        return new_model
+
+
     def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
-        model = Sequential()
-
-        model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
-        model.add(Dropout(0.2))
-
-        model.add(LSTM(units=50, return_sequences=True))
-        model.add(Dropout(0.2))
-
-        model.add(LSTM(units=50, return_sequences=True))
-        model.add(Dropout(0.2))
-
-        model.add(LSTM(units=50))
-        model.add(Dropout(0.2))
-
-        model.add(Dense(units=1))
-
-        model.compile(optimizer='adam', loss='mean_squared_error')
-
+        model = self.create_model(columns=X_train.shape[1], rows=X_train.shape[2], batch_size=batch_size)
         model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
         return model
