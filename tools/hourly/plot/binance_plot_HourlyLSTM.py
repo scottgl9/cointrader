@@ -11,6 +11,9 @@ except ImportError:
 import sqlite3
 import sys
 import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import time
 from trader.account.binance.client import Client
 from trader.config import *
@@ -26,7 +29,6 @@ try:
 except ImportError:
     from trader.indicator.EMA import EMA
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import numpy as np
 import pandas as pd

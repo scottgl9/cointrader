@@ -92,15 +92,17 @@ class HourlyLSTM(object):
             return
 
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
-        adjusted_size = int(len(df) / self.batch_size) * self.batch_size + 1
-        df = df.iloc[:adjusted_size]
+        # adjust size to take into account batch_size
+        #adjusted_size = int(len(df) / self.batch_size) * self.batch_size + 1
+        #df = df.iloc[:adjusted_size]
 
         self.start_ts = df['ts'].values.tolist()[-1]
         self.df = self.create_features(df)
-        # adjust size to take into account batch_size
-        adjusted_size = int(len(self.df) / self.batch_size) * self.batch_size + 1
-        self.df = self.df.iloc[:adjusted_size]
         trainX, trainY = self.create_train_dataset(self.df, column='LSMA_CLOSE', transform=True)
+
+        batch_adjusted_start  = len(trainX) - int(len(trainX) / self.batch_size) * self.batch_size
+        trainX = trainX[batch_adjusted_start:]
+        trainY = trainY[batch_adjusted_start:]
 
         # reshape for training
         trainX = np.reshape(trainX, (-1, len(self.columns), 1))
@@ -129,9 +131,10 @@ class HourlyLSTM(object):
             self.indicators_loaded = True
 
         df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
-        #print(df_update)
         #self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
+        if not len(self.df_update):
+            return
         self.test_result = self.df_update['LSMA_CLOSE'].values[0]
         self.testX = self.create_test_dataset(self.df_update)
         predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
@@ -184,7 +187,7 @@ class HourlyLSTM(object):
         df['LSMA_CLOSE'] = np.array(lsma_close.results())
         self.lsma_close = lsma_close.indicator
 
-        obv = Indicator(OBV)
+        obv = Indicator(OBV, use_log10=True)
         obv.close_key = 'LSMA_CLOSE'
         obv.volume_key = 'quote_volume'
         obv.load_dataframe(df)
@@ -210,7 +213,7 @@ class HourlyLSTM(object):
             self.lsma_close = lsma_close.indicator
 
         # process OBV values
-        obv = Indicator(OBV)
+        obv = Indicator(OBV, use_log10=True)
         obv.close_key = 'LSMA_CLOSE'
         obv.volume_key = 'quote_volume'
         if self.obv:
