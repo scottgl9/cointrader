@@ -23,87 +23,10 @@ from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.account.AccountBinance import AccountBinance
 
-from trader.indicator.OBV import OBV
 try:
     from trader.indicator.native.EMA import EMA
 except ImportError:
     from trader.indicator.EMA import EMA
-
-
-import numpy as np
-import pandas as pd
-from keras.layers.core import Dense, Activation, Dropout
-from keras.layers.recurrent import LSTM
-from keras.models import Sequential, load_model
-from sklearn.cross_validation import  train_test_split
-from sklearn.preprocessing import MinMaxScaler
-import talib
-from trader.indicator.RSI import RSI
-from trader.indicator.MACD import MACD
-from trader.indicator.LSMA import LSMA
-from trader.lib.Indicator import Indicator
-
-
-# convert an array of values into a dataset matrix
-def create_dataset(dataset, x_scaler, y_scaler, column='close'):
-    dataX = dataset.shift(1).dropna().values
-    dataY = dataset[column].shift(-1).dropna().values
-
-    #if len(dataY) > len(dataX):
-    #    dataY = dataY[:len(dataX)]
-
-    dataY = dataY.reshape(-1, 1)
-
-    scaleX = x_scaler.fit_transform(dataX)
-    scaleY = y_scaler.fit_transform(dataY)
-    return np.array(scaleX), np.array(scaleY)
-
-
-# get index of column name
-def get_index_column(dataset, column='close'):
-    # get column names
-    names = list(dataset)
-    # get index of column before scaling
-    column_index = names.index(column)
-    return column_index
-
-def create_model(columns=3, rows=1, batch_size=32, model=None):
-    new_model = Sequential()
-
-    new_model.add(LSTM(units=50, return_sequences=True, batch_input_shape=(batch_size, columns, rows)))
-    new_model.add(Dropout(0.2))
-
-    new_model.add(LSTM(units=50, return_sequences=True))
-    new_model.add(Dropout(0.2))
-
-    new_model.add(LSTM(units=50, return_sequences=True))
-    new_model.add(Dropout(0.2))
-
-    new_model.add(LSTM(units=50))
-    new_model.add(Dropout(0.2))
-
-    new_model.add(Dense(units=1))
-
-    #for reshaping batch_size from a previously created model
-    if model:
-        weights = model.get_weights()
-        new_model.set_weights(weights)
-
-    new_model.compile(optimizer='adam', loss='mean_squared_error')
-    return new_model
-
-
-def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
-    filename = "models/{}.h5".format(symbol)
-    if os.path.exists(filename):
-        model = load_model(filename)
-        return model
-
-    model = create_model(columns=X_train.shape[1], rows=X_train.shape[2], batch_size=batch_size)
-    for i in range(epoch):
-        model.fit(X_train, Y_train, epochs=1, batch_size=batch_size)
-    model.save(filename)
-    return model
 
 
 def simulate(hkdb, symbol, start_ts, end_ts):
@@ -117,7 +40,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     count = 0
 
     ts = start_ts + 3600 * 1000
-    while count <= 1000: #ts <= end_ts:
+    while ts <= end_ts:
         #print(time.ctime(int(ts / 1000)))
         hourly_lstm.update(ts)
         testy.append(hourly_lstm.test_result)
@@ -150,7 +73,8 @@ def get_first_timestamp(filename, symbol):
 def get_last_timestamp(filename, symbol):
     conn = sqlite3.connect(filename)
     c = conn.cursor()
-    c.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+    #c.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+    c.execute("SELECT E FROM miniticker WHERE s='{}' ORDER BY E DESC LIMIT 1".format(symbol))
     result = c.fetchone()
     return int(result[0])
 
@@ -189,7 +113,7 @@ if __name__ == '__main__':
             sys.exit(-1)
         else:
             start_ts = get_first_timestamp(results.filename, symbol)
-            end_ts = get_last_timestamp(hourly_filename, symbol)
+            end_ts = get_last_timestamp(results.filename, symbol)
             start_ts = accnt.get_hourly_ts(start_ts)
             print(start_ts, end_ts)
 
