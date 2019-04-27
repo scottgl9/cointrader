@@ -55,6 +55,8 @@ class HourlyLSTM(object):
         self.testX = None
         self.scalers_loaded = False
         self.indicators_loaded = False
+        self.test_result = 0
+        self.predict_result = 0
 
 
     def load_model(self):
@@ -127,13 +129,15 @@ class HourlyLSTM(object):
             self.indicators_loaded = True
 
         df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
-        print(df_update)
-        self.last_ts = df_update['ts'].values.tolist()[-1]
+        #print(df_update)
+        #self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
+        self.test_result = self.df_update['LSMA_CLOSE'].values[0]
         self.testX = self.create_test_dataset(self.df_update)
         predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
         predictY = self.y_scaler.inverse_transform(predictY)[0][0]
-        print("{} = {}".format(self.symbol, predictY))
+        self.predict_result = predictY
+        #print("{} = {}".format(self.symbol, predictY))
 
     def create_train_dataset(self, dataset, column='close', transform=True):
         dataX = dataset.shift(1).dropna().values
@@ -181,6 +185,7 @@ class HourlyLSTM(object):
         self.lsma_close = lsma_close.indicator
 
         obv = Indicator(OBV)
+        obv.close_key = 'LSMA_CLOSE'
         obv.volume_key = 'quote_volume'
         obv.load_dataframe(df)
         obv.process()
@@ -206,6 +211,7 @@ class HourlyLSTM(object):
 
         # process OBV values
         obv = Indicator(OBV)
+        obv.close_key = 'LSMA_CLOSE'
         obv.volume_key = 'quote_volume'
         if self.obv:
             obv_indicator = self.obv

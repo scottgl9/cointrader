@@ -109,11 +109,19 @@ def simulate(hkdb, symbol, start_ts, end_ts):
 
     hourly_lstm.load(start_ts=0, end_ts=start_ts)
 
+    testy = []
+    predicty = []
+
+    count = 0
+
     ts = start_ts + 3600 * 1000
-    while ts <= end_ts:
-        print(time.ctime(int(ts / 1000)))
+    while count <= 1000: #ts <= end_ts:
+        #print(time.ctime(int(ts / 1000)))
         hourly_lstm.update(ts)
+        testy.append(hourly_lstm.test_result)
+        predicty.append(hourly_lstm.predict_result)
         ts += 3600 * 1000
+        count += 1
 
     # plot_predict_y = []
     # for X in testX:
@@ -123,11 +131,11 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     #
     # plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
     #
-    # plt.subplot(211)
-    # fig1, = plt.plot(plot_test_y, label='TESTY')
-    # fig2, = plt.plot(plot_predict_y, label='PREDICTY')
-    # plt.legend(handles=[fig1, fig2])
-    # plt.show()
+    plt.subplot(211)
+    fig1, = plt.plot(testy, label='TESTY')
+    fig2, = plt.plot(predicty, label='PREDICTY')
+    plt.legend(handles=[fig1, fig2])
+    plt.show()
 
 # get first timestamp from kline sqlite db
 def get_first_timestamp(filename, symbol):

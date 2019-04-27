@@ -256,7 +256,8 @@ class basic_signal_market_strategy(StrategyBase):
 
         if not self.timestamp:
             if self.simulate and self.hourly_klines_signal and not self.hourly_klines_loaded:
-                if self.accnt.loaded_model_count <= 5:
+                #if self.accnt.loaded_model_count <= 5:
+                if self.ticker_id.endswith('USDT'):
                     self.load_hourly_klines(kline.ts)
                     self.hourly_klines_loaded = True
                 else:
