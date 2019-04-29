@@ -10,12 +10,16 @@ class MovingMedian(object):
         self.values = []
         self.age = 0
         self.result = 0
+        self.full = False
 
     def update(self, close):
         if len(self.values) < self.window:
             self.skip_list.insert(float(close))
             self.result = float(close)
             self.values.append(float(close))
+        elif not self.full:
+            self.result = self.skip_list[self.mid_index]
+            self.full = True
         else:
             old_value = self.values[int(self.age)]
             self.values[int(self.age)] = float(close)

@@ -25,6 +25,9 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     mm = MovingMedian(25)
     mm_values = []
 
+    ema25 = EMA(25, scale=24)
+    ema25_values = []
+
     obv = OBV()
     obv_ema12 = EMA(12)
     obv_ema26 = EMA(26)
@@ -51,6 +54,9 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         mm.update(close)
         mm_values.append(mm.result)
 
+        ema25.update(close)
+        ema25_values.append(ema25.result)
+
         obv_value = obv.update(close=close, volume=volume)
         obv_ema12_values.append(obv_ema12.update(obv_value))
         obv_ema26_values.append(obv_ema26.update(obv_value))
@@ -67,7 +73,8 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     symprice, = plt.plot(close_prices, label=symbol)
 
     fig1, = plt.plot(mm_values, label='MM')
-    plt.legend(handles=[symprice, fig1])
+    fig2, = plt.plot(ema25_values, label="EMA25")
+    plt.legend(handles=[symprice, fig1, fig2])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')
