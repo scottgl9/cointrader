@@ -5,7 +5,7 @@ from trader.lib.IndexableSkiplist import IndexableSkiplist
 class MovingMedian(object):
     def __init__(self, window):
         self.window = window
-        self.mid_index = self.window // 2
+        self.mid_index = self.window / 2
         self.skip_list = IndexableSkiplist(win_size=self.window)
         self.values = []
         self.age = 0
@@ -14,6 +14,7 @@ class MovingMedian(object):
     def update(self, close):
         if len(self.values) < self.window:
             self.skip_list.insert(float(close))
+            self.result = float(close)
         else:
             old_value = self.values[int(self.age)]
             self.values[int(self.age)] = float(close)
