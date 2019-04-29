@@ -22,7 +22,7 @@ from trader.indicator.EMA import EMA
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    mm = MovingMedian(1000)
+    mm = MovingMedian(25)
     mm_values = []
 
     obv = OBV()
