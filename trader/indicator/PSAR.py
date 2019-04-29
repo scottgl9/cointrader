@@ -2,13 +2,14 @@ from .IndicatorBase import IndicatorBase
 
 
 class PSAR(IndicatorBase):
-    def __init__(self, iaf=0.02, maxaf=0.2, close_only=False):
+    def __init__(self, iaf=0.02, maxaf=0.2):
         IndicatorBase.__init__(self, use_close=True, use_low=True, use_high=True)
         self.iaf = iaf
         self.maxaf = maxaf
         self.af = 0
         self.bull = True
         self.psar = 0
+        self.result = 0
         self.ep = 0
         self.hp = 0
         self.lp = 0
@@ -18,22 +19,16 @@ class PSAR(IndicatorBase):
         self.prev_high = 0
         self.last_prev_low = 0
         self.last_prev_high = 0
-        self.close_only = close_only
 
-    def update(self, close, low=0, high=0):
-        # low and high values unavailable
-        if self.close_only:
-            low = close
-            high = close
-
+    def update(self, close, low, high):
         if self.psar == 0 or self.last_prev_low == 0 or self.last_prev_high == 0:
             self.psar = close
             self.last_prev_low = self.prev_low
             self.last_prev_high = self.prev_high
             self.prev_low = low
             self.prev_high = high
-
-            return self.psar
+            self.result = self.psar
+            return self.result
 
         prev_psar = self.psar
 
@@ -95,4 +90,5 @@ class PSAR(IndicatorBase):
         self.prev_low = low
         self.prev_high = high
 
-        return self.psar
+        self.result = self.psar
+        return self.result

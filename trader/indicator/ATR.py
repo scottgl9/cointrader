@@ -7,32 +7,27 @@ class ATR(IndicatorBase):
         self.result = 0.0
         self.window = window
         self.last_close = 0.0
-        self.trs = []
         self._tr_sum = 0
-        self.age = 0
+        self.count = 0
         self.atr = 0.0
         self.prior_atr = 0.0
 
     def update(self, close, low=0, high=0):
-        if not len(self.trs):
+        if not self.count:
             tr = high - low
         else:
             tr = max([high - low, abs(high - self.last_close), abs(low - self.last_close)])
-        if len(self.trs) < self.window - 1:
-            self.trs.append(tr)
+        if self.count < self.window - 1:
             self._tr_sum += tr
-            self.atr = tr
+            self.count += 1
         elif self.atr == 0.0:
-            self.trs.append(tr)
             self._tr_sum += tr
             self.atr = self._tr_sum / self.window
-            self.trs[self.age] = self.atr
+            self.count += 1
         else:
-            self.atr = ((self.prior_atr * (self.window-1.0)) + tr) / self.window
-            self.trs[self.age] = self.atr
+            self.prior_atr = self.atr
+            self.atr = ((self.prior_atr * float(self.window - 1)) + tr) / self.window
 
         self.last_close = close
-        self.prior_atr = self.atr
-        self.age = (self.age + 1) % self.window
         self.result = self.atr
         return self.result
