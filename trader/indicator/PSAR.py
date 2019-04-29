@@ -20,7 +20,7 @@ class PSAR(IndicatorBase):
         self.last_prev_high = 0
         self.close_only = close_only
 
-    def update(self, close, low=0, high=0, ts=0):
+    def update(self, close, low=0, high=0):
         # low and high values unavailable
         if self.close_only:
             low = close

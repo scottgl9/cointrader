@@ -13,7 +13,7 @@ class ATR(IndicatorBase):
         self.atr = 0.0
         self.prior_atr = 0.0
 
-    def update(self, close, low=0, high=0, ts=0):
+    def update(self, close, low=0, high=0):
         if not len(self.trs):
             tr = high - low
         else:
