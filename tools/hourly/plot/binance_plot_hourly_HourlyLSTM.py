@@ -39,23 +39,14 @@ def simulate(hkdb, symbol, start_ts, end_ts):
 
     count = 0
 
-    ts = start_ts + 3600 * 1000
+    ts = start_ts
     while ts <= end_ts:
-        #print(time.ctime(int(ts / 1000)))
+        ts += 3600 * 1000
         hourly_lstm.update(ts)
         testy.append(hourly_lstm.test_result)
         predicty.append(hourly_lstm.predict_result)
-        ts += 3600 * 1000
         count += 1
 
-    # plot_predict_y = []
-    # for X in testX:
-    #     Y = test_model.predict(np.array( [X,] ))
-    #     predictY = y_scaler.inverse_transform(Y)
-    #     plot_predict_y.append(predictY[0][0])
-    #
-    # plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
-    #
     plt.subplot(211)
     fig1, = plt.plot(testy, label='TESTY')
     fig2, = plt.plot(predicty, label='PREDICTY')
@@ -114,7 +105,9 @@ if __name__ == '__main__':
         else:
             start_ts = get_first_timestamp(results.filename, symbol)
             end_ts = get_last_timestamp(results.filename, symbol)
-            start_ts = accnt.get_hourly_ts(start_ts)
+            #start_ts = accnt.get_hourly_ts(start_ts)
+            start_ts = (int(start_ts / 1000) / 3600) * 3600 * 1000
+            print(time.ctime(int(start_ts / 1000)))
             print(start_ts, end_ts)
 
     if not os.path.exists(results.hourly_filename):
