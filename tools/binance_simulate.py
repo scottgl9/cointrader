@@ -106,10 +106,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                            simulate_db_filename=simulate_db_filename)
 
     config.select_section('binance.simulate')
-    strategy = config.get('strategy')
-    signal_name = config.get('signals')
-    hourly_signal_name = config.get('hourly_signal')
-    hourly_klines_db_file = config.get('hourly_kline_db_file')
     btc_balance = config.get('BTC')
     eth_balance = config.get('ETH')
     bnb_balance = config.get('BNB')
@@ -123,17 +119,10 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     if bnb_balance:
         accnt.update_asset_balance('BNB', float(bnb_balance), float(bnb_balance))
 
-    signal_names = [signal_name] #, "BTC_USDT_Signal"]
-
     multitrader = MultiTrader(client,
-                              strategy,
-                              signal_names=signal_names,
-                              hourly_signal_name=hourly_signal_name,
-                              simulate=True,
                               accnt=accnt,
                               logger=logger,
                               store_trades=True,
-                              hourly_klines_db_file=hourly_klines_db_file,
                               config=config)
 
     print(multitrader.accnt.balances)

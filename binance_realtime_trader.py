@@ -36,19 +36,21 @@ class BinanceTrader:
         self.kline = None
         self.tickers = {}
 
-        simulate = config.get('simulate')
+        #simulate = config.get('simulate')
         strategy = config.get('strategy')
         signal_name = config.get('signals')
-        hourly_signal_name = config.get('hourly_signal')
-        hourly_klines_db_file = config.get('hourly_kline_db_file')
+        #hourly_signal_name = config.get('hourly_signal')
+        #hourly_klines_db_file = config.get('hourly_kline_db_file')
+
+        config.select_section('binance.live')
 
         self.multitrader = MultiTrader(client,
-                                       strategy,
-                                       signal_names=[signal_name],
-                                       hourly_signal_name=hourly_signal_name,
-                                       simulate=simulate,
+                                       #strategy,
+                                       #signal_names=[signal_name],
+                                       #hourly_signal_name=hourly_signal_name,
+                                       #simulate=simulate,
                                        logger=logger,
-                                       hourly_klines_db_file=hourly_klines_db_file,
+                                       #hourly_klines_db_file=hourly_klines_db_file,
                                        config=config)
 
         logger.info("Started live trading strategy: {} signal: {}".format(strategy, signal_name))

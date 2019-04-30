@@ -41,18 +41,19 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
 # handle incoming websocket messages for all symbols, and create new tradepairs
 # for those that do not yet exist
 class MultiTrader(object):
-    def __init__(self, client, strategy_name='', signal_names=None, hourly_signal_name=None, assets_info=None,
-                 simulate=False, accnt=None, logger=None, global_en=True, store_trades=False,
-                 hourly_klines_db_file=None, config=None):
+    def __init__(self, client, assets_info=None, simulate=False, accnt=None, logger=None,
+                 global_en=True, store_trades=False, config=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.config = config
-        self.simulate = simulate
-        self.strategy_name = strategy_name
-        self.signal_names = signal_names
-        self.hourly_signal_name = hourly_signal_name
-        self.hourly_klines_db_file = hourly_klines_db_file
+
+        self.simulate = self.config.get('simulate')
+        self.strategy_name = self.config.get('strategy')
+        self.signal_names = [self.config.get('signals')]
+        self.hourly_signal_name = self.config.get('hourly_signal')
+        self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+
         if accnt:
             self.accnt = accnt
         else:
