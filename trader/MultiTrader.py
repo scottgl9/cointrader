@@ -15,7 +15,7 @@ from trader.strategy.null_strategy import null_strategy
 
 def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, hourly_signal_name=None,
                     account_handler=None, order_handler=None, hourly_klines_handler=None,
-                    base_min_size=0.0, tick_size=0.0, asset_info=None, logger=None):
+                    base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
     elif sname == 'basic_signal_stop_loss_strategy': strategy = basic_signal_stop_loss_strategy
@@ -35,6 +35,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
                     asset_info=asset_info,
                     base_min_size=base_min_size,
                     tick_size=tick_size,
+                    config=config,
                     logger=logger)
 
 
@@ -155,6 +156,7 @@ class MultiTrader(object):
                                      base_min_size=base_min_size,
                                      tick_size=tick_size,
                                      asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
+                                     config=self.config,
                                      logger=self.logger)
 
         self.trade_pairs[symbol] = trade_pair

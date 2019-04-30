@@ -34,9 +34,10 @@ def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
 
 class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, logger=None):
+                 hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
         self.strategy_name = None
         self.logger = logger
+        self.config = config
         self.tickers = None
         self.base = base
         self.currency = currency
