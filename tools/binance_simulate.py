@@ -105,6 +105,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                            logger=logger,
                            simulate_db_filename=simulate_db_filename)
 
+    config.select_section('binance.simulate')
     strategy = config.get('strategy')
     signal_name = config.get('signals')
     hourly_signal_name = config.get('hourly_signal')
@@ -132,7 +133,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                               accnt=accnt,
                               logger=logger,
                               store_trades=True,
-                              hourly_klines_db_file=hourly_klines_db_file)
+                              hourly_klines_db_file=hourly_klines_db_file,
+                              config=config)
 
     print(multitrader.accnt.balances)
 

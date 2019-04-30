@@ -30,11 +30,13 @@ from trader.config import *
 class BinanceTrader:
     def __init__(self, client, config, logger=None):
         self.client = client
+        self.config = config
         self.found = False
         self.logger = logger
         self.kline = None
         self.tickers = {}
 
+        simulate = config.get('simulate')
         strategy = config.get('strategy')
         signal_name = config.get('signals')
         hourly_signal_name = config.get('hourly_signal')
@@ -44,9 +46,10 @@ class BinanceTrader:
                                        strategy,
                                        signal_names=[signal_name],
                                        hourly_signal_name=hourly_signal_name,
-                                       simulate=False,
+                                       simulate=simulate,
                                        logger=logger,
-                                       hourly_klines_db_file=hourly_klines_db_file)
+                                       hourly_klines_db_file=hourly_klines_db_file,
+                                       config=config)
 
         logger.info("Started live trading strategy: {} signal: {}".format(strategy, signal_name))
 

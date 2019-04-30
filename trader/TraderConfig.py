@@ -15,6 +15,7 @@ class TraderConfig(object):
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_signal', 'Hourly_EMA_Crossover')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
+        self.config.set(section, 'simulate', 'False')
         self.config.set(section, 'balance_update', 'True')
         self.config.set(section, 'use_hourly_klines', 'True')
         # live trading specific options
@@ -30,6 +31,7 @@ class TraderConfig(object):
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_signal', 'Hourly_EMA_Crossover')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
+        self.config.set(section, 'simulate', 'True')
         self.config.set(section, 'balance_update', 'False')
         self.config.set(section, 'use_hourly_klines', 'True')
         # simulate trading specific options
@@ -62,10 +64,15 @@ class TraderConfig(object):
     def get(self, option):
         if not self.section:
             return None
-        return self.config.get(self.section, option)
+        return self.get_section(self.section, option)
 
     def get_section(self, section, option):
-        return self.config.get(section, option)
+        result = self.config.get(section, option)
+        if result == 'True':
+            return True
+        elif result == 'False':
+            return False
+        return result
 
     def set(self, option, value):
         if not self.section:

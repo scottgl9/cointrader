@@ -43,10 +43,11 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
 class MultiTrader(object):
     def __init__(self, client, strategy_name='', signal_names=None, hourly_signal_name=None, assets_info=None,
                  simulate=False, accnt=None, logger=None, global_en=True, store_trades=False,
-                 hourly_klines_db_file=None):
+                 hourly_klines_db_file=None, config=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
+        self.config = config
         self.simulate = simulate
         self.strategy_name = strategy_name
         self.signal_names = signal_names
