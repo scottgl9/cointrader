@@ -43,13 +43,14 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
 # for those that do not yet exist
 class MultiTrader(object):
     def __init__(self, client, assets_info=None, simulate=False, accnt=None, logger=None,
-                 global_en=True, store_trades=False, config=None):
+                 global_en=True, config=None):
         self.trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.config = config
 
         self.simulate = self.config.get('simulate')
+        self.store_trades = self.config.get('store_trades')
         self.strategy_name = self.config.get('strategy')
         self.signal_names = [self.config.get('signals')]
         self.hourly_signal_name = self.config.get('hourly_signal')
@@ -83,7 +84,6 @@ class MultiTrader(object):
         self.check_count = 0
         self.stopped = False
         self.running = True
-        self.store_trades = store_trades
         self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger, self.store_trades)
         self.global_strategy = None
         self.global_en = global_en

@@ -16,6 +16,7 @@ class TraderConfig(object):
         self.config.set(section, 'hourly_signal', 'Hourly_EMA_Crossover')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
         self.config.set(section, 'simulate', 'False')
+        self.config.set(section, 'store_trades', 'False')
         self.config.set(section, 'balance_update', 'True')
         self.config.set(section, 'use_hourly_klines', 'True')
         # live trading specific options
@@ -32,6 +33,7 @@ class TraderConfig(object):
         self.config.set(section, 'hourly_signal', 'Hourly_EMA_Crossover')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
         self.config.set(section, 'simulate', 'True')
+        self.config.set(section, 'store_trades', 'True')
         self.config.set(section, 'balance_update', 'False')
         self.config.set(section, 'use_hourly_klines', 'True')
         # simulate trading specific options

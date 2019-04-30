@@ -122,7 +122,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     multitrader = MultiTrader(client,
                               accnt=accnt,
                               logger=logger,
-                              store_trades=True,
                               config=config)
 
     print(multitrader.accnt.balances)
