@@ -25,7 +25,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
     obv = OBV()
-    scale = 24
+    #scale = 24
     if start_ts and end_ts:
         scale = 1
     ema12 = EMA(12, scale=scale)
@@ -112,11 +112,19 @@ def get_first_timestamp(filename, symbol):
     result = c.fetchone()
     return int(result[0])
 
+def get_last_timestamp(filename, symbol):
+    conn = sqlite3.connect(filename)
+    c = conn.cursor()
+    #c.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+    c.execute("SELECT E FROM miniticker WHERE s='{}' ORDER BY E DESC LIMIT 1".format(symbol))
+    result = c.fetchone()
+    return int(result[0])
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # used to get first timestamp for symbol from precaptured live market data
     parser.add_argument('-f', action='store', dest='filename',
-                        default='', #'cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='cryptocurrency_database.miniticker_collection_04092018.db',
                         help='filename of kline sqlite db')
 
     parser.add_argument('--hours', action='store', dest='hours',
@@ -148,8 +156,9 @@ if __name__ == '__main__':
             print("file {} doesn't exist, exiting...".format(results.filename))
             sys.exit(-1)
         else:
-            end_ts = get_first_timestamp(results.filename, symbol)
-            start_ts = end_ts - 1000 * 3600 * int(results.hours)
+            end_ts = get_last_timestamp(results.filename, symbol)
+            start_ts = get_first_timestamp(results.filename, symbol)
+            start_ts = start_ts - 1000 * 3600 * int(results.hours)
             print(start_ts, end_ts)
 
 

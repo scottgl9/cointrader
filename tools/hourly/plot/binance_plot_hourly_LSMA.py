@@ -69,10 +69,10 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
 
-    fig2, = plt.plot(lsma24_values, label='LSMA1DAY')
-    fig3, = plt.plot(lsma168_values, label='LSMA1WEEK')
-    fig4, = plt.plot(lsma720_values, label='LSMA1MONTH')
-    plt.legend(handles=[symprice, fig2, fig3, fig4])
+    #fig2, = plt.plot(lsma24_values, label='LSMA1DAY')
+    #fig3, = plt.plot(lsma168_values, label='LSMA1WEEK')
+    #fig4, = plt.plot(lsma720_values, label='LSMA1MONTH')
+    plt.legend(handles=[symprice])
     plt.subplot(212)
     fig21, = plt.plot(lsma6_obv_values, label='OBVLSMA12')
     plt.legend(handles=[fig21])
@@ -86,11 +86,19 @@ def get_first_timestamp(filename, symbol):
     result = c.fetchone()
     return int(result[0])
 
+def get_last_timestamp(filename, symbol):
+    conn = sqlite3.connect(filename)
+    c = conn.cursor()
+    #c.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+    c.execute("SELECT E FROM miniticker WHERE s='{}' ORDER BY E DESC LIMIT 1".format(symbol))
+    result = c.fetchone()
+    return int(result[0])
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # used to get first timestamp for symbol from precaptured live market data
     parser.add_argument('-f', action='store', dest='filename',
-                        default='', #'cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='cryptocurrency_database.miniticker_collection_04092018.db',
                         help='filename of kline sqlite db')
 
     parser.add_argument('--hours', action='store', dest='hours',
@@ -122,8 +130,9 @@ if __name__ == '__main__':
             print("file {} doesn't exist, exiting...".format(results.filename))
             sys.exit(-1)
         else:
-            end_ts = get_first_timestamp(results.filename, symbol)
-            start_ts = end_ts - 1000 * 3600 * int(results.hours)
+            end_ts = get_last_timestamp(results.filename, symbol)
+            start_ts = get_first_timestamp(results.filename, symbol)
+            start_ts = start_ts - 1000 * 3600 * int(results.hours)
             print(start_ts, end_ts)
 
 
