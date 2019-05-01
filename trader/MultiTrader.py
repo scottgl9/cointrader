@@ -45,6 +45,7 @@ class MultiTrader(object):
         self.accounts = {}
         self.client = client
         self.config = config
+        self.logger = logger
 
         self.simulate = self.config.get('simulate')
         self.store_trades = self.config.get('store_trades')
@@ -52,6 +53,9 @@ class MultiTrader(object):
         self.signal_names = [self.config.get('signals')]
         self.hourly_signal_name = self.config.get('hourly_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+        self.usdt_value_cutoff = float(self.config.get('usdt_value_cutoff'))
+
+        self.logger.info("Setting USDT value cutoff to {}".format(self.usdt_value_cutoff))
 
         if accnt:
             self.accnt = accnt
@@ -62,7 +66,6 @@ class MultiTrader(object):
         self.assets_info = assets_info
         self.tickers = None
         self.msg_handler = MessageHandler()
-        self.logger = logger
 
         try:
             self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_file, self.logger)
@@ -127,10 +130,10 @@ class MultiTrader(object):
             return None
 
         # check USDT value of base by calculating (base_currency) * (currency_usdt)
-        # verify that USDT value >= $0.02, if less do not buy
+        # verify that USDT value >= self.usdt_value_cutoff, if less do not buy
         usdt_value = self.accnt.get_usdt_value_symbol(symbol, float(price))
         if usdt_value:
-            if usdt_value < 0.02:
+            if usdt_value < self.usdt_value_cutoff:
                 return None
 
         # *FIXME* use AssetInfo class instead
