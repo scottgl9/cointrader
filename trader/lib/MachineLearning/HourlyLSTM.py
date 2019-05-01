@@ -33,8 +33,8 @@ class HourlyLSTM(object):
 
         self.weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
         self.arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
-        self.xscale_file = os.path.join(self.models_path, "{}_xscale.skl".format(self.symbol))
-        self.yscale_file = os.path.join(self.models_path, "{}_yscale.skl".format(self.symbol))
+        #self.xscale_file = os.path.join(self.models_path, "{}_xscale.skl".format(self.symbol))
+        #self.yscale_file = os.path.join(self.models_path, "{}_yscale.skl".format(self.symbol))
         # hours to preload to initialize indicators
         self.columns = ['LSMA_CLOSE', 'RSI', 'OBV']
         self.batch_size=batch_size
@@ -92,9 +92,6 @@ class HourlyLSTM(object):
             return
 
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
-        # adjust size to take into account batch_size
-        #adjusted_size = int(len(df) / self.batch_size) * self.batch_size + 1
-        #df = df.iloc[:adjusted_size]
 
         self.start_ts = df['ts'].values.tolist()[-1]
         self.df = self.create_features(df)
@@ -140,7 +137,7 @@ class HourlyLSTM(object):
         predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
         predictY = self.y_scaler.inverse_transform(predictY)[0][0]
         self.predict_result = predictY
-        #print("{} = {}".format(self.symbol, predictY))
+
 
     def create_train_dataset(self, dataset, column='close', transform=True):
         dataX = dataset.shift(1).dropna().values
@@ -160,8 +157,8 @@ class HourlyLSTM(object):
             scaleX = dataX
             scaleY = dataY
 
-        self.model_columns = 3 #scaleX.shape[1]
-        self.model_rows = 1 #scaleX.shape[2]
+        self.model_columns = len(self.columns)
+        self.model_rows = 1
 
         return scaleX, scaleY
 
@@ -190,8 +187,7 @@ class HourlyLSTM(object):
         else:
             lsma_close.process()
 
-        if not self.lsma_close:
-            self.lsma_close = lsma_close.indicator
+        self.lsma_close = lsma_close.indicator
 
         # process OBV values
         obv = Indicator(OBV, use_log10=True)
@@ -206,12 +202,11 @@ class HourlyLSTM(object):
         else:
             obv.process()
 
-        if not self.obv:
-            self.obv = obv.indicator
+        self.obv = obv.indicator
 
         # process RSI values
         rsi = Indicator(RSI, 14)
-        #rsi.close_key = 'LSMA_CLOSE'
+        rsi.close_key = 'LSMA_CLOSE'
         if self.rsi:
             rsi_indicator = self.rsi
             rsi.set_indicator(rsi_indicator)
@@ -222,8 +217,8 @@ class HourlyLSTM(object):
             df['RSI'] = rsi_result
         else:
             rsi.process()
-        if not self.rsi:
-            self.rsi = rsi.indicator
+
+        self.rsi = rsi.indicator
 
         if store:
             df = pd.DataFrame(df, columns=self.columns)
@@ -258,6 +253,6 @@ class HourlyLSTM(object):
 
 
     def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
-        model = self.create_model(columns=X_train.shape[1], rows=X_train.shape[2], batch_size=batch_size)
+        model = self.create_model(columns=len(self.columns), rows=X_train.shape[2], batch_size=batch_size)
         model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
         return model
