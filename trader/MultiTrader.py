@@ -13,9 +13,8 @@ from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_mar
 from trader.strategy.null_strategy import null_strategy
 
 
-def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None, hourly_signal_name=None,
-                    account_handler=None, order_handler=None, hourly_klines_handler=None,
-                    base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
+def select_strategy(sname, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
+                    hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
     elif sname == 'basic_signal_stop_loss_strategy': strategy = basic_signal_stop_loss_strategy
@@ -27,8 +26,6 @@ def select_strategy(sname, client, base='BTC', currency='USD', signal_names=None
     return strategy(client,
                     base,
                     currency,
-                    signal_names,
-                    hourly_signal_name,
                     account_handler,
                     order_handler=order_handler,
                     hourly_klines_handler=hourly_klines_handler,
@@ -148,8 +145,6 @@ class MultiTrader(object):
                                      self.client,
                                      base_name,
                                      currency_name,
-                                     signal_names=self.signal_names,
-                                     hourly_signal_name=self.hourly_signal_name,
                                      account_handler=self.accnt,
                                      order_handler=self.order_handler,
                                      hourly_klines_handler=self.hourly_klines_handler,

@@ -10,8 +10,8 @@ from datetime import datetime
 
 
 class basic_signal_market_strategy(StrategyBase):
-    def __init__(self, client, base='BTC', currency='USD', signal_names=None, hourly_signal_name=None,
-                 account_handler=None, order_handler=None, hourly_klines_handler=None, config=None, asset_info=None,
+    def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
+                 hourly_klines_handler=None, config=None, asset_info=None,
                  base_min_size=0.0, tick_size=0.0, logger=None):
         super(basic_signal_market_strategy, self).__init__(client,
                                                            base,
@@ -34,6 +34,9 @@ class basic_signal_market_strategy(StrategyBase):
                                                    usdt=10.0,
                                                    multiplier=5.0)
 
+
+        signal_names = [self.config.get('signals')]
+        hourly_signal_name = self.config.get('hourly_signal')
 
         if hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,

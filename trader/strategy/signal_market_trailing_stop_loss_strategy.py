@@ -8,8 +8,8 @@ from trader.signal.SignalBase import SignalBase
 
 
 class signal_market_trailing_stop_loss_strategy(StrategyBase):
-    def __init__(self, client, base='BTC', currency='USD', signal_names=None, hourly_signal_name=None,
-                 account_handler=None, order_handler=None, hourly_klines_handler=None, config=None, asset_info=None,
+    def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
+                 hourly_klines_handler=None, config=None, asset_info=None,
                  base_min_size=0.0, tick_size=0.0, logger=None):
         super(signal_market_trailing_stop_loss_strategy, self).__init__(client,
                                                                         base,
@@ -41,6 +41,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                        pax=10.0,
                                                        usdt=10.0,
                                                        multiplier=5.0)
+
+        signal_names = [self.config.get('signals')]
+        hourly_signal_name = self.config.get('hourly_signal')
 
         if signal_names:
             for name in signal_names:
