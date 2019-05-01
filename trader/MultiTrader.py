@@ -54,6 +54,7 @@ class MultiTrader(object):
         self.hourly_signal_name = self.config.get('hourly_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.usdt_value_cutoff = float(self.config.get('usdt_value_cutoff'))
+        self.use_hourly_klines = self.config.get('use_hourly_klines')
 
         self.logger.info("Setting USDT value cutoff to {}".format(self.usdt_value_cutoff))
 
@@ -67,12 +68,13 @@ class MultiTrader(object):
         self.tickers = None
         self.msg_handler = MessageHandler()
 
-        try:
-            self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_file, self.logger)
-            self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
-        except IOError:
-            self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
-            self.hourly_klines_handler = None
+        if self.use_hourly_klines:
+            try:
+                self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_file, self.logger)
+                self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
+            except IOError:
+                self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
+                self.hourly_klines_handler = None
 
         #self.market_manager = MarketManager()
 

@@ -37,8 +37,10 @@ class basic_signal_market_strategy(StrategyBase):
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
         signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('hourly_signal')
+        self.use_hourly_klines = self.config.get('use_hourly_klines')
+        self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
 
-        if hourly_signal_name:
+        if self.use_hourly_klines and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
                                                              hkdb=self.hourly_klines_handler,
                                                              accnt=self.accnt,
@@ -260,8 +262,8 @@ class basic_signal_market_strategy(StrategyBase):
 
         if not self.timestamp:
             if self.simulate and self.hourly_klines_signal and not self.hourly_klines_loaded:
-                #if self.accnt.loaded_model_count <= 5:
-                if self.ticker_id.endswith('USDT'):
+                # limit maximum number of models to load, unless max_hourly_model_count is zero
+                if not self.max_hourly_model_count or self.accnt.loaded_model_count <= self.max_hourly_model_count:
                     self.load_hourly_klines(kline.ts)
                     self.hourly_klines_loaded = True
                 else:
