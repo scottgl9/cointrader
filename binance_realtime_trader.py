@@ -305,6 +305,9 @@ if __name__ == '__main__':
     results = parser.parse_args()
 
     config = TraderConfig("trader.ini")
+    if not config.section_exists('binance.live'):
+        print("Section binance.live does not exist")
+        sys.exit(-1)
     config.select_section('binance.live')
 
     if results.strategy:

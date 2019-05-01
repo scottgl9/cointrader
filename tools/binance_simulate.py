@@ -105,6 +105,10 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                            logger=logger,
                            simulate_db_filename=simulate_db_filename)
 
+    if not config.section_exists('binance.simulate'):
+        print("Section binance.simulate does not exist")
+        sys.exit(-1)
+
     config.select_section('binance.simulate')
     btc_balance = config.get('BTC')
     eth_balance = config.get('ETH')

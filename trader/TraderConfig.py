@@ -63,6 +63,15 @@ class TraderConfig(object):
     def select_section(self, section):
         self.section = section
 
+    def section_exists(self, section):
+        return self.config.has_section(section)
+
+    def option_exists(self, option):
+        return self.option_in_section_exists(self.section, option)
+
+    def option_in_section_exists(self, section, option):
+        return self.config.has_option(section, option)
+
     def get(self, option):
         if not self.section:
             return None
