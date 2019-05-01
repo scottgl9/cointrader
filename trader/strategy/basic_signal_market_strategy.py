@@ -34,7 +34,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                    usdt=10.0,
                                                    multiplier=5.0)
 
-
+        self.min_percent_profit = float(self.config.get('min_percent_profit'))
         signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('hourly_signal')
 
@@ -122,7 +122,7 @@ class basic_signal_market_strategy(StrategyBase):
         if price < float(signal.buy_price):
             return False
 
-        if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
+        if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
             return False
 
         # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0

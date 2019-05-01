@@ -27,6 +27,7 @@ class basic_signal_stop_loss_strategy(StrategyBase):
         self.last_price = self.price = 0.0
         self.last_close = 0.0
 
+        self.min_percent_profit = float(self.config.get('min_percent_profit'))
         signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('hourly_signal')
 
@@ -118,10 +119,10 @@ class basic_signal_stop_loss_strategy(StrategyBase):
             return False
 
         if self.base == 'ETH' or self.base == 'BNB':
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
                 return False
         else:
-            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, 1.0):
+            if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
                 return False
 
         if signal.sell_signal():
