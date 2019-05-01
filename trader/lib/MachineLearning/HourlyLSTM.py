@@ -167,12 +167,6 @@ class HourlyLSTM(object):
 
     def create_test_dataset(self, dataset):
         dataX = dataset.dropna().values
-
-        # resize input test data to batch_size used to train model
-        #if len(dataX) > self.batch_size:
-        #    offset = len(dataX) - self.batch_size
-        #    dataX = dataX[offset:]
-
         scaleX = self.x_scaler.transform(dataX)
         testX = np.reshape(np.array(scaleX), (-1, len(self.columns), 1))
         return testX
@@ -181,64 +175,60 @@ class HourlyLSTM(object):
     # initialize indicators if model loaded from file
     def init_indicators(self, start_ts, end_ts):
         df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
-        lsma_close = Indicator(LSMA, 12)
-        lsma_close.load_dataframe(df)
-        lsma_close.process()
-        df['LSMA_CLOSE'] = np.array(lsma_close.results())
-        self.lsma_close = lsma_close.indicator
-
-        obv = Indicator(OBV, use_log10=True)
-        obv.close_key = 'LSMA_CLOSE'
-        obv.volume_key = 'quote_volume'
-        obv.load_dataframe(df)
-        obv.process()
-        self.obv = obv.indicator
-
-        rsi = Indicator(RSI, 14)
-        rsi.close_key = 'LSMA_CLOSE'
-        rsi.load_dataframe(df)
-        rsi.process()
-        self.rsi = rsi.indicator
+        self.create_features(df, store=False)
 
 
-    def create_features(self, df):
+    def create_features(self, df, store=True):
         # process LSMA close values
         lsma_close = Indicator(LSMA, 12)
         if self.lsma_close:
             lsma_close_indicator = self.lsma_close
             lsma_close.set_indicator(lsma_close_indicator)
         lsma_close.load_dataframe(df)
-        df['LSMA_CLOSE'] = np.array(lsma_close.results())
+        if store:
+            df['LSMA_CLOSE'] = np.array(lsma_close.results())
+        else:
+            lsma_close.process()
+
         if not self.lsma_close:
             self.lsma_close = lsma_close.indicator
 
         # process OBV values
         obv = Indicator(OBV, use_log10=True)
-        obv.close_key = 'LSMA_CLOSE'
+        #obv.close_key = 'LSMA_CLOSE'
         obv.volume_key = 'quote_volume'
         if self.obv:
             obv_indicator = self.obv
             obv.set_indicator(obv_indicator)
         obv.load_dataframe(df)
-        df['OBV'] = np.array(obv.results())
+        if store:
+            df['OBV'] = np.array(obv.results())
+        else:
+            obv.process()
+
         if not self.obv:
             self.obv = obv.indicator
 
         # process RSI values
         rsi = Indicator(RSI, 14)
-        rsi.close_key = 'LSMA_CLOSE'
+        #rsi.close_key = 'LSMA_CLOSE'
         if self.rsi:
             rsi_indicator = self.rsi
             rsi.set_indicator(rsi_indicator)
         rsi.load_dataframe(df)
-        rsi_result = np.array(rsi.results())
-        rsi_result[rsi_result == 0] = np.nan
-        df['RSI'] = rsi_result
+        if store:
+            rsi_result = np.array(rsi.results())
+            rsi_result[rsi_result == 0] = np.nan
+            df['RSI'] = rsi_result
+        else:
+            rsi.process()
         if not self.rsi:
             self.rsi = rsi.indicator
 
-        df = pd.DataFrame(df, columns=self.columns)
-        return df.dropna()
+        if store:
+            df = pd.DataFrame(df, columns=self.columns)
+            return df.dropna()
+        return None
 
 
     def create_model(self, columns=3, rows=1, batch_size=32, model=None):
