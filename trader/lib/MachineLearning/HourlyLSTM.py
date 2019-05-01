@@ -50,7 +50,10 @@ class HourlyLSTM(object):
         self.rsi = None
         self.start_ts = 0
         self.last_ts = 0
+        self.model_start_ts = 0
         self.model_end_ts = 0
+        self.test_start_ts = 0
+        self.test_end_ts = 0
         self.df_update = None
         self.testX = None
         self.scalers_loaded = False
@@ -83,15 +86,19 @@ class HourlyLSTM(object):
         self.create_train_dataset(self.df, column='LSMA_CLOSE', transform=False)
 
 
-    def load(self, start_ts=0, end_ts=0):
-        self.model_end_ts = end_ts
+    def load(self, model_start_ts=0, model_end_ts=0, test_start_ts=0, test_end_ts=0):
+        self.model_start_ts = model_start_ts
+        self.model_end_ts = model_end_ts
+        self.test_start_ts = test_start_ts
+        self.test_end_ts = test_end_ts
+
         self.model = self.load_model()
         if self.model:
             # create test model from original model
             self.test_model = self.create_model(batch_size=1, model=self.model)
             return
 
-        df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+        df = self.hkdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
 
         self.start_ts = df['ts'].values.tolist()[-1]
         self.df = self.create_features(df)

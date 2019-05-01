@@ -32,7 +32,7 @@ except ImportError:
 def simulate(hkdb, symbol, start_ts, end_ts):
     hourly_lstm = HourlyLSTM(hkdb, symbol)
 
-    hourly_lstm.load(start_ts=0, end_ts=start_ts)
+    hourly_lstm.load(model_start_ts=0, model_end_ts=start_ts)
 
     testy = []
     predicty = []
@@ -105,8 +105,7 @@ if __name__ == '__main__':
         else:
             start_ts = get_first_timestamp(results.filename, symbol)
             end_ts = get_last_timestamp(results.filename, symbol)
-            #start_ts = accnt.get_hourly_ts(start_ts)
-            start_ts = (int(start_ts / 1000) / 3600) * 3600 * 1000
+            start_ts = accnt.get_hourly_ts(start_ts)
             print(time.ctime(int(start_ts / 1000)))
             print(start_ts, end_ts)
 

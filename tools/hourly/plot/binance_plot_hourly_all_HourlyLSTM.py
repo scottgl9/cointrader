@@ -32,7 +32,7 @@ except ImportError:
 def simulate(hkdb, symbol, start_ts, end_ts):
     hourly_lstm = HourlyLSTM(hkdb, symbol)
 
-    hourly_lstm.load(start_ts=0, end_ts=start_ts)
+    hourly_lstm.load(model_start_ts=0, model_end_ts=start_ts)
 
     testy = []
     predicty = []

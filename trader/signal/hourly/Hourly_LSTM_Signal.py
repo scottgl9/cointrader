@@ -10,10 +10,10 @@ class Hourly_LSTM_Signal(HourlySignalBase):
                                       simulate_db_filename=self.accnt.simulate_db_filename, batch_size=self.batch_size)
 
     def load(self, start_ts=0, end_ts=0, ts=0):
-        self.hourly_lstm.load(start_ts=0, end_ts=end_ts)
+        self.hourly_lstm.load(model_start_ts=0, model_end_ts=end_ts)
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(end_ts)
-        self.last_hourly_ts = self.first_hourly_ts #- self.accnt.hours_to_ts(self.batch_size)
+        self.last_hourly_ts = self.first_hourly_ts
 
     def update(self, ts):
         #if (ts - self.last_update_ts) < self.accnt.hours_to_ts(1):
