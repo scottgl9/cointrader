@@ -29,13 +29,31 @@ except ImportError:
     from trader.indicator.EMA import EMA
 
 
-def simulate(hkdb, symbol, start_ts, end_ts):
+def simulate(hkdb, symbol, start_ts, end_ts, test_hours=0):
     hourly_lstm = HourlyLSTM(hkdb, symbol)
 
-    hourly_lstm.load(model_start_ts=0, model_end_ts=start_ts)
+    if test_hours:
+        # hours to set aside for testing
+        model_end_ts = start_ts - test_hours * 3600 * 1000
+        test_start_ts = start_ts - (test_hours - 1) * 3600 * 1000
+        test_end_ts = start_ts
+    else:
+        model_end_ts = start_ts
+        test_start_ts = 0
+        test_end_ts = 0
 
-    testy = []
-    predicty = []
+    hourly_lstm.load(model_start_ts=0,
+                     model_end_ts=model_end_ts,
+                     test_start_ts=test_start_ts,
+                     test_end_ts=test_end_ts)
+
+    if test_start_ts and test_end_ts:
+        hourly_lstm.process_test()
+        testy = hourly_lstm.test_actual_results
+        predicty = hourly_lstm.test_predict_results
+    else:
+        testy = []
+        predicty = []
 
     count = 0
 
@@ -80,6 +98,10 @@ if __name__ == '__main__':
                         default='binance_hourly_klines.db',
                         help='filename of hourly kline sqlite db')
 
+    parser.add_argument('-t', action='store', dest='test_hours',
+                        default=48,
+                        help='Hours before initial kline sqlitedb ts to end model data, and begin test data')
+
     parser.add_argument('-s', action='store', dest='symbol',
                         default='',
                         help='trade symbol')
@@ -103,8 +125,12 @@ if __name__ == '__main__':
             print("file {} doesn't exist, exiting...".format(results.filename))
             sys.exit(-1)
         else:
+            # first timestamp from kline sqlite db
             start_ts = get_first_timestamp(results.filename, symbol)
+            # last timestamp from kline sqlite db
             end_ts = get_last_timestamp(results.filename, symbol)
+
+            # remove minutes and seconds from start timestamp
             start_ts = accnt.get_hourly_ts(start_ts)
             print(time.ctime(int(start_ts / 1000)))
             print(start_ts, end_ts)
@@ -121,6 +147,8 @@ if __name__ == '__main__':
         for symbol in hkdb.get_table_list():
             print(symbol)
 
+    test_hours = int(results.test_hours)
+
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts)
+        simulate(hkdb, symbol, start_ts, end_ts, test_hours)
     hkdb.close()
