@@ -58,7 +58,7 @@ class HourlyLSTM(object):
         self.testX = None
         self.scalers_loaded = False
         self.indicators_loaded = False
-        self.test_result = 0
+        self.actual_result = 0
         self.predict_result = 0
 
 
@@ -121,6 +121,35 @@ class HourlyLSTM(object):
         self.test_model = self.create_model(batch_size=1, model=self.model)
 
 
+    # process test data before beginning processing live updates
+    def process_test(self):
+        if not self.test_start_ts and not self.test_end_ts:
+            return
+
+        if not self.scalers_loaded:
+            self.create_scaler_model()
+            self.indicators_loaded = True
+            self.scalers_loaded = True
+
+        if not self.indicators_loaded:
+            self.init_indicators(start_ts=0, end_ts=self.model_end_ts)
+            self.indicators_loaded = True
+
+        hourly_ts = self.test_start_ts
+
+        while hourly_ts <= self.test_end_ts:
+            df_test = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+            df_test = self.create_features(df_test)
+            if not len(df_test):
+                continue
+            self.actual_result = df_test['LSMA_CLOSE'].values[0]
+            self.testX = self.create_test_dataset(df_test)
+            predictY = self.test_model.predict(self.testX)
+            predictY = self.y_scaler.inverse_transform(predictY)[0][0]
+            self.predict_result = predictY
+            hourly_ts = hourly_ts + 3600 * 1000
+
+
     def update(self, hourly_ts):
         if not self.scalers_loaded:
             self.create_scaler_model()
@@ -139,7 +168,7 @@ class HourlyLSTM(object):
         self.df_update = self.create_features(df_update)
         if not len(self.df_update):
             return
-        self.test_result = self.df_update['LSMA_CLOSE'].values[0]
+        self.actual_result = self.df_update['LSMA_CLOSE'].values[0]
         self.testX = self.create_test_dataset(self.df_update)
         predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
         predictY = self.y_scaler.inverse_transform(predictY)[0][0]

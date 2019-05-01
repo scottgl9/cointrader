@@ -43,7 +43,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     while ts <= end_ts:
         ts += 3600 * 1000
         hourly_lstm.update(ts)
-        testy.append(hourly_lstm.test_result)
+        testy.append(hourly_lstm.actual_result)
         predicty.append(hourly_lstm.predict_result)
         count += 1
 
