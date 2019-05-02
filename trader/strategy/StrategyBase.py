@@ -1,6 +1,7 @@
 # base class for all strategies
 from datetime import datetime
 from trader.lib.MessageHandler import Message, MessageHandler
+from trader.signal.SignalHandler import SignalHandler
 
 
 def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
