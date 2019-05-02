@@ -218,9 +218,11 @@ class MultiTrader(object):
         # print alive check message once every hour
         if not self.accnt.simulate:
             hourly_ts = self.accnt.get_hourly_ts(self.current_ts)
-            if self.hourly_klines_handler and self.last_hourly_ts != hourly_ts:
-                self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
-                self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
+            if self.hourly_klines_handler:
+                last_hourly_ts = self.hourly_klines_handler.get_last_update_ts(kline.symbol)
+                if last_hourly_ts and hourly_ts != last_hourly_ts:
+                    self.logger.info("Updating hourly kline table {}".format(kline.symbol))
+                    self.hourly_klines_handler.update_table(kline.symbol, end_ts=hourly_ts)
             elif self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:

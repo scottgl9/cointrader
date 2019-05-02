@@ -26,6 +26,11 @@ class HourlyKlinesDB(object):
         self.scname_list = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
         self.scnames = ','.join(self.scname_list)
         self.table_symbols = self.get_table_list()
+        self.table_last_update_ts = None
+        if not self.accnt.simulate:
+            self.table_last_update_ts = {}
+            for symbol in self.table_symbols:
+                self.table_last_update_ts[symbol] = 0
 
     # close connection to db
     def close(self):
@@ -46,6 +51,18 @@ class HourlyKlinesDB(object):
             if last_ts:
                 result = last_ts
         return result
+
+    def get_last_update_ts(self, symbol):
+        try:
+            return self.table_last_update_ts[symbol]
+        except KeyError:
+            return
+
+    def set_last_update_ts(self, symbol, hourly_ts):
+        try:
+            self.table_last_update_ts[symbol] = hourly_ts
+        except KeyError:
+            return
 
     # get list of tables named by trading symbol
     def get_table_list(self):
@@ -97,6 +114,8 @@ class HourlyKlinesDB(object):
             count += 1
 
         if count:
+            if last_ts:
+                self.set_last_update_ts(symbol, last_ts)
             self.conn.commit()
 
         return last_ts
