@@ -40,7 +40,7 @@ class basic_signal_market_strategy(StrategyBase):
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
 
-        if self.use_hourly_klines and hourly_signal_name:
+        if self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
                                                              hkdb=self.hourly_klines_handler,
                                                              accnt=self.accnt,
