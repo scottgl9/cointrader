@@ -27,3 +27,9 @@ class Hourly_ROC_Signal(HourlySignalBase):
         self.roc.update(close)
 
         self.last_hourly_ts = hourly_ts
+
+    def buy(self):
+        if self.roc.result < 0: # and self.roc.result <= self.roc.last_result:
+            return False
+
+        return True

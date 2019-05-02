@@ -107,7 +107,10 @@ class MultiTrader(object):
             run_type = "live"
 
         if sigstr:
-            self.logger.info("Running MultiTrade {} strategy {} signal(s) {}".format(run_type, self.strategy_name, sigstr))
+            self.logger.info("Running MultiTrade {} strategy {} signal(s) {} hourly signal: {}".format(run_type,
+                                                                                                       self.strategy_name,
+                                                                                                       sigstr,
+                                                                                                       self.hourly_signal_name))
         else:
             self.logger.info("Running MultiTrade {} strategy {}".format(run_type, self.strategy_name))
 

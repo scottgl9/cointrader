@@ -100,6 +100,9 @@ class basic_signal_market_strategy(StrategyBase):
         if self.last_close == 0:
             return False
 
+        if self.hourly_klines_signal and not self.hourly_klines_signal.buy():
+            return False
+
         if signal.buy_signal():
             return True
 
