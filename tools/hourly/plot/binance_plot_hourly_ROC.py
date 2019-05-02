@@ -33,7 +33,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     ema200 = EMA(200, scale=scale)
     ema300 = EMA(300, scale=scale)
     ema500 = EMA(500, scale=scale)
-    roc = ROC(window=10, use_sma=True)
+    roc = ROC(window=24, use_sma=True)
     roc_values = []
     ema12_values = []
     ema26_values = []

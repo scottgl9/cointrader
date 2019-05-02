@@ -12,6 +12,7 @@ class ROC(IndicatorBase):
         if self.use_sma:
             self.sma = SMA(window=window)
         self.result = 0
+        self.last_result = 0
         self.last_value = 0
         self.age = 0
         self.values = []
@@ -22,7 +23,9 @@ class ROC(IndicatorBase):
                 self.last_value = float(value)
                 return self.result
             else:
+                self.last_result = self.result
                 self.result = 100.0 * (float(value - self.last_value)) / self.last_value
+                self.last_value = float(value)
                 return self.result
 
         if self.use_sma:
@@ -30,7 +33,9 @@ class ROC(IndicatorBase):
                 self.last_value = float(value)
                 return self.result
             else:
+                self.last_result = self.result
                 self.result = self.sma.update(100.0 * (float(value - self.last_value)) / self.last_value)
+                self.last_value = float(value)
                 return self.result
 
         if len(self.values) < self.window:
