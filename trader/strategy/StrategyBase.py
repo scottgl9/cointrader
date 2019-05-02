@@ -1,36 +1,27 @@
 # base class for all strategies
 from datetime import datetime
 from trader.lib.MessageHandler import Message, MessageHandler
-from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
-from trader.signal.AEMA_Crossover_Test import AEMA_Crossover_Test
-from trader.signal.EFI_Breakout_Signal import EFI_Breakout_Signal
-from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
-from trader.signal.Hybrid_Crossover_Test import Hybrid_Crossover_Test
-from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
-from trader.signal.KST_Crossover import KST_Crossover
-from trader.signal.MACD_Crossover import MACD_Crossover
-from trader.signal.PPO_OBV import PPO_OBV
-from trader.signal.PMO_Crossover import PMO_Crossover
-from trader.signal.SignalHandler import SignalHandler
-from trader.signal.TrendStateTrack_Signal import TrendStateTrack_Signal
-from trader.signal.TSI_Signal import TSI_Signal
-from trader.signal.TSV_Signal import TSV_Signal
-from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
 
-from trader.signal.hourly.Hourly_EMA_Crossover import Hourly_EMA_Crossover
-from trader.signal.hourly.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
-from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
 
 def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
     signal = None
-    if sname == 'Hourly_EMA_Crossover': signal = Hourly_EMA_Crossover
-    elif sname == 'Hourly_LSMA_Crossover': signal = Hourly_LSMA_Crossover
-    elif sname == 'Hourly_LSTM_Signal': signal = Hourly_LSTM_Signal
-
+    if sname == 'Hourly_EMA_Crossover':
+        from trader.signal.hourly.Hourly_EMA_Crossover import Hourly_EMA_Crossover
+        signal = Hourly_EMA_Crossover
+    elif sname == 'Hourly_LSMA_Crossover':
+        from trader.signal.hourly.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
+        signal = Hourly_LSMA_Crossover
+    elif sname == 'Hourly_LSTM_Signal':
+        from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
+        signal = Hourly_LSTM_Signal
+    elif sname == 'Hourly_ROC_Signal':
+        from trader.signal.hourly.Hourly_ROC_Signal import Hourly_ROC_Signal
+        signal = Hourly_ROC_Signal
     if not signal:
         return None
 
     return signal(hkdb, accnt, symbol, asset_info)
+
 
 class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
@@ -104,20 +95,48 @@ class StrategyBase(object):
 
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None):
-        if name == "BTC_USDT_Signal": return BTC_USDT_Signal(accnt)
-        elif name == "AEMA_Crossover_Test": return AEMA_Crossover_Test(accnt, symbol, asset_info)
-        elif name == "Currency_Long_EMA": return Currency_EMA_Long(accnt)
-        elif name == "EFI_Breakout_Signal": return EFI_Breakout_Signal(accnt, symbol)
-        elif name == "EMA_OBV_Crossover": return EMA_OBV_Crossover(accnt, symbol)
-        elif name == "Hybrid_Crossover_Test": return Hybrid_Crossover_Test(accnt, symbol, asset_info)
-        elif name == "Hybrid_Crossover_Test2": return Hybrid_Crossover_Test2(accnt, symbol, asset_info)
-        elif name == "KST_Crossover": return KST_Crossover(accnt, symbol)
-        elif name == "MACD_Crossover": return MACD_Crossover(accnt, symbol)
-        elif name == "PPO_OBV": return PPO_OBV(accnt, symbol)
-        elif name == "PMO_Crossover": return PMO_Crossover(accnt, symbol)
-        elif name == "TrendStateTrack_Signal": return TrendStateTrack_Signal(accnt, symbol, asset_info)
-        elif name == "TSI_Signal": return TSI_Signal(accnt, symbol)
-        elif name == "TSV_Signal": return TSV_Signal(accnt, symbol)
+        if name == "BTC_USDT_Signal":
+            from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
+            return BTC_USDT_Signal(accnt)
+        elif name == "AEMA_Crossover_Test":
+            from trader.signal.AEMA_Crossover_Test import AEMA_Crossover_Test
+            return AEMA_Crossover_Test(accnt, symbol, asset_info)
+        elif name == "Currency_Long_EMA":
+            from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
+            return Currency_EMA_Long(accnt)
+        elif name == "EFI_Breakout_Signal":
+            from trader.signal.EFI_Breakout_Signal import EFI_Breakout_Signal
+            return EFI_Breakout_Signal(accnt, symbol)
+        elif name == "EMA_OBV_Crossover":
+            from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
+            return EMA_OBV_Crossover(accnt, symbol)
+        elif name == "Hybrid_Crossover_Test":
+            from trader.signal.Hybrid_Crossover_Test import Hybrid_Crossover_Test
+            return Hybrid_Crossover_Test(accnt, symbol, asset_info)
+        elif name == "Hybrid_Crossover_Test2":
+            from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
+            return Hybrid_Crossover_Test2(accnt, symbol, asset_info)
+        elif name == "KST_Crossover":
+            from trader.signal.KST_Crossover import KST_Crossover
+            return KST_Crossover(accnt, symbol)
+        elif name == "MACD_Crossover":
+            from trader.signal.MACD_Crossover import MACD_Crossover
+            return MACD_Crossover(accnt, symbol)
+        elif name == "PPO_OBV":
+            from trader.signal.PPO_OBV import PPO_OBV
+            return PPO_OBV(accnt, symbol)
+        elif name == "PMO_Crossover":
+            from trader.signal.PMO_Crossover import PMO_Crossover
+            return PMO_Crossover(accnt, symbol)
+        elif name == "TrendStateTrack_Signal":
+            from trader.signal.TrendStateTrack_Signal import TrendStateTrack_Signal
+            return TrendStateTrack_Signal(accnt, symbol, asset_info)
+        elif name == "TSI_Signal":
+            from trader.signal.TSI_Signal import TSI_Signal
+            return TSI_Signal(accnt, symbol)
+        elif name == "TSV_Signal":
+            from trader.signal.TSV_Signal import TSV_Signal
+            return TSV_Signal(accnt, symbol)
 
     def get_ticker_id(self):
         return self.ticker_id

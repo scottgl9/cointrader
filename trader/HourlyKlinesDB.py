@@ -144,6 +144,18 @@ class HourlyKlinesDB(object):
                 break
         return result
 
+    # load single hourly kline in dict format
+    def get_dict_kline(self, symbol, hourly_ts=0):
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, hourly_ts)
+        cur = self.conn.cursor()
+        cur.execute(sql)
+        k = cur.fetchone()
+
+        result = {}
+        for i in range(0, len(self.scname_list)):
+            result[self.scname_list[i]] = k[i]
+        return result
+
     # load hourly klines in pandas dataframe
     def get_pandas_klines(self, symbol, start_ts=0, end_ts=0):
         sql = self.build_sql_select_query(symbol, start_ts, end_ts)
