@@ -37,6 +37,11 @@ class HourlyKlinesDB(object):
         if self.conn:
             self.conn.close()
 
+    def symbol_in_table_list(self, symbol):
+        if symbol in self.table_symbols:
+            return True
+        return False
+
     # update all tables' hourly values ending in end_ts,
     # or if end_ts is zero, through the current time
     def update_all_tables(self, end_ts=0):
