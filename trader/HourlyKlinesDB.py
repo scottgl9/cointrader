@@ -49,32 +49,43 @@ class HourlyKlinesDB(object):
             result.append(name[0])
         return result
 
+    # determine if timestamp already exists in table
+    def ts_in_table(self, symbol, ts):
+        cur = self.conn.cursor()
+        cur.execute("SELECT ts FROM {} WHERE ts = {}".format(symbol, ts))
+        row = cur.fetchone()
+        if row is None or not len(row):
+            return False
+        return True
+
     # update hourly values missing in table through end_ts
-    def update_table(self, symbol, end_ts):
+    def update_table(self, symbol, end_ts=0):
         if not self.accnt:
             return
         cur = self.conn.cursor()
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
         result = cur.fetchone()
-        start_ts = result[0]
-        # klines = self.client.get_historical_klines_generator(
-        #     symbol=symbol,
-        #     interval=Client.KLINE_INTERVAL_1HOUR,
-        #     start_str=start_ts,
-        #     end_str=end_ts,
-        # )
+        start_ts = int(result[0])
+        end_ts = self.accnt.get_hourly_ts(end_ts)
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
         sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, self.cnames)
 
+        count = 0
+
         for k in klines:
-            if k[0] == start_ts:
+            if int(k[0]) == start_ts:
+                continue
+            if self.ts_in_table(symbol, int[k[0]]):
                 continue
             del k[6]
             k = k[:-1]
             cur = self.conn.cursor()
             cur.execute(sql, k)
-        self.conn.commit()
+            count += 1
+
+        if count:
+            self.conn.commit()
 
     # return list of specific kline column by specifying which column to select
     def get_kline_values_by_column(self, symbol, column='close', end_ts=0):
