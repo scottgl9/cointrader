@@ -104,7 +104,7 @@ class HourlyKlinesDB(object):
         for k in klines:
             if int(k[0]) == start_ts:
                 continue
-            if self.ts_in_table(symbol, int[k[0]]):
+            if self.ts_in_table(symbol, int(k[0])):
                 continue
             last_ts = int(k[0])
             del k[6]
