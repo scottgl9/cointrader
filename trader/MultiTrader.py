@@ -28,7 +28,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
                     currency,
                     account_handler,
                     order_handler=order_handler,
-                    hourly_klines_handler=hourly_klines_handler,
+                    #hourly_klines_handler=hourly_klines_handler,
                     asset_info=asset_info,
                     base_min_size=base_min_size,
                     tick_size=tick_size,
@@ -159,7 +159,7 @@ class MultiTrader(object):
                                      currency_name,
                                      account_handler=self.accnt,
                                      order_handler=self.order_handler,
-                                     hourly_klines_handler=self.hourly_klines_handler,
+                                     #hourly_klines_handler=self.hourly_klines_handler,
                                      base_min_size=base_min_size,
                                      tick_size=tick_size,
                                      asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
@@ -217,12 +217,13 @@ class MultiTrader(object):
 
         # print alive check message once every hour
         if not self.accnt.simulate:
+            hourly_klines_handler = symbol_trader.hourly_klines_handler
             hourly_ts = self.accnt.get_hourly_ts(self.current_ts)
-            if self.hourly_klines_handler:
-                last_hourly_ts = self.hourly_klines_handler.get_last_update_ts(kline.symbol)
+            if hourly_klines_handler:
+                last_hourly_ts = hourly_klines_handler.get_last_update_ts(kline.symbol)
                 if last_hourly_ts and hourly_ts != last_hourly_ts:
                     self.logger.info("Updating hourly kline table {}".format(kline.symbol))
-                    self.hourly_klines_handler.update_table(kline.symbol, end_ts=hourly_ts)
+                    hourly_klines_handler.update_table(kline.symbol, end_ts=hourly_ts)
             elif self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:

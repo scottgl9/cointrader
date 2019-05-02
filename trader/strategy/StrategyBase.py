@@ -2,7 +2,7 @@
 from datetime import datetime
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.signal.SignalHandler import SignalHandler
-
+from trader.HourlyKlinesDB import HourlyKlinesDB
 
 def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
     signal = None
@@ -50,7 +50,16 @@ class StrategyBase(object):
         self.client = client
         self.accnt = account_handler
         self.order_handler = order_handler
-        self.hourly_klines_handler = hourly_klines_handler
+
+        self.use_hourly_klines = self.config.get('use_hourly_klines')
+        if self.use_hourly_klines:
+            hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+            try:
+                self.hourly_klines_handler = HourlyKlinesDB(self.accnt, hourly_klines_db_file, self.logger)
+            except IOError:
+                self.logger.warning("hourly_klines_handler: Failed to load {}".format(hourly_klines_db_file))
+                self.hourly_klines_handler = None
+
         self.hourly_klines_disabled = False
         self.make_ticker_id()
         # true if base, and currency are both tradable currencies (ex ETH/BTC)
