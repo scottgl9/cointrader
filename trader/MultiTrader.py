@@ -67,6 +67,8 @@ class MultiTrader(object):
         self.assets_info = assets_info
         self.tickers = None
         self.msg_handler = MessageHandler()
+        self.hourly_klines_handler = None
+        self.last_hourly_ts = 0
 
         if self.use_hourly_klines:
             try:
@@ -76,7 +78,9 @@ class MultiTrader(object):
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
                 self.hourly_klines_handler = None
 
-        #self.market_manager = MarketManager()
+        if not self.simulate and self.hourly_klines_handler:
+            self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
+            self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
 
         self.notify = None
         self.current_ts = 0
@@ -211,9 +215,13 @@ class MultiTrader(object):
         self.order_handler.stored_trades_update(kline)
         self.order_handler.process_limit_order(kline)
 
-        # print alive check message once every 4 hours
+        # print alive check message once every hour
         if not self.accnt.simulate:
-            if self.last_ts == 0 and self.current_ts != 0:
+            hourly_ts = self.accnt.get_hourly_ts(self.current_ts)
+            if self.hourly_klines_handler and self.last_hourly_ts != hourly_ts:
+                self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
+                self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
+            elif self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
                 if (self.current_ts - self.last_ts) > self.check_ts:

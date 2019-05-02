@@ -35,11 +35,17 @@ class HourlyKlinesDB(object):
     # update all tables' hourly values ending in end_ts,
     # or if end_ts is zero, through the current time
     def update_all_tables(self, end_ts=0):
+        result = 0
+        last_ts = 0
+
         if not end_ts:
             end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
 
         for symbol in self.get_table_list():
-            self.update_table(symbol, end_ts)
+            last_ts = self.update_table(symbol, end_ts)
+            if last_ts:
+                result = last_ts
+        return result
 
     # get list of tables named by trading symbol
     def get_table_list(self):
@@ -60,12 +66,17 @@ class HourlyKlinesDB(object):
 
     # update hourly values missing in table through end_ts
     def update_table(self, symbol, end_ts=0):
+        last_ts = 0
         if not self.accnt:
-            return
+            return 0
         cur = self.conn.cursor()
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
         result = cur.fetchone()
         start_ts = int(result[0])
+
+        if not end_ts:
+            end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
+
         end_ts = self.accnt.get_hourly_ts(end_ts)
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
@@ -78,6 +89,7 @@ class HourlyKlinesDB(object):
                 continue
             if self.ts_in_table(symbol, int[k[0]]):
                 continue
+            last_ts = int(k[0])
             del k[6]
             k = k[:-1]
             cur = self.conn.cursor()
@@ -86,6 +98,8 @@ class HourlyKlinesDB(object):
 
         if count:
             self.conn.commit()
+
+        return last_ts
 
     # return list of specific kline column by specifying which column to select
     def get_kline_values_by_column(self, symbol, column='close', end_ts=0):
@@ -99,15 +113,24 @@ class HourlyKlinesDB(object):
                 break
         return result
 
-    # get range of timestamps for table with name symbol
-    def get_table_ts_range(self, symbol):
+    # get first timestamp in symbol table
+    def get_table_start_ts(self, symbol):
+        cur = self.conn.cursor()
+        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
+        result = cur.fetchone()
+        return int(result[0])
+
+    # get last timestamp in symbol table
+    def get_table_end_ts(self, symbol):
         cur = self.conn.cursor()
         cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
         result = cur.fetchone()
-        end_ts = int(result[0])
-        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
-        result = cur.fetchone()
-        start_ts = int(result[0])
+        return int(result[0])
+
+    # get range of timestamps for table with name symbol
+    def get_table_ts_range(self, symbol):
+        start_ts = self.get_table_start_ts(symbol)
+        end_ts = self.get_table_end_ts(symbol)
         return start_ts, end_ts
 
     def build_sql_select_query(self, symbol, start_ts, end_ts):
