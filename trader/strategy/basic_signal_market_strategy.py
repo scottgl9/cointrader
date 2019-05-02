@@ -135,7 +135,7 @@ class basic_signal_market_strategy(StrategyBase):
         if self.disable_buy:
             return True
 
-        # if buy price was loaded from trade.db, don't want for signal to sell
+        # if buy price was loaded from trade.db, don't wait for signal to sell
         if self.buy_loaded:
             return True
 
@@ -262,12 +262,16 @@ class basic_signal_market_strategy(StrategyBase):
 
         if not self.timestamp:
             if self.simulate and self.hourly_klines_signal and not self.hourly_klines_loaded:
-                # limit maximum number of models to load, unless max_hourly_model_count is zero
-                if not self.max_hourly_model_count or self.accnt.loaded_model_count <= self.max_hourly_model_count:
+                if self.hourly_klines_signal.uses_models:
+                    # limit maximum number of models to load, unless max_hourly_model_count is zero
+                    if not self.max_hourly_model_count or self.accnt.loaded_model_count <= self.max_hourly_model_count:
+                        self.load_hourly_klines(kline.ts)
+                        self.hourly_klines_loaded = True
+                    else:
+                        self.hourly_klines_disabled = True
+                else:
                     self.load_hourly_klines(kline.ts)
                     self.hourly_klines_loaded = True
-                else:
-                    self.hourly_klines_disabled = True
 
         self.timestamp = kline.ts
 

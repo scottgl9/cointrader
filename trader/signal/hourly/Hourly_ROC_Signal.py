@@ -4,6 +4,7 @@ from trader.indicator.ROC import ROC
 class Hourly_ROC_Signal(HourlySignalBase):
     def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
         super(Hourly_ROC_Signal, self).__init__(hkdb, accnt, symbol, asset_info)
+        self.name = "Hourly_ROC_Signal"
         self.roc = ROC(window=24, use_sma=True)
 
     def load(self, start_ts=0, end_ts=0, ts=0):

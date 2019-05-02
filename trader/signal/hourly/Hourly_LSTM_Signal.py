@@ -4,7 +4,8 @@ import time
 
 class Hourly_LSTM_Signal(HourlySignalBase):
     def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
-        super(Hourly_LSTM_Signal, self).__init__(hkdb, accnt, symbol, asset_info)
+        super(Hourly_LSTM_Signal, self).__init__(hkdb, accnt, symbol, asset_info, uses_models=True)
+        self.name = "Hourly_LSTM_Signal"
         self.batch_size = 32
         self.hourly_lstm = HourlyLSTM(self.hkdb, self.symbol,
                                       simulate_db_filename=self.accnt.simulate_db_filename, batch_size=self.batch_size)
