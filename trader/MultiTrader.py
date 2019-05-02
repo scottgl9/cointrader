@@ -72,7 +72,7 @@ class MultiTrader(object):
 
         if self.use_hourly_klines:
             try:
-                self.hourly_klines_handler = HourlyKlinesDB(self, self.hourly_klines_db_file, self.logger)
+                self.hourly_klines_handler = HourlyKlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
             except IOError:
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
