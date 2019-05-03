@@ -51,6 +51,20 @@ class StrategyBase(object):
         self.accnt = account_handler
         self.order_handler = order_handler
 
+        self.hourly_klines_disabled = False
+        self.make_ticker_id()
+        # true if base, and currency are both tradable currencies (ex ETH/BTC)
+        self._currency_pair = self.accnt.is_currency_pair(base=self.base, currency=self.currency)
+
+        self.msg_handler = MessageHandler()
+        self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
+        self.simulate = self.accnt.simulate
+        self.trade_size_handler = None
+        self.count_prices_added = 0
+        self.mm_enabled = False
+        self.kline = None
+        self.hourly_klines = None
+
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         if self.use_hourly_klines:
             hourly_klines_db_file = self.config.get('hourly_kline_db_file')
@@ -66,19 +80,6 @@ class StrategyBase(object):
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(hourly_klines_db_file))
                 self.hourly_klines_handler = None
 
-        self.hourly_klines_disabled = False
-        self.make_ticker_id()
-        # true if base, and currency are both tradable currencies (ex ETH/BTC)
-        self._currency_pair = self.accnt.is_currency_pair(base=self.base, currency=self.currency)
-
-        self.msg_handler = MessageHandler()
-        self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
-        self.simulate = self.accnt.simulate
-        self.trade_size_handler = None
-        self.count_prices_added = 0
-        self.mm_enabled = False
-        self.kline = None
-        self.hourly_klines = None
         self.tpprofit = 0
         self.last_tpprofit = 0
         self.start_ts = 0
