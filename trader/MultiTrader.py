@@ -207,14 +207,6 @@ class MultiTrader(object):
         if tpprofit != 0:
             symbol_trader.update_total_percent_profit(tpprofit)
 
-        symbol_trader.run_update(kline, cache_db=cache_db)
-
-        if self.global_strategy:
-            self.global_strategy.run_update(kline)
-
-        self.order_handler.stored_trades_update(kline)
-        self.order_handler.process_limit_order(kline)
-
         # print alive check message once every hour
         if not self.accnt.simulate:
             hourly_klines_handler = symbol_trader.hourly_klines_handler
@@ -236,6 +228,14 @@ class MultiTrader(object):
                     self.last_ts = self.current_ts
                     timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
                     self.logger.info("MultiTrader running {}".format(timestr))
+
+        symbol_trader.run_update(kline, cache_db=cache_db)
+
+        if self.global_strategy:
+            self.global_strategy.run_update(kline)
+
+        self.order_handler.stored_trades_update(kline)
+        self.order_handler.process_limit_order(kline)
 
         # handle incoming messages
         self.order_handler.process_order_messages()

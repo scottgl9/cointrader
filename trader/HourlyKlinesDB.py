@@ -10,10 +10,14 @@ import pandas as pd
 
 
 class HourlyKlinesDB(object):
-    def __init__(self, accnt, filename, logger=None):
+    def __init__(self, accnt, filename, symbol=None, logger=None):
         self.accnt = accnt
         self.filename = filename
         self.logger = logger
+        self.symbol = symbol
+        if self.symbol and not self.symbol_in_table_list(self.symbol):
+            return
+
         if not filename or not os.path.exists(filename):
             raise IOError
         self.conn = sqlite3.connect(filename)
@@ -29,8 +33,12 @@ class HourlyKlinesDB(object):
         self.table_last_update_ts = None
         if not self.accnt.simulate:
             self.table_last_update_ts = {}
-            for symbol in self.table_symbols:
-                self.table_last_update_ts[symbol] = 0
+            if not self.symbol:
+                for symbol in self.table_symbols:
+                    self.table_last_update_ts[symbol] = 0
+            else:
+                self.table_last_update_ts[self.symbol] = self.get_table_end_ts(self.symbol)
+
 
     # close connection to db
     def close(self):
