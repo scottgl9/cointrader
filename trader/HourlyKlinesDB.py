@@ -32,12 +32,11 @@ class HourlyKlinesDB(object):
         if self.symbol and not self.symbol_in_table_list(self.symbol):
             return
 
-        self.table_last_update_ts = None
+        self.table_last_update_ts = {}
         if not self.accnt.simulate:
-            self.table_last_update_ts = {}
             if not self.symbol:
                 for symbol in self.table_symbols:
-                    self.table_last_update_ts[symbol] = 0
+                    self.table_last_update_ts[symbol] = self.get_table_end_ts(symbol)
             else:
                 self.table_last_update_ts[self.symbol] = self.get_table_end_ts(self.symbol)
 
@@ -71,7 +70,7 @@ class HourlyKlinesDB(object):
         try:
             return self.table_last_update_ts[symbol]
         except KeyError:
-            return
+            return 0
 
     def set_last_update_ts(self, symbol, hourly_ts):
         try:
