@@ -15,8 +15,6 @@ class HourlyKlinesDB(object):
         self.filename = filename
         self.logger = logger
         self.symbol = symbol
-        if self.symbol and not self.symbol_in_table_list(self.symbol):
-            return
 
         if not filename or not os.path.exists(filename):
             raise IOError
@@ -30,6 +28,10 @@ class HourlyKlinesDB(object):
         self.scname_list = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
         self.scnames = ','.join(self.scname_list)
         self.table_symbols = self.get_table_list()
+
+        if self.symbol and not self.symbol_in_table_list(self.symbol):
+            return
+
         self.table_last_update_ts = None
         if not self.accnt.simulate:
             self.table_last_update_ts = {}
