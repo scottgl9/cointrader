@@ -26,6 +26,17 @@ def get_table_list(c):
         result.append(name[0])
     return result
 
+def check_duplicates(c):
+    for symbol in get_table_list(c):
+        cur = c.cursor()
+        sql = "SELECT ts, COUNT(*) c FROM {} GROUP BY ts HAVING c > 1;".format(symbol)
+        result = cur.execute(sql)
+        count=0
+        for row in result:
+            count += 1
+        if count:
+            print("{}: {} Duplicate entries found".format(symbol, count))
+
 def list_table_dates(c, symbol):
     cur = conn.cursor()
     cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
@@ -95,6 +106,10 @@ if __name__ == '__main__':
                         default=False,
                         help='List table names with date ranges in db')
 
+    parser.add_argument('--check-duplicates', action='store_true', dest='check_duplicates',
+                        default=False,
+                        help='Check for duplicate entries in db')
+
     parser.add_argument('-l', action='store_true', dest='list_table_names',
                         default=False,
                         help='List table names in db')
@@ -146,5 +161,7 @@ if __name__ == '__main__':
             update_table(conn, client, symbol, end_ts)
         if results.remove_outdated_tables:
             remove_outdated_tables(conn, end_ts)
+    elif results.check_duplicates:
+        check_duplicates(conn)
 
     conn.close()
