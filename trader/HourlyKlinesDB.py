@@ -28,12 +28,13 @@ class HourlyKlinesDB(object):
         self.scname_list = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
         self.scnames = ','.join(self.scname_list)
         self.table_symbols = self.get_table_list()
+        self.table_last_update_ts = None
 
         if self.symbol and not self.symbol_in_table_list(self.symbol):
             return
 
-        self.table_last_update_ts = {}
         if not self.accnt.simulate:
+            self.table_last_update_ts = {}
             if not self.symbol:
                 for symbol in self.table_symbols:
                     self.table_last_update_ts[symbol] = self.get_table_end_ts(symbol)
@@ -55,7 +56,6 @@ class HourlyKlinesDB(object):
     # or if end_ts is zero, through the current time
     def update_all_tables(self, end_ts=0):
         result = 0
-        last_ts = 0
 
         if not end_ts:
             end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
@@ -67,12 +67,16 @@ class HourlyKlinesDB(object):
         return result
 
     def get_last_update_ts(self, symbol):
+        if not self.table_last_update_ts:
+            return 0
         try:
             return self.table_last_update_ts[symbol]
         except KeyError:
             return 0
 
     def set_last_update_ts(self, symbol, hourly_ts):
+        if not self.table_last_update_ts:
+            return
         try:
             self.table_last_update_ts[symbol] = hourly_ts
         except KeyError:
