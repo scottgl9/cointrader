@@ -216,8 +216,10 @@ class MultiTrader(object):
                 if last_hourly_ts and (self.current_ts - last_hourly_ts) >= self.accnt.seconds_to_ts(3600 - 1):
                     hourly_ts = self.accnt.get_hourly_ts(self.current_ts)
                     if hourly_ts != last_hourly_ts:
-                        self.logger.info("Updating hourly kline table {} hourly_ts={}".format(kline.symbol, hourly_ts))
                         hourly_klines_handler.update_table(kline.symbol, end_ts=hourly_ts)
+                        if hourly_ts != self.last_hourly_ts:
+                            self.logger.info("Updating hourly klines hourly_ts={}".format(hourly_ts))
+                            self.last_hourly_ts = hourly_ts
             elif self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
