@@ -38,9 +38,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-f', action='store', dest='filename',
-                        default='binance_hourly_klines.db',
-                        help='filename of hourly kline sqlite db')
+    parser.add_argument('-f', action='store', dest='base_filename',
+                        default='binance_hourly_klines',
+                        help='base filename of hourly kline sqlite db')
+
+    parser.add_argument('--currency', action='store', dest='currency',
+                        default='BTC',
+                        help='currency of trade symbols')
 
     parser.add_argument('--start-date', action='store', dest='start_date',
                         default=date_two_years_ago,
@@ -59,7 +63,13 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    db_file = results.filename
+    currency = results.currency
+
+    if not currency:
+        currency = 'BTC'
+        db_file = "{}.db".format(results.base_filename)
+    else:
+        db_file = "{}_{}.db".format(results.base_filename, currency)
     if os.path.exists(db_file):
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
@@ -70,7 +80,7 @@ if __name__ == '__main__':
     accnt.load_detail_all_assets()
 
     symbol_table_list = []
-    for symbol in sorted(accnt.get_all_ticker_symbols('BTC')):
+    for symbol in sorted(accnt.get_all_ticker_symbols(currency)):
         if accnt.get_usdt_value_symbol(symbol) <= 0.02:
             continue
         base_name, currency_name = accnt.split_symbol(symbol)
@@ -80,8 +90,8 @@ if __name__ == '__main__':
 
         symbol_table_list.append(symbol)
 
-    for symbol in ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'PAXUSDT', 'XRPUSDT']: #sorted(accnt.get_all_ticker_symbols('USDT')):
-        symbol_table_list.append(symbol)
+    #for symbol in ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'PAXUSDT', 'XRPUSDT']: #sorted(accnt.get_all_ticker_symbols('USDT')):
+    #    symbol_table_list.append(symbol)
 
     db_conn = create_db_connection(db_file)
 
