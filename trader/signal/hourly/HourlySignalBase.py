@@ -8,6 +8,7 @@ class HourlySignalBase(object):
         self.first_hourly_ts = 0
         self.last_update_ts = 0
         self.last_hourly_ts = 0
+        self.last_ts = 0
         self.uses_models = uses_models
 
     def load(self, start_ts=0, end_ts=0, ts=0):
