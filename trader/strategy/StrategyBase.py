@@ -64,6 +64,7 @@ class StrategyBase(object):
         self.mm_enabled = False
         self.kline = None
         self.hourly_klines = None
+        self.hourly_update_fail_count = 0
 
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         if self.use_hourly_klines:

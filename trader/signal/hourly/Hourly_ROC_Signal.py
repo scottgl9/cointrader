@@ -20,18 +20,20 @@ class Hourly_ROC_Signal(HourlySignalBase):
     def update(self, ts):
         hourly_ts = self.accnt.get_hourly_ts(ts)
         if hourly_ts == self.last_hourly_ts:
-            return
+            return True
 
         kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
 
         # hourly kline not in db yet, wait until next update() call
         if not kline:
-            return
+            return False
 
         close = float(kline['close'])
         self.roc.update(close)
 
         self.last_hourly_ts = hourly_ts
+
+        return True
 
     def buy(self):
         if self.roc.result < 0: # and self.roc.result <= self.roc.last_result:
