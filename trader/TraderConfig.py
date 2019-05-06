@@ -13,7 +13,7 @@ class TraderConfig(object):
         self.config.add_section(section)
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
-        self.config.set(section, 'hourly_signal', 'Hourly_EMA_Crossover')
+        self.config.set(section, 'hourly_signal', 'Hourly_ROC_Signal')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
         self.config.set(section, 'max_hourly_model_count', '5')
         self.config.set(section, 'simulate', 'False')
@@ -24,6 +24,8 @@ class TraderConfig(object):
         self.config.set(section, 'min_percent_profit', '1.0')
         # live trading specific options
         self.config.set(section, 'btc_only', 'True')
+        self.config.set(section, 'eth_only', 'False')
+        self.config.set(section, 'bnb_only', 'False')
         self.config.set(section, 'sell_only', 'False')
         self.config.set(section, 'trades_disabled', 'False')
         self.config.set(section, 'max_market_buy', '0')
@@ -33,7 +35,7 @@ class TraderConfig(object):
         self.config.add_section(section)
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
-        self.config.set(section, 'hourly_signal', 'Hourly_EMA_Crossover')
+        self.config.set(section, 'hourly_signal', 'Hourly_ROC_Signal')
         self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
         self.config.set(section, 'max_hourly_model_count', '5')
         self.config.set(section, 'simulate', 'True')
@@ -47,6 +49,8 @@ class TraderConfig(object):
         self.config.set(section, 'ETH', '0.0')
         self.config.set(section, 'BNB', '0.0')
         self.config.set(section, 'btc_only', 'True')
+        self.config.set(section, 'eth_only', 'False')
+        self.config.set(section, 'bnb_only', 'False')
         self.config.set(section, 'init_max_buy_count', '0')
 
     def load(self):
