@@ -23,6 +23,11 @@ class Hourly_ROC_Signal(HourlySignalBase):
             return
 
         kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
+
+        # hourly kline not in db yet, wait until next update() call
+        if not kline:
+            return
+
         close = float(kline['close'])
         self.roc.update(close)
 

@@ -222,6 +222,10 @@ class HourlyKlinesDB(object):
         cur.execute(sql)
         k = cur.fetchone()
 
+        #if kline is not in db yet
+        if not k:
+            return None
+
         result = {}
         for i in range(0, len(self.scname_list)):
             result[self.scname_list[i]] = k[i]
