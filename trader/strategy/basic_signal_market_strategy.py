@@ -29,7 +29,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                    asset_info,
                                                    btc=0.004,
                                                    eth=0.1,
-                                                   bnb=3,
+                                                   bnb=1,
                                                    pax=10.0,
                                                    usdt=10.0,
                                                    multiplier=5.0)
