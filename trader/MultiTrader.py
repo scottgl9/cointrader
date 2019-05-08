@@ -70,10 +70,13 @@ class MultiTrader(object):
         self.hourly_klines_handler = None
         self.last_hourly_ts = 0
 
+        hourly_symbols_only = False
+
         if self.use_hourly_klines:
             try:
                 self.hourly_klines_handler = HourlyKlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
+                hourly_symbols_only = self.config.get('hourly_symbols_only')
             except IOError:
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
                 self.hourly_klines_handler = None
@@ -81,6 +84,16 @@ class MultiTrader(object):
         if not self.simulate and self.hourly_klines_handler:
             self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
             self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
+
+        # config options for AccountBinance
+        btc_only = self.config.get('btc_only')
+        eth_only = self.config.get('eth_only')
+        bnb_only = self.config.get('bnb_only')
+
+        if btc_only: self.accnt.set_btc_only(btc_only)
+        elif eth_only: self.accnt.set_eth_only(eth_only)
+        elif bnb_only: self.accnt.set_bnb_only(bnb_only)
+        elif hourly_symbols_only: self.accnt.set_hourly_symbols_only(hourly_symbols_only)
 
         self.notify = None
         self.current_ts = 0
@@ -134,8 +147,13 @@ class MultiTrader(object):
         if not asset_info:
             return None
 
-        # if set to trade BTC only, do not process add trade pair if not BTC currency
         if self.accnt.btc_only() and currency_name != 'BTC':
+            return None
+        elif self.accnt.eth_only() and currency_name != 'ETH':
+            return None
+        elif self.accnt.bnb_only() and currency_name != 'BNB':
+            return None
+        elif self.accnt.hourly_symbols_only() and symbol not in self.hourly_klines_handler.table_symbols:
             return None
 
         # check USDT value of base by calculating (base_currency) * (currency_usdt)

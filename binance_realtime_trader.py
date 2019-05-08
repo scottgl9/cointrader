@@ -39,18 +39,11 @@ class BinanceTrader:
         #simulate = config.get('simulate')
         strategy = config.get('strategy')
         signal_name = config.get('signals')
-        #hourly_signal_name = config.get('hourly_signal')
-        #hourly_klines_db_file = config.get('hourly_kline_db_file')
 
         config.select_section('binance.live')
 
         self.multitrader = MultiTrader(client,
-                                       #strategy,
-                                       #signal_names=[signal_name],
-                                       #hourly_signal_name=hourly_signal_name,
-                                       #simulate=simulate,
                                        logger=logger,
-                                       #hourly_klines_db_file=hourly_klines_db_file,
                                        config=config)
 
         logger.info("Started live trading strategy: {} signal: {}".format(strategy, signal_name))
@@ -63,10 +56,6 @@ class BinanceTrader:
     def set_sell_only(self):
         if self.multitrader and self.multitrader.accnt:
             self.multitrader.accnt.set_sell_only(True)
-
-    def set_btc_only(self):
-        if self.multitrader and self.multitrader.accnt:
-            self.multitrader.accnt.set_btc_only(True)
 
     def set_trades_disabled(self):
         if self.multitrader and self.multitrader.accnt:
@@ -285,10 +274,6 @@ if __name__ == '__main__':
     parser.add_argument('--sell-only', action='store_true', dest='sell_only',
                         default=False,
                         help='Set to sell only mode')
-
-    parser.add_argument('--btc-only', action='store_true', dest='btc_only',
-                        default=False,
-                        help='Only buy/sell BTC currency trade pairs')
 
     parser.add_argument('--trades-disabled', action='store_true', dest='trades_disabled',
                         default=False,

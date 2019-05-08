@@ -44,6 +44,9 @@ class AccountBinance(AccountBase):
         self.actual_initial_btc = 0
         self._sell_only = False
         self._btc_only = False
+        self._eth_only = False
+        self._bnb_only = False
+        self._hourly_symbols_only = False
         self._trades_disabled = False
         self._test_stop_loss = False
         self._max_market_buy = 0
@@ -127,6 +130,27 @@ class AccountBinance(AccountBase):
 
     def btc_only(self):
         return self._btc_only
+
+    def set_eth_only(self, eth_only):
+        self.logger.info("set_eth_only({})".format(eth_only))
+        self._eth_only = eth_only
+
+    def eth_only(self):
+        return self._eth_only
+
+    def set_bnb_only(self, bnb_only):
+        self.logger.info("set_bnb_only({})".format(bnb_only))
+        self._bnb_only = bnb_only
+
+    def bnb_only(self):
+        return self._bnb_only
+
+    def set_hourly_symbols_only(self, hourly_symbols_only):
+        self.logger.info("set_hourly_symbols_only({})".format(hourly_symbols_only))
+        self._hourly_symbols_only = hourly_symbols_only
+
+    def hourly_symbols_only(self):
+        return self._hourly_symbols_only
 
     def set_trades_disabled(self, trades_disabled):
         self.logger.info("set_trades_disabled({})".format(trades_disabled))
