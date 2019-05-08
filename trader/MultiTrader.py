@@ -213,12 +213,12 @@ class MultiTrader(object):
     def process_message(self, kline, cache_db=None):
         self.current_ts = kline.ts
 
+        # keep track of all current price values for all symbols being processed
+        self.accnt.update_ticker(kline.symbol, kline.close, kline.ts)
+
         symbol_trader = self.get_trader(kline.symbol, kline.close)
         if not symbol_trader:
             return None
-
-        # keep track of all current price values for all symbols being processed
-        self.accnt.update_ticker(kline.symbol, kline.close, kline.ts)
 
         # compute current total percent profit, and update info in strategy
         tpprofit = self.order_handler.get_total_percent_profit()

@@ -165,7 +165,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                 total_btc = multitrader.accnt.get_total_btc_value()
                 initial_btc_total = total_btc
                 multitrader.update_initial_btc()
-                #logger.info("Initial BTC={}".format(total_btc))
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
         #if msg['s'].endswith("USDT"):
@@ -203,7 +202,10 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     print(multitrader.accnt.balances)
     logger.info("\nTrade Symbol Profits:")
     final_btc_total = multitrader.accnt.get_total_btc_value()
-    total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
+    total_pprofit = 0
+    if initial_btc_total:
+        total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
+
     for pair in multitrader.trade_pairs.values():
         for signal in pair.get_signals():
             if signal.buy_price != 0.0:

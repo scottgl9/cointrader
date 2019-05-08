@@ -619,10 +619,7 @@ class AccountBinance(AccountBase):
     def preload_buy_price_list(self):
         return [], []
 
-    def get_24hr_stats(self, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
-
+    def get_24hr_stats(self, ticker_id):
         stats = self.client.get_ticker(symbol=ticker_id)
 
         high_24hr = low_24hr = 0.0
@@ -663,11 +660,9 @@ class AccountBinance(AccountBase):
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = price * total_amount
                 elif accnt['asset'] != 'USDT':
-                    price = 1.0
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = total_amount
                 else:
-                    price = 1.0
                     total_amount = float(accnt['free']) + float(accnt['locked'])
                     price_btc = total_amount / btc_usd_price
 
@@ -812,7 +807,7 @@ class AccountBinance(AccountBase):
             for ticker in self.client.get_all_tickers():
                 result[ticker['symbol']] = ticker['price']
         else:
-            result = self.info_all_assets
+            result = self._tickers
         return result
 
     def get_all_my_trades(self, limit=100):

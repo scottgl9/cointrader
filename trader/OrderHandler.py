@@ -26,9 +26,8 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
-
-        self.update_initial_btc()
-        self.logger.info("Initial BTC value = {}".format(self.accnt.initial_btc))
+            self.update_initial_btc()
+            self.logger.info("Initial BTC value = {}".format(self.accnt.initial_btc))
 
     def trade_db_init(self, filename):
         if self.accnt.simulate:
@@ -63,6 +62,7 @@ class OrderHandler(object):
             self.accnt.initial_btc = self.accnt.get_account_total_btc_value()
         else:
             self.accnt.initial_btc = self.accnt.get_total_btc_value()
+        self.logger.info("Initial BTC: {}".format(self.accnt.initial_btc))
 
     def get_open_market_buy_count(self):
         return self.open_market_buy_count
