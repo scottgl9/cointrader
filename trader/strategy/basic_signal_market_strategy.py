@@ -251,16 +251,19 @@ class basic_signal_market_strategy(StrategyBase):
 
         return completed
 
+
     def load_hourly_klines(self, ts):
         if self.ticker_id not in self.hourly_klines_handler.table_symbols:
             self.hourly_klines_disabled = True
             return
-        if self.simulate:
-            # end_ts is first ts for simulation, so adjust ts to 2 hours ago (just to be safe):
-            end_ts = ts - self.accnt.hours_to_ts(2)
-            start_ts = end_ts - self.accnt.hours_to_ts(48)
-            self.hourly_klines_signal.load(start_ts, end_ts, ts)
+
+        # end_ts is first hourly ts for simulation
+        end_ts = self.accnt.get_hourly_ts(ts)
+        start_ts = end_ts - self.accnt.hours_to_ts(48)
+        self.hourly_klines_signal.load(start_ts, end_ts, ts)
+        if self.hourly_klines_signal.uses_models:
             self.accnt.loaded_model_count += 1
+
 
     def run_update(self, kline, mmkline=None, cache_db=None):
         close = kline.close
@@ -269,7 +272,7 @@ class basic_signal_market_strategy(StrategyBase):
         volume = kline.volume_quote
 
         if not self.timestamp:
-            if self.simulate and self.hourly_klines_signal and not self.hourly_klines_loaded:
+            if self.hourly_klines_signal and not self.hourly_klines_loaded:
                 if self.hourly_klines_signal.uses_models:
                     # limit maximum number of models to load, unless max_hourly_model_count is zero
                     if not self.max_hourly_model_count or self.accnt.loaded_model_count <= self.max_hourly_model_count:
