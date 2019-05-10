@@ -138,13 +138,17 @@ class MultiTrader(object):
 
         if not base_name or not currency_name: return None
 
-        # if an asset has deposit disabled, means its probably suspended
-        # or de-listed so DO NOT trade this coin
-        if self.accnt.deposit_asset_disabled(base_name):
-            return None
+        # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
+        if not self.use_hourly_klines:
+            if self.accnt.deposit_asset_disabled(base_name):
+                # if an asset has deposit disabled, means its probably suspended
+                # or de-listed so DO NOT trade this coin
+                self.logger.info("Asset {} disabled".format(base_name))
+                return None
 
         asset_info = self.accnt.get_asset_info_dict(symbol)
         if not asset_info:
+            self.logger.info("No asset info for {}".format(symbol))
             return None
 
         if self.accnt.btc_only() and currency_name != 'BTC':
@@ -238,7 +242,8 @@ class MultiTrader(object):
                         if hourly_ts != self.last_hourly_ts:
                             self.logger.info("Updating hourly klines hourly_ts={}".format(hourly_ts))
                             self.last_hourly_ts = hourly_ts
-            elif self.last_ts == 0 and self.current_ts != 0:
+
+            if self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
                 if (self.current_ts - self.last_ts) > self.check_ts:
