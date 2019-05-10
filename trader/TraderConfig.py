@@ -28,6 +28,14 @@ class TraderConfig(object):
         self.config.set(section, 'bnb_only', 'False')
         # only trade symbols present in hourly db
         self.config.set(section, 'hourly_symbols_only', 'True')
+        # trade_size_strategy params
+        self.config.set(section, 'btc_trade_size', '0.003')
+        self.config.set(section, 'eth_trade_size', '0.1')
+        self.config.set(section, 'bnb_trade_size', '1')
+        self.config.set(section, 'pax_trade_size', '20')
+        self.config.set(section, 'usdt_trade_size', '20')
+        self.config.set(section, 'trade_size_multiplier', '5.0')
+
         self.config.set(section, 'sell_only', 'False')
         self.config.set(section, 'trades_disabled', 'False')
         self.config.set(section, 'max_market_buy', '0')
@@ -55,6 +63,14 @@ class TraderConfig(object):
         self.config.set(section, 'bnb_only', 'False')
         # only trade symbols present in hourly db
         self.config.set(section, 'hourly_symbols_only', 'True')
+        # trade_size_strategy params
+        self.config.set(section, 'btc_trade_size', '0.004')
+        self.config.set(section, 'eth_trade_size', '0.1')
+        self.config.set(section, 'bnb_trade_size', '1')
+        self.config.set(section, 'pax_trade_size', '20')
+        self.config.set(section, 'usdt_trade_size', '20')
+        self.config.set(section, 'trade_size_multiplier', '5.0')
+
         self.config.set(section, 'init_max_buy_count', '0')
 
     def load(self):

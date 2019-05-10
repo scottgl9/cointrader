@@ -25,20 +25,28 @@ class basic_signal_market_strategy(StrategyBase):
                                                            config,
                                                            logger)
         self.strategy_name = 'hybrid_signal_market_strategy'
-        self.trade_size_handler = fixed_trade_size(self.accnt,
-                                                   asset_info,
-                                                   btc=0.004,
-                                                   eth=0.1,
-                                                   bnb=1,
-                                                   pax=10.0,
-                                                   usdt=10.0,
-                                                   multiplier=5.0)
 
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
         signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('hourly_signal')
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
+
+        btc_trade_size = float(self.config.get('btc_trade_size'))
+        eth_trade_size = float(self.config.get('eth_trade_size'))
+        bnb_trade_size = float(self.config.get('bnb_trade_size'))
+        pax_trade_size = float(self.config.get('pax_trade_size'))
+        usdt_trade_size = float(self.config.get('usdt_trade_size'))
+        trade_size_multiplier = float(self.config.get('trade_size_multiplier'))
+
+        self.trade_size_handler = fixed_trade_size(self.accnt,
+                                                   asset_info,
+                                                   btc=btc_trade_size,
+                                                   eth=eth_trade_size,
+                                                   bnb=bnb_trade_size,
+                                                   pax=pax_trade_size,
+                                                   usdt=usdt_trade_size,
+                                                   multiplier=trade_size_multiplier)
 
         if self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
