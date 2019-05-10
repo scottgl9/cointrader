@@ -301,8 +301,6 @@ class basic_signal_market_strategy(StrategyBase):
             return
 
         if self.hourly_klines_signal and not self.hourly_klines_disabled:
-            if not self.hourly_update_fail_count:
-                self.logger.info("Attempting hourly update for {}".format(self.ticker_id))
             if not self.hourly_klines_signal.update(ts=self.timestamp):
                 # hourly kline update failed
                 self.hourly_update_fail_count += 1
