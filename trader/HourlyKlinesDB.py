@@ -33,7 +33,7 @@ class HourlyKlinesDB(object):
         if self.symbol and not self.symbol_in_table_list(self.symbol):
             return
 
-        if not self.accnt.simulate:
+        if self.accnt and not self.accnt.simulate:
             self.table_last_update_ts = {}
             if not self.symbol:
                 for symbol in self.table_symbols:
