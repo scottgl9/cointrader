@@ -18,26 +18,32 @@ from trader.lib.ValueLag import ValueLag
 
 def get_largest_value_change(msgs, field='close', hours=4, direction=1, percent=True):
     lag = ValueLag(window=hours)
+    lag_ts = ValueLag(window=hours)
     largest_value_change = 0
+    largest_change_start_ts = 0
     for msg in msgs:
         value = float(msg[field])
+        ts = int(msg['ts'])
+        lag_ts.update(int(ts))
         lag.update(value)
         if not lag.ready():
             continue
         last_value = lag.result
         if direction == 1 and last_value and value > last_value:
             if not largest_value_change or (value - last_value) > largest_value_change:
+                largest_change_start_ts = lag_ts.result
                 if percent:
                     largest_value_change = round(100 * (value - last_value) / last_value, 2)
                 else:
                     largest_value_change = value - last_value
         elif direction == -1 and last_value and value < last_value:
             if not largest_value_change or (value - last_value) < largest_value_change:
+                largest_change_start_ts = lag_ts.result
                 if percent:
                     largest_value_change = round(100 * (value - last_value) / last_value, 2)
                 else:
                     largest_value_change = value - last_value
-    return largest_value_change
+    return largest_value_change, largest_change_start_ts
 
 
 # get longest amount of time where all hourly values delta change is in same direction
@@ -46,9 +52,12 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
     count = 0
     max_count = 0
     max_start_value = 0
+    max_start_ts = 0
+    max_tmp_start_ts = 0
     max_change = 0
     for msg in msgs:
         value = float(msg[field])
+        ts = int(msg['ts'])
         if not last_value:
             last_value = value
             continue
@@ -56,9 +65,11 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
             if value > last_value:
                 if count == 0:
                     max_start_value = last_value
+                    max_tmp_start_ts = ts
                 count += 1
             else:
                 if count > max_count and max_start_value:
+                    max_start_ts = max_tmp_start_ts
                     if percent:
                         max_change = round(100.0 * (value - max_start_value) / max_start_value, 2)
                     else:
@@ -69,9 +80,11 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
             if value < last_value:
                 if count == 0:
                     max_start_value = last_value
+                    max_tmp_start_ts = ts
                 count += 1
             else:
                 if count > max_count and max_start_value:
+                    max_start_ts = max_tmp_start_ts
                     if percent:
                         max_change = round(100.0 * (value - max_start_value) / max_start_value, 2)
                     else:
@@ -79,7 +92,7 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
                     max_count = count
                 count = 0
         last_value = value
-    return max_count, max_change
+    return max_count, max_change, max_start_ts
 
 
 def analyze(hkdb, symbol, start_ts, end_ts):
