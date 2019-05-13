@@ -13,12 +13,49 @@ import os
 from trader.account.AccountBinance import AccountBinance
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.lib.ValueLag import ValueLag
+
+
+def get_largest_value_change(msgs, field='close', hours=4, direction=1, percent=True):
+    lag = ValueLag(window=hours)
+    largest_value_change = 0
+    for msg in msgs:
+        value = float(msg[field])
+        lag.update(value)
+        if not lag.ready():
+            continue
+        last_value = lag.result
+        if direction == 1 and last_value and value > last_value:
+            if not largest_value_change or (value - last_value) > largest_value_change:
+                if percent:
+                    largest_value_change = round(100 * (value - last_value) / last_value, 2)
+                else:
+                    largest_value_change = value - last_value
+        elif direction == -1 and last_value and value < last_value:
+            if not largest_value_change or (value - last_value) < largest_value_change:
+                if percent:
+                    largest_value_change = round(100 * (value - last_value) / last_value, 2)
+                else:
+                    largest_value_change = value - last_value
+    return largest_value_change
+
+
+# get longest amount of time where all hourly values delta change is in same direction
+def get_longest_trend(msg, field='close', direction=1, percent=True):
+    pass
 
 
 def analyze(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
-    for msg in msgs:
-        print(msg)
+    print("Largest 4 hour price change {}:".format(symbol))
+    print(get_largest_value_change(msgs, hours=4, direction=1))
+    print(get_largest_value_change(msgs, hours=4, direction=-1))
+    print("Largest 8 hour price change {}:".format(symbol))
+    print(get_largest_value_change(msgs, hours=8, direction=1))
+    print(get_largest_value_change(msgs, hours=8, direction=-1))
+    print("Largest 24 hour price change {}:".format(symbol))
+    print(get_largest_value_change(msgs, hours=24, direction=1))
+    print(get_largest_value_change(msgs, hours=24, direction=-1))
 
 
 # get first timestamp from kline sqlite db
