@@ -41,8 +41,45 @@ def get_largest_value_change(msgs, field='close', hours=4, direction=1, percent=
 
 
 # get longest amount of time where all hourly values delta change is in same direction
-def get_longest_trend(msg, field='close', direction=1, percent=True):
-    pass
+def get_longest_trend(msgs, field='close', direction=1, percent=True):
+    last_value = 0
+    count = 0
+    max_count = 0
+    max_start_value = 0
+    max_change = 0
+    for msg in msgs:
+        value = float(msg[field])
+        if not last_value:
+            last_value = value
+            continue
+        if direction == 1:
+            if value > last_value:
+                if count == 0:
+                    max_start_value = last_value
+                count += 1
+            else:
+                if count > max_count and max_start_value:
+                    if percent:
+                        max_change = round(100.0 * (value - max_start_value) / max_start_value, 2)
+                    else:
+                        max_change = value - max_start_value
+                    max_count = count
+                count = 0
+        elif direction == -1:
+            if value < last_value:
+                if count == 0:
+                    max_start_value = last_value
+                count += 1
+            else:
+                if count > max_count and max_start_value:
+                    if percent:
+                        max_change = round(100.0 * (value - max_start_value) / max_start_value, 2)
+                    else:
+                        max_change = value - max_start_value
+                    max_count = count
+                count = 0
+        last_value = value
+    return max_count, max_change
 
 
 def analyze(hkdb, symbol, start_ts, end_ts):
@@ -56,6 +93,9 @@ def analyze(hkdb, symbol, start_ts, end_ts):
     print("Largest 24 hour price change {}:".format(symbol))
     print(get_largest_value_change(msgs, hours=24, direction=1))
     print(get_largest_value_change(msgs, hours=24, direction=-1))
+    print("Longest trend {}:".format(symbol))
+    print(get_longest_trend(msgs, direction=1))
+    print(get_longest_trend(msgs, direction=-1))
 
 
 # get first timestamp from kline sqlite db
@@ -133,4 +173,6 @@ if __name__ == '__main__':
 
     if symbol:
         analyze(hkdb, symbol, start_ts, end_ts)
+    else:
+        parser.print_help()
     hkdb.close()

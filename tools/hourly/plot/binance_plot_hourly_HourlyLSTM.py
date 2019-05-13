@@ -151,4 +151,6 @@ if __name__ == '__main__':
 
     if symbol:
         simulate(hkdb, symbol, start_ts, end_ts, test_hours)
+    else:
+        parser.print_help()
     hkdb.close()

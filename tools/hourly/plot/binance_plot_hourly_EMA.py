@@ -25,7 +25,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
     obv = OBV()
-    #scale = 24
+    scale = 24
     if start_ts and end_ts:
         scale = 1
     ema12 = EMA(12, scale=scale)
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # used to get first timestamp for symbol from precaptured live market data
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='',
                         help='filename of kline sqlite db')
 
     parser.add_argument('--hours', action='store', dest='hours',
@@ -175,4 +175,6 @@ if __name__ == '__main__':
 
     if symbol:
         simulate(hkdb, symbol, start_ts, end_ts)
+    else:
+        parser.print_help()
     hkdb.close()

@@ -112,4 +112,6 @@ if __name__ == '__main__':
         start_ts = int(timestamps[train_index])
         end_ts = int(timestamps[-1])
         simulate(hkdb, symbol, start_ts, end_ts)
+    else:
+        parser.print_help()
     hkdb.close()
