@@ -2,10 +2,11 @@
 
 class Candlestick(object):
     def __init__(self):
-        pass
+        self.prev_kline = None
 
     def update(self, kline):
-        pass
+
+        self.prev_kline = kline
 
     @staticmethod
     def body_length(kline):
@@ -56,12 +57,41 @@ class Candlestick(object):
     # Boolean pattern detection.
 
     @staticmethod
+    def is_marubozu(kline):
+        if kline.close == kline.high and kline.open == kline.low:
+            return True
+        if kline.open == kline.high and kline.close == kline.low:
+            return True
+        return False
+
+    @staticmethod
+    def is_spinning_top(kline):
+        body_len = Candlestick.body_length(kline)
+        return body_len < Candlestick.wick_length(kline) and body_len < Candlestick.tail_length(kline)
+
+    @staticmethod
     def is_hammer(kline):
         return Candlestick.is_bullish(kline) and Candlestick.is_hammer_like(kline)
 
     @staticmethod
     def is_inverted_hammer(kline):
         return Candlestick.is_bearish(kline) and Candlestick.is_inverted_hammer_like(kline)
+
+    @staticmethod
+    def is_marubozu_bullish(kline):
+        return Candlestick.is_bullish(kline) and Candlestick.is_marubozu(kline)
+
+    @staticmethod
+    def is_marubozu_bearish(kline):
+        return Candlestick.is_bearish(kline) and Candlestick.is_marubozu(kline)
+
+    @staticmethod
+    def is_spinning_top_bullish(kline):
+        return Candlestick.is_bullish(kline) and Candlestick.is_spinning_top(kline)
+
+    @staticmethod
+    def is_spinning_top_bearish(kline):
+        return Candlestick.is_bearish(kline) and Candlestick.is_spinning_top(kline)
 
     @staticmethod
     def is_hanging_man(previous, current):
