@@ -1,11 +1,35 @@
 # Library for finding candlestick patterns
+from trader.lib.CircularArray import CircularArray
 
 class Candlestick(object):
-    def __init__(self):
+    def __init__(self, window):
+        self.window = window
         self.prev_kline = None
+        self.klines = []
+        self.age = 0
+        self.prev_age = 0
+        self._body_len_sum = 0
+        self._tail_len_sum = 0
+        self._wick_len_sum = 0
 
     def update(self, kline):
-
+        if len(self.klines) < self.window:
+            self.klines.append(kline)
+            self._body_len_sum += Candlestick.body_length(kline)
+            self._tail_len_sum += Candlestick.tail_length(kline)
+            self._wick_len_sum += Candlestick.wick_length(kline)
+        else:
+            start_kline = self.klines[int(self.age)]
+            self._body_len_sum -= Candlestick.body_length(start_kline)
+            self._tail_len_sum -= Candlestick.tail_length(start_kline)
+            self._wick_len_sum -= Candlestick.wick_length(start_kline)
+            # re-calculate sums including new kline
+            self._body_len_sum += Candlestick.body_length(kline)
+            self._tail_len_sum += Candlestick.tail_length(kline)
+            self._wick_len_sum += Candlestick.wick_length(kline)
+            self.klines[int(self.age)] = kline
+            self.prev_age = self.age
+            self.age = (self.age + 1) % self.window
         self.prev_kline = kline
 
     @staticmethod
