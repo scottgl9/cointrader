@@ -10,6 +10,7 @@ except ImportError:
 import sqlite3
 import sys
 import os
+import time
 from trader.account.AccountBinance import AccountBinance
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
@@ -21,6 +22,7 @@ def get_largest_value_change(msgs, field='close', hours=4, direction=1, percent=
     lag_ts = ValueLag(window=hours)
     largest_value_change = 0
     largest_change_start_ts = 0
+    largest_change_end_ts = 0
     for msg in msgs:
         value = float(msg[field])
         ts = int(msg['ts'])
@@ -31,19 +33,21 @@ def get_largest_value_change(msgs, field='close', hours=4, direction=1, percent=
         last_value = lag.result
         if direction == 1 and last_value and value > last_value:
             if not largest_value_change or (value - last_value) > largest_value_change:
-                largest_change_start_ts = lag_ts.result
+                largest_change_start_ts = int(lag_ts.result)
+                largest_change_end_ts = int(ts)
                 if percent:
                     largest_value_change = round(100 * (value - last_value) / last_value, 2)
                 else:
                     largest_value_change = value - last_value
         elif direction == -1 and last_value and value < last_value:
             if not largest_value_change or (value - last_value) < largest_value_change:
-                largest_change_start_ts = lag_ts.result
+                largest_change_start_ts = int(lag_ts.result)
+                largest_change_end_ts = int(ts)
                 if percent:
                     largest_value_change = round(100 * (value - last_value) / last_value, 2)
                 else:
                     largest_value_change = value - last_value
-    return largest_value_change, largest_change_start_ts
+    return largest_value_change, largest_change_start_ts, largest_change_end_ts
 
 
 # get longest amount of time where all hourly values delta change is in same direction
@@ -53,6 +57,7 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
     max_count = 0
     max_start_value = 0
     max_start_ts = 0
+    max_end_ts = 0
     max_tmp_start_ts = 0
     max_change = 0
     for msg in msgs:
@@ -69,7 +74,8 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
                 count += 1
             else:
                 if count > max_count and max_start_value:
-                    max_start_ts = max_tmp_start_ts
+                    max_start_ts = int(max_tmp_start_ts)
+                    max_end_ts = int(ts)
                     if percent:
                         max_change = round(100.0 * (value - max_start_value) / max_start_value, 2)
                     else:
@@ -84,7 +90,8 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
                 count += 1
             else:
                 if count > max_count and max_start_value:
-                    max_start_ts = max_tmp_start_ts
+                    max_start_ts = int(max_tmp_start_ts)
+                    max_end_ts = int(ts)
                     if percent:
                         max_change = round(100.0 * (value - max_start_value) / max_start_value, 2)
                     else:
@@ -92,23 +99,31 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
                     max_count = count
                 count = 0
         last_value = value
-    return max_count, max_change, max_start_ts
+    return max_count, max_change, max_start_ts, max_end_ts
 
 
 def analyze(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
     print("Largest 4 hour price change {}:".format(symbol))
-    print(get_largest_value_change(msgs, hours=4, direction=1))
-    print(get_largest_value_change(msgs, hours=4, direction=-1))
+    value_change, start_ts, end_ts = get_largest_value_change(msgs, hours=4, direction=1)
+    print(value_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
+    value_change, start_ts, end_ts = get_largest_value_change(msgs, hours=4, direction=-1)
+    print(value_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
     print("Largest 8 hour price change {}:".format(symbol))
-    print(get_largest_value_change(msgs, hours=8, direction=1))
-    print(get_largest_value_change(msgs, hours=8, direction=-1))
+    value_change, start_ts, end_ts = get_largest_value_change(msgs, hours=8, direction=1)
+    print(value_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
+    value_change, start_ts, end_ts = get_largest_value_change(msgs, hours=8, direction=-1)
+    print(value_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
     print("Largest 24 hour price change {}:".format(symbol))
-    print(get_largest_value_change(msgs, hours=24, direction=1))
-    print(get_largest_value_change(msgs, hours=24, direction=-1))
+    value_change, start_ts, end_ts = get_largest_value_change(msgs, hours=24, direction=1)
+    print(value_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
+    value_change, start_ts, end_ts = get_largest_value_change(msgs, hours=24, direction=-1)
+    print(value_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
     print("Longest trend {}:".format(symbol))
-    print(get_longest_trend(msgs, direction=1))
-    print(get_longest_trend(msgs, direction=-1))
+    max_count, max_change, start_ts, end_ts = get_longest_trend(msgs, direction=1)
+    print(max_count, max_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
+    max_count, max_change, start_ts, end_ts = get_longest_trend(msgs, direction=-1)
+    print(max_count, max_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
 
 
 # get first timestamp from kline sqlite db
