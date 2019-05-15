@@ -128,7 +128,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                               logger=logger,
                               config=config)
 
-    print(multitrader.accnt.balances)
+    initial_balances = multitrader.accnt.balances
+    print(initial_balances)
 
     found = False
 
@@ -199,7 +200,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         cache_db.commit()
         cache_db.close()
 
-    print(multitrader.accnt.balances)
     logger.info("\nTrade Symbol Profits:")
     final_btc_total = multitrader.accnt.get_total_btc_value()
     total_pprofit = 0
@@ -230,7 +230,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     max_tickers = accnt.get_max_tickers()
     end_tickers = accnt.get_tickers()
 
-    return multitrader.get_stored_trades(), end_tickers, min_tickers, max_tickers, total_pprofit
+    return multitrader.get_stored_trades(), end_tickers, min_tickers, max_tickers, total_pprofit, initial_btc_total
 
 
 def get_detail_all_assets(client):
@@ -364,7 +364,7 @@ if __name__ == '__main__':
     try:
         simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
         print(simulate_db_filename)
-        trades, end_tickers, min_tickers, max_tickers, total_pprofit = simulate(conn, config, logger, simulate_db_filename)
+        trades, end_tickers, min_tickers, max_tickers, total_pprofit, initial_btc_total = simulate(conn, config, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
@@ -383,8 +383,10 @@ if __name__ == '__main__':
         f.write(json.dumps(trade_cache, f, indent=4, sort_keys=True))
 
     with open(trade_result_filepath, "w") as f:
-        trade_result = process_trade_cache(trades, end_tickers)
-        for symbol in sorted(trade_result):
-            results = sorted(trade_result[symbol])
-            f.write("{}: {}\n".format(symbol, results))
+        #trade_result = process_trade_cache(trades, end_tickers)
+        #for symbol in sorted(trade_result):
+        #    results = sorted(trade_result[symbol])
+        #    f.write("{}: {}\n".format(symbol, results))
+        f.write("Initial BTC Total: {}\n".format(initial_btc_total))
         f.write("Total Profit: {}%".format(total_pprofit))
+
