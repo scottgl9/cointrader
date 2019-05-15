@@ -1,9 +1,9 @@
-from .IndicatorBase import IndicatorBase
-from .EMA import EMA
+from trader.indicator.IndicatorBase import IndicatorBase
+from trader.indicator.EMA import EMA
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 
 
-class EMA_ROC(IndicatorBase):
+class VelocityEMA(IndicatorBase):
     def __init__(self, window, scale=1, hourly_mode=False, percent=False):
         IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.hourly_mode = hourly_mode

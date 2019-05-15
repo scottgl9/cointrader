@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
-from trader.indicator.EMA_ROC import EMA_ROC
+from trader.lib.VelocityEMA import VelocityEMA
 
 
 def get_rows_as_msgs(c):
@@ -35,9 +35,9 @@ def simulate(conn, client, base, currency):
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     obv = OBV()
-    emaroc12 = EMA_ROC(12, scale=24)
-    emaroc26 = EMA_ROC(26, scale=24)
-    emaroc200 = EMA_ROC(200, scale=24)
+    emaroc12 = VelocityEMA(12, scale=24)
+    emaroc26 = VelocityEMA(26, scale=24)
+    emaroc200 = VelocityEMA(200, scale=24)
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema200 = EMA(200, scale=24)
@@ -100,9 +100,9 @@ def simulate(conn, client, base, currency):
     fig3, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
-    fig21, = plt.plot(emaroc12_values, label='EMAROC12')
-    fig22, = plt.plot(emaroc26_values, label='EMAROC26')
-    fig23, = plt.plot(emaroc200_values, label='EMAROC200')
+    fig21, = plt.plot(emaroc12_values, label='VEMA12')
+    fig22, = plt.plot(emaroc26_values, label='VEMA26')
+    fig23, = plt.plot(emaroc200_values, label='VEMA200')
     plt.legend(handles=[fig21, fig22, fig23])
     plt.show()
 
