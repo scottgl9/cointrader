@@ -16,6 +16,15 @@ class EMA_ROC(IndicatorBase):
         if not self.hourly_mode:
             self.mts = MovingTimeSegment(seconds=3600)
 
+    def ready(self):
+        if self.hourly_mode:
+            if self.prev_ema:
+                return True
+        else:
+            if self.mts.ready():
+                return True
+        return False
+
     def update(self, close, ts):
         if self.mts:
             self.ema.update(close)
