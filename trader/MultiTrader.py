@@ -147,7 +147,7 @@ class MultiTrader(object):
                 return None
 
         asset_info = self.accnt.get_asset_info_dict(symbol)
-        if not asset_info:
+        if not self.simulate and not asset_info:
             self.logger.info("No asset info for {}".format(symbol))
             return None
 
