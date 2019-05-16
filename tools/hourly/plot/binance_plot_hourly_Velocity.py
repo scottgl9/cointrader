@@ -34,9 +34,9 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     ema300 = EMA(300, scale=scale)
     ema500 = EMA(500, scale=scale)
 
-    vema12 = Velocity(12, hourly_mode=True, percent=False)
-    vema26 = Velocity(26, hourly_mode=True, percent=False)
-    vema200 = Velocity(200, hourly_mode=True, percent=False)
+    vema12 = Velocity(hourly_mode=True, percent=False)
+    vema26 = Velocity(hourly_mode=True, percent=False)
+    vema200 = Velocity(hourly_mode=True, percent=False)
     vema12_values = []
     vema26_values = []
     vema200_values = []
@@ -64,13 +64,6 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         volume = float(msg['quote_volume'])
         volumes.append(volume)
 
-        vema12.update(close, ts)
-        vema26.update(close, ts)
-        vema200.update(close, ts)
-        vema12_values.append(vema12.result)
-        vema26_values.append(vema26.result)
-        vema200_values.append(vema200.result)
-
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
         ema26_values.append(ema26.update(close))
@@ -84,6 +77,13 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         ema300_values.append(ema300.result)
         ema500.update(close)
         ema500_values.append(ema500.result)
+
+        vema12.update(ema12.result, ts)
+        vema26.update(ema26.result, ts)
+        vema200.update(ema200.result, ts)
+        vema12_values.append(vema12.result)
+        vema26_values.append(vema26.result)
+        vema200_values.append(vema200.result)
 
         close_prices.append(close)
         open_prices.append(open)

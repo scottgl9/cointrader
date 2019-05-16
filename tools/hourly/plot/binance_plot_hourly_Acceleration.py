@@ -34,9 +34,9 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     ema300 = EMA(300, scale=scale)
     ema500 = EMA(500, scale=scale)
 
-    accelema12 = Acceleration(12, hourly_mode=True, percent=False)
-    accelema26 = Acceleration(26, hourly_mode=True, percent=False)
-    accelema200 = Acceleration(200, hourly_mode=True, percent=False)
+    accelema12 = Acceleration(hourly_mode=True, percent=False)
+    accelema26 = Acceleration(hourly_mode=True, percent=False)
+    accelema200 = Acceleration(hourly_mode=True, percent=False)
     accelema12_values = []
     accelema26_values = []
     accelema200_values = []
@@ -64,13 +64,6 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         volume = float(msg['quote_volume'])
         volumes.append(volume)
 
-        accelema12.update(close, ts)
-        accelema26.update(close, ts)
-        accelema200.update(close, ts)
-        accelema12_values.append(accelema12.result)
-        accelema26_values.append(accelema26.result)
-        accelema200_values.append(accelema200.result)
-
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
         ema26_values.append(ema26.update(close))
@@ -84,6 +77,13 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         ema300_values.append(ema300.result)
         ema500.update(close)
         ema500_values.append(ema500.result)
+
+        accelema12.update(ema12.result, ts)
+        accelema26.update(ema26.result, ts)
+        accelema200.update(ema200.result, ts)
+        accelema12_values.append(accelema12.result)
+        accelema26_values.append(accelema26.result)
+        accelema200_values.append(accelema200.result)
 
         close_prices.append(close)
         open_prices.append(open)

@@ -5,11 +5,11 @@ from trader.lib.Velocity import Velocity
 
 
 class Acceleration(IndicatorBase):
-    def __init__(self, window, scale=1, hourly_mode=False, percent=False):
+    def __init__(self, hourly_mode=False, percent=False):
         IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.hourly_mode = hourly_mode
         self.percent = percent
-        self.velocity = Velocity(window, scale, hourly_mode, percent)
+        self.velocity = Velocity(hourly_mode, percent)
         self.mts = None
         self.lag = None
         if not self.hourly_mode:

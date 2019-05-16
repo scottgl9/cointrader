@@ -4,11 +4,10 @@ from trader.indicator.EMA import EMA
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 
 class Velocity(IndicatorBase):
-    def __init__(self, window, scale=1, hourly_mode=False, percent=False):
+    def __init__(self, hourly_mode=False, percent=False):
         IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.hourly_mode = hourly_mode
         self.percent = percent
-        self.ema = EMA(window, scale=scale)
         self.mts = None
         self.lag = None
         self.prev_value = 0

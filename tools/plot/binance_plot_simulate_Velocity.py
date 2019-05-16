@@ -35,9 +35,9 @@ def simulate(conn, client, base, currency):
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     obv = OBV()
-    emaroc12 = Velocity(12, scale=24)
-    emaroc26 = Velocity(26, scale=24)
-    emaroc200 = Velocity(200, scale=24)
+    vema12 = Velocity()
+    vema26 = Velocity()
+    vema200 = Velocity()
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema200 = EMA(200, scale=24)
@@ -47,9 +47,9 @@ def simulate(conn, client, base, currency):
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
-    emaroc12_values = []
-    emaroc26_values = []
-    emaroc200_values = []
+    vema12_values = []
+    vema26_values = []
+    vema200_values = []
     ema12_values = []
     ema26_values = []
     ema200_values = []
@@ -80,13 +80,13 @@ def simulate(conn, client, base, currency):
         ema200.update(close)
         ema200_values.append(ema200.result)
 
-        emaroc12.update(close, ts)
-        emaroc26.update(close, ts)
-        emaroc200.update(close, ts)
+        vema12.update(ema12.result, ts)
+        vema26.update(ema26.result, ts)
+        vema200.update(ema200.result, ts)
 
-        emaroc12_values.append(emaroc12.result)
-        emaroc26_values.append(emaroc26.result)
-        emaroc200_values.append(emaroc200.result)
+        vema12_values.append(vema12.result)
+        vema26_values.append(vema26.result)
+        vema200_values.append(vema200.result)
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -100,9 +100,9 @@ def simulate(conn, client, base, currency):
     fig3, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
-    fig21, = plt.plot(emaroc12_values, label='VEMA12')
-    fig22, = plt.plot(emaroc26_values, label='VEMA26')
-    fig23, = plt.plot(emaroc200_values, label='VEMA200')
+    fig21, = plt.plot(vema12_values, label='VEMA12')
+    fig22, = plt.plot(vema26_values, label='VEMA26')
+    fig23, = plt.plot(vema200_values, label='VEMA200')
     plt.legend(handles=[fig21, fig22, fig23])
     plt.show()
 
