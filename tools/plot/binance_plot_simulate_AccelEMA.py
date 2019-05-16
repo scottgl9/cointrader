@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
+from trader.lib.VelocityEMA import VelocityEMA
 from trader.lib.AccelEMA import AccelEMA
 
 
@@ -35,9 +36,12 @@ def simulate(conn, client, base, currency):
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     obv = OBV()
-    emaroc12 = AccelEMA(12, scale=24, percent=False)
-    emaroc26 = AccelEMA(26, scale=24, percent=False)
-    emaroc200 = AccelEMA(200, scale=24, percent=False)
+    accelema12 = AccelEMA(12, scale=24, percent=False)
+    accelema26 = AccelEMA(26, scale=24, percent=False)
+    accelema200 = AccelEMA(200, scale=24, percent=False)
+    vema12 = VelocityEMA(12, scale=24, percent=False)
+    vema26 = VelocityEMA(26, scale=24, percent=False)
+    vema200 = VelocityEMA(200, scale=24, percent=False)
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema200 = EMA(200, scale=24)
@@ -47,9 +51,12 @@ def simulate(conn, client, base, currency):
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
-    emaroc12_values = []
-    emaroc26_values = []
-    emaroc200_values = []
+    accelema12_values = []
+    accelema26_values = []
+    accelema200_values = []
+    vema12_values = []
+    vema26_values = []
+    vema200_values = []
     ema12_values = []
     ema26_values = []
     ema200_values = []
@@ -80,30 +87,44 @@ def simulate(conn, client, base, currency):
         ema200.update(close)
         ema200_values.append(ema200.result)
 
-        emaroc12.update(close, ts)
-        emaroc26.update(close, ts)
-        emaroc200.update(close, ts)
+        accelema12.update(close, ts)
+        accelema26.update(close, ts)
+        accelema200.update(close, ts)
 
-        emaroc12_values.append(emaroc12.result)
-        emaroc26_values.append(emaroc26.result)
-        emaroc200_values.append(emaroc200.result)
+        accelema12_values.append(accelema12.result)
+        accelema26_values.append(accelema26.result)
+        accelema200_values.append(accelema200.result)
+
+        vema12.update(close, ts)
+        vema26.update(close, ts)
+        vema200.update(close, ts)
+
+        vema12_values.append(vema12.result)
+        vema26_values.append(vema26.result)
+        vema200_values.append(vema200.result)
+
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
         i += 1
 
-    plt.subplot(211)
+    plt.subplot(311)
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3])
-    plt.subplot(212)
-    fig21, = plt.plot(emaroc12_values, label='VEMA12')
-    fig22, = plt.plot(emaroc26_values, label='VEMA26')
-    fig23, = plt.plot(emaroc200_values, label='VEMA200')
+    plt.subplot(312)
+    fig21, = plt.plot(accelema12_values, label='AEMA12')
+    fig22, = plt.plot(accelema26_values, label='AEMA26')
+    fig23, = plt.plot(accelema200_values, label='AEMA200')
     plt.legend(handles=[fig21, fig22, fig23])
+    plt.subplot(313)
+    fig31, = plt.plot(vema12_values, label='VEMA12')
+    fig32, = plt.plot(vema26_values, label='VEMA26')
+    fig33, = plt.plot(vema200_values, label='VEMA200')
+    plt.legend(handles=[fig31, fig32, fig33])
     plt.show()
 
 if __name__ == '__main__':

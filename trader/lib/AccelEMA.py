@@ -21,6 +21,8 @@ class AccelEMA(IndicatorBase):
     def update(self, close, ts):
         if self.mts:
             self.velocity_ema.update(close, ts)
+            if not self.velocity_ema.ready():
+                return self.result
             self.mts.update(self.velocity_ema.result, ts)
             if not self.mts.ready() or not self.mts.first_value():
                 return self.result
