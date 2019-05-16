@@ -9,7 +9,7 @@ class Acceleration(IndicatorBase):
         IndicatorBase.__init__(self, use_close=True, use_ts=True)
         self.hourly_mode = hourly_mode
         self.percent = percent
-        self.velocity = Velocity(hourly_mode, percent)
+        self.velocity = Velocity(hourly_mode, percent=False)
         self.mts = None
         self.lag = None
         if not self.hourly_mode:
