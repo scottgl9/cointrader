@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
-from trader.lib.VelocityEMA import VelocityEMA
+from trader.lib.Velocity import Velocity
 
 
 def get_rows_as_msgs(c):
@@ -35,9 +35,9 @@ def simulate(conn, client, base, currency):
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     obv = OBV()
-    emaroc12 = VelocityEMA(12, scale=24)
-    emaroc26 = VelocityEMA(26, scale=24)
-    emaroc200 = VelocityEMA(200, scale=24)
+    emaroc12 = Velocity(12, scale=24)
+    emaroc26 = Velocity(26, scale=24)
+    emaroc200 = Velocity(200, scale=24)
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema200 = EMA(200, scale=24)

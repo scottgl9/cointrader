@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
-from trader.lib.VelocityEMA import VelocityEMA
-from trader.lib.AccelEMA import AccelEMA
+from trader.lib.Velocity import Velocity
+from trader.lib.Acceleration import Acceleration
 
 
 def get_rows_as_msgs(c):
@@ -36,12 +36,12 @@ def simulate(conn, client, base, currency):
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     obv = OBV()
-    accelema12 = AccelEMA(12, scale=24, percent=False)
-    accelema26 = AccelEMA(26, scale=24, percent=False)
-    accelema200 = AccelEMA(200, scale=24, percent=False)
-    vema12 = VelocityEMA(12, scale=24, percent=False)
-    vema26 = VelocityEMA(26, scale=24, percent=False)
-    vema200 = VelocityEMA(200, scale=24, percent=False)
+    accelema12 = Acceleration(12, scale=24, percent=False)
+    accelema26 = Acceleration(26, scale=24, percent=False)
+    accelema200 = Acceleration(200, scale=24, percent=False)
+    vema12 = Velocity(12, scale=24, percent=False)
+    vema26 = Velocity(26, scale=24, percent=False)
+    vema200 = Velocity(200, scale=24, percent=False)
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema200 = EMA(200, scale=24)
