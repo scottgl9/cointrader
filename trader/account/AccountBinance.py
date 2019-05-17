@@ -377,6 +377,17 @@ class AccountBinance(AccountBase):
             return self.info_all_assets[symbol][field]
         return self.info_all_assets[symbol]
 
+    def get_base_step_size(self, symbol=None, base=None, currency=None):
+        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
+        if not info:
+            return 0
+        return info['stepSize']
+
+    def get_currency_step_size(self, symbol=None, base=None, currency=None):
+        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
+        if not info:
+            return 0
+        return info['tickSize']
 
     # return asset info in AssetInfo class object
     def get_asset_info(self, symbol=None, base=None, currency=None):
