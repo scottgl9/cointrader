@@ -3,7 +3,7 @@
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-adaptive-rsi/
 from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 
 class ARSI(IndicatorBase):

@@ -9,7 +9,6 @@ except ImportError:
 import sqlite3
 import json
 import os
-from datetime import datetime
 import sys
 import matplotlib
 matplotlib.use('Agg')
@@ -19,14 +18,9 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from trader.indicator.EMA import EMA
 from trader.indicator.AEMA import AEMA
 from trader.indicator.OBV import OBV
-from trader.lib.Kline import Kline
 from trader.lib.MAAvg import MAAvg
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 
-from trader.account.binance.client import Client
-from trader.MultiTrader import MultiTrader
-from trader.account.AccountBinance import AccountBinance
-from trader.config import *
 import argparse
 import logging
 

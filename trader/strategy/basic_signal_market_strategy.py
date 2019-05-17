@@ -1,12 +1,7 @@
-from trader.lib.Message import Message
-from trader.lib.MessageHandler import MessageHandler
-from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
+from trader.lib.struct.Message import Message
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
-from trader.strategy.trade_size_strategy.percent_balance_trade_size import percent_balance_trade_size
 from trader.strategy.StrategyBase import StrategyBase, select_hourly_signal
 from trader.signal.SignalBase import SignalBase
-import time
-from datetime import datetime
 
 
 class basic_signal_market_strategy(StrategyBase):

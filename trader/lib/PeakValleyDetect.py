@@ -1,5 +1,4 @@
 # Peak / Valley Detection
-from trader.lib.CircularArray import CircularArray
 
 
 class PeakValleyDetect(object):

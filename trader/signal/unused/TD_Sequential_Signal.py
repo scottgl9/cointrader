@@ -1,6 +1,6 @@
 # TD Sequential Indicator / Signal
-from trader.lib.CircularArray import CircularArray
-from trader.lib.FakeKline import FakeKline
+from trader.lib.struct.CircularArray import CircularArray
+from trader.lib.struct.FakeKline import FakeKline
 from trader.signal.SignalBase import SignalBase
 
 class TD_Sequential_Signal(SignalBase):

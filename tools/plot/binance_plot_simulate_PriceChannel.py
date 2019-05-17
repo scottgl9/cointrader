@@ -9,8 +9,6 @@ except ImportError:
 
 import sqlite3
 import sys
-from trader.account.binance.client import Client
-from trader.config import *
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
@@ -18,7 +16,7 @@ from trader.indicator.IchimokuCloud import IchimokuCloud
 from trader.indicator.OBV import OBV
 from trader.indicator.HMA import HMA
 from trader.indicator.test.QUAD import QUAD
-from trader.lib.FakeKline import FakeKline
+from trader.lib.struct.FakeKline import FakeKline
 from trader.lib.PriceFilter import PriceFilter
 from trader.indicator.ZLEMA import *
 from trader.indicator.test.PriceChannel import PriceChannel

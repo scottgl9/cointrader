@@ -1,5 +1,5 @@
 # a second order low pass filter
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class LowPass:
     def __init__(self, period):

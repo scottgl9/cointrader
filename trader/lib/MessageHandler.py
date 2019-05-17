@@ -1,5 +1,5 @@
 # global handling of messages to and from strategies to multitrader
-from trader.lib.Message import Message
+from trader.lib.struct.Message import Message
 
 global_message_queue = []
 

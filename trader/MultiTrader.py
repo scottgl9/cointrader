@@ -1,7 +1,6 @@
 # handle multiple TraiePairs, one for each base / currency we want to trade
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
-from trader.lib.Kline import Kline
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy

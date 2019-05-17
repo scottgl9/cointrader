@@ -1,5 +1,5 @@
 # idea I have for smoothing a moving average
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 # Idea of channel linear regression lines:
 # - each time price is updated, add to circular array of size
@@ -9,7 +9,6 @@ from trader.lib.CircularArray import CircularArray
 # Find direction of the trend:
 # if minimum of high_prices <= maximum of low_prices: direction = -1
 # if maximum of low_prices >= minimum of high_prices: direction = 1
-from trader.indicator.EMA import EMA
 
 class TESTMA(object):
     def __init__(self, window=50, window2=50):

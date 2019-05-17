@@ -4,7 +4,7 @@ import os
 import sqlite3
 import time
 from datetime import datetime
-from trader.lib.Kline import Kline
+from trader.lib.struct.Kline import Kline
 import pandas as pd
 #from trader.account.binance.client import Client
 

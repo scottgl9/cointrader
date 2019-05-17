@@ -2,7 +2,7 @@
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-forward-reverse-ema/
 from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class FREMA(IndicatorBase):
     def __init__(self):

@@ -10,12 +10,10 @@ from trader.account.binance.websockets import BinanceSocketManager
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.TraderConfig import TraderConfig
-from trader.lib.Kline import Kline
+from trader.lib.struct.Kline import Kline
 import argparse
-import collections
 import logging
 import threading
-import signal
 import time
 from trader.WebHandler import WebThread
 from trader.config import *

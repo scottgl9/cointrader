@@ -1,5 +1,4 @@
 # Library for finding candlestick patterns
-from trader.lib.CircularArray import CircularArray
 
 class Candlestick(object):
     def __init__(self, window):

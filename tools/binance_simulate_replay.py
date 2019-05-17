@@ -7,15 +7,12 @@ except ImportError:
     sys.path.append('.')
 
 import os.path
-import time
 import sqlite3
-from datetime import datetime, timedelta
-import threading
+from datetime import datetime
 import sys
-from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
 from trader.MultiTrader import MultiTrader
-from trader.lib.Kline import Kline
+from trader.lib.struct.Kline import Kline
 from trader.account.AccountBinance import AccountBinance
 from trader.config import *
 import argparse

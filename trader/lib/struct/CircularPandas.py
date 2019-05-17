@@ -1,6 +1,5 @@
-import numpy as np
 import pandas as pd
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class CircularPandas(object):
     def __init__(self, window):

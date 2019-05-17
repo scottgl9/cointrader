@@ -1,6 +1,5 @@
-from trader.lib.MovingTimeSegment.MTSCircularArray import MTSCircularArray
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
-from trader.lib.Kline import Kline
+from trader.lib.struct.Kline import Kline
 
 class MTSKline(object):
     def __init__(self, win_size_secs=60):

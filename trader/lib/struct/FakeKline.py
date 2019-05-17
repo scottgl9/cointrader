@@ -1,5 +1,5 @@
 # If only close prices are available in realtime, create fake kline data from the close prices
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 
 class FakeKline(object):

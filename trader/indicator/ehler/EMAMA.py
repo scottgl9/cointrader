@@ -2,7 +2,7 @@
 # Ehler's MESA Adaptive Moving Average
 from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class EMAMA(IndicatorBase):
     def __init__(self, fast_limit=0.5, slow_limit=0.05):

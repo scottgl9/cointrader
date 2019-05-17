@@ -1,7 +1,7 @@
 # https://www.tradingview.com/script/MxgNScFI-NG-Gaussian-Filter-Multi-Pole/
 # NOTE: incomplete
 import numpy as np
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class GaussianPoleFilter(object):
     def __init__(self, lag=13, poles=8):

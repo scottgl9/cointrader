@@ -1,5 +1,5 @@
 # moving estimate of window size based on specified time interval, and updated with timestamps
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class TimeWindow(object):
     def __init__(self, seconds, max_win_count=5000):

@@ -1,5 +1,4 @@
-import uuid
-from trader.lib.Message import Message
+from trader.lib.struct.Message import Message
 
 
 class OrderList(object):

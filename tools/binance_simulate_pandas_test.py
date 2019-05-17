@@ -6,20 +6,15 @@ try:
 except ImportError:
     sys.path.append('.')
 
-import os.path
-import time
 import sqlite3
 import sys
-from trader.WebHandler import WebThread
 from trader.account.binance.client import Client
-from trader.MultiTrader import MultiTrader
-from trader.lib.Kline import Kline
-from trader.lib.CircularPandas import CircularPandas
+from trader.lib.struct.Kline import Kline
+from trader.lib.struct.CircularPandas import CircularPandas
 from trader.account.AccountBinance import AccountBinance
 from trader.config import *
 import argparse
 import logging
-import pandas as pd
 
 
 def simulate(conn, client, strategy, logger):

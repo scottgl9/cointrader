@@ -1,10 +1,8 @@
 # My idea to use the quadratic estimation to find maximum point of upward trend
 
 import numpy as np
-from numpy import array
-from scipy.linalg import solve
 from trader.indicator.REMA import REMA
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 
 class QUAD2:

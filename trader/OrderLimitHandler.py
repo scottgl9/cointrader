@@ -1,10 +1,5 @@
-from trader.lib.Message import Message
-from trader.lib.Order import Order
-from trader.notify.Email import Email
-from trader.lib.TraderDB import TraderDB
-from trader.TradeBalanceHandler import TradeBalanceHandler
-import time
-import os
+from trader.lib.struct.Message import Message
+
 
 class OrderLimitHandler(object):
     def __init__(self, accnt, msg_handler, logger):

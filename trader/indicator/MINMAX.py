@@ -1,5 +1,5 @@
 from .IndicatorBase import IndicatorBase
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 
 class MINMAX(IndicatorBase):

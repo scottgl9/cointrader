@@ -1,6 +1,6 @@
 # use any indicator to process an entire set of data at once, instead of processing it live, and store results
 from pandas import DataFrame
-from trader.lib.Kline import Kline
+from trader.lib.struct.Kline import Kline
 
 
 class Indicator(object):

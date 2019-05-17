@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-import os
+
 try:
     import trader
 except ImportError:
@@ -12,14 +12,12 @@ import sqlite3
 from datetime import datetime
 import sys
 import os
-from trader.account.binance.client import Client
 from trader.MarketManager import MarketManager
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
 from trader.indicator.DTWMA import DTWMA
-from trader.lib.Kline import Kline
+from trader.lib.struct.Kline import Kline
 from trader.indicator.ZLEMA import *
 
 

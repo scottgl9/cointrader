@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-import os
+
 try:
     import trader
 except ImportError:
@@ -11,14 +11,12 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.BB import BollingerBands
 from trader.indicator.EFI import EFI
 from trader.indicator.OBV import OBV
-from trader.lib.FakeKline import FakeKline
+from trader.lib.struct.FakeKline import FakeKline
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.ZLEMA import *
 

@@ -6,7 +6,7 @@
 # for the input parameter period.
 from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class DSMA(IndicatorBase):
     def __init__(self, period=40):

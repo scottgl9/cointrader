@@ -1,6 +1,6 @@
 # OrderHandler: order handler for MultiTrader
-from trader.lib.Message import Message
-from trader.lib.Order import Order
+from trader.lib.struct.Message import Message
+from trader.lib.struct.Order import Order
 from trader.notify.Email import Email
 from trader.lib.TraderDB import TraderDB
 from trader.TradeBalanceHandler import TradeBalanceHandler

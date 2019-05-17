@@ -3,7 +3,7 @@
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-instantaneous-trendline/
 from trader.indicator.IndicatorBase import IndicatorBase
 import numpy as np
-from trader.lib.CircularArray import CircularArray
+from trader.lib.struct.CircularArray import CircularArray
 
 class InstantTrendline(IndicatorBase):
     def __init__(self, window=40):

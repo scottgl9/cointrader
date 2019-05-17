@@ -1,14 +1,13 @@
 from trader.account.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
-from trader.lib.Message import Message
-from trader.lib.Order import Order
-from trader.lib.OrderUpdate import OrderUpdate
-from trader.lib.AssetInfo import AssetInfo
+from trader.lib.struct.Message import Message
+from trader.lib.struct.Order import Order
+from trader.lib.struct.OrderUpdate import OrderUpdate
+from trader.lib.struct.AssetInfo import AssetInfo
 
 import json
 import os
-from datetime import datetime
-import time
+
 
 #logger = logging.getLogger(__name__)
 
