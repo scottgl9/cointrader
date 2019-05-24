@@ -24,15 +24,38 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     hourlysr = HourlySupportResistance(symbol, None, None, hkdb)
     close_prices = []
 
+    daily_supports = []
+    daily_resistances = []
+    weekly_supports = []
+    weekly_resistances = []
+    monthly_supports = []
+    monthly_resistances = []
+
     i=0
     for kline in klines:
         hourlysr.update(kline=kline)
+        if hourlysr.daily_support:
+            daily_supports.append(hourlysr.daily_support)
+        if hourlysr.daily_resistance:
+            daily_resistances.append(hourlysr.daily_resistance)
+        if hourlysr.weekly_support:
+            weekly_supports.append(hourlysr.weekly_support)
+        if hourlysr.weekly_resistance:
+            weekly_resistances.append(hourlysr.weekly_resistance)
+        if hourlysr.monthly_support:
+            monthly_supports.append(hourlysr.monthly_support)
+        if hourlysr.monthly_resistance:
+            monthly_resistances.append(hourlysr.monthly_resistance)
         close_prices.append(kline.close)
         i += 1
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
-    #plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    fig1, = plt.plot(weekly_supports, label='WEEKLY_SUPPORT')
+    fig2, = plt.plot(weekly_resistances, label='WEEKLY_RESISTANCE')
+    fig3, = plt.plot(monthly_supports, label='MONTHLY_SUPPORT')
+    fig4, = plt.plot(monthly_resistances, label='MONTHLY_RESISTANCE')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     #plt.legend(handles=[fig21, fig22, fig23])
     plt.show()
