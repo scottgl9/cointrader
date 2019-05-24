@@ -264,3 +264,23 @@ class HourlyKlinesDB(object):
             if end_ts and row[0] >= end_ts:
                 break
         return result
+
+    def get_kline(self, symbol, hourly_ts=0):
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, hourly_ts)
+        cur = self.conn.cursor()
+        cur.execute(sql)
+        k = cur.fetchone()
+
+        #if kline is not in db yet
+        if not k:
+            return None
+
+        kline = Kline()
+        kline.ts = k[0]
+        kline.open = k[1]
+        kline.high = k[2]
+        kline.low = k[3]
+        kline.close = k[4]
+        kline.volume_base = k[5]
+        kline.volume_quote = k[6]
+        return kline

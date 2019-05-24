@@ -7,14 +7,20 @@ class HourlySupportResistance(object):
         self.filename = filename
         self.symbol = symbol
         self.db = db
+        self.klines = None
         if not self.db:
             self.db = HourlyKlinesDB(self.accnt, self.filename, self.symbol)
 
     def load(self, hourly_start_ts, hourly_end_ts):
-        pass
+        self.klines = self.db.get_klines(self.symbol, hourly_start_ts, hourly_end_ts)
 
     def update(self, hourly_ts):
-        pass
+        kline = self.db.get_kline(self.symbol, hourly_ts)
+        if not self.klines:
+            self.klines = [kline]
+        else:
+            self.klines.append(kline)
 
     def process(self):
-        pass
+        if not self.klines:
+            return
