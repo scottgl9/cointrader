@@ -39,6 +39,13 @@ class HourlySupportResistance(object):
         self.monthly_closes = CircularArray(window=self.win_monthly)
         self.monthly_lows = CircularArray(window=self.win_monthly)
         self.monthly_highs = CircularArray(window=self.win_monthly)
+        self.tmp_daily_support = 0
+        self.tmp_daily_resistance = 0
+        self.tmp_weekly_support = 0
+        self.tmp_weekly_resistance = 0
+        self.tmp_monthly_support = 0
+        self.tmp_monthly_resistance = 0
+
         self.daily_support = 0
         self.daily_resistance = 0
         self.weekly_support = 0
@@ -107,23 +114,39 @@ class HourlySupportResistance(object):
         if len(self.daily_lows) < self.win_daily:
             return
 
-        self.daily_support, self.daily_resistance = self.find_support_resistance(kline,
-                                                                                 self.daily_closes,
-                                                                                 self.daily_support,
-                                                                                 self.daily_resistance)
+        self.tmp_daily_support, self.tmp_daily_resistance = self.find_support_resistance(kline,
+                                                                                         self.daily_closes,
+                                                                                         self.tmp_daily_support,
+                                                                                         self.tmp_daily_resistance)
+
+        if self.tmp_daily_support and self.tmp_daily_resistance:
+            self.daily_support = self.tmp_daily_support
+            self.daily_resistance = self.tmp_daily_resistance
+            self.tmp_daily_support = 0
+            self.tmp_daily_resistance = 0
 
         if len(self.weekly_lows) < self.win_weekly:
             return
 
-        self.weekly_support, self.weekly_resistance = self.find_support_resistance(kline,
-                                                                                   self.weekly_closes,
-                                                                                   self.weekly_support,
-                                                                                   self.weekly_resistance)
+        self.tmp_weekly_support, self.tmp_weekly_resistance = self.find_support_resistance(kline,
+                                                                                           self.weekly_closes,
+                                                                                           self.tmp_weekly_support,
+                                                                                           self.tmp_weekly_resistance)
+        if self.tmp_weekly_support and self.tmp_weekly_resistance:
+            self.weekly_support = self.tmp_weekly_support
+            self.weekly_resistance = self.tmp_weekly_resistance
+            self.tmp_weekly_support = 0
+            self.tmp_weekly_resistance = 0
 
         if len(self.monthly_lows) < self.win_monthly:
             return
 
-        self.monthly_support, self.monthly_resistance = self.find_support_resistance(kline,
-                                                                                     self.monthly_closes,
-                                                                                     self.monthly_support,
-                                                                                     self.monthly_resistance)
+        self.tmp_monthly_support, self.tmp_monthly_resistance = self.find_support_resistance(kline,
+                                                                                             self.monthly_closes,
+                                                                                             self.tmp_monthly_support,
+                                                                                             self.tmp_monthly_resistance)
+        if self.tmp_monthly_support and self.tmp_monthly_resistance:
+            self.monthly_support = self.tmp_monthly_support
+            self.monthly_resistance = self.tmp_monthly_resistance
+            self.tmp_monthly_support = 0
+            self.tmp_monthly_resistance = 0
