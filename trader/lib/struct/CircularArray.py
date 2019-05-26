@@ -1,6 +1,7 @@
 class CircularArray(object):
-    def __init__(self, window, dne=None, reverse=True):
+    def __init__(self, window, dne=None, reverse=True, track_minmax=False):
         self.window = window
+        self.track_minmax = track_minmax
         self.carray = []
         # if value at index doesn't exist, return value set in dne
         self.dne = dne
@@ -8,6 +9,12 @@ class CircularArray(object):
         self.reverse = reverse
         self.last_age = 0
         self.age = 0
+        self.min_value = 0
+        self.min_index = -1
+        self.min_age = -1
+        self.max_value = 0
+        self.max_index = -1
+        self.max_age = -1
 
     def __len__(self):
         return len(self.carray)
@@ -39,6 +46,45 @@ class CircularArray(object):
     def full(self):
         return len(self.carray) == self.window
 
+    # track min and max values in circular array
+    def update_minmax(self, value):
+        if value >= self.max_value:
+            self.max_value = value
+            self.max_age = 0
+        else:
+            self.max_age += 1
+            if self.max_age > self.window:
+                count = 0
+                # start with oldest value
+                age = self.age
+                self.max_age = 0
+                self.max_value = 0
+                while age != self.last_age:
+                    if self.carray[int(age)] >= self.max_value:
+                        self.max_value = self.carray[int(age)]
+                        self.max_age = count
+                    count += 1
+                    age = (age + 1) % self.window
+
+        if not self.min_value or value <= self.min_value:
+            self.min_value = value
+            self.min_age = 0
+        else:
+            self.min_age += 1
+            # find new minimum
+            if self.min_age > self.window:
+                count = 0
+                # start with oldest value
+                age = self.age
+                self.min_age = 0
+                self.min_value = 0
+                while age != self.last_age:
+                    if not self.min_value or self.carray[int(age)] <= self.min_value:
+                        self.min_value = self.carray[int(age)]
+                        self.min_age = count
+                    count += 1
+                    age = (age + 1) % self.window
+
     # Add value to circular array
     def add(self, value):
         if len(self.carray) < self.window:
@@ -48,6 +94,10 @@ class CircularArray(object):
 
         self.last_age = self.age
         self.age = (self.age + 1) % self.window
+
+        # track min and max values in circular array
+        if self.track_minmax:
+            self.update_minmax(value)
 
     # forward indexing: first(0) = first added, first(1) = second added, etc
     def first(self, index=0):
@@ -159,7 +209,11 @@ class CircularArray(object):
         return self.carray[int(age)]
 
     def min(self):
+        if self.track_minmax:
+            return self.min_value
         return min(self.carray)
 
     def max(self):
+        if self.track_minmax:
+            return self.max_value
         return max(self.carray)

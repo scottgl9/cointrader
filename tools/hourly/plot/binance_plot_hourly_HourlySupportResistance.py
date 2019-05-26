@@ -23,6 +23,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
 
     hourlysr = HourlySupportResistance(symbol, None, None, hkdb)
     close_prices = []
+    timestamps = []
 
     daily_supports = []
     daily_resistances = []
@@ -39,7 +40,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     monthly_x_resistances = []
 
     i=0
-    for kline in klines:
+    for kline in klines[int(0.5*len(klines)):]:
         hourlysr.update(kline=kline)
         if hourlysr.daily_support and hourlysr.daily_resistance:
             daily_supports.append(hourlysr.daily_support)
@@ -57,7 +58,10 @@ def simulate(hkdb, symbol, start_ts, end_ts):
             monthly_resistances.append(hourlysr.monthly_resistance)
             monthly_x_resistances.append(i)
         close_prices.append(kline.close)
+        timestamps.append(kline.ts)
         i += 1
+
+    print(str(hourlysr.srlines))
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
