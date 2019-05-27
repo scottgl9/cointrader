@@ -69,6 +69,10 @@ class HourlySupportResistance(object):
         self.tmp_monthly_support = 0
         self.tmp_monthly_resistance = 0
 
+        self.daily_counter = 0
+        self.weekly_counter = 0
+        self.monthly_counter = 0
+
         self.daily_support = 0
         self.daily_resistance = 0
         self.weekly_support = 0
@@ -90,36 +94,51 @@ class HourlySupportResistance(object):
             self.monthly_closes.add(kline.close)
 
 
-    def find_support_resistance(self, kline, closes, support, resistance):
-        if not support:
-            if resistance:
-                if kline.low < resistance:
-                    min_daily_closes = closes.min()
-                    if min_daily_closes > kline.low:
-                        support = kline.low
-                else:
-                    resistance = 0
-                    #support = kline.low
-            else:
-                min_daily_closes = closes.min()
-                if min_daily_closes > kline.low:
-                    support = kline.low
+    def find_support_resistance(self, kline, closes, counter, support, resistance):
+        # wait until closes buffer is full
+        if not closes.full():
+            return counter, support, resistance
 
-        if not resistance:
-            if support:
-                if kline.high > support:
-                    max_daily_closes = closes.max()
-                    if max_daily_closes < kline.high:
-                        resistance = kline.high
-                else:
-                    support = 0
-                    #resistance = kline.high
-            else:
-                max_daily_closes = closes.max()
-                if max_daily_closes < kline.high:
-                    resistance = kline.high
+        if not support or not resistance:
+            support = closes.min()
+            resistance = closes.max()
+            counter = 0
+        else:
+            counter += 1
+            if kline.high > resistance:
+                resistance = kline.high
+                counter = 0
+            if kline.low < support:
+                support = kline.low
+                counter = 0
 
-        return support, resistance
+        # if not support:
+        #     if resistance:
+        #         if kline.low < resistance:
+        #             min_daily_closes = closes.min()
+        #             if min_daily_closes > kline.low:
+        #                 support = kline.low
+        #         else:
+        #             resistance = 0
+        #     else:
+        #         min_daily_closes = closes.min()
+        #         if min_daily_closes > kline.low:
+        #             support = kline.low
+
+        # if not resistance:
+        #     if support:
+        #         if kline.high > support:
+        #             max_daily_closes = closes.max()
+        #             if max_daily_closes < kline.high:
+        #                 resistance = kline.high
+        #         else:
+        #             support = 0
+        #     else:
+        #         max_daily_closes = closes.max()
+        #         if max_daily_closes < kline.high:
+        #             resistance = kline.high
+
+        return counter, support, resistance
 
     def update(self, hourly_ts=0, kline=None):
         if not kline:
@@ -135,14 +154,17 @@ class HourlySupportResistance(object):
         if len(self.daily_closes) < self.win_daily:
             return
 
-        self.tmp_daily_support, self.tmp_daily_resistance = self.find_support_resistance(kline,
-                                                                                         self.daily_closes,
-                                                                                         self.tmp_daily_support,
-                                                                                         self.tmp_daily_resistance)
+        self.daily_counter, self.tmp_daily_support, self.tmp_daily_resistance = \
+            self.find_support_resistance(kline,
+                                         self.daily_closes,
+                                         self.daily_counter,
+                                         self.tmp_daily_support,
+                                         self.tmp_daily_resistance)
 
-        if self.tmp_daily_support and self.tmp_daily_resistance:
+        if self.daily_counter > self.win_daily:
             self.daily_support = self.tmp_daily_support
             self.daily_resistance = self.tmp_daily_resistance
+            self.daily_counter = 0
             self.tmp_daily_support = 0
             self.tmp_daily_resistance = 0
             srline = HourlySRLine(HourlySRLine.SRTYPE_DAILY, kline.ts, self.daily_support, self.daily_resistance)
@@ -151,13 +173,17 @@ class HourlySupportResistance(object):
         if len(self.weekly_closes) < self.win_weekly:
             return
 
-        self.tmp_weekly_support, self.tmp_weekly_resistance = self.find_support_resistance(kline,
-                                                                                           self.weekly_closes,
-                                                                                           self.tmp_weekly_support,
-                                                                                           self.tmp_weekly_resistance)
-        if self.tmp_weekly_support and self.tmp_weekly_resistance:
+        self.weekly_counter, self.tmp_weekly_support, self.tmp_weekly_resistance = \
+            self.find_support_resistance(kline,
+                                         self.weekly_closes,
+                                         self.weekly_counter,
+                                         self.tmp_weekly_support,
+                                         self.tmp_weekly_resistance)
+
+        if self.weekly_counter > self.win_weekly:
             self.weekly_support = self.tmp_weekly_support
             self.weekly_resistance = self.tmp_weekly_resistance
+            self.weekly_counter = 0
             self.tmp_weekly_support = 0
             self.tmp_weekly_resistance = 0
             srline = HourlySRLine(HourlySRLine.SRTYPE_WEEKLY, kline.ts, self.weekly_support, self.weekly_resistance)
@@ -166,13 +192,17 @@ class HourlySupportResistance(object):
         if len(self.monthly_closes) < self.win_monthly:
             return
 
-        self.tmp_monthly_support, self.tmp_monthly_resistance = self.find_support_resistance(kline,
-                                                                                             self.monthly_closes,
-                                                                                             self.tmp_monthly_support,
-                                                                                             self.tmp_monthly_resistance)
-        if self.tmp_monthly_support and self.tmp_monthly_resistance:
+        self.monthly_counter, self.tmp_monthly_support, self.tmp_monthly_resistance = \
+            self.find_support_resistance(kline,
+                                         self.monthly_closes,
+                                         self.monthly_counter,
+                                         self.tmp_monthly_support,
+                                         self.tmp_monthly_resistance)
+
+        if self.monthly_counter > self.win_monthly:
             self.monthly_support = self.tmp_monthly_support
             self.monthly_resistance = self.tmp_monthly_resistance
+            self.monthly_counter = 0
             self.tmp_monthly_support = 0
             self.tmp_monthly_resistance = 0
             srline = HourlySRLine(HourlySRLine.SRTYPE_MONTHLY, kline.ts, self.monthly_support, self.monthly_resistance)
