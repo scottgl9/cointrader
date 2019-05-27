@@ -17,3 +17,4 @@ class CronManage(object):
         cmd = "python {} {}".format(cmd, args)
         job = self.cron.new(command=cmd)
         job.hour.every(1)
+        self.cron.write()

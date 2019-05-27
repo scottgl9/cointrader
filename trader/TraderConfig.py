@@ -1,6 +1,7 @@
 import os
 from ConfigParser import SafeConfigParser
 
+
 class TraderConfig(object):
     def __init__(self, filename):
         self.filename = filename
@@ -9,8 +10,10 @@ class TraderConfig(object):
         self.load()
 
     def set_defaults(self):
+        path = os.path.join(os.path.basename(__file__), "..")
         section = 'binance.live'
         self.config.add_section(section)
+        self.config.set(section, 'path', os.path.abspath(path))
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_signal', 'Hourly_ROC_Signal')
@@ -43,6 +46,7 @@ class TraderConfig(object):
 
         section = 'binance.simulate'
         self.config.add_section(section)
+        self.config.set(section, 'path', os.path.abspath(path))
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_signal', 'Hourly_ROC_Signal')

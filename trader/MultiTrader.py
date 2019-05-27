@@ -1,7 +1,9 @@
 # handle multiple TraiePairs, one for each base / currency we want to trade
+import os
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.CronManage import CronManage
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from datetime import datetime
@@ -47,6 +49,7 @@ class MultiTrader(object):
         self.logger = logger
 
         self.simulate = self.config.get('simulate')
+        self.path = self.config.get('path')
         self.store_trades = self.config.get('store_trades')
         self.strategy_name = self.config.get('strategy')
         self.signal_names = [self.config.get('signals')]
@@ -54,6 +57,18 @@ class MultiTrader(object):
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.usdt_value_cutoff = float(self.config.get('usdt_value_cutoff'))
         self.use_hourly_klines = self.config.get('use_hourly_klines')
+
+        if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
+            # setup crontab for hourly kline updates
+            if os.path.exists(self.hourly_klines_db_file):
+                cronmgr = CronManage()
+                cronmgr.remove_all_jobs()
+                exec_cmd_path = os.path.join(self.path, "tools/binance_update_hourly_kline_db.py")
+                exec_args = "--update -f {}"
+                cronmgr.add_hourly_job(exec_cmd_path, exec_args)
+                self.logger.info("Setup hourly {} {}".format(exec_cmd_path, exec_args))
+            else:
+                self.logger.info("Failed to setup cron update for {}".format(self.hourly_klines_db_file))
 
         self.logger.info("Setting USDT value cutoff to {}".format(self.usdt_value_cutoff))
 
@@ -235,17 +250,17 @@ class MultiTrader(object):
 
         # print alive check message once every hour
         if not self.accnt.simulate:
-            hourly_klines_handler = symbol_trader.hourly_klines_handler
-
-            if hourly_klines_handler:
-                last_hourly_ts = hourly_klines_handler.get_last_update_ts(kline.symbol)
-                if last_hourly_ts and (self.current_ts - last_hourly_ts) >= self.accnt.seconds_to_ts(3600):
-                    hourly_ts = self.accnt.get_hourly_ts(self.current_ts)
-                    if hourly_ts != last_hourly_ts:
-                        hourly_klines_handler.update_table(kline.symbol, end_ts=hourly_ts)
-                        if hourly_ts != self.last_hourly_ts:
-                            self.logger.info("Updating hourly klines hourly_ts={}".format(hourly_ts))
-                            self.last_hourly_ts = hourly_ts
+            # hourly_klines_handler = symbol_trader.hourly_klines_handler
+            #
+            # if hourly_klines_handler:
+            #     last_hourly_ts = hourly_klines_handler.get_last_update_ts(kline.symbol)
+            #     if last_hourly_ts and (self.current_ts - last_hourly_ts) >= self.accnt.seconds_to_ts(3600):
+            #         hourly_ts = self.accnt.get_hourly_ts(self.current_ts)
+            #         if hourly_ts != last_hourly_ts:
+            #             hourly_klines_handler.update_table(kline.symbol, end_ts=hourly_ts)
+            #             if hourly_ts != self.last_hourly_ts:
+            #                 self.logger.info("Updating hourly klines hourly_ts={}".format(hourly_ts))
+            #                 self.last_hourly_ts = hourly_ts
 
             if self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
