@@ -41,7 +41,16 @@ class HourlySRLine(object):
 
 
 class SRInfo(object):
-    def __init__(self):
+    def __init__(self, window):
+        self.window=window
+        self.counter = 0
+        self.support_counter = 0
+        self.resistance_counter = 0
+        self.support = 0
+        self.resistance = 0
+        self.started = False
+
+    def reset(self):
         self.counter = 0
         self.support_counter = 0
         self.resistance_counter = 0
@@ -71,9 +80,9 @@ class HourlySupportResistance(object):
         # self.monthly_highs = CircularArray(window=self.win_monthly)
         self.srlines = []
         self.start_ts = 0
-        self.daily_info = SRInfo()
-        self.weekly_info = SRInfo()
-        self.monthly_info = SRInfo()
+        self.daily_info = SRInfo(self.win_daily)
+        self.weekly_info = SRInfo(self.win_weekly)
+        self.monthly_info = SRInfo(self.win_monthly)
         self.daily_support = 0
         self.daily_resistance = 0
         self.weekly_support = 0
@@ -116,7 +125,9 @@ class HourlySupportResistance(object):
                 info.support = kline.low
                 info.support_counter = 0
                 info.counter = 0
-
+            if not info.counter and (info.support_counter >= info.window or info.resistance_counter >= info.window):
+                info.reset()
+                return info
         return info
 
     def update(self, hourly_ts=0, kline=None):

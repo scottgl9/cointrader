@@ -25,51 +25,44 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     close_prices = []
     timestamps = []
 
-    daily_supports = []
-    daily_resistances = []
-    weekly_supports = []
-    weekly_resistances = []
-    monthly_supports = []
-    monthly_resistances = []
-
-    daily_x_supports = []
-    daily_x_resistances = []
-    weekly_x_supports = []
-    weekly_x_resistances = []
-    monthly_x_supports = []
-    monthly_x_resistances = []
-
     i=0
     for kline in klines[int(0.5*len(klines)):]:
         hourlysr.update(kline=kline)
-        if hourlysr.daily_support and hourlysr.daily_resistance:
-            daily_supports.append(hourlysr.daily_support)
-            daily_x_supports.append(i)
-            daily_resistances.append(hourlysr.daily_resistance)
-            daily_x_resistances.append(i)
-        if hourlysr.weekly_support and hourlysr.weekly_resistance:
-            weekly_supports.append(hourlysr.weekly_support)
-            weekly_x_supports.append(i)
-            weekly_resistances.append(hourlysr.weekly_resistance)
-            weekly_x_resistances.append(i)
-        if hourlysr.monthly_support and hourlysr.monthly_resistance:
-            monthly_supports.append(hourlysr.monthly_support)
-            monthly_x_supports.append(i)
-            monthly_resistances.append(hourlysr.monthly_resistance)
-            monthly_x_resistances.append(i)
+        # if hourlysr.daily_support and hourlysr.daily_resistance:
+        #     daily_supports.append(hourlysr.daily_support)
+        #     daily_x_supports.append(i)
+        #     daily_resistances.append(hourlysr.daily_resistance)
+        #     daily_x_resistances.append(i)
+        # if hourlysr.weekly_support and hourlysr.weekly_resistance:
+        #     weekly_supports.append(hourlysr.weekly_support)
+        #     weekly_x_supports.append(i)
+        #     weekly_resistances.append(hourlysr.weekly_resistance)
+        #     weekly_x_resistances.append(i)
+        # if hourlysr.monthly_support and hourlysr.monthly_resistance:
+        #     monthly_supports.append(hourlysr.monthly_support)
+        #     monthly_x_supports.append(i)
+        #     monthly_resistances.append(hourlysr.monthly_resistance)
+        #     monthly_x_resistances.append(i)
         close_prices.append(kline.close)
         timestamps.append(kline.ts)
         i += 1
 
-    print(str(hourlysr.srlines))
-
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
-    fig1, = plt.plot(weekly_x_supports,  weekly_supports, label='WEEKLY_SUPPORT')
-    fig2, = plt.plot(weekly_x_resistances, weekly_resistances, label='WEEKLY_RESISTANCE')
-    fig3, = plt.plot(monthly_x_supports, monthly_supports, label='MONTHLY_SUPPORT')
-    fig4, = plt.plot(monthly_x_resistances, monthly_resistances, label='MONTHLY_RESISTANCE')
-    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    for sr in hourlysr.srlines:
+        if sr.type == 1:
+            color='yellow'
+        elif sr.type == 2:
+            color = 'blue'
+        elif sr.type == 3:
+            color = 'green'
+        plt.axhline(y=sr.s, color=color)
+        plt.axhline(y=sr.r, color=color)
+    #fig1, = plt.plot(weekly_x_supports,  weekly_supports, label='WEEKLY_SUPPORT')
+    #fig2, = plt.plot(weekly_x_resistances, weekly_resistances, label='WEEKLY_RESISTANCE')
+    #fig3, = plt.plot(monthly_x_supports, monthly_supports, label='MONTHLY_SUPPORT')
+    #fig4, = plt.plot(monthly_x_resistances, monthly_resistances, label='MONTHLY_RESISTANCE')
+    plt.legend(handles=[symprice]) #, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     #plt.legend(handles=[fig21, fig22, fig23])
     plt.show()
