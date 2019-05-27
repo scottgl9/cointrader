@@ -13,6 +13,11 @@ class CronManage(object):
             self.cron.remove(job)
         self.cron.write()
 
+    def remove_by_command(self, command):
+        for job in self.cron.find_command(command):
+            self.cron.remove(job)
+        self.cron.write()
+
     def add_hourly_job(self, cmd, args):
         cmd = "python {} {}".format(cmd, args)
         job = self.cron.new(command=cmd)

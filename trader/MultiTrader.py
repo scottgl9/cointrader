@@ -61,10 +61,10 @@ class MultiTrader(object):
         if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
             # setup crontab for hourly kline updates
             if os.path.exists(self.hourly_klines_db_file):
-                cronmgr = CronManage()
-                cronmgr.remove_all_jobs()
                 exec_cmd_path = os.path.join(self.path, "tools/binance_update_hourly_kline_db.py")
                 exec_args = "--update -f {}"
+                cronmgr = CronManage()
+                cronmgr.remove_by_command(exec_cmd_path)
                 cronmgr.add_hourly_job(exec_cmd_path, exec_args)
                 self.logger.info("Setup hourly {} {}".format(exec_cmd_path, exec_args))
             else:
