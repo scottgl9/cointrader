@@ -40,6 +40,15 @@ class HourlySRLine(object):
                 'r': self.r})
 
 
+class SRInfo(object):
+    def __init__(self):
+        self.counter = 0
+        self.support_counter = 0
+        self.resistance_counter = 0
+        self.support = 0
+        self.resistance = 0
+
+
 class HourlySupportResistance(object):
     def __init__(self, symbol, accnt=None, filename=None, db=None):
         self.accnt = accnt
@@ -62,17 +71,9 @@ class HourlySupportResistance(object):
         # self.monthly_highs = CircularArray(window=self.win_monthly)
         self.srlines = []
         self.start_ts = 0
-        self.tmp_daily_support = 0
-        self.tmp_daily_resistance = 0
-        self.tmp_weekly_support = 0
-        self.tmp_weekly_resistance = 0
-        self.tmp_monthly_support = 0
-        self.tmp_monthly_resistance = 0
-
-        self.daily_counter = 0
-        self.weekly_counter = 0
-        self.monthly_counter = 0
-
+        self.daily_info = SRInfo()
+        self.weekly_info = SRInfo()
+        self.monthly_info = SRInfo()
         self.daily_support = 0
         self.daily_resistance = 0
         self.weekly_support = 0
@@ -94,51 +95,29 @@ class HourlySupportResistance(object):
             self.monthly_closes.add(kline.close)
 
 
-    def find_support_resistance(self, kline, closes, counter, support, resistance):
+    def find_support_resistance(self, kline, closes, info):
         # wait until closes buffer is full
         if not closes.full():
-            return counter, support, resistance
+            return info
 
-        if not support or not resistance:
-            support = closes.min()
-            resistance = closes.max()
-            counter = 0
+        if not info.support or not info.resistance:
+            info.support = closes.min()
+            info.resistance = closes.max()
+            info.counter = 0
         else:
-            counter += 1
-            if kline.high > resistance:
-                resistance = kline.high
-                counter = 0
-            if kline.low < support:
-                support = kline.low
-                counter = 0
+            info.support_counter += 1
+            info.resistance_counter += 1
+            info.counter += 1
+            if kline.high > info.resistance:
+                info.resistance = kline.high
+                info.resistance_counter = 0
+                info.counter = 0
+            if kline.low < info.support:
+                info.support = kline.low
+                info.support_counter = 0
+                info.counter = 0
 
-        # if not support:
-        #     if resistance:
-        #         if kline.low < resistance:
-        #             min_daily_closes = closes.min()
-        #             if min_daily_closes > kline.low:
-        #                 support = kline.low
-        #         else:
-        #             resistance = 0
-        #     else:
-        #         min_daily_closes = closes.min()
-        #         if min_daily_closes > kline.low:
-        #             support = kline.low
-
-        # if not resistance:
-        #     if support:
-        #         if kline.high > support:
-        #             max_daily_closes = closes.max()
-        #             if max_daily_closes < kline.high:
-        #                 resistance = kline.high
-        #         else:
-        #             support = 0
-        #     else:
-        #         max_daily_closes = closes.max()
-        #         if max_daily_closes < kline.high:
-        #             resistance = kline.high
-
-        return counter, support, resistance
+        return info
 
     def update(self, hourly_ts=0, kline=None):
         if not kline:
@@ -154,56 +133,47 @@ class HourlySupportResistance(object):
         if len(self.daily_closes) < self.win_daily:
             return
 
-        self.daily_counter, self.tmp_daily_support, self.tmp_daily_resistance = \
-            self.find_support_resistance(kline,
-                                         self.daily_closes,
-                                         self.daily_counter,
-                                         self.tmp_daily_support,
-                                         self.tmp_daily_resistance)
+        self.daily_info = self.find_support_resistance(kline, self.daily_closes, self.daily_info)
 
-        if self.daily_counter > self.win_daily:
-            self.daily_support = self.tmp_daily_support
-            self.daily_resistance = self.tmp_daily_resistance
-            self.daily_counter = 0
-            self.tmp_daily_support = 0
-            self.tmp_daily_resistance = 0
+        if self.daily_info.counter > self.win_monthly:
+            self.daily_support = self.daily_info.support
+            self.daily_resistance = self.daily_info.resistance
+            self.daily_info.counter = 0
+            self.daily_info.support_counter = 0
+            self.daily_info.resistance_counter = 0
+            self.daily_info.support = 0
+            self.daily_info.resistance = 0
             srline = HourlySRLine(HourlySRLine.SRTYPE_DAILY, kline.ts, self.daily_support, self.daily_resistance)
             self.srlines.append(srline)
 
         if len(self.weekly_closes) < self.win_weekly:
             return
 
-        self.weekly_counter, self.tmp_weekly_support, self.tmp_weekly_resistance = \
-            self.find_support_resistance(kline,
-                                         self.weekly_closes,
-                                         self.weekly_counter,
-                                         self.tmp_weekly_support,
-                                         self.tmp_weekly_resistance)
+        self.weekly_info = self.find_support_resistance(kline, self.weekly_closes, self.weekly_info)
 
-        if self.weekly_counter > self.win_weekly:
-            self.weekly_support = self.tmp_weekly_support
-            self.weekly_resistance = self.tmp_weekly_resistance
-            self.weekly_counter = 0
-            self.tmp_weekly_support = 0
-            self.tmp_weekly_resistance = 0
+        if self.weekly_info.counter > self.win_monthly:
+            self.weekly_support = self.weekly_info.support
+            self.weekly_resistance = self.weekly_info.resistance
+            self.weekly_info.counter = 0
+            self.weekly_info.support_counter = 0
+            self.weekly_info.resistance_counter = 0
+            self.weekly_info.support = 0
+            self.weekly_info.resistance = 0
             srline = HourlySRLine(HourlySRLine.SRTYPE_WEEKLY, kline.ts, self.weekly_support, self.weekly_resistance)
             self.srlines.append(srline)
 
         if len(self.monthly_closes) < self.win_monthly:
             return
 
-        self.monthly_counter, self.tmp_monthly_support, self.tmp_monthly_resistance = \
-            self.find_support_resistance(kline,
-                                         self.monthly_closes,
-                                         self.monthly_counter,
-                                         self.tmp_monthly_support,
-                                         self.tmp_monthly_resistance)
+        self.monthly_info = self.find_support_resistance(kline, self.monthly_closes, self.monthly_info)
 
-        if self.monthly_counter > self.win_monthly:
-            self.monthly_support = self.tmp_monthly_support
-            self.monthly_resistance = self.tmp_monthly_resistance
-            self.monthly_counter = 0
-            self.tmp_monthly_support = 0
-            self.tmp_monthly_resistance = 0
+        if self.monthly_info.counter > self.win_monthly:
+            self.monthly_support = self.monthly_info.support
+            self.monthly_resistance = self.monthly_info.resistance
+            self.monthly_info.counter = 0
+            self.monthly_info.support_counter = 0
+            self.monthly_info.resistance_counter = 0
+            self.monthly_info.support = 0
+            self.monthly_info.resistance = 0
             srline = HourlySRLine(HourlySRLine.SRTYPE_MONTHLY, kline.ts, self.monthly_support, self.monthly_resistance)
             self.srlines.append(srline)
