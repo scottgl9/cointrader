@@ -24,9 +24,10 @@ class HourlySRLine(object):
     SRTYPE_WEEKLY = 2
     SRTYPE_MONTHLY = 3
 
-    def __init__(self, type, ts, s, r):
+    def __init__(self, type, s, r, start_ts=0, end_ts=0):
         self.type = type
-        self.ts = ts
+        self.start_ts = start_ts
+        self.end_ts = end_ts
         self.s = s
         self.r = r
 
@@ -35,7 +36,8 @@ class HourlySRLine(object):
 
     def __repr__(self):
         return str({'type': self.type,
-                'ts': self.ts,
+                'start_ts': self.start_ts,
+                'end_ts': self.end_ts,
                 's': self.s,
                 'r': self.r})
 
@@ -154,7 +156,9 @@ class HourlySupportResistance(object):
             self.daily_info.resistance_counter = 0
             self.daily_info.support = 0
             self.daily_info.resistance = 0
-            srline = HourlySRLine(HourlySRLine.SRTYPE_DAILY, kline.ts, self.daily_support, self.daily_resistance)
+            start_ts = kline.ts - 1000 * 3600 * self.win_daily
+            end_ts = kline.ts
+            srline = HourlySRLine(HourlySRLine.SRTYPE_DAILY, self.daily_support, self.daily_resistance, start_ts, end_ts)
             self.srlines.append(srline)
 
         if len(self.weekly_closes) < self.win_weekly:
@@ -170,7 +174,10 @@ class HourlySupportResistance(object):
             self.weekly_info.resistance_counter = 0
             self.weekly_info.support = 0
             self.weekly_info.resistance = 0
-            srline = HourlySRLine(HourlySRLine.SRTYPE_WEEKLY, kline.ts, self.weekly_support, self.weekly_resistance)
+            start_ts = kline.ts - 1000 * 3600 * self.win_weekly
+            end_ts = kline.ts
+            srline = HourlySRLine(HourlySRLine.SRTYPE_WEEKLY, self.weekly_support, self.weekly_resistance,
+                                  start_ts, end_ts)
             self.srlines.append(srline)
 
         if len(self.monthly_closes) < self.win_monthly:
@@ -186,5 +193,8 @@ class HourlySupportResistance(object):
             self.monthly_info.resistance_counter = 0
             self.monthly_info.support = 0
             self.monthly_info.resistance = 0
-            srline = HourlySRLine(HourlySRLine.SRTYPE_MONTHLY, kline.ts, self.monthly_support, self.monthly_resistance)
+            start_ts = kline.ts - 1000 * 3600 * self.win_monthly
+            end_ts = kline.ts
+            srline = HourlySRLine(HourlySRLine.SRTYPE_MONTHLY, self.monthly_support, self.monthly_resistance,
+                                  start_ts, end_ts)
             self.srlines.append(srline)

@@ -16,10 +16,17 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
-from trader.lib.HourlySupportResistance import HourlySupportResistance
+from trader.lib.HourlySupportResistance import HourlySupportResistance, HourlySRLine
 
-def simulate(hkdb, symbol, start_ts, end_ts):
+
+def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
     klines = hkdb.get_klines(symbol, start_ts, end_ts)
+
+    # plot all if all are false
+    if not daily and not weekly and not monthly:
+        daily = True
+        weekly = True
+        monthly = True
 
     hourlysr = HourlySupportResistance(symbol, None, None, hkdb)
     close_prices = []
@@ -28,21 +35,6 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     i=0
     for kline in klines[int(0.5*len(klines)):]:
         hourlysr.update(kline=kline)
-        # if hourlysr.daily_support and hourlysr.daily_resistance:
-        #     daily_supports.append(hourlysr.daily_support)
-        #     daily_x_supports.append(i)
-        #     daily_resistances.append(hourlysr.daily_resistance)
-        #     daily_x_resistances.append(i)
-        # if hourlysr.weekly_support and hourlysr.weekly_resistance:
-        #     weekly_supports.append(hourlysr.weekly_support)
-        #     weekly_x_supports.append(i)
-        #     weekly_resistances.append(hourlysr.weekly_resistance)
-        #     weekly_x_resistances.append(i)
-        # if hourlysr.monthly_support and hourlysr.monthly_resistance:
-        #     monthly_supports.append(hourlysr.monthly_support)
-        #     monthly_x_supports.append(i)
-        #     monthly_resistances.append(hourlysr.monthly_resistance)
-        #     monthly_x_resistances.append(i)
         close_prices.append(kline.close)
         timestamps.append(kline.ts)
         i += 1
@@ -50,14 +42,21 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
     for sr in hourlysr.srlines:
-        if sr.type == 1:
-            color='yellow'
-        elif sr.type == 2:
-            color = 'blue'
-        elif sr.type == 3:
-            color = 'green'
-        plt.axhline(y=sr.s, color=color)
-        plt.axhline(y=sr.r, color=color)
+        if daily and sr.type == HourlySRLine.SRTYPE_DAILY:
+            start = float(timestamps.index(sr.start_ts)) / len(timestamps)
+            end = float(timestamps.index(sr.end_ts)) / len(timestamps)
+            plt.axhline(y=sr.s, xmin=start, xmax=end, color='green')
+            plt.axhline(y=sr.r, xmin=start, xmax=end, color='red')
+        elif weekly and sr.type == HourlySRLine.SRTYPE_WEEKLY:
+            start = float(timestamps.index(sr.start_ts)) / len(timestamps)
+            end = float(timestamps.index(sr.end_ts)) / len(timestamps)
+            plt.axhline(y=sr.s, xmin=start, xmax=end, color='blue')
+            plt.axhline(y=sr.r, xmin=start, xmax=end, color='orange')
+        elif monthly and sr.type == HourlySRLine.SRTYPE_MONTHLY:
+            start = float(timestamps.index(sr.start_ts)) / len(timestamps)
+            end = float(timestamps.index(sr.end_ts)) / len(timestamps)
+            plt.axhline(y=sr.s, xmin=start, xmax=end, color='purple')
+            plt.axhline(y=sr.r, xmin=start, xmax=end, color='yellow')
     #fig1, = plt.plot(weekly_x_supports,  weekly_supports, label='WEEKLY_SUPPORT')
     #fig2, = plt.plot(weekly_x_resistances, weekly_resistances, label='WEEKLY_RESISTANCE')
     #fig3, = plt.plot(monthly_x_supports, monthly_supports, label='MONTHLY_SUPPORT')
@@ -93,6 +92,18 @@ if __name__ == '__main__':
     parser.add_argument('--hours', action='store', dest='hours',
                         default=48,
                         help='Hours before first ts in db specified by -f')
+
+    parser.add_argument('-d', action='store_true', dest='daily',
+                        default=False,
+                        help='plot daily s/r lines')
+
+    parser.add_argument('-w', action='store_true', dest='weekly',
+                        default=False,
+                        help='plot weekly s/r lines')
+
+    parser.add_argument('-m', action='store_true', dest='monthly',
+                        default=False,
+                        help='plot monthly s/r lines')
 
     parser.add_argument('-k', action='store', dest='hourly_filename',
                         default='binance_hourly_klines.db',
@@ -137,7 +148,7 @@ if __name__ == '__main__':
             print(symbol)
 
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts)
+        plot(hkdb, symbol, start_ts, end_ts, results.daily, results.weekly, results.monthly)
     else:
         parser.print_help()
     hkdb.close()
