@@ -2,6 +2,7 @@ from .HourlySignalBase import HourlySignalBase
 from trader.indicator.ROC import ROC
 from trader.lib.Crossover import Crossover
 
+
 class Hourly_ROC_Signal(HourlySignalBase):
     def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
         super(Hourly_ROC_Signal, self).__init__(hkdb, accnt, symbol, asset_info)
