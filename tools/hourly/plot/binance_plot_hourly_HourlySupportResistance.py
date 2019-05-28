@@ -41,23 +41,22 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
-    fig, ax = plt.subplots()
     for sr in hourlysr.srlines:
         if daily and sr.type == HourlySRLine.SRTYPE_DAILY:
-            start = float(timestamps.index(sr.start_ts)) / len(timestamps)
-            end = float(timestamps.index(sr.end_ts)) / len(timestamps)
-            plt.axhline(y=sr.s, xmin=start, xmax=end, color='green')
-            plt.axhline(y=sr.r, xmin=start, xmax=end, color='red')
+            start = timestamps.index(sr.start_ts)
+            end = timestamps.index(sr.end_ts)
+            plt.hlines(y=sr.s, xmin=start, xmax=end, color='green')
+            plt.hlines(y=sr.r, xmin=start, xmax=end, color='red')
         elif weekly and sr.type == HourlySRLine.SRTYPE_WEEKLY:
             start = timestamps.index(sr.start_ts)
             end = timestamps.index(sr.end_ts)
             plt.hlines(y=sr.s, xmin=start, xmax=end, color='blue')
             plt.hlines(y=sr.r, xmin=start, xmax=end, color='orange')
         elif monthly and sr.type == HourlySRLine.SRTYPE_MONTHLY:
-            start = float(timestamps.index(sr.start_ts)) / len(timestamps)
-            end = float(timestamps.index(sr.end_ts)) / len(timestamps)
-            plt.axhline(y=sr.s, xmin=start, xmax=end, color='purple')
-            plt.axhline(y=sr.r, xmin=start, xmax=end, color='yellow')
+            start = timestamps.index(sr.start_ts)
+            end = timestamps.index(sr.end_ts)
+            plt.hlines(y=sr.s, xmin=start, xmax=end, color='purple')
+            plt.hlines(y=sr.r, xmin=start, xmax=end, color='yellow')
     #fig1, = plt.plot(weekly_x_supports,  weekly_supports, label='WEEKLY_SUPPORT')
     #fig2, = plt.plot(weekly_x_resistances, weekly_resistances, label='WEEKLY_RESISTANCE')
     #fig3, = plt.plot(monthly_x_supports, monthly_supports, label='MONTHLY_SUPPORT')
