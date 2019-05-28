@@ -124,6 +124,7 @@ class MTS_SupportResistance(object):
             srinfo.start_ts = start_ts
             srinfo.end_ts = end_ts
             self.srlines.append(srinfo)
+            self.mts1_info.reset()
 
         if not self.mts12.ready():
             return False
@@ -142,6 +143,7 @@ class MTS_SupportResistance(object):
             srinfo.start_ts = start_ts
             srinfo.end_ts = end_ts
             self.srlines.append(srinfo)
+            self.mts12_info.reset()
 
         if not self.mts24.ready():
             return False
@@ -161,3 +163,4 @@ class MTS_SupportResistance(object):
             srinfo.start_ts = start_ts
             srinfo.end_ts = end_ts
             self.srlines.append(srinfo)
+            self.mts24_info.reset()
