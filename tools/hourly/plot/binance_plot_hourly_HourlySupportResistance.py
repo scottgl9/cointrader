@@ -33,7 +33,7 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
     timestamps = []
 
     i=0
-    for kline in klines[int(0.5*len(klines)):]:
+    for kline in klines:#[int(0.5*len(klines)):]:
         hourlysr.update(kline=kline)
         close_prices.append(kline.close)
         timestamps.append(kline.ts)
@@ -41,6 +41,7 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
+    fig, ax = plt.subplots()
     for sr in hourlysr.srlines:
         if daily and sr.type == HourlySRLine.SRTYPE_DAILY:
             start = float(timestamps.index(sr.start_ts)) / len(timestamps)
@@ -48,10 +49,10 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
             plt.axhline(y=sr.s, xmin=start, xmax=end, color='green')
             plt.axhline(y=sr.r, xmin=start, xmax=end, color='red')
         elif weekly and sr.type == HourlySRLine.SRTYPE_WEEKLY:
-            start = float(timestamps.index(sr.start_ts)) / len(timestamps)
-            end = float(timestamps.index(sr.end_ts)) / len(timestamps)
-            plt.axhline(y=sr.s, xmin=start, xmax=end, color='blue')
-            plt.axhline(y=sr.r, xmin=start, xmax=end, color='orange')
+            start = timestamps.index(sr.start_ts)
+            end = timestamps.index(sr.end_ts)
+            plt.hlines(y=sr.s, xmin=start, xmax=end, color='blue')
+            plt.hlines(y=sr.r, xmin=start, xmax=end, color='orange')
         elif monthly and sr.type == HourlySRLine.SRTYPE_MONTHLY:
             start = float(timestamps.index(sr.start_ts)) / len(timestamps)
             end = float(timestamps.index(sr.end_ts)) / len(timestamps)
