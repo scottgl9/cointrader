@@ -50,17 +50,25 @@ class SRInfo(object):
         self.resistance_counter = 0
         self.support_update_ts = 0
         self.resistance_update_ts = 0
+        self.prev_support_update_ts = 0
+        self.prev_resistance_update_ts = 0
         self.support = 0
         self.resistance = 0
         self.started = False
 
     def reset(self):
         self.counter = 0
+        self.reset_support()
+        self.reset_resistance()
+
+    def reset_support(self):
         self.support_counter = 0
-        self.resistance_counter = 0
         self.support_update_ts = 0
-        self.resistance_update_ts = 0
         self.support = 0
+
+    def reset_resistance(self):
+        self.resistance_counter = 0
+        self.resistance_update_ts = 0
         self.resistance = 0
 
 
@@ -119,29 +127,48 @@ class HourlySupportResistance(object):
             return info
 
         if not info.support or not info.resistance:
-            info.support = closes.min()
+            if not info.started:
+                info.support = closes.min()
+            else:
+                info.support = kline.low
+            info.prev_support_update_ts = info.support_update_ts
+            info.prev_resistance_update_ts = info.resistance_update_ts
             info.support_update_ts = kline.ts
-            info.resistance = closes.max()
+            if not info.started:
+                info.resistance = closes.max()
+            else:
+                info.resistance = kline.high
             info.resistance_update_ts = kline.ts
             info.counter = 0
+            info.started = True
         else:
             info.support_counter += 1
             info.resistance_counter += 1
             info.counter += 1
             if kline.high > info.resistance:
                 info.resistance = kline.high
+                info.prev_resistance_update_ts = info.resistance_update_ts
                 info.resistance_update_ts = kline.ts
                 info.resistance_counter = 0
                 info.counter = 0
-            if kline.low < info.support:
+            if not info.support or kline.low < info.support:
                 info.support = kline.low
+                info.prev_support_update_ts = info.support_update_ts
                 info.support_update_ts = kline.ts
                 info.support_counter = 0
                 info.counter = 0
             #if not info.counter and (info.support_counter >= info.window or info.resistance_counter >= info.window):
-            if abs(info.support_counter - info.resistance_counter) >= 0.5 * info.window:
-                info.reset()
-                return info
+            if info.support_counter - info.resistance_counter >= 0.5 * info.window:
+
+                info.reset_resistance()
+            elif info.resistance_counter - info.support_counter >= 0.5 * info.window:
+                info.reset_support()
+            #if info.prev_support_update_ts and info.support_update_ts and (info.support_update_ts - info.prev_support_update_ts) > 0.1 * 1000 * 3600 * info.window:
+            #    #info.prev_support_update_ts = info.support_update_ts
+            #    info.reset_support()
+            #if info.prev_resistance_update_ts and info.resistance_update_ts and (info.resistance_update_ts - info.prev_resistance_update_ts) > 0.1 * 1000 * 3600 * info.window:
+            #    #info.prev_resistance_update_ts = info.resistance_update_ts
+            #    info.reset_resistance()
         return info
 
     def update(self, hourly_ts=0, kline=None):
