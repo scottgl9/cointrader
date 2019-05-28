@@ -85,6 +85,9 @@ class HourlySupportResistance(object):
         self.daily_info = SRInfo(self.win_daily)
         self.weekly_info = SRInfo(self.win_weekly)
         self.monthly_info = SRInfo(self.win_monthly)
+        self.prev_daily_info = SRInfo(self.win_daily)
+        self.prev_weekly_info = SRInfo(self.win_weekly)
+        self.prev_monthly_info = SRInfo(self.win_monthly)
         self.daily_support = 0
         self.daily_resistance = 0
         self.weekly_support = 0
@@ -127,7 +130,8 @@ class HourlySupportResistance(object):
                 info.support = kline.low
                 info.support_counter = 0
                 info.counter = 0
-            if not info.counter and (info.support_counter >= info.window or info.resistance_counter >= info.window):
+            #if not info.counter and (info.support_counter >= info.window or info.resistance_counter >= info.window):
+            if abs(info.support_counter - info.resistance_counter) >= 0.5 * info.window:
                 info.reset()
                 return info
         return info
@@ -154,6 +158,7 @@ class HourlySupportResistance(object):
             self.daily_info.counter = 0
             self.daily_info.support_counter = 0
             self.daily_info.resistance_counter = 0
+            self.prev_daily_info = self.daily_info
             self.daily_info.support = 0
             self.daily_info.resistance = 0
             start_ts = kline.ts - 1000 * 3600 * self.win_daily
@@ -172,6 +177,7 @@ class HourlySupportResistance(object):
             self.weekly_info.counter = 0
             self.weekly_info.support_counter = 0
             self.weekly_info.resistance_counter = 0
+            self.prev_weekly_info = self.weekly_info
             self.weekly_info.support = 0
             self.weekly_info.resistance = 0
             start_ts = kline.ts - 1000 * 3600 * self.win_weekly
@@ -191,6 +197,7 @@ class HourlySupportResistance(object):
             self.monthly_info.counter = 0
             self.monthly_info.support_counter = 0
             self.monthly_info.resistance_counter = 0
+            self.prev_monthly_info = self.monthly_info
             self.monthly_info.support = 0
             self.monthly_info.resistance = 0
             start_ts = kline.ts - 1000 * 3600 * self.win_monthly
