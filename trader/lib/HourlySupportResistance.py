@@ -98,9 +98,9 @@ class HourlySupportResistance(object):
         self.daily_info = SRInfo(self.win_daily)
         self.weekly_info = SRInfo(self.win_weekly)
         self.monthly_info = SRInfo(self.win_monthly)
-        self.prev_daily_info = SRInfo(self.win_daily)
-        self.prev_weekly_info = SRInfo(self.win_weekly)
-        self.prev_monthly_info = SRInfo(self.win_monthly)
+        self.prev_daily_info = None
+        self.prev_weekly_info = None
+        self.prev_monthly_info = None
         self.daily_support = 0
         self.daily_resistance = 0
         self.weekly_support = 0

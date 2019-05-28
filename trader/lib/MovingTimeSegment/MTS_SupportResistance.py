@@ -1,6 +1,30 @@
 from .MovingTimeSegment import MovingTimeSegment
 
 
+class HourlySRLine(object):
+    SRTYPE_1HR = 1
+    SRTYPE_12HR = 2
+    SRTYPE_24HR = 3
+
+    def __init__(self, type, s, r, start_ts=0, end_ts=0):
+        self.type = type
+        self.start_ts = start_ts
+        self.end_ts = end_ts
+        self.s = s
+        self.r = r
+        self.ended = False
+
+    def __str__(self):
+        return str(self.__repr__())
+
+    def __repr__(self):
+        return str({'type': self.type,
+                'start_ts': self.start_ts,
+                'end_ts': self.end_ts,
+                's': self.s,
+                'r': self.r})
+
+
 class MTS_SRInfo(object):
     def __init__(self, secs):
         self.secs = secs
@@ -15,17 +39,15 @@ class MTS_SRInfo(object):
         self.started = False
 
     def reset(self):
-        self.counter = 0
+        self.update_ts = 0
         self.reset_support()
         self.reset_resistance()
 
     def reset_support(self):
-        self.support_counter = 0
         self.support_update_ts = 0
         self.support = 0
 
     def reset_resistance(self):
-        self.resistance_counter = 0
         self.resistance_update_ts = 0
         self.resistance = 0
 
@@ -38,10 +60,13 @@ class MTS_SupportResistance(object):
         self.mts1 = MovingTimeSegment(seconds=self.win_mts1, disable_fmm=False)
         self.mts12 = MovingTimeSegment(seconds=self.win_mts12, disable_fmm=False)
         self.mts24 = MovingTimeSegment(seconds=self.win_mts24, disable_fmm=False)
-
+        self.prev_mts1_info = None
+        self.prev_mts12_info = None
+        self.prev_mts24_info = None
         self.mts1_info = MTS_SRInfo(secs=self.mts1.seconds)
         self.mts12_info = MTS_SRInfo(secs=self.mts12.seconds)
         self.mts24_info = MTS_SRInfo(secs=self.mts24.seconds)
+        self.srlines = []
 
     def find_support_resistance(self, mts, info, ts):
         # wait until mts.buffer is full
@@ -93,6 +118,12 @@ class MTS_SupportResistance(object):
             else:
                 start_ts = self.mts1_info.resistance_update_ts
             end_ts = ts
+            srinfo = MTS_SRInfo(self.mts1_info.secs)
+            srinfo.s = self.mts1_info.support
+            srinfo.r = self.mts1_info.resistance
+            srinfo.start_ts = start_ts
+            srinfo.end_ts = end_ts
+            self.srlines.append(srinfo)
 
         if not self.mts12.ready():
             return False
@@ -105,6 +136,12 @@ class MTS_SupportResistance(object):
             else:
                 start_ts = self.mts12_info.resistance_update_ts
             end_ts = ts
+            srinfo = MTS_SRInfo(self.mts12_info.secs)
+            srinfo.s = self.mts12_info.support
+            srinfo.r = self.mts12_info.resistance
+            srinfo.start_ts = start_ts
+            srinfo.end_ts = end_ts
+            self.srlines.append(srinfo)
 
         if not self.mts24.ready():
             return False
@@ -118,3 +155,9 @@ class MTS_SupportResistance(object):
             else:
                 start_ts = self.mts24_info.resistance_update_ts
             end_ts = ts
+            srinfo = MTS_SRInfo(self.mts24_info.secs)
+            srinfo.s = self.mts24_info.support
+            srinfo.r = self.mts24_info.resistance
+            srinfo.start_ts = start_ts
+            srinfo.end_ts = end_ts
+            self.srlines.append(srinfo)
