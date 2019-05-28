@@ -30,6 +30,7 @@ class HourlySRLine(object):
         self.end_ts = end_ts
         self.s = s
         self.r = r
+        self.ended = False
 
     def __str__(self):
         return str(self.__repr__())
@@ -234,6 +235,13 @@ class HourlySupportResistance(object):
             srline = HourlySRLine(HourlySRLine.SRTYPE_WEEKLY, self.weekly_support, self.weekly_resistance,
                                   start_ts, end_ts)
             self.srlines.append(srline)
+
+        # if len(self.srlines) and (not self.weekly_info.support or not self.weekly_info.resistance):
+        #     srline = self.srlines[-1]
+        #     if not srline.ended and srline.r >= kline.close >= srline.s:
+        #         self.srlines[-1].end_ts = kline.ts
+        #     else:
+        #         self.srlines[-1].ended = True
 
         if len(self.monthly_closes) < self.win_monthly:
             return
