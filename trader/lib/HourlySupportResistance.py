@@ -48,6 +48,8 @@ class SRInfo(object):
         self.counter = 0
         self.support_counter = 0
         self.resistance_counter = 0
+        self.support_update_ts = 0
+        self.resistance_update_ts = 0
         self.support = 0
         self.resistance = 0
         self.started = False
@@ -56,6 +58,8 @@ class SRInfo(object):
         self.counter = 0
         self.support_counter = 0
         self.resistance_counter = 0
+        self.support_update_ts = 0
+        self.resistance_update_ts = 0
         self.support = 0
         self.resistance = 0
 
@@ -116,7 +120,9 @@ class HourlySupportResistance(object):
 
         if not info.support or not info.resistance:
             info.support = closes.min()
+            info.support_update_ts = kline.ts
             info.resistance = closes.max()
+            info.resistance_update_ts = kline.ts
             info.counter = 0
         else:
             info.support_counter += 1
@@ -124,10 +130,12 @@ class HourlySupportResistance(object):
             info.counter += 1
             if kline.high > info.resistance:
                 info.resistance = kline.high
+                info.resistance_update_ts = kline.ts
                 info.resistance_counter = 0
                 info.counter = 0
             if kline.low < info.support:
                 info.support = kline.low
+                info.support_update_ts = kline.ts
                 info.support_counter = 0
                 info.counter = 0
             #if not info.counter and (info.support_counter >= info.window or info.resistance_counter >= info.window):
@@ -152,10 +160,12 @@ class HourlySupportResistance(object):
 
         self.daily_info = self.find_support_resistance(kline, self.daily_closes, self.daily_info)
 
-        if self.daily_info.counter > self.win_monthly:
+        if self.daily_info.counter > self.win_daily:
             self.daily_support = self.daily_info.support
             self.daily_resistance = self.daily_info.resistance
             self.daily_info.counter = 0
+            self.daily_info.support_update_ts = 0
+            self.daily_info.resistance_update_ts = 0
             self.daily_info.support_counter = 0
             self.daily_info.resistance_counter = 0
             self.prev_daily_info = self.daily_info
@@ -171,10 +181,12 @@ class HourlySupportResistance(object):
 
         self.weekly_info = self.find_support_resistance(kline, self.weekly_closes, self.weekly_info)
 
-        if self.weekly_info.counter > self.win_monthly:
+        if self.weekly_info.counter > self.win_weekly:
             self.weekly_support = self.weekly_info.support
             self.weekly_resistance = self.weekly_info.resistance
             self.weekly_info.counter = 0
+            self.weekly_info.support_update_ts = 0
+            self.weekly_info.resistance_update_ts = 0
             self.weekly_info.support_counter = 0
             self.weekly_info.resistance_counter = 0
             self.prev_weekly_info = self.weekly_info
@@ -195,6 +207,8 @@ class HourlySupportResistance(object):
             self.monthly_support = self.monthly_info.support
             self.monthly_resistance = self.monthly_info.resistance
             self.monthly_info.counter = 0
+            self.monthly_info.support_update_ts = 0
+            self.monthly_info.resistance_update_ts = 0
             self.monthly_info.support_counter = 0
             self.monthly_info.resistance_counter = 0
             self.prev_monthly_info = self.monthly_info
