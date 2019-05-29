@@ -94,6 +94,9 @@ class HourlySupportResistance(object):
         # self.monthly_lows = CircularArray(window=self.win_monthly)
         # self.monthly_highs = CircularArray(window=self.win_monthly)
         self.srlines = []
+        self.last_srlines_daily_index = 0
+        self.last_srlines_weekly_index = 0
+        self.last_srlines_monthly_index = 0
         self.start_ts = 0
         self.daily_info = SRInfo(self.win_daily)
         self.weekly_info = SRInfo(self.win_weekly)
@@ -208,6 +211,14 @@ class HourlySupportResistance(object):
 
             srline = HourlySRLine(HourlySRLine.SRTYPE_DAILY, self.daily_support, self.daily_resistance, start_ts, end_ts)
             self.srlines.append(srline)
+            self.last_srlines_daily_index = self.srlines.index(srline)
+
+        if self.last_srlines_daily_index and not self.srlines[self.last_srlines_daily_index].ended:
+            index = self.last_srlines_daily_index
+            if self.srlines[index].r >= kline.close >= self.srlines[index].s:
+                self.srlines[index].end_ts = kline.ts
+            else:
+                self.srlines[index].ended = True
 
         if len(self.weekly_closes) < self.win_weekly:
             return
@@ -235,7 +246,14 @@ class HourlySupportResistance(object):
             srline = HourlySRLine(HourlySRLine.SRTYPE_WEEKLY, self.weekly_support, self.weekly_resistance,
                                   start_ts, end_ts)
             self.srlines.append(srline)
+            self.last_srlines_weekly_index = self.srlines.index(srline)
 
+        if self.last_srlines_weekly_index and not self.srlines[self.last_srlines_weekly_index].ended:
+            index = self.last_srlines_weekly_index
+            if self.srlines[index].r >= kline.close >= self.srlines[index].s:
+                self.srlines[index].end_ts = kline.ts
+            else:
+                self.srlines[index].ended = True
         # if len(self.srlines) and (not self.weekly_info.support or not self.weekly_info.resistance):
         #     srline = self.srlines[-1]
         #     if not srline.ended and srline.r >= kline.close >= srline.s:
@@ -269,3 +287,11 @@ class HourlySupportResistance(object):
             srline = HourlySRLine(HourlySRLine.SRTYPE_MONTHLY, self.monthly_support, self.monthly_resistance,
                                   start_ts, end_ts)
             self.srlines.append(srline)
+            self.last_srlines_monthly_index = self.srlines.index(srline)
+
+        if self.last_srlines_monthly_index and not self.srlines[self.last_srlines_monthly_index].ended:
+            index = self.last_srlines_monthly_index
+            if self.srlines[index].r >= kline.close >= self.srlines[index].s:
+                self.srlines[index].end_ts = kline.ts
+            else:
+                self.srlines[index].ended = True
