@@ -167,12 +167,6 @@ class HourlySupportResistance(object):
                 info.reset_resistance()
             elif info.resistance_counter - info.support_counter >= 0.5 * info.window:
                 info.reset_support()
-            #if info.prev_support_update_ts and info.support_update_ts and (info.support_update_ts - info.prev_support_update_ts) > 0.1 * 1000 * 3600 * info.window:
-            #    #info.prev_support_update_ts = info.support_update_ts
-            #    info.reset_support()
-            #if info.prev_resistance_update_ts and info.resistance_update_ts and (info.resistance_update_ts - info.prev_resistance_update_ts) > 0.1 * 1000 * 3600 * info.window:
-            #    #info.prev_resistance_update_ts = info.resistance_update_ts
-            #    info.reset_resistance()
         return info
 
     def update(self, hourly_ts=0, kline=None):
@@ -189,7 +183,8 @@ class HourlySupportResistance(object):
         if len(self.daily_closes) < self.win_daily:
             return
 
-        self.daily_info = self.find_support_resistance(kline, self.daily_closes, self.daily_info)
+        if not self.last_srlines_daily_index or self.srlines[self.last_srlines_daily_index].ended:
+            self.daily_info = self.find_support_resistance(kline, self.daily_closes, self.daily_info)
 
         if self.daily_info.counter > self.win_daily:
             # start_ts = kline.ts - 1000 * 3600 * self.win_daily
@@ -223,7 +218,8 @@ class HourlySupportResistance(object):
         if len(self.weekly_closes) < self.win_weekly:
             return
 
-        self.weekly_info = self.find_support_resistance(kline, self.weekly_closes, self.weekly_info)
+        if not self.last_srlines_weekly_index or self.srlines[self.last_srlines_weekly_index].ended:
+            self.weekly_info = self.find_support_resistance(kline, self.weekly_closes, self.weekly_info)
 
         if self.weekly_info.counter > self.win_weekly:
             # start_ts = kline.ts - 1000 * 3600 * self.win_weekly
@@ -254,17 +250,12 @@ class HourlySupportResistance(object):
                 self.srlines[index].end_ts = kline.ts
             else:
                 self.srlines[index].ended = True
-        # if len(self.srlines) and (not self.weekly_info.support or not self.weekly_info.resistance):
-        #     srline = self.srlines[-1]
-        #     if not srline.ended and srline.r >= kline.close >= srline.s:
-        #         self.srlines[-1].end_ts = kline.ts
-        #     else:
-        #         self.srlines[-1].ended = True
 
         if len(self.monthly_closes) < self.win_monthly:
             return
 
-        self.monthly_info = self.find_support_resistance(kline, self.monthly_closes, self.monthly_info)
+        if not self.last_srlines_monthly_index or self.srlines[self.last_srlines_monthly_index].ended:
+            self.monthly_info = self.find_support_resistance(kline, self.monthly_closes, self.monthly_info)
 
         if self.monthly_info.counter > self.win_monthly:
             #start_ts = kline.ts - 1000 * 3600 * self.win_monthly
