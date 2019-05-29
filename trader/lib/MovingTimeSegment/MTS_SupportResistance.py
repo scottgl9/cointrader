@@ -67,6 +67,9 @@ class MTS_SupportResistance(object):
         self.mts12_info = MTS_SRInfo(secs=self.mts12.seconds)
         self.mts24_info = MTS_SRInfo(secs=self.mts24.seconds)
         self.srlines = []
+        self.last_srlines_mts1_index = 0
+        self.last_srlines_mts12_index = 0
+        self.last_srlines_mts24_index = 0
 
     def find_support_resistance(self, mts, info, ts):
         # wait until mts.buffer is full
@@ -95,6 +98,10 @@ class MTS_SupportResistance(object):
                 info.support_update_ts = ts
                 info.last_update_ts = info.update_ts
                 info.update_ts = ts
+            if info.prev_support_update_ts - info.prev_resistance_update_ts >= info.secs * 1000:
+                info.reset_resistance()
+            elif info.prev_resistance_update_ts - info.prev_support_update_ts >= info.secs * 1000:
+                info.reset_support()
             #if not info.counter and (info.support_counter >= info.window or info.resistance_counter >= info.window):
             #if info.support_counter - info.resistance_counter >= 0.5 * info.window:
             #    info.reset_resistance()
@@ -118,13 +125,21 @@ class MTS_SupportResistance(object):
             else:
                 start_ts = self.mts1_info.resistance_update_ts
             end_ts = ts
-            srinfo = MTS_SRLine()
-            srinfo.s = self.mts1_info.support
-            srinfo.r = self.mts1_info.resistance
-            srinfo.start_ts = start_ts
-            srinfo.end_ts = end_ts
-            self.srlines.append(srinfo)
+            srline = MTS_SRLine()
+            srline.s = self.mts1_info.support
+            srline.r = self.mts1_info.resistance
+            srline.start_ts = start_ts
+            srline.end_ts = end_ts
+            self.srlines.append(srline)
             self.mts1_info.reset()
+            self.last_srlines_mts1_index = self.srlines.index(srline)
+
+        if self.last_srlines_mts1_index and not self.srlines[self.last_srlines_mts1_index].ended:
+            index = self.last_srlines_mts1_index
+            if self.srlines[index].r >= value >= self.srlines[index].s:
+                self.srlines[index].end_ts = ts
+            else:
+                self.srlines[index].ended = True
 
         if not self.mts12.ready():
             return False
@@ -137,13 +152,21 @@ class MTS_SupportResistance(object):
             else:
                 start_ts = self.mts12_info.resistance_update_ts
             end_ts = ts
-            srinfo = MTS_SRLine()
-            srinfo.s = self.mts12_info.support
-            srinfo.r = self.mts12_info.resistance
-            srinfo.start_ts = start_ts
-            srinfo.end_ts = end_ts
-            self.srlines.append(srinfo)
+            srline = MTS_SRLine()
+            srline.s = self.mts12_info.support
+            srline.r = self.mts12_info.resistance
+            srline.start_ts = start_ts
+            srline.end_ts = end_ts
+            self.srlines.append(srline)
             self.mts12_info.reset()
+            self.last_srlines_mts12_index = self.srlines.index(srline)
+
+        if self.last_srlines_mts12_index and not self.srlines[self.last_srlines_mts12_index].ended:
+            index = self.last_srlines_mts12_index
+            if self.srlines[index].r >= value >= self.srlines[index].s:
+                self.srlines[index].end_ts = ts
+            else:
+                self.srlines[index].ended = True
 
         if not self.mts24.ready():
             return False
@@ -157,10 +180,18 @@ class MTS_SupportResistance(object):
             else:
                 start_ts = self.mts24_info.resistance_update_ts
             end_ts = ts
-            srinfo = MTS_SRLine()
-            srinfo.s = self.mts24_info.support
-            srinfo.r = self.mts24_info.resistance
-            srinfo.start_ts = start_ts
-            srinfo.end_ts = end_ts
-            self.srlines.append(srinfo)
+            srline = MTS_SRLine()
+            srline.s = self.mts24_info.support
+            srline.r = self.mts24_info.resistance
+            srline.start_ts = start_ts
+            srline.end_ts = end_ts
+            self.srlines.append(srline)
             self.mts24_info.reset()
+            self.last_srlines_mts24_index = self.srlines.index(srline)
+
+        if self.last_srlines_mts24_index and not self.srlines[self.last_srlines_mts24_index].ended:
+            index = self.last_srlines_mts24_index
+            if self.srlines[index].r >= value >= self.srlines[index].s:
+                self.srlines[index].end_ts = ts
+            else:
+                self.srlines[index].ended = True
