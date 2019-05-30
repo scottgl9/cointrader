@@ -61,15 +61,15 @@ def simulate(conn, client, base, currency):
         ts=int(msg['E'])
         volumes.append(volume)
 
-        mtssr.update(close, ts)
-
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
-        ema26_values.append(ema26.update(close))
-        ema50_value = ema50.update(close)
-        ema50_values.append(ema50_value)
-        ema200_value = ema200.update(close)
-        ema200_values.append(ema200_value)
+        #ema26_values.append(ema26.update(close))
+        #ema50_value = ema50.update(close)
+        #ema50_values.append(ema50_value)
+        #ema200_value = ema200.update(close)
+        #ema200_values.append(ema200_value)
+
+        mtssr.update(ema12_value, ts)
 
         close_prices.append(close)
         open_prices.append(open)

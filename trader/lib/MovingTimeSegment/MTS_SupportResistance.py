@@ -53,7 +53,8 @@ class MTS_SRInfo(object):
 
 
 class MTS_SupportResistance(object):
-    def __init__(self):
+    def __init__(self, percent_margin=0):
+        self.percent_margin = percent_margin
         self.win_mts1 = 3600
         self.win_mts12 = 3600 * 12
         self.win_mts24 = 3600 * 24
@@ -128,6 +129,11 @@ class MTS_SupportResistance(object):
             srline = MTS_SRLine()
             srline.s = self.mts1_info.support
             srline.r = self.mts1_info.resistance
+            if self.percent_margin:
+                support_margin = float(100.0 - self.percent_margin) / 100.0
+                resistance_margin = float(100.0 + self.percent_margin) / 100.0
+                srline.s *= support_margin
+                srline.r *= resistance_margin
             srline.start_ts = start_ts
             srline.end_ts = end_ts
             self.srlines.append(srline)
@@ -155,6 +161,11 @@ class MTS_SupportResistance(object):
             srline = MTS_SRLine()
             srline.s = self.mts12_info.support
             srline.r = self.mts12_info.resistance
+            if self.percent_margin:
+                support_margin = float(100.0 - self.percent_margin) / 100.0
+                resistance_margin = float(100.0 + self.percent_margin) / 100.0
+                srline.s *= support_margin
+                srline.r *= resistance_margin
             srline.start_ts = start_ts
             srline.end_ts = end_ts
             self.srlines.append(srline)
@@ -183,6 +194,11 @@ class MTS_SupportResistance(object):
             srline = MTS_SRLine()
             srline.s = self.mts24_info.support
             srline.r = self.mts24_info.resistance
+            if self.percent_margin:
+                support_margin = float(100.0 - self.percent_margin) / 100.0
+                resistance_margin = float(100.0 + self.percent_margin) / 100.0
+                srline.s *= support_margin
+                srline.r *= resistance_margin
             srline.start_ts = start_ts
             srline.end_ts = end_ts
             self.srlines.append(srline)

@@ -74,7 +74,8 @@ class SRInfo(object):
 
 
 class HourlySupportResistance(object):
-    def __init__(self, symbol, accnt=None, filename=None, db=None):
+    def __init__(self, symbol, accnt=None, filename=None, db=None, percent_margin=0):
+        self.percent_margin = percent_margin
         self.accnt = accnt
         self.filename = filename
         self.symbol = symbol
@@ -205,6 +206,11 @@ class HourlySupportResistance(object):
             self.daily_info.resistance = 0
 
             srline = HourlySRLine(HourlySRLine.SRTYPE_DAILY, self.daily_support, self.daily_resistance, start_ts, end_ts)
+            if self.percent_margin:
+                support_margin = float(100.0 - self.percent_margin) / 100.0
+                resistance_margin = float(100.0 + self.percent_margin) / 100.0
+                srline.s *= support_margin
+                srline.r *= resistance_margin
             self.srlines.append(srline)
             self.last_srlines_daily_index = self.srlines.index(srline)
 
@@ -241,6 +247,11 @@ class HourlySupportResistance(object):
 
             srline = HourlySRLine(HourlySRLine.SRTYPE_WEEKLY, self.weekly_support, self.weekly_resistance,
                                   start_ts, end_ts)
+            if self.percent_margin:
+                support_margin = float(100.0 - self.percent_margin) / 100.0
+                resistance_margin = float(100.0 + self.percent_margin) / 100.0
+                srline.s *= support_margin
+                srline.r *= resistance_margin
             self.srlines.append(srline)
             self.last_srlines_weekly_index = self.srlines.index(srline)
 
@@ -277,6 +288,11 @@ class HourlySupportResistance(object):
 
             srline = HourlySRLine(HourlySRLine.SRTYPE_MONTHLY, self.monthly_support, self.monthly_resistance,
                                   start_ts, end_ts)
+            if self.percent_margin:
+                support_margin = float(100.0 - self.percent_margin) / 100.0
+                resistance_margin = float(100.0 + self.percent_margin) / 100.0
+                srline.s *= support_margin
+                srline.r *= resistance_margin
             self.srlines.append(srline)
             self.last_srlines_monthly_index = self.srlines.index(srline)
 
