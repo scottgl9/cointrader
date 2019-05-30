@@ -9,6 +9,7 @@ from trader.strategy.global_strategy.global_obv_strategy import global_obv_strat
 from datetime import datetime
 
 from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
+from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
 from trader.strategy.basic_signal_stop_loss_strategy import basic_signal_stop_loss_strategy
 from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
 from trader.strategy.null_strategy import null_strategy
@@ -18,6 +19,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
                     hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
+    elif sname == 'multi_market_order_strategy': strategy = multi_market_order_strategy
     elif sname == 'basic_signal_stop_loss_strategy': strategy = basic_signal_stop_loss_strategy
     elif sname == 'signal_market_trailing_stop_loss_strategy': strategy = signal_market_trailing_stop_loss_strategy
     elif sname == 'null_strategy': strategy = null_strategy
@@ -29,7 +31,6 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
                     currency,
                     account_handler,
                     order_handler=order_handler,
-                    #hourly_klines_handler=hourly_klines_handler,
                     asset_info=asset_info,
                     base_min_size=base_min_size,
                     tick_size=tick_size,

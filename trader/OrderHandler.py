@@ -5,12 +5,15 @@ from trader.notify.Email import Email
 from trader.lib.TraderDB import TraderDB
 from trader.TradeBalanceHandler import TradeBalanceHandler
 from trader.OrderLimitHandler import OrderLimitHandler
+from trader.strategy.StrategyBase import StrategyBase
 import time
 import os
 
 
 class OrderHandler(object):
     def __init__(self, accnt, msg_handler, logger, store_trades=False):
+        # by default, single signal, single order
+        self.order_method = StrategyBase.SINGLE_SIGNAL_SINGLE_ORDER
         self.accnt = accnt
         self.msg_handler = msg_handler
         self.logger = logger
