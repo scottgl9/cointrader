@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
+from trader.indicator.EMA import EMA
 from trader.lib.HourlySupportResistance import HourlySupportResistance, HourlySRLine
 
 
@@ -31,9 +32,14 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
     hourlysr = HourlySupportResistance(symbol, None, None, hkdb)
     close_prices = []
     timestamps = []
+    ema12 = EMA(12)
+    ema12_values = []
 
     i=0
     for kline in klines:#[int(0.5*len(klines)):]:
+        ema12.update(kline.close)
+        ema12_values.append(ema12.result)
+        kline.close = ema12.result
         hourlysr.update(kline=kline)
         close_prices.append(kline.close)
         timestamps.append(kline.ts)
@@ -41,6 +47,7 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
+    fig1, = plt.plot(ema12_values, label="EMA12")
     for sr in hourlysr.srlines:
         if daily and sr.type == HourlySRLine.SRTYPE_DAILY:
             start = timestamps.index(sr.start_ts)
@@ -61,7 +68,7 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
     #fig2, = plt.plot(weekly_x_resistances, weekly_resistances, label='WEEKLY_RESISTANCE')
     #fig3, = plt.plot(monthly_x_supports, monthly_supports, label='MONTHLY_SUPPORT')
     #fig4, = plt.plot(monthly_x_resistances, monthly_resistances, label='MONTHLY_RESISTANCE')
-    plt.legend(handles=[symprice]) #, fig1, fig2, fig3, fig4])
+    plt.legend(handles=[symprice, fig1]) #, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     #plt.legend(handles=[fig21, fig22, fig23])
     plt.show()

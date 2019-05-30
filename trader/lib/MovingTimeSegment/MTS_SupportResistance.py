@@ -118,9 +118,10 @@ class MTS_SupportResistance(object):
         if not self.mts1.ready():
             return False
 
-        self.mts1_info = self.find_support_resistance(self.mts1, self.mts1_info, ts)
+        if not self.last_srlines_mts1_index or self.srlines[self.last_srlines_mts1_index].ended:
+            self.mts1_info = self.find_support_resistance(self.mts1, self.mts1_info, ts)
 
-        if (ts - self.mts1_info.update_ts) > self.win_mts1 * 1000:
+        if (ts - self.mts1_info.update_ts) > self.win_mts1 * 1000 and self.mts1_info.support_update_ts and self.mts1_info.resistance_update_ts:
             if self.mts1_info.support_update_ts < self.mts1_info.resistance_update_ts:
                 start_ts = self.mts1_info.support_update_ts
             else:
@@ -150,9 +151,10 @@ class MTS_SupportResistance(object):
         if not self.mts12.ready():
             return False
 
-        self.mts12_info = self.find_support_resistance(self.mts12, self.mts12_info, ts)
+        if not self.last_srlines_mts12_index or self.srlines[self.last_srlines_mts12_index].ended:
+            self.mts12_info = self.find_support_resistance(self.mts12, self.mts12_info, ts)
 
-        if (ts - self.mts12_info.update_ts) > self.win_mts12 * 1000:
+        if (ts - self.mts12_info.update_ts) > self.win_mts12 * 1000 and self.mts12_info.support_update_ts and self.mts12_info.resistance_update_ts:
             if self.mts12_info.support_update_ts < self.mts12_info.resistance_update_ts:
                 start_ts = self.mts12_info.support_update_ts
             else:
@@ -182,9 +184,10 @@ class MTS_SupportResistance(object):
         if not self.mts24.ready():
             return False
 
-        self.mts24_info = self.find_support_resistance(self.mts24, self.mts24_info, ts)
+        if not self.last_srlines_mts24_index or self.srlines[self.last_srlines_mts24_index].ended:
+            self.mts24_info = self.find_support_resistance(self.mts24, self.mts24_info, ts)
 
-        if (ts - self.mts24_info.update_ts) > self.win_mts24 * 1000:
+        if (ts - self.mts24_info.update_ts) > self.win_mts24 * 1000 and self.mts24_info.support_update_ts and self.mts24_info.resistance_update_ts:
             # start_ts = kline.ts - 1000 * 3600 * self.win_weekly
             if self.mts24_info.support_update_ts < self.mts24_info.resistance_update_ts:
                 start_ts = self.mts24_info.support_update_ts
