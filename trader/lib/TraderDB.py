@@ -114,7 +114,7 @@ class TraderDB(object):
         if not self.db:
             return count
 
-        sql = "SELECT COUNT(*) FROM trades WHERE symbol='{}'"
+        sql = "SELECT COUNT(*) FROM trades WHERE symbol='{}'".format(symbol)
         if sig_id != 0:
             sql += " AND sigid={}".format(sig_id)
         if sig_oid != 0:
