@@ -40,11 +40,13 @@ class Message(object):
     TYPE_NONE = 31
 
     def __init__(self, src_id, dst_id, cmd, sig_id=0, price=0.0, size=0.0, buy_price=0.0, ts=0,
-                 asset_info=None, order_type=TYPE_MARKET, buy_type=0, sell_type=0):
+                 asset_info=None, order_type=TYPE_MARKET, buy_type=0, sell_type=0, sig_oid=0):
         self.src_id = src_id
         self.dst_id = dst_id
         self.cmd = cmd
         self.sig_id = sig_id
+        # for strategy which allows multiple orders per signal, set sig_oid (signal order id)
+        self.sig_oid = sig_oid
         self.price = price
         self.size = size
         self.buy_price = buy_price
