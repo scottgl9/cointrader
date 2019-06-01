@@ -33,6 +33,7 @@ class SignalBase(object):
         self.last_tpprofit = 0
         self.timestamp = 0
         self.last_timestamp = 0
+        self.multi_order_tracker = None
         self.buy_price = 0.0
         self.buy_size = 0.0
         self.buy_timestamp = 0

@@ -1,4 +1,5 @@
 from trader.lib.struct.Message import Message
+from trader.lib.MultiOrderTracker import MultiOrderTracker
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
 from trader.strategy.StrategyBase import StrategyBase, select_hourly_signal
 from trader.signal.SignalBase import SignalBase
@@ -65,12 +66,15 @@ class multi_market_order_strategy(StrategyBase):
                     continue
                 if not signal.global_signal and self.ticker_id.endswith('USDT'):
                     continue
+                signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=10)
                 self.signal_handler.add(signal)
         else:
-            self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover",
-                                                                    self.accnt,
-                                                                    self.ticker_id,
-                                                                    asset_info))
+            signal = StrategyBase.select_signal_name("Hybrid_Crossover",
+                                                     self.accnt,
+                                                     self.ticker_id,
+                                                     asset_info)
+            signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=10)
+            self.signal_handler.add(signal)
 
 
     # clear pending sell trades which have been bought
@@ -88,7 +92,7 @@ class multi_market_order_strategy(StrategyBase):
         if self.accnt.sell_only():
             return False
 
-        if float(signal.buy_price) != 0.0 or self.disable_buy:
+        if self.disable_buy:
             return False
 
         # limit number of market buy orders without corresponding market sell orders
@@ -373,6 +377,9 @@ class multi_market_order_strategy(StrategyBase):
 
         if self.min_trade_size_qty != 1.0:
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
+
+        if not signal.multi_order_tracker.add(price, min_trade_size):
+            return
 
         signal.buy_price = price
         signal.buy_size = min_trade_size

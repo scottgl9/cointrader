@@ -37,6 +37,36 @@ class MultiOrderTracker(object):
             return None
         return self.multi_order_entries[sigoid].buy_size
 
+    # get total size that we can sell at percent profit
+    def get_total_sell_size(self, sell_price, percent=1.0):
+        total_size = 0
+        for entry in self.multi_order_entries.values():
+            if sell_price > entry.buy_price and 100.0 * (sell_price - entry.buy_price) / entry.buy_price >= percent:
+                total_size += entry.buy_size
+        return total_size
+
+    # remove all entries that we can sell at percent profit
+    def remove_total_sell_size(self, sell_price, percent=1.0):
+        remove_entries = []
+        for entry in self.multi_order_entries.values():
+            if sell_price > entry.buy_price and 100.0 * (sell_price - entry.buy_price) / entry.buy_price >= percent:
+                remove_entries.append(entry)
+        for entry in remove_entries:
+            self.sigoids.remove(entry.sig_oid)
+            del self.multi_order_entries[entry.sig_oid]
+
+    def remove_by_buy_price(self, buy_price):
+        completed = False
+        remove_entries = []
+        for entry in self.multi_order_entries:
+            if entry.buy_price == buy_price:
+                completed = True
+                remove_entries.append(entry)
+        for entry in remove_entries:
+            self.sigoids.remove(entry.sig_oid)
+            del self.multi_order_entries[entry.sig_oid]
+        return completed
+
     def remove_by_signoid(self, sigoid):
         if sigoid in self.multi_order_entries.keys():
             del self.multi_order_entries[sigoid]
