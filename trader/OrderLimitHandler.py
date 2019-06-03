@@ -114,7 +114,7 @@ class OrderLimitHandler(object):
         elif order_type == Message.MSG_LIMIT_BUY:
             buy_type = "buy_limit"
 
-        message = "{}({}, {}, {}) @ {}".format(buy_type, sig_id, ticker_id, size, price)
+        message = "{}({}, {}, {}, {}) @ {}".format(buy_type, sig_id, sig_oid, ticker_id, size, price)
         self.msg_handler.buy_complete(ticker_id, price, size, sig_id, order_type=order_type, sig_oid=sig_oid)
         return message
 
@@ -142,22 +142,24 @@ class OrderLimitHandler(object):
             current_btc = self.accnt.get_total_btc_value()
             tpprofit = 100.0 * (current_btc - self.accnt.initial_btc) / self.accnt.initial_btc
             self.accnt.set_total_percent_profit(tpprofit)
-            message = "{}({}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sell_type,
-                                                                           sig_id,
-                                                                           ticker_id,
-                                                                           size,
-                                                                           price,
-                                                                           buy_price,
-                                                                           round(pprofit, 2),
-                                                                           round(tpprofit, 2))
+            message = "{}({}, {}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sell_type,
+                                                                               sig_id,
+                                                                               sig_oid,
+                                                                               ticker_id,
+                                                                               size,
+                                                                               price,
+                                                                               buy_price,
+                                                                               round(pprofit, 2),
+                                                                               round(tpprofit, 2))
         else:
-            message = "{}({}, {}, {}) @ {} (bought @ {}, {}%)".format(sell_type,
-                                                                      sig_id,
-                                                                      ticker_id,
-                                                                      size,
-                                                                      price,
-                                                                      buy_price,
-                                                                      round(pprofit, 2))
+            message = "{}({}, {}, {}, {}) @ {} (bought @ {}, {}%)".format(sell_type,
+                                                                          sig_id,
+                                                                          sig_oid,
+                                                                          ticker_id,
+                                                                          size,
+                                                                          price,
+                                                                          buy_price,
+                                                                          round(pprofit, 2))
         self.logger.info(message)
         self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=order_type, sig_oid=sig_oid)
         return message
