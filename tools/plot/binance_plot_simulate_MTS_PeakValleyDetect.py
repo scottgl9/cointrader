@@ -16,7 +16,8 @@ import argparse
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.ZLEMA import *
 from trader.lib.MovingTimeSegment.MTS_PeakValleyDetect import MTS_PeakValleyDetect
-
+from trader.indicator.AEMA import AEMA
+from trader.lib.MovingTimeSegment.MTS_LSMA import MTS_LSMA
 
 def get_rows_as_msgs(c):
     msgs = []
@@ -33,23 +34,19 @@ def simulate(conn, client, base, currency):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    ema12 = EMA(12, scale=24)
-    ema26 = EMA(26, scale=24)
-    ema50 = EMA(100, scale=24, lag_window=5)
-    ema200 = EMA(200, scale=24, lag_window=5)
+    aema12 = AEMA(50, scale_interval_secs=60)
+    lsma = MTS_LSMA(3600)
 
     mtspvd = MTS_PeakValleyDetect()
 
-    ema12_values = []
-    ema26_values = []
-    ema50_values = []
-    ema200_values = []
-    close_prices = []
+    aema12_values = []
+    lsma_values = []
     open_prices = []
     low_prices = []
     high_prices = []
     volumes = []
     timestamps = []
+    close_prices = []
 
     peaks = []
     valleys = []
@@ -64,15 +61,13 @@ def simulate(conn, client, base, currency):
         ts=int(msg['E'])
         volumes.append(volume)
 
-        ema12_value = ema12.update(close)
-        ema12_values.append(ema12_value)
-        #ema26_values.append(ema26.update(close))
-        ema50_value = ema50.update(close)
-        ema50_values.append(ema50_value)
-        #ema200_value = ema200.update(close)
-        #ema200_values.append(ema200_value)
+        aema12.update(close, ts)
+        aema12_values.append(aema12.result)
 
-        mtspvd.update(ema50_value, ts)
+        lsma.update(close, ts)
+        lsma_values.append(lsma.result)
+
+        mtspvd.update(aema12.result, ts)
         if mtspvd.peak_detect():
             peaks.append(i)
         elif mtspvd.valley_detect():
@@ -90,8 +85,9 @@ def simulate(conn, client, base, currency):
     for valley in valleys:
         plt.axvline(x=valley, color='green')
     symprice, = plt.plot(close_prices, label=ticker_id)
-    fig1, = plt.plot(ema12_values, label="EMA12")
-    fig2, = plt.plot(ema50_values, label="EMA50")
+    fig1, = plt.plot(aema12_values, label="AEMA12")
+    fig2, = plt.plot(lsma_values, label="LSMA")
+
     plt.legend(handles=[symprice, fig1, fig2])
     plt.show()
 

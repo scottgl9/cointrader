@@ -3,7 +3,7 @@ from .MovingTimeSegment import MovingTimeSegment
 
 
 class MTS_PeakValleyDetect(object):
-    def __init__(self, value_win_secs=60, slope_win_secs=3600):
+    def __init__(self, value_win_secs=60, slope_win_secs=1800):
         self.value_win_secs = value_win_secs
         self.slope_win_secs = slope_win_secs
         self.mts_values = MovingTimeSegment(seconds=self.value_win_secs, disable_fmm=True)
