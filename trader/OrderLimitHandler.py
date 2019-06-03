@@ -91,15 +91,15 @@ class OrderLimitHandler(object):
                     self.remove_open_order(kline.symbol)
 
 
-    def send_buy_failed(self, ticker_id, price, size, sig_id, order_type):
-        return self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=order_type)
+    def send_buy_failed(self, ticker_id, price, size, sig_id, order_type, sig_oid=0):
+        return self.msg_handler.buy_failed(ticker_id, price, size, sig_id, order_type=order_type, sig_oid=sig_oid)
 
 
-    def send_sell_failed(self, ticker_id, price, size, buy_price, sig_id, order_type):
-        return self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=order_type)
+    def send_sell_failed(self, ticker_id, price, size, buy_price, sig_id, order_type, sig_oid=0):
+        return self.msg_handler.sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=order_type, sig_oid=sig_oid)
 
 
-    def send_buy_complete(self, ticker_id, price, size, sig_id, order_type):
+    def send_buy_complete(self, ticker_id, price, size, sig_id, order_type, sig_oid=0):
         buy_type="buy_unknown"
         if order_type == Message.TYPE_MARKET:
             buy_type = "buy_market"
@@ -115,10 +115,10 @@ class OrderLimitHandler(object):
             buy_type = "buy_limit"
 
         message = "{}({}, {}, {}) @ {}".format(buy_type, sig_id, ticker_id, size, price)
-        self.msg_handler.buy_complete(ticker_id, price, size, sig_id, order_type=order_type)
+        self.msg_handler.buy_complete(ticker_id, price, size, sig_id, order_type=order_type, sig_oid=sig_oid)
         return message
 
-    def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type):
+    def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type, sig_oid=0):
         sell_type="sell_unknown"
         if order_type == Message.TYPE_MARKET:
             sell_type = "sell_market"
@@ -159,5 +159,5 @@ class OrderLimitHandler(object):
                                                                       buy_price,
                                                                       round(pprofit, 2))
         self.logger.info(message)
-        self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=order_type)
+        self.msg_handler.sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=order_type, sig_oid=sig_oid)
         return message

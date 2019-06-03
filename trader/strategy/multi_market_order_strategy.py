@@ -161,7 +161,7 @@ class multi_market_order_strategy(StrategyBase):
         return False
 
 
-    def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
+    def set_buy_price_size(self, buy_price, buy_size, sig_id=0, sig_oid=0):
         signal = self.signal_handler.get_handler(id=sig_id)
         if not signal:
             self.logger.info("set_buy_price(): sigid {} not in signal_handler for {}: price={}, size={}".format(sig_id,
@@ -169,9 +169,8 @@ class multi_market_order_strategy(StrategyBase):
                                                                                                                 buy_price,
                                                                                                                 buy_size))
             return
-        #if signal.buy_price == 0 and signal.buy_size == 0:
-        signal.buy_price = buy_price
-        signal.buy_size = buy_size
+        if not signal.multi_order_tracker.load(buy_price, buy_size, sig_oid):
+            return
         self.buy_loaded = True
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
@@ -190,6 +189,7 @@ class multi_market_order_strategy(StrategyBase):
                         self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
                                                                                        msg.price,
                                                                                        msg.size))
+                    oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.buy_size = msg.size
                     signal.buy_price = msg.price
@@ -203,6 +203,7 @@ class multi_market_order_strategy(StrategyBase):
                                                                                                      msg.price,
                                                                                                      msg.buy_price,
                                                                                                      msg.size))
+                    oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
                     if self.min_trade_size_qty != 1.0:
@@ -221,6 +222,7 @@ class multi_market_order_strategy(StrategyBase):
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
+                    oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
                                                                                  msg.price,
@@ -235,8 +237,8 @@ class multi_market_order_strategy(StrategyBase):
                     signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_SELL_FAILED:
-                    id = msg.sig_id
-                    signal = self.signal_handler.get_handler(id=id)
+                    oid = msg.sig_oid
+                    signal = self.signal_handler.get_handler(id=msg.sig_id)
                     self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
                                                                                                msg.price,
                                                                                                msg.buy_price,
@@ -378,11 +380,9 @@ class multi_market_order_strategy(StrategyBase):
         if self.min_trade_size_qty != 1.0:
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-        if not signal.multi_order_tracker.add(price, min_trade_size):
+        sig_oid = signal.multi_order_tracker.add(price, min_trade_size)
+        if not sig_oid:
             return
-
-        signal.buy_price = price
-        signal.buy_size = min_trade_size
 
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
@@ -394,10 +394,16 @@ class multi_market_order_strategy(StrategyBase):
                                            price,
                                            signal.buy_size,
                                            asset_info=self.asset_info,
-                                           buy_type=signal.buy_type)
+                                           buy_type=signal.buy_type,
+                                           sig_oid=sig_oid)
         else:
-            self.msg_handler.buy_market(self.ticker_id, signal.buy_price, signal.buy_size,
-                                        sig_id=signal.id, asset_info=self.asset_info, buy_type=signal.buy_type)
+            self.msg_handler.buy_market(self.ticker_id,
+                                        signal.buy_price,
+                                        signal.buy_size,
+                                        sig_id=signal.id,
+                                        asset_info=self.asset_info,
+                                        buy_type=signal.buy_type,
+                                        sig_oid=sig_oid)
 
 
     def sell_market(self, signal, price):

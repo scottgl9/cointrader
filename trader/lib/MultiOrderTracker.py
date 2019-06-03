@@ -17,6 +17,14 @@ class MultiOrderTracker(object):
     def get_sigoids(self):
         return self.sigoids
 
+    def load(self, buy_price, buy_size, sig_oid):
+        self.current_sig_oid = sig_oid
+        entry = MultiOrderEntry(buy_price, buy_size, self.current_sig_oid)
+        self.multi_order_entries[self.current_sig_oid] = entry
+        self.sigoids.append(self.current_sig_oid)
+        self.current_sig_oid += 1
+        return True
+
     def add(self, buy_price, buy_size):
         if len(self.sigoids) >= self.max_count:
             return False
