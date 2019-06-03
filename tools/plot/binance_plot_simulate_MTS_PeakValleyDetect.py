@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import os
 try:
     import trader
 except ImportError:
@@ -8,13 +9,13 @@ except ImportError:
     import trader
 
 import sqlite3
-import sys
-import os
+from trader.account.binance.client import Client
+from trader.config import *
 import matplotlib.pyplot as plt
-from trader.indicator.native.AEMA import AEMA
-from trader.indicator.OBV import OBV
-from trader.lib.unused.DecisionTree import DecisionTree
 import argparse
+from trader.indicator.DTWMA import DTWMA
+from trader.indicator.ZLEMA import *
+from trader.lib.MovingTimeSegment.MTS_PeakValleyDetect import MTS_PeakValleyDetect
 
 
 def get_rows_as_msgs(c):
@@ -32,26 +33,26 @@ def simulate(conn, client, base, currency):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
+    ema12 = EMA(12, scale=24)
+    ema26 = EMA(26, scale=24)
+    ema50 = EMA(100, scale=24, lag_window=5)
+    ema200 = EMA(200, scale=24, lag_window=5)
+
+    mtspvd = MTS_PeakValleyDetect()
+
+    ema12_values = []
+    ema26_values = []
+    ema50_values = []
+    ema200_values = []
     close_prices = []
     open_prices = []
     low_prices = []
     high_prices = []
-    base_volumes = []
-    quote_volumes = []
-    obv = OBV()
-    obv_aema12 = AEMA(12, scale_interval_secs=60)
-    obv_aema12_values = []
-    aema12 = AEMA(12, scale_interval_secs=60)
-    aema12_values = []
-    aema12_300 = AEMA(12, scale_interval_secs=300)
-    aema12_300_values = []
-    aema26 = AEMA(26, scale_interval_secs=60)
-    aema26_values = []
-    aema50 = AEMA(50, scale_interval_secs=60)
-    aema50_values = []
-    predictions = []
+    volumes = []
+    timestamps = []
 
-    dt = DecisionTree()
+    peaks = []
+    valleys = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -59,43 +60,39 @@ def simulate(conn, client, base, currency):
         low = float(msg['l'])
         high = float(msg['h'])
         open = float(msg['o'])
-        volume_base = float(msg['v'])
-        volume_quote = float(msg['q'])
-        ts = int(msg['E'])
+        volume = float(msg['v'])
+        ts=int(msg['E'])
+        volumes.append(volume)
 
-        base_volumes.append(volume_base)
-        quote_volumes.append(volume_quote)
+        ema12_value = ema12.update(close)
+        ema12_values.append(ema12_value)
+        #ema26_values.append(ema26.update(close))
+        ema50_value = ema50.update(close)
+        ema50_values.append(ema50_value)
+        #ema200_value = ema200.update(close)
+        #ema200_values.append(ema200_value)
 
-        obv.update(close, volume_base)
-        obv_aema12.update(obv.result, ts)
-        obv_aema12_values.append(obv_aema12.result)
-        aema12_values.append(aema12.update(close, ts))
-        aema12_300_values.append(aema12_300.update(close, ts))
-        aema26_values.append(aema26.update(close, ts))
-        aema50_values.append(aema50.update(close, ts))
-
-        dt.update(close, volume_base, ts)
-        predictions.append(dt.prediction)
-
+        mtspvd.update(ema50_value, ts)
+        if mtspvd.peak_detect():
+            peaks.append(i)
+        elif mtspvd.valley_detect():
+            valleys.append(i)
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
+        timestamps.append(ts)
         i += 1
 
     plt.subplot(211)
+    for peak in peaks:
+        plt.axvline(x=peak, color='red')
+    for valley in valleys:
+        plt.axvline(x=valley, color='green')
     symprice, = plt.plot(close_prices, label=ticker_id)
-
-    fig1, = plt.plot(aema12_values, label='AEMA12')
-    #fig2, = plt.plot(aema26_values, label='AEMA26')
-    fig3, = plt.plot(aema50_values, label='AEMA50')
-    #fig4, = plt.plot(aema12_300_values, label='AEMA12_300')
-    #plt.plot(low_prices)
-    #plt.plot(high_prices)
-
-    plt.legend(handles=[symprice, fig1, fig3])
-    plt.subplot(212)
-    plt.plot(predictions) #obv_aema12_values)
+    fig1, = plt.plot(ema12_values, label="EMA12")
+    fig2, = plt.plot(ema50_values, label="EMA50")
+    plt.legend(handles=[symprice, fig1, fig2])
     plt.show()
 
 if __name__ == '__main__':

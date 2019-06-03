@@ -4,7 +4,6 @@ from trader.strategy.trade_size_strategy.static_trade_size import static_trade_s
 from trader.strategy.StrategyBase import StrategyBase
 from trader.signal.SignalHandler import SignalHandler
 from trader.indicator.OBV import OBV
-from trader.lib.SupportResistLevels import SupportResistLevels
 from datetime import datetime
 
 
