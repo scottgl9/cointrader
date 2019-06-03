@@ -80,9 +80,7 @@ class multi_market_order_strategy(StrategyBase):
     # clear pending sell trades which have been bought
     def reset(self):
         for signal in self.signal_handler.get_handlers():
-            signal.buy_price = 0.0
-            signal.buy_size = 0.0
-            signal.buy_order_id = None
+            signal.multi_order_tracker.clear()
 
 
     def buy_signal(self, signal, price):
@@ -375,7 +373,7 @@ class multi_market_order_strategy(StrategyBase):
         if self.min_trade_size_qty != 1.0:
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-        sig_oid = signal.multi_order_tracker.add(price, min_trade_size)
+        sig_oid = signal.multi_order_tracker.add(price, min_trade_size, self.timestamp)
         if not sig_oid:
             return
 
@@ -402,7 +400,8 @@ class multi_market_order_strategy(StrategyBase):
 
 
     def sell_market(self, signal, price):
-        if float(signal.buy_price) == 0:
+        sigoids = signal.multi_order_tracker.get_sell_sigoids(sell_price=price)
+        if not len(sigoids):
             return
 
         sell_price = price

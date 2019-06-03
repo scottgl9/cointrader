@@ -25,11 +25,11 @@ class MultiOrderTracker(object):
         self.current_sig_oid += 1
         return True
 
-    def add(self, buy_price, buy_size):
+    def add(self, buy_price, buy_size, ts=0):
         if len(self.sigoids) >= self.max_count:
             return 0
         result = self.current_sig_oid
-        entry = MultiOrderEntry(buy_price, buy_size, self.current_sig_oid)
+        entry = MultiOrderEntry(buy_price, buy_size, self.current_sig_oid, last_buy_ts=ts)
         self.multi_order_entries[self.current_sig_oid] = entry
         self.sigoids.append(self.current_sig_oid)
         self.current_sig_oid += 1
@@ -62,6 +62,14 @@ class MultiOrderTracker(object):
         except KeyError:
             return False
         return True
+
+    # get list of sigoids which are available to sell
+    def get_sell_sigoids(self, sell_price, percent=1.0):
+        result = []
+        for entry in self.multi_order_entries.values():
+            if sell_price > entry.buy_price and 100.0 * (sell_price - entry.buy_price) / entry.buy_price >= percent:
+                result.append(entry.sig_oid)
+        return result
 
     # get total size that we can sell at percent profit
     def get_total_sell_size(self, sell_price, percent=1.0):
@@ -102,7 +110,8 @@ class MultiOrderTracker(object):
 
 
 class MultiOrderEntry(object):
-    def __init__(self, buy_price, buy_size, sig_oid):
+    def __init__(self, buy_price, buy_size, sig_oid, last_buy_ts=0):
         self.buy_price = buy_price
         self.buy_size = buy_size
         self.sig_oid = sig_oid
+        self.last_buy_ts = last_buy_ts
