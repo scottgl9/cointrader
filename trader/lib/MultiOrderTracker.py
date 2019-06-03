@@ -27,23 +27,41 @@ class MultiOrderTracker(object):
 
     def add(self, buy_price, buy_size):
         if len(self.sigoids) >= self.max_count:
-            return False
-
+            return 0
+        result = self.current_sig_oid
         entry = MultiOrderEntry(buy_price, buy_size, self.current_sig_oid)
         self.multi_order_entries[self.current_sig_oid] = entry
         self.sigoids.append(self.current_sig_oid)
         self.current_sig_oid += 1
-        return True
+        return result
 
     def get_price_by_sigoid(self, sigoid):
-        if sigoid not in self.multi_order_entries.keys():
-            return None
-        return self.multi_order_entries[sigoid].buy_price
+        try:
+            result = self.multi_order_entries[sigoid].buy_price
+        except KeyError:
+            return 0
+        return result
 
     def get_size_by_sigoid(self, sigoid):
-        if sigoid not in self.multi_order_entries.keys():
-            return None
-        return self.multi_order_entries[sigoid].buy_size
+        try:
+            result = self.multi_order_entries[sigoid].buy_size
+        except KeyError:
+            return 0
+        return result
+
+    def update_price_by_sigoid(self, sigoid, buy_price):
+        try:
+            self.multi_order_entries[sigoid].buy_price = buy_price
+        except KeyError:
+            return False
+        return True
+
+    def update_size_by_sigoid(self, sigoid, buy_size):
+        try:
+            self.multi_order_entries[sigoid].buy_size = buy_size
+        except KeyError:
+            return False
+        return True
 
     # get total size that we can sell at percent profit
     def get_total_sell_size(self, sell_price, percent=1.0):
@@ -75,11 +93,12 @@ class MultiOrderTracker(object):
             del self.multi_order_entries[entry.sig_oid]
         return completed
 
-    def remove_by_signoid(self, sigoid):
-        if sigoid in self.multi_order_entries.keys():
+    def remove_by_sigoid(self, sigoid):
+        try:
             del self.multi_order_entries[sigoid]
-            return True
-        return False
+        except KeyError:
+            return False
+        return True
 
 
 class MultiOrderEntry(object):
