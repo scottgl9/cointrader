@@ -367,7 +367,7 @@ class OrderHandler(object):
 
                 self.accnt.get_account_balances()
                 # add to trader db for tracking
-                self.trader_db.insert_trade(int(time.time()), ticker_id, price, size, sig_id)
+                self.trader_db.insert_trade(int(time.time()), ticker_id, price, size, sig_id, sig_oid=sig_oid)
                 message = self.send_buy_complete(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET, sig_oid=sig_oid)
                 self.open_market_buy_count += 1
                 self.logger.info(message)
@@ -405,7 +405,7 @@ class OrderHandler(object):
             #base, currency = self.accnt.split_ticker_id(ticker_id)
             available_size = self.accnt.round_base(self.accnt.get_asset_balance(base)['available'])
             if available_size == 0:
-                self.trader_db.remove_trade(ticker_id, sig_id)
+                self.trader_db.remove_trade(ticker_id, sig_id, sig_oid=sig_oid)
                 self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET, sig_oid=sig_oid)
                 return
 
@@ -425,7 +425,7 @@ class OrderHandler(object):
             else:
                 self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET, sig_oid=sig_oid)
                 # remove from trade db since it failed to be sold
-                self.trader_db.remove_trade(ticker_id, sig_id)
+                self.trader_db.remove_trade(ticker_id, sig_id, sig_oid=sig_oid)
                 return
 
             # update price from actual sell price for live trading
@@ -435,7 +435,7 @@ class OrderHandler(object):
 
             self.accnt.get_account_balances()
             # remove from trade db since it has been sold
-            self.trader_db.remove_trade(ticker_id, sig_id)
+            self.trader_db.remove_trade(ticker_id, sig_id, sig_oid=sig_oid)
             message = self.send_sell_complete(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET, sig_oid=sig_oid)
 
             if self.open_market_buy_count > 0:
