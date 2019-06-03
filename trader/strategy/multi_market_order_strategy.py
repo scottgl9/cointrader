@@ -126,9 +126,6 @@ class multi_market_order_strategy(StrategyBase):
         if self.accnt.trades_disabled():
             return False
 
-        if float(signal.buy_price) == 0.0 or float(signal.buy_size) == 0.0:
-            return False
-
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size) or balance_available == 0.0:
@@ -189,10 +186,10 @@ class multi_market_order_strategy(StrategyBase):
                         self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
                                                                                        msg.price,
                                                                                        msg.size))
-                    oid = msg.sig_oid
+                    sig_oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    signal.buy_size = msg.size
-                    signal.buy_price = msg.price
+                    signal.multi_order_tracker.update_price_by_sigoid(sig_oid, msg.price)
+                    signal.multi_order_tracker.update_price_by_sigoid(sig_oid, msg.size)
                     signal.buy_timestamp = self.timestamp
                     signal.last_buy_ts = self.timestamp
                     msg.mark_read()
@@ -203,15 +200,14 @@ class multi_market_order_strategy(StrategyBase):
                                                                                                      msg.price,
                                                                                                      msg.buy_price,
                                                                                                      msg.size))
-                    oid = msg.sig_oid
+                    sig_oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
 
                     signal.last_buy_price = msg.buy_price
-                    signal.buy_price = 0.0
-                    signal.buy_size = 0.0
+                    signal.multi_order_tracker.remove_by_sigoid(sig_oid)
                     signal.last_sell_price = msg.price
                     signal.buy_timestamp = 0
                     signal.last_sell_ts = self.timestamp
@@ -222,15 +218,14 @@ class multi_market_order_strategy(StrategyBase):
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
-                    oid = msg.sig_oid
+                    sig_oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
                                                                                  msg.price,
                                                                                  msg.size))
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
-                    signal.buy_price = 0.0
-                    signal.buy_size = 0.0
+                    signal.multi_order_tracker.remove_by_sigoid(sig_oid)
                     signal.buy_timestamp = 0
                     # for failed buy, disable buys for this symbol for 4 hours
                     signal.disabled = True
