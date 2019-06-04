@@ -29,7 +29,7 @@ class MultiOrderTracker(object):
         if len(self.sigoids) >= self.max_count:
             return 0
         result = self.current_sig_oid
-        entry = MultiOrderEntry(buy_price, buy_size, self.current_sig_oid, last_buy_ts=ts)
+        entry = MultiOrderEntry(buy_price=float(buy_price), buy_size=float(buy_size), sig_oid=self.current_sig_oid, last_buy_ts=ts)
         self.multi_order_entries[self.current_sig_oid] = entry
         self.sigoids.append(self.current_sig_oid)
         self.current_sig_oid += 1
