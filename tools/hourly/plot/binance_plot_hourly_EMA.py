@@ -10,6 +10,8 @@ except ImportError:
 import sqlite3
 import sys
 import os
+from datetime import datetime
+import time
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
@@ -143,6 +145,14 @@ if __name__ == '__main__':
                         default=False,
                         help='List table names in db')
 
+    parser.add_argument('--start-date', action='store', dest='start_date',
+                        default='',
+                        help='specify start date in month/day/year format')
+
+    parser.add_argument('--end-date', action='store', dest='end_date',
+                        default='',
+                        help='specify end date in month/day/year format')
+
     results = parser.parse_args()
 
 
@@ -160,7 +170,11 @@ if __name__ == '__main__':
             start_ts = get_first_timestamp(results.filename, symbol)
             start_ts = start_ts - 1000 * 3600 * int(results.hours)
             print(start_ts, end_ts)
-
+    elif results.start_date and results.end_date:
+        start_dt = datetime.strptime(results.start_date, '%m/%d/%Y')
+        end_dt = datetime.strptime(results.end_date, '%m/%d/%Y')
+        start_ts = int(time.mktime(start_dt.timetuple()) * 1000.0)
+        end_ts = int(time.mktime(end_dt.timetuple()) * 1000.0)
 
     if not os.path.exists(results.hourly_filename):
         print("file {} doesn't exist, exiting...".format(results.filename))
