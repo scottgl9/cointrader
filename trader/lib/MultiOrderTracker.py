@@ -29,10 +29,27 @@ class MultiOrderTracker(object):
         if len(self.sigoids) >= self.max_count:
             return 0
         result = self.current_sig_oid
-        entry = MultiOrderEntry(buy_price=float(buy_price), buy_size=float(buy_size), sig_oid=self.current_sig_oid, last_buy_ts=ts)
+        entry = MultiOrderEntry(buy_price=float(buy_price),
+                                buy_size=float(buy_size),
+                                sig_oid=self.current_sig_oid,
+                                last_buy_ts=ts)
         self.multi_order_entries[self.current_sig_oid] = entry
         self.sigoids.append(self.current_sig_oid)
         self.current_sig_oid += 1
+        return result
+
+    def mark_buy_completed(self, sigoid):
+        try:
+            self.multi_order_entries[sigoid].buy_completed = True
+        except KeyError:
+            return False
+        return True
+
+    def get_buy_completed(self, sigoid):
+        try:
+            result = self.multi_order_entries[sigoid].buy_completed
+        except KeyError:
+            return False
         return result
 
     def get_price_by_sigoid(self, sigoid):
@@ -51,14 +68,14 @@ class MultiOrderTracker(object):
 
     def update_price_by_sigoid(self, sigoid, buy_price):
         try:
-            self.multi_order_entries[sigoid].buy_price = buy_price
+            self.multi_order_entries[sigoid].buy_price = float(buy_price)
         except KeyError:
             return False
         return True
 
     def update_size_by_sigoid(self, sigoid, buy_size):
         try:
-            self.multi_order_entries[sigoid].buy_size = buy_size
+            self.multi_order_entries[sigoid].buy_size = float(buy_size)
         except KeyError:
             return False
         return True
@@ -113,5 +130,6 @@ class MultiOrderEntry(object):
     def __init__(self, buy_price, buy_size, sig_oid, last_buy_ts=0):
         self.buy_price = buy_price
         self.buy_size = buy_size
+        self.buy_complete = False
         self.sig_oid = sig_oid
         self.last_buy_ts = last_buy_ts

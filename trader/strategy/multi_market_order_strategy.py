@@ -132,12 +132,6 @@ class multi_market_order_strategy(StrategyBase):
         if signal.sell_long_signal():
             return True
 
-        #if price < float(signal.buy_price):
-        #    return False
-
-        if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
-            return False
-
         # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0
         if (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
             return True
@@ -187,7 +181,8 @@ class multi_market_order_strategy(StrategyBase):
                     sig_oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.multi_order_tracker.update_price_by_sigoid(sig_oid, msg.price)
-                    signal.multi_order_tracker.update_price_by_sigoid(sig_oid, msg.size)
+                    signal.multi_order_tracker.update_size_by_sigoid(sig_oid, msg.size)
+                    signal.multi_order_tracker.mark_buy_completed(sig_oid)
                     signal.buy_timestamp = self.timestamp
                     signal.last_buy_ts = self.timestamp
                     msg.mark_read()
@@ -204,7 +199,7 @@ class multi_market_order_strategy(StrategyBase):
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
 
-                    signal.last_buy_price = msg.buy_price
+                    signal.last_buy_price = signal.multi_order_tracker.get_price_by_sigoid(sig_oid)
                     signal.multi_order_tracker.remove_by_sigoid(sig_oid)
                     signal.last_sell_price = msg.price
                     signal.buy_timestamp = 0
@@ -311,16 +306,7 @@ class multi_market_order_strategy(StrategyBase):
         completed = self.handle_incoming_messages()
 
         for signal in self.signal_handler.get_handlers():
-            if signal.is_global() and signal.global_filter == kline.symbol:
-                signal.pre_update(kline.close, kline.volume, kline.ts)
-                if signal.enable_buy and not self.enable_buy:
-                    self.msg_handler.buy_enable(self.ticker_id)
-                elif signal.disable_buy and not self.disable_buy:
-                    self.msg_handler.buy_disable(self.ticker_id)
-                self.disable_buy = signal.disable_buy
-                self.enable_buy = signal.enable_buy
-            else:
-                self.run_update_signal(signal, close, signal_completed=completed)
+            self.run_update_signal(signal, close, signal_completed=completed)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
@@ -331,27 +317,18 @@ class multi_market_order_strategy(StrategyBase):
 
     def run_update_signal(self, signal, price, signal_completed=False):
         # handle delayed buy/sell message
-        if self.accnt.simulate and self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
-            sig_oid = self.delayed_buy_msg.sig_oid
-            signal.multi_order_tracker.update_price_by_sigoid(sig_oid, price)
+        if self.accnt.simulate and self.delayed_buy_msg:# and self.delayed_buy_msg.sig_id == signal.id:
             self.msg_handler.add(self.delayed_buy_msg)
             self.delayed_buy_msg = None
 
         if self.accnt.simulate and self.delayed_sell_msg:
             for msg in self.delayed_sell_msg:
-                #signal.multi_order_tracker.remove_by_sigoid(msg.sig_oid)
                 self.msg_handler.add(msg)
-                print(msg.buy_price, msg.size)
             self.delayed_sell_msg = None
 
         # prevent buying at the same price with the same timestamp with more than one signal
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
             return
-
-        if signal.get_flag() == SignalBase.FLAG_SELL_ALL:
-            balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
-            if balance_available != 0 and signal.sell_signal():
-                self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
 
         if not signal_completed and self.buy_signal(signal, price):
             self.buy_market(signal, price)
@@ -377,8 +354,6 @@ class multi_market_order_strategy(StrategyBase):
         if not sig_oid:
             return
 
-        buy_price = signal.multi_order_tracker.get_price_by_sigoid(sig_oid)
-        buy_size = signal.multi_order_tracker.get_size_by_sigoid(sig_oid)
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
         if self.accnt.simulate and not self.delayed_buy_msg:
@@ -386,15 +361,15 @@ class multi_market_order_strategy(StrategyBase):
                                            Message.ID_MULTI,
                                            Message.MSG_MARKET_BUY,
                                            signal.id,
-                                           price=buy_price,
-                                           size=buy_size,
+                                           price,
+                                           min_trade_size,
                                            asset_info=self.asset_info,
                                            buy_type=signal.buy_type,
                                            sig_oid=sig_oid)
         else:
             self.msg_handler.buy_market(self.ticker_id,
-                                        buy_price,
-                                        buy_size,
+                                        price,
+                                        min_trade_size,
                                         sig_id=signal.id,
                                         asset_info=self.asset_info,
                                         buy_type=signal.buy_type,
@@ -403,13 +378,14 @@ class multi_market_order_strategy(StrategyBase):
 
     def sell_market(self, signal, price):
         sigoids = signal.multi_order_tracker.get_sell_sigoids(sell_price=price)
-        print(sigoids)
         if not len(sigoids):
             return
 
         sell_price = price
 
         for sigoid in sigoids:
+            if not signal.multi_order_tracker.get_buy_completed(sigoid):
+                continue
             buy_price = signal.multi_order_tracker.get_price_by_sigoid(sigoid)
             buy_size = signal.multi_order_tracker.get_size_by_sigoid(sigoid)
 
