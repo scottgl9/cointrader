@@ -132,8 +132,8 @@ class multi_market_order_strategy(StrategyBase):
         if signal.sell_long_signal():
             return True
 
-        if price < float(signal.buy_price):
-            return False
+        #if price < float(signal.buy_price):
+        #    return False
 
         if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
             return False
@@ -337,11 +337,10 @@ class multi_market_order_strategy(StrategyBase):
             self.msg_handler.add(self.delayed_buy_msg)
             self.delayed_buy_msg = None
 
-        if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
-            self.delayed_sell_msg.price = price
-            signal.buy_price = 0
-            signal.buy_size = 0
-            self.msg_handler.add(self.delayed_sell_msg)
+        if self.accnt.simulate and self.delayed_sell_msg:
+            for msg in self.delayed_sell_msg:
+                signal.multi_order_tracker.remove_by_sigoid(msg.sig_oid)
+                self.msg_handler.add(msg)
             self.delayed_sell_msg = None
 
         # prevent buying at the same price with the same timestamp with more than one signal
@@ -361,8 +360,8 @@ class multi_market_order_strategy(StrategyBase):
 
 
     def buy_market(self, signal, price):
-        if float(signal.buy_price) != 0:
-            return
+        #if float(signal.buy_price) != 0:
+        #    return
 
         if 'e' in str(self.min_trade_size):
             self.signal_handler.clear_handler_signaled()
@@ -406,19 +405,34 @@ class multi_market_order_strategy(StrategyBase):
 
         sell_price = price
 
-        # for more accurate simulation, delay sell message for one cycle in order to have the buy price
-        # be the value immediately following the price that the buy signal was triggered
-        if self.accnt.simulate and not self.delayed_sell_msg:
-            self.delayed_sell_msg = Message(self.ticker_id,
-                                            Message.ID_MULTI,
-                                            Message.MSG_MARKET_SELL,
-                                            signal.id,
-                                            sell_price,
-                                            signal.buy_size,
-                                            signal.buy_price,
-                                            asset_info=self.asset_info,
-                                            sell_type=signal.sell_type)
-        else:
-            self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price,
-                                         sig_id=signal.id, asset_info=self.asset_info, sell_type=signal.sell_type)
+        for sigoid in sigoids:
+            buy_price = signal.multi_order_tracker.get_price_by_sigoid(sigoid)
+            buy_size = signal.multi_order_tracker.get_size_by_sigoid(sigoid)
+
+            # for more accurate simulation, delay sell message for one cycle in order to have the buy price
+            # be the value immediately following the price that the buy signal was triggered
+            if self.accnt.simulate:
+                if not self.delayed_sell_msg:
+                    self.delayed_sell_msg = []
+
+                msg = Message(self.ticker_id,
+                              Message.ID_MULTI,
+                              Message.MSG_MARKET_SELL,
+                              signal.id,
+                              sell_price,
+                              buy_size,
+                              buy_price,
+                              asset_info=self.asset_info,
+                              sell_type=signal.sell_type,
+                              sig_oid=sigoid)
+                self.delayed_sell_msg.append(msg)
+            else:
+                self.msg_handler.sell_market(self.ticker_id,
+                                             sell_price,
+                                             buy_size,
+                                             buy_price,
+                                             sig_id=signal.id,
+                                             asset_info=self.asset_info,
+                                             sell_type=signal.sell_type,
+                                             sig_oid=sigoid)
 

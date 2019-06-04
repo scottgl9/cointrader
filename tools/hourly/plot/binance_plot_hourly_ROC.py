@@ -115,7 +115,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # used to get first timestamp for symbol from precaptured live market data
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='',
                         help='filename of kline sqlite db')
 
     parser.add_argument('--hours', action='store', dest='hours',
