@@ -66,14 +66,14 @@ class multi_market_order_strategy(StrategyBase):
                     continue
                 if not signal.global_signal and self.ticker_id.endswith('USDT'):
                     continue
-                signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=1)
+                signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=2)
                 self.signal_handler.add(signal)
         else:
             signal = StrategyBase.select_signal_name("Hybrid_Crossover",
                                                      self.accnt,
                                                      self.ticker_id,
                                                      asset_info)
-            signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=1)
+            signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=2)
             self.signal_handler.add(signal)
 
 
@@ -340,11 +340,12 @@ class multi_market_order_strategy(StrategyBase):
 
 
     def buy_market(self, signal, price):
-        #if float(signal.buy_price) != 0:
-        #    return
-
         if 'e' in str(self.min_trade_size):
             self.signal_handler.clear_handler_signaled()
+            return
+
+        # if already bought at this price, return
+        if signal.multi_order_tracker.buy_price_exists(price):
             return
 
         min_trade_size = self.min_trade_size

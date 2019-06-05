@@ -110,6 +110,13 @@ class MultiOrderTracker(object):
                 total_size += entry.buy_size
         return total_size
 
+    # check if buy has already occurred at specified buy_price
+    def buy_price_exists(self, buy_price):
+        for entry in self.multi_order_entries.values():
+            if entry.buy_price == buy_price:
+                return True
+        return False
+
     # remove all entries that we can sell at percent profit
     def remove_total_sell_size(self, sell_price, percent=1.0):
         remove_entries = []
