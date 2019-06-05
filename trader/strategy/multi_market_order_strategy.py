@@ -175,9 +175,11 @@ class multi_market_order_strategy(StrategyBase):
                     continue
                 if msg.cmd == Message.MSG_BUY_COMPLETE:
                     if not self.simulate:
-                        self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
-                                                                                       msg.price,
-                                                                                       msg.size))
+                        self.logger.info("BUY_COMPLETE for {} price={} size={} sigid={} sigoid={}".format(msg.dst_id,
+                                                                                                          msg.price,
+                                                                                                          msg.size,
+                                                                                                          msg.sig_id,
+                                                                                                          msg.sig_oid))
                     sig_oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.multi_order_tracker.update_price_by_sigoid(sig_oid, msg.price)
@@ -386,6 +388,8 @@ class multi_market_order_strategy(StrategyBase):
         for sigoid in sigoids:
             if not signal.multi_order_tracker.get_buy_completed(sigoid):
                 continue
+            if signal.multi_order_tracker.get_sell_started(sigoid):
+                continue
             buy_price = signal.multi_order_tracker.get_price_by_sigoid(sigoid)
             buy_size = signal.multi_order_tracker.get_size_by_sigoid(sigoid)
 
@@ -406,6 +410,7 @@ class multi_market_order_strategy(StrategyBase):
                               sell_type=signal.sell_type,
                               sig_oid=sigoid)
                 self.delayed_sell_msg.append(msg)
+                signal.multi_order_tracker.mark_sell_started(sigoid)
             else:
                 self.msg_handler.sell_market(self.ticker_id,
                                              sell_price,

@@ -52,6 +52,20 @@ class MultiOrderTracker(object):
             return False
         return result
 
+    def mark_sell_started(self, sigoid):
+        try:
+            self.multi_order_entries[sigoid].sell_started = True
+        except KeyError:
+            return False
+        return True
+
+    def get_sell_started(self, sigoid):
+        try:
+            result = self.multi_order_entries[sigoid].sell_started
+        except KeyError:
+            return False
+        return result
+
     def get_price_by_sigoid(self, sigoid):
         try:
             result = self.multi_order_entries[sigoid].buy_price
@@ -130,6 +144,7 @@ class MultiOrderEntry(object):
     def __init__(self, buy_price, buy_size, sig_oid, last_buy_ts=0):
         self.buy_price = buy_price
         self.buy_size = buy_size
-        self.buy_complete = False
+        self.buy_completed = False
+        self.sell_started = False
         self.sig_oid = sig_oid
         self.last_buy_ts = last_buy_ts
