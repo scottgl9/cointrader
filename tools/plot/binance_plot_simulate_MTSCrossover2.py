@@ -13,7 +13,7 @@ import os
 import matplotlib.pyplot as plt
 from trader.indicator.AEMA import AEMA
 from trader.indicator.OBV import OBV
-from trader.lib.MovingTimeSegment.MTSCrossover import MTSCrossover
+from trader.lib.MovingTimeSegment.MTSCrossover2 import MTSCrossover2
 import argparse
 
 
@@ -38,6 +38,7 @@ def simulate(conn, client, base, currency):
     high_prices = []
     base_volumes = []
     quote_volumes = []
+    timestamps = []
     obv = OBV()
     obv_aema12 = AEMA(12, scale_interval_secs=60)
     obv_aema12_values = []
@@ -50,9 +51,11 @@ def simulate(conn, client, base, currency):
     aema50 = AEMA(50, scale_interval_secs=60)
     aema50_values = []
 
-    mts_cross = MTSCrossover()
+    mts_cross = MTSCrossover2()
     up_crosses = []
     down_crosses = []
+    up_cross_points = []
+    down_cross_points = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -76,21 +79,31 @@ def simulate(conn, client, base, currency):
         mts_cross.update(aema12.result, aema50.result, ts)
         if mts_cross.crossup_detected():
             up_crosses.append(i)
+            if mts_cross.crossup_ts:
+                up_cross_points.append(timestamps.index(mts_cross.crossup_ts))
         if mts_cross.crossdown_detected():
             down_crosses.append(i)
+            if mts_cross.crossdown_ts:
+                down_cross_points.append(timestamps.index(mts_cross.crossdown_ts))
 
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
+        timestamps.append(ts)
         i += 1
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 
-    for i in up_crosses:
+    #for i in up_crosses:
+    #    plt.axvline(x=i, color='green')
+    #for i in down_crosses:
+    #    plt.axvline(x=i, color='red')
+
+    for i in up_cross_points:
         plt.axvline(x=i, color='green')
-    for i in down_crosses:
+    for i in down_cross_points:
         plt.axvline(x=i, color='red')
 
     fig1, = plt.plot(aema12_values, label='AEMA12')

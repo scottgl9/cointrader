@@ -10,6 +10,8 @@ except ImportError:
 import sqlite3
 import sys
 import os
+from datetime import datetime
+import time
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
@@ -30,7 +32,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     scale = 24
     if start_ts and end_ts:
         scale = 1
-    macd = MACD(scale=scale)
+    macd = MACD(short_weight=50, long_weight=200, scale=scale)
     macd_values = []
     macd_signal_values = []
     obv_ema12 = EMA(12)
@@ -110,6 +112,14 @@ if __name__ == '__main__':
                         default=False,
                         help='List table names in db')
 
+    parser.add_argument('--start-date', action='store', dest='start_date',
+                        default='',
+                        help='specify start date in month/day/year format')
+
+    parser.add_argument('--end-date', action='store', dest='end_date',
+                        default='',
+                        help='specify end date in month/day/year format')
+
     results = parser.parse_args()
 
 
@@ -138,6 +148,11 @@ if __name__ == '__main__':
     if results.list_table_names:
         for symbol in hkdb.get_table_list():
             print(symbol)
+    elif results.start_date and results.end_date:
+        start_dt = datetime.strptime(results.start_date, '%m/%d/%Y')
+        end_dt = datetime.strptime(results.end_date, '%m/%d/%Y')
+        start_ts = int(time.mktime(start_dt.timetuple()) * 1000.0)
+        end_ts = int(time.mktime(end_dt.timetuple()) * 1000.0)
 
     if symbol:
         simulate(hkdb, symbol, start_ts, end_ts)
