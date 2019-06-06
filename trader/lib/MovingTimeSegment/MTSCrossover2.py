@@ -3,12 +3,6 @@
 # 1) detect if values1 crosses from below to above values2 (crossup)
 # 2) detect if values1 crosses from above to below values2 (crossdown)
 
-# pre_window allows an additional window to check before or after crossover
-# in addition to window, to verify all values in pre_window were under/over crosspoint
-# before crossup/crossdown occurred
-#try:
-#    from trader.lib.MovingTimeSegment.native.MTSCircularArray import MTSCircularArray
-#except ImportError:
 from trader.lib.MovingTimeSegment.MTSCircularArray import MTSCircularArray
 
 
