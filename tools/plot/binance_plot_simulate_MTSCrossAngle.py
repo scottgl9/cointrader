@@ -56,7 +56,8 @@ def simulate(conn, client, base, currency):
     down_crosses = []
     up_cross_points = []
     down_cross_points = []
-    angles = []
+    angles1 = []
+    angles2 = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -87,7 +88,9 @@ def simulate(conn, client, base, currency):
             if mts_cross.cross_down_ts:
                 down_cross_points.append(timestamps.index(mts_cross.cross_down_ts))
 
-        angles.append(mts_cross.cross_angle())
+        angle1, angle2 = mts_cross.cross_angle()
+        angles1.append(angle1)
+        angles2.append(angle2)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -118,7 +121,8 @@ def simulate(conn, client, base, currency):
 
     plt.legend(handles=[symprice, fig1, fig3])
     plt.subplot(212)
-    plt.plot(angles)
+    plt.plot(angles1)
+    plt.plot(angles2)
     plt.show()
 
 if __name__ == '__main__':

@@ -58,24 +58,27 @@ class MTSCrossAngle(object):
         return result
 
     def cross_angle(self):
-        angle = 0
+        result1 = 0
+        result2 = 0
 
         if not self.cross_down_ts and not self.cross_down_ts:
-            return angle
+            return result1, result2
         if self.cross_up_ts > self.cross_down_ts:
-            delta_ts = (self.ts - self.cross_up_ts) / 1000.0
-            delta_ma1 = self.ma1_result - self.cross_up_value
-            delta_ma2 = self.ma2_result - self.cross_up_value
+            delta_ts = (self.ts - self.cross_up_ts) / (1000.0)
+            pchange_ma1 = 100.0 * (self.ma1_result - self.cross_up_value) / self.cross_up_value
+            pchange_ma2 = 100.0 * (self.ma2_result - self.cross_up_value) / self.cross_up_value
+            result1 = pchange_ma1
+            result2 = pchange_ma2
             #v0 = np.array([delta_ts, delta_ma1])
             #v1 = np.array([delta_ts, delta_ma2])
             #angle = np.math.atan2(np.linalg.det([v0, v1]), np.dot(v0, v1))
-            angle = np.sqrt(delta_ts * delta_ma1) / np.sqrt(delta_ts * delta_ma2)
         elif self.cross_up_ts < self.cross_down_ts:
-            delta_ts = (self.ts - self.cross_down_ts) / 1000.0
-            delta_ma1 = self.ma1_result - self.cross_down_value
-            delta_ma2 = self.ma2_result - self.cross_down_value
+            delta_ts = (self.ts - self.cross_down_ts) / (1000.0)
+            pchange_ma1 = 100.0 * (self.ma1_result - self.cross_down_value) / self.cross_down_value
+            pchange_ma2 = 100.0 * (self.ma2_result - self.cross_down_value) / self.cross_down_value
+            result1 = pchange_ma1
+            result2 = pchange_ma2
             #v0 = np.array([delta_ts, delta_ma1])
             #v1 = np.array([delta_ts, delta_ma2])
             #angle = np.math.atan2(np.linalg.det([v0, v1]), np.dot(v0, v1))
-            angle = np.sqrt(delta_ts * delta_ma1) / np.sqrt(delta_ts * delta_ma2)
-        return angle
+        return result1, result2
