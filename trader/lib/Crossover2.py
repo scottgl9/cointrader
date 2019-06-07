@@ -1,76 +1,78 @@
-# MTSCrossover version 2
-# crossover detection
+# crossover detection version 2
 # 1) detect if values1 crosses from below to above values2 (crossup)
 # 2) detect if values1 crosses from above to below values2 (crossdown)
+from trader.lib.struct.CircularArray import CircularArray
 
-from trader.lib.MovingTimeSegment.MTSCircularArray import MTSCircularArray
 
+class Crossover2(object):
+    def __init__(self, window=12):
+        self.window = window
 
-class MTSCrossover2(object):
-    def __init__(self, win_secs=60):
-        self.win_secs = win_secs
-        self.mtsca1 = MTSCircularArray(win_secs=win_secs, max_win_size=win_secs+1, minmax=False)
-        self.mtsca2 = MTSCircularArray(win_secs=win_secs, max_win_size=win_secs+1, minmax=False)
+        self.values1 = CircularArray(window=self.window, track_minmax=False)
+        self.values2 = CircularArray(window=self.window, track_minmax=False)
+        self.timestamps = CircularArray(window=self.window, track_minmax=False)
+        self.age = 0
+        self.last_age = 0
+        self.values_under = False
+        self.values_over = False
+        # use for detecting the value where crossover took place
+        self.values1_under_max_value = 0
+        self.values1_over_min_value = 0
         self.crossup = False
-        self.crossup_value = 0
-        self.crossup_ts = 0
         self.crossdown = False
+        self.crossup_value = 0
         self.crossdown_value = 0
+        self.crossup_ts = 0
         self.crossdown_ts = 0
-        self.ts = 0
 
     def update(self, value1, value2, ts):
-        if not self.ts:
-            self.ts = ts
-
-        self.mtsca1.add(value1, ts)
-        self.mtsca2.add(value2, ts)
-
-        if not self.mtsca1.ready():
+        self.values1.add(float(value1))
+        self.values2.add(float(value2))
+        self.timestamps.add(ts)
+        if self.timestamps.length() < self.window:
             return
-
-        mtsca2_last_value = self.mtsca2.last_value()
-        if self.mtsca1.first_value() < mtsca2_last_value <= self.mtsca1.last_value():
+        values2_last_value = self.values2.last_value()
+        if self.values1.first_value() < values2_last_value <= self.values1.last_value():
             if self.crossup_ts and self.crossdown_ts < self.crossup_ts:
                 return
-            if self.mtsca1.last_value() == mtsca2_last_value:
-                self.crossup_value = mtsca2_last_value
+            if self.values1.last_value() == values2_last_value:
+                self.crossup_value = values2_last_value
                 self.crossup_ts = ts
             else:
                 # find exact cross up point
                 index_low = -1
                 index_high = -1
-                values = self.mtsca1.values(ordered=True)
-                timestamps = self.mtsca1.timestamps(ordered=True)
+                values = self.values1.values_ordered()
+                timestamps = self.timestamps.values_ordered()
                 for i in range(len(values)-1, 0, -1):
-                    if values[i] >= mtsca2_last_value: index_high = i
+                    if values[i] >= values2_last_value: index_high = i
                     else: break
                 for i in range(0, len(values)):
-                    if values[i] <= mtsca2_last_value: index_low = i
+                    if values[i] <= values2_last_value: index_low = i
                     else: break
                 index = int((index_low + index_high) / 2)
                 self.crossup_value = values[index]
                 self.crossup_ts = timestamps[index]
             self.crossup = True
-        elif self.mtsca1.first_value() >= mtsca2_last_value > self.mtsca1.last_value():
-            if self.crossdown_ts and self.crossup_ts < self.crossdown_ts:
+        elif self.values1.first_value() >= values2_last_value > self.values1.last_value():
+            if self.crossup_ts and self.crossdown_ts < self.crossup_ts:
                 return
-            if self.mtsca1.first_value() == mtsca2_last_value:
-                self.crossdown_value = mtsca2_last_value
+            if self.values1.first_value() == values2_last_value:
+                self.crossdown_value = values2_last_value
                 self.crossdown_ts = ts
             else:
                 # find exact cross down point
                 index_low = -1
                 index_high = -1
-                values = self.mtsca1.values(ordered=True)
-                timestamps = self.mtsca1.timestamps(ordered=True)
+                values = self.values1.values_ordered()
+                timestamps = self.timestamps.values_ordered()
                 for i in range(len(values) - 1, 0, -1):
-                    if values[i] <= mtsca2_last_value:
+                    if values[i] <= values2_last_value:
                         index_low = i
                     else:
                         break
                 for i in range(0, len(values)):
-                    if values[i] >= mtsca2_last_value:
+                    if values[i] >= values2_last_value:
                         index_high = i
                     else:
                         break

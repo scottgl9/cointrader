@@ -193,6 +193,15 @@ class CircularArray(object):
     def last_index(self):
         return self.last_age
 
+    def first_value(self):
+        if len(self.carray) < self.window:
+            return self.carray[0]
+        else:
+            return self.carray[self.age]
+
+    def last_value(self):
+        return self.carray[self.last_age]
+
     def values_by_range(self, start=0, end=-1):
         values = self.values_ordered()
         return values[start:end]
