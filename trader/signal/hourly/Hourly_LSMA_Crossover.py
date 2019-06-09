@@ -1,4 +1,4 @@
-from .HourlySignalBase import HourlySignalBase
+from trader.lib.struct.HourlySignalBase import HourlySignalBase
 from trader.indicator.LSMA import LSMA
 
 class Hourly_LSMA_Crossover(HourlySignalBase):

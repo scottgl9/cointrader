@@ -1,9 +1,8 @@
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
-from trader.lib.TrendState.TrendState import TrendState
 from trader.lib.TrendState.TrendStateInfo import TrendStateInfo
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class TrendStateTrack_Signal(SignalBase):

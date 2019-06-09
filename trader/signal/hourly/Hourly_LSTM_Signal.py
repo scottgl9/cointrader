@@ -1,6 +1,6 @@
-from .HourlySignalBase import HourlySignalBase
+from trader.lib.struct.HourlySignalBase import HourlySignalBase
 from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
-import time
+
 
 class Hourly_LSTM_Signal(HourlySignalBase):
     def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):

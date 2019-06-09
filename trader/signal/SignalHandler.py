@@ -1,4 +1,4 @@
-from trader.signal.SigType import SigType
+from trader.lib.struct.SigType import SigType
 
 
 class SignalHandler(object):

@@ -7,11 +7,10 @@ except ImportError:
 
 from trader.indicator.OBV import OBV
 from trader.lib.MACross import MACross
-from trader.lib.MADiff import MADiff
 from trader.lib.MovingTimeSegment.MTSCrossover import MTSCrossover
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 from trader.lib.MovingTimeSegment.MTS_LSMA import MTS_LSMA
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class Hybrid_Crossover_Test2(SignalBase):

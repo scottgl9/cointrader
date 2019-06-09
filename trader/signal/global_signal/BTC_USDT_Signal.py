@@ -1,4 +1,4 @@
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
 from trader.lib.TrendState.TrendState import TrendState
 from trader.indicator.EMA import EMA

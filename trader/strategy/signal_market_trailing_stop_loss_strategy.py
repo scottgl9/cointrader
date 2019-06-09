@@ -1,7 +1,7 @@
 from trader.lib.struct.Message import Message
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
-from trader.strategy.StrategyBase import StrategyBase
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.StrategyBase import StrategyBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class signal_market_trailing_stop_loss_strategy(StrategyBase):

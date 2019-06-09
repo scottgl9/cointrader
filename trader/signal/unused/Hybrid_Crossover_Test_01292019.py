@@ -7,7 +7,7 @@ from trader.lib.MADiff import MADiff
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
 from trader.lib.MovingTimeSegment.MTSPercentChangeROC import MTSPercentChangeROC
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class Hybrid_Crossover_Test(SignalBase):

@@ -2,7 +2,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.PPO import PPO
 from trader.lib.Crossover import Crossover
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 class PPO_OBV(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, win_short=12, win_med=26, win_long=50):

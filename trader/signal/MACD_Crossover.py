@@ -2,8 +2,8 @@ from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.lib.Crossover import Crossover
-from trader.signal.SigType import SigType
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SigType import SigType
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class MACD_Crossover(SignalBase):

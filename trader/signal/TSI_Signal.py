@@ -1,6 +1,6 @@
 from trader.indicator.TSI import TSI
 from trader.lib.Crossover import Crossover
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 class TSI_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, window=26):

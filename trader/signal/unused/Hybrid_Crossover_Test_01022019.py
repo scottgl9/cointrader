@@ -7,7 +7,7 @@ from trader.lib.MADiff import MADiff
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.TimeSegmentPriceChannel import TimeSegmentPriceChannel
 from trader.lib.IndicatorCache import IndicatorCache
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class Hybrid_Crossover_Test(SignalBase):

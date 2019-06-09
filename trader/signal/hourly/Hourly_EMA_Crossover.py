@@ -1,4 +1,4 @@
-from .HourlySignalBase import HourlySignalBase
+from trader.lib.struct.HourlySignalBase import HourlySignalBase
 from trader.indicator.EMA import EMA
 
 class Hourly_EMA_Crossover(HourlySignalBase):

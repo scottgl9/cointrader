@@ -1,10 +1,7 @@
-from trader.lib.MessageHandler import Message, MessageHandler
-from trader.strategy.StrategyBase import StrategyBase
+from trader.lib.MessageHandler import Message
 from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
-from trader.strategy.StrategyBase import StrategyBase
-from trader.signal.SignalHandler import SignalHandler
+from trader.lib.struct.StrategyBase import StrategyBase
 from trader.indicator.OBV import OBV
-from datetime import datetime
 
 
 class basic_signal_stop_loss_strategy(StrategyBase):

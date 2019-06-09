@@ -2,7 +2,7 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.PMO import PMO
 from trader.lib.Crossover import Crossover
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class PMO_Crossover(SignalBase):

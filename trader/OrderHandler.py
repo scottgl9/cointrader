@@ -5,7 +5,7 @@ from trader.notify.Email import Email
 from trader.lib.TraderDB import TraderDB
 from trader.TradeBalanceHandler import TradeBalanceHandler
 from trader.OrderLimitHandler import OrderLimitHandler
-from trader.strategy.StrategyBase import StrategyBase
+from trader.lib.struct.StrategyBase import StrategyBase
 import time
 import os
 

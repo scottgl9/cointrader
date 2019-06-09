@@ -1,5 +1,5 @@
 from datetime import datetime
-from trader.strategy.StrategyBase import StrategyBase
+from trader.lib.struct.StrategyBase import StrategyBase
 
 
 def datetime_to_float(d):

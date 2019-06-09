@@ -1,4 +1,4 @@
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 from trader.indicator.EFI import EFI
 from trader.indicator.EMA import EMA
 from trader.indicator.BB import BollingerBands

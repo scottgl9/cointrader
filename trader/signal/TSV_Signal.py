@@ -4,7 +4,7 @@ from trader.indicator.ZLEMA import ZLEMA
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 from trader.lib.Crossover import Crossover
 from trader.lib.PeakValleyDetect import PeakValleyDetect
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 class TSV_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, window=26):

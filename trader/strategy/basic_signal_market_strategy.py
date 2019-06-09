@@ -1,7 +1,7 @@
 from trader.lib.struct.Message import Message
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
-from trader.strategy.StrategyBase import StrategyBase, select_hourly_signal
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.StrategyBase import StrategyBase, select_hourly_signal
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class basic_signal_market_strategy(StrategyBase):

@@ -5,8 +5,8 @@ from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.lib.Crossover import Crossover
 from trader.lib.PeakValleyDetect import PeakValleyDetect
-from trader.signal.SigType import SigType
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SigType import SigType
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class Hybrid_Crossover_MM(SignalBase):

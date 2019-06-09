@@ -1,14 +1,13 @@
 # Combination of MACD, OBV
 from trader.indicator.MACD import MACD
 from trader.indicator.EMA import EMA
-from trader.indicator.ZLEMA import ZLEMA
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.DTWMA import DTWMA
 from trader.lib.Crossover import Crossover
 from trader.lib.PeakValleyDetect import PeakValleyDetect
-from trader.signal.SigType import SigType
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SigType import SigType
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class Hybrid_Crossover(SignalBase):

@@ -5,9 +5,8 @@ except ImportError:
     from trader.indicator.AEMA import AEMA
     from trader.indicator.EMA import EMA
 
-from trader.indicator.OBV import OBV
 from trader.lib.MovingTimeSegment.MTSCrossover2 import MTSCrossover2
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class MTS_Crossover2_Signal(SignalBase):
@@ -99,7 +98,7 @@ class MTS_Crossover2_Signal(SignalBase):
         if self.last_crossup_ts > self.last_crossdown_ts:
             return False
 
-        if self.aema2.result < self.last_crossdown_value:
+        if self.aema2.result <= self.last_crossdown_value:
             return True
 
         return False

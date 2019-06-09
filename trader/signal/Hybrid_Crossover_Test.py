@@ -8,10 +8,9 @@ from trader.indicator.OBV import OBV
 from trader.lib.MACross import MACross
 from trader.lib.MADiff import MADiff
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
-from trader.lib.TrendState.TrendState import TrendState
 from trader.lib.TrendState.TrendStateInfo import TrendStateInfo
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 
 
 class Hybrid_Crossover_Test(SignalBase):

@@ -7,10 +7,9 @@ except ImportError:
     from trader.indicator.EMA import EMA
 
 from trader.lib.MACross import MACross
-from trader.signal.SignalBase import SignalBase
+from trader.lib.struct.SignalBase import SignalBase
 from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
-from trader.lib.TrendState.TrendState import TrendState
-from trader.lib.TrendState.TrendStateInfo import TrendStateInfo
+
 
 class AEMA_Crossover_Test(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None):

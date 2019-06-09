@@ -1,4 +1,4 @@
-from .HourlySignalBase import HourlySignalBase
+from trader.lib.struct.HourlySignalBase import HourlySignalBase
 from trader.indicator.ROC import ROC
 from trader.lib.Crossover import Crossover
 
