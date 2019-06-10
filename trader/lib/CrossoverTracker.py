@@ -26,6 +26,19 @@ class CrossoverTracker(object):
                                    CrossInfo.CROSS_DOWN)
             self.cross_info_list.append(cross_info)
 
+    def get_cross_up_timestamps(self):
+        timestamps = []
+        for cross in self.cross_info_list:
+            if cross.type == CrossInfo.CROSS_UP:
+                timestamps.append(cross.ts)
+        return timestamps
+
+    def get_cross_down_timestamps(self):
+        timestamps = []
+        for cross in self.cross_info_list:
+            if cross.type == CrossInfo.CROSS_DOWN:
+                timestamps.append(cross.ts)
+        return timestamps
 
 class CrossInfo(object):
     CROSS_DOWN = -1
