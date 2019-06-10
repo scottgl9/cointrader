@@ -72,6 +72,9 @@ def simulate(conn, client, base, currency):
         timestamps.append(ts)
         i += 1
 
+    for segment in cross_tracker.cross_segment_list:
+        print(segment.percent, segment.percent_per_hr)
+
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 
