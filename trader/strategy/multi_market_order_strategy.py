@@ -34,6 +34,7 @@ class multi_market_order_strategy(StrategyBase):
         pax_trade_size = float(self.config.get('pax_trade_size'))
         usdt_trade_size = float(self.config.get('usdt_trade_size'))
         trade_size_multiplier = float(self.config.get('trade_size_multiplier'))
+        multi_order_max_count = int(self.config.get('multi_order_max_count'))
 
         self.trade_size_handler = fixed_trade_size(self.accnt,
                                                    asset_info,
@@ -65,14 +66,14 @@ class multi_market_order_strategy(StrategyBase):
                     continue
                 if not signal.global_signal and self.ticker_id.endswith('USDT'):
                     continue
-                signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=2)
+                signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=multi_order_max_count)
                 self.signal_handler.add(signal)
         else:
             signal = StrategyBase.select_signal_name("Hybrid_Crossover",
                                                      self.accnt,
                                                      self.ticker_id,
                                                      asset_info)
-            signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=2)
+            signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=multi_order_max_count)
             self.signal_handler.add(signal)
 
 

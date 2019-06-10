@@ -31,6 +31,8 @@ class TraderConfig(object):
         self.config.set(section, 'bnb_only', 'False')
         # only trade symbols present in hourly db
         self.config.set(section, 'hourly_symbols_only', 'True')
+        #multi order strategy params
+        self.config.set(section, 'multi_order_max_count', '5')
         # trade_size_strategy params
         self.config.set(section, 'btc_trade_size', '0.003')
         self.config.set(section, 'eth_trade_size', '0.1')
@@ -67,6 +69,8 @@ class TraderConfig(object):
         self.config.set(section, 'bnb_only', 'False')
         # only trade symbols present in hourly db
         self.config.set(section, 'hourly_symbols_only', 'True')
+        #multi order strategy params
+        self.config.set(section, 'multi_order_max_count', '5')
         # trade_size_strategy params
         self.config.set(section, 'btc_trade_size', '0.004')
         self.config.set(section, 'eth_trade_size', '0.1')
