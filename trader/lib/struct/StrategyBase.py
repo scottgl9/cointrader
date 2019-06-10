@@ -154,6 +154,9 @@ class StrategyBase(object):
         elif name == "MTS_Crossover2_Signal":
             from trader.signal.MTS_Crossover2_Signal import MTS_Crossover2_Signal
             return MTS_Crossover2_Signal(accnt, symbol)
+        elif name == "MTS_CrossoverTracker_Signal":
+            from trader.signal.MTS_CrossoverTracker_Signal import MTS_CrossoverTracker_Signal
+            return MTS_CrossoverTracker_Signal(accnt, symbol)
         elif name == "PPO_OBV":
             from trader.signal.PPO_OBV import PPO_OBV
             return PPO_OBV(accnt, symbol)

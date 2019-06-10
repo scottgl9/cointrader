@@ -12,6 +12,8 @@ class CrossoverTracker(object):
             self.cross = Crossover2(window=self.window)
         else:
             self.cross = MTSCrossover2(win_secs=self.win_secs)
+        self.cross_up= False
+        self.cross_down = False
 
     def update(self, value1, value2, ts=0):
         self.cross.update(value1=value1, value2=value2, ts=ts)
@@ -20,11 +22,25 @@ class CrossoverTracker(object):
                                    self.cross.crossup_ts,
                                    CrossInfo.CROSS_UP)
             self.cross_info_list.append(cross_info)
+            self.cross_up = True
         elif self.cross.crossdown_detected():
             cross_info = CrossInfo(self.cross.crossdown_value,
                                    self.cross.crossdown_ts,
                                    CrossInfo.CROSS_DOWN)
             self.cross_info_list.append(cross_info)
+            self.cross_down = False
+
+    def cross_up_detected(self, clear=True):
+        result = self.cross_up
+        if clear:
+            self.cross_up = False
+        return result
+
+    def cross_down_detected(self, clear=True):
+        result = self.cross_down
+        if clear:
+            self.cross_down = False
+        return result
 
     def get_cross_up_timestamps(self):
         timestamps = []
