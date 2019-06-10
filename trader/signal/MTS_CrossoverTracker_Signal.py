@@ -66,4 +66,6 @@ class MTS_CrossoverTracker_Signal(SignalBase):
         return False
 
     def sell_signal(self):
+        if self.cross_tracker.cross_down_detected():
+            return True
         return False
