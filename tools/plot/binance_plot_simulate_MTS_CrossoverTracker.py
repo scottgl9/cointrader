@@ -44,6 +44,8 @@ def simulate(conn, client, base, currency):
     aema12_values = []
     aema50 = AEMA(50, scale_interval_secs=60)
     aema50_values = []
+    aema100 = AEMA(100, scale_interval_secs=60)
+    aema100_values = []
 
     cross_tracker = CrossoverTracker(win_secs=60, hourly_mode=False)
 
@@ -62,8 +64,9 @@ def simulate(conn, client, base, currency):
 
         aema12_values.append(aema12.update(close, ts))
         aema50_values.append(aema50.update(close, ts))
+        aema100_values.append(aema100.update(close, ts))
 
-        cross_tracker.update(aema12.result, aema50.result, ts)
+        cross_tracker.update(aema12.result, aema100.result, ts)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -87,9 +90,10 @@ def simulate(conn, client, base, currency):
         plt.axvline(x=index, color='red')
 
     fig1, = plt.plot(aema12_values, label='AEMA12')
-    fig3, = plt.plot(aema50_values, label='AEMA50')
+    fig2, = plt.plot(aema50_values, label='AEMA50')
+    fig3, = plt.plot(aema100_values, label='AEMA100')
 
-    plt.legend(handles=[symprice, fig1, fig3])
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
     plt.show()
 

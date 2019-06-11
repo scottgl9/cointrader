@@ -16,7 +16,7 @@ class MTS_CrossoverTracker_Signal(SignalBase):
         self.last_volume = 0
 
         self.aema1 = AEMA(12, scale_interval_secs=60)
-        self.aema2 = AEMA(50, scale_interval_secs=60)
+        self.aema2 = AEMA(100, scale_interval_secs=60)
         self.cross_tracker = CrossoverTracker(win_secs=60, hourly_mode=False)
 
     def get_cache_list(self):
