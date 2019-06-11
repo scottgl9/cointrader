@@ -108,7 +108,7 @@ class MultiTrader(object):
         if btc_only: self.accnt.set_btc_only(btc_only)
         elif eth_only: self.accnt.set_eth_only(eth_only)
         elif bnb_only: self.accnt.set_bnb_only(bnb_only)
-        elif hourly_symbols_only: self.accnt.set_hourly_symbols_only(hourly_symbols_only)
+        elif self.use_hourly_klines and hourly_symbols_only: self.accnt.set_hourly_symbols_only(hourly_symbols_only)
 
         self.notify = None
         self.current_ts = 0
@@ -154,7 +154,7 @@ class MultiTrader(object):
         if not base_name or not currency_name: return None
 
         # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
-        if not self.use_hourly_klines:
+        if not self.simulate and not self.use_hourly_klines:
             if self.accnt.deposit_asset_disabled(base_name):
                 # if an asset has deposit disabled, means its probably suspended
                 # or de-listed so DO NOT trade this coin
