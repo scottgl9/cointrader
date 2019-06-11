@@ -16,3 +16,23 @@ class HourlySignalBase(object):
 
     def update(self, ts):
         pass
+
+    # enable / disable buy orders for live market signals
+    def buy_enable(self):
+        return True
+
+    # enable/disable sell orders for live market signals
+    def sell_enable(self):
+        return True
+
+    # buy signal which works the same as buy_signal() with live market signals
+    def buy_signal(self):
+        return False
+
+    # sell long signal which works the same as sell_long_signal() with live market signals
+    def sell_long_signal(self):
+        return False
+
+    # sell signal which works the same as sell_signal() with live market signals
+    def sell_signal(self):
+        return False

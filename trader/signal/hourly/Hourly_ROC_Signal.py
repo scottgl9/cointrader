@@ -46,7 +46,7 @@ class Hourly_ROC_Signal(HourlySignalBase):
 
         return True
 
-    def buy(self):
+    def buy_enable(self):
         # hourly ts hasn't been updated in over 2 hours, so return False for buy
         if (self.last_ts - self.last_hourly_ts) >= self.accnt.hours_to_ts(2):
             return False

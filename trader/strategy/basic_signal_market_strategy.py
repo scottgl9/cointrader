@@ -108,8 +108,11 @@ class basic_signal_market_strategy(StrategyBase):
             if not self.hourly_klines_handler or self.hourly_klines_disabled:
                 return False
 
-        if self.hourly_klines_signal and not self.hourly_klines_signal.buy():
+        if self.use_hourly_klines and self.hourly_klines_signal and not self.hourly_klines_signal.buy_enable():
             return False
+
+        if self.use_hourly_klines and self.hourly_klines_signal and self.hourly_klines_signal.buy_signal():
+            return True
 
         if signal.buy_signal():
             return True
@@ -148,6 +151,12 @@ class basic_signal_market_strategy(StrategyBase):
 
         # if buy price was loaded from trade.db, don't wait for signal to sell
         if self.buy_loaded:
+            return True
+
+        if self.use_hourly_klines and self.hourly_klines_signal and not self.hourly_klines_signal.sell_enable():
+            return False
+
+        if self.use_hourly_klines and self.hourly_klines_signal and self.hourly_klines_signal.sell_signal():
             return True
 
         if signal.sell_signal():
