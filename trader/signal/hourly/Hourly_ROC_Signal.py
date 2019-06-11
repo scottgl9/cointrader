@@ -1,6 +1,7 @@
 from trader.lib.struct.HourlySignalBase import HourlySignalBase
 from trader.indicator.ROC import ROC
 from trader.lib.Crossover import Crossover
+from trader.lib.Crossover2 import Crossover2
 
 
 class Hourly_ROC_Signal(HourlySignalBase):
@@ -8,7 +9,7 @@ class Hourly_ROC_Signal(HourlySignalBase):
         super(Hourly_ROC_Signal, self).__init__(hkdb, accnt, symbol, asset_info)
         self.name = "Hourly_ROC_Signal"
         self.roc = ROC(window=24, use_sma=True)
-        self.roc_cross = Crossover(window=2)
+        self.roc_cross = Crossover2(window=10)
         self.cross_down = False
         self.cross_up = False
 
@@ -40,7 +41,7 @@ class Hourly_ROC_Signal(HourlySignalBase):
 
         close = float(kline['close'])
         self.roc.update(close)
-        self.roc_cross.update(self.roc.result, 0)
+        self.roc_cross.update(self.roc.result, 0, hourly_ts)
 
         self.last_hourly_ts = hourly_ts
 

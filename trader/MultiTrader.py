@@ -188,8 +188,9 @@ class MultiTrader(object):
             base_min_size = float(asset_info['stepSize'])
             tick_size = float(asset_info['tickSize'])
             min_notional = float(asset_info['minNotional'])
-        except KeyError:
-            self.logger.info("symbol {} attributes not in asset info".format(symbol))
+        except (KeyError, TypeError):
+            if not self.simulate:
+                self.logger.info("symbol {} attributes not in asset info".format(symbol))
             return None
 
         if min_notional > base_min_size:
@@ -201,7 +202,6 @@ class MultiTrader(object):
                                      currency_name,
                                      account_handler=self.accnt,
                                      order_handler=self.order_handler,
-                                     #hourly_klines_handler=self.hourly_klines_handler,
                                      base_min_size=base_min_size,
                                      tick_size=tick_size,
                                      asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),

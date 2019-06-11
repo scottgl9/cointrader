@@ -18,4 +18,4 @@ DB_LIST+=" cryptocurrency_database.miniticker_collection_11232018.db"
 DB_LIST+=" cryptocurrency_database.miniticker_collection_01192019.db"
 DB_LIST+=" cryptocurrency_database.miniticker_collection_01202019.db"
 DB_LIST+=" cryptocurrency_database.miniticker_collection_03142019.db"
-echo $DB_LIST | tr ' ' '\n' | parallel -j 4 python tools/binance_simulate.py -f {} #-s $strategy_name -g $signal_name
+echo $DB_LIST | tr ' ' '\n' | parallel -j 3 python tools/binance_simulate.py -f {} #-s $strategy_name -g $signal_name
