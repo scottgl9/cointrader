@@ -20,6 +20,7 @@ from trader.indicator.AEMA import AEMA
 from trader.indicator.OBV import OBV
 from trader.lib.MAAvg import MAAvg
 from trader.lib.MovingTimeSegment.MTSPriceChannel import MTSPriceChannel
+from trader.TraderConfig import TraderConfig
 
 import argparse
 import logging
@@ -173,14 +174,6 @@ if __name__ == '__main__':
                         default='cryptocurrency_database.miniticker_collection_04092018.db',
                         help='filename of kline sqlite db')
 
-    parser.add_argument('-s', action='store', dest='strategy',
-                        default='basic_signal_market_strategy',
-                        help='name of strategy to use')
-
-    parser.add_argument('-g', action='store', dest='signal_name',
-                        default='Hybrid_Crossover_Test',
-                        help='name of signal to use')
-
     parser.add_argument('-c', action='store', dest='cache_dir',
                         default='cache',
                         help='simulation cache directory')
@@ -195,6 +188,11 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.DEBUG)
 
+    config = TraderConfig("trader.ini")
+    config.select_section('binance.simulate')
+    strategy = config.get('strategy')
+    signal_name = config.get('signals')
+
     if not os.path.exists(results.cache_dir):
         logger.warning("cache directory {} doesn't exist, exiting...".format(results.cache_dir))
         sys.exit(0)
@@ -202,12 +200,12 @@ if __name__ == '__main__':
     conn = sqlite3.connect(results.filename)
     trade_cache = {}
 
-    trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
+    trade_cache_name = "{}-{}".format(strategy, signal_name)
 
     # if we already ran simulation, load the results
     trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
     if os.path.exists(trade_cache_filename):
-        logger.info("Loading {}".format(trade_cache_filename))
+        logger.info("Loading {} from {}".format(trade_cache_name, trade_cache_filename))
         with open(trade_cache_filename, "r") as f:
             trade_cache = json.loads(str(f.read()))
 

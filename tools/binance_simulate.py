@@ -355,7 +355,7 @@ if __name__ == '__main__':
         with open(trade_cache_filename, "r") as f:
             trade_cache = json.loads(str(f.read()))
 
-    logger.info("Running simulate with {} signal {}".format(results.filename, results.signal_name))
+    logger.info("Running simulate with {} signal {}".format(results.filename, signal_name))
 
     hourly_kline_db_file = results.hourly_klines_db_file
 
