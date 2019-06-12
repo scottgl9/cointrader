@@ -7,6 +7,7 @@ class CrossoverTracker(object):
         self.hourly_mode = hourly_mode
         self.win_secs = win_secs
         self.window = window
+        self.last_cross_info = None
         self.cross_info_list = []
         self.cross_segment_list = []
         if self.hourly_mode:
@@ -19,19 +20,33 @@ class CrossoverTracker(object):
     def update(self, value1, value2, ts=0):
         self.cross.update(value1=value1, value2=value2, ts=ts)
         if self.cross.crossup_detected():
+            if self.last_cross_info:
+                if self.last_cross_info.type == CrossInfo.CROSS_UP:
+                    return
+                pchange = abs(100.0*(self.last_cross_info.value - self.cross.crossup_value) / self.last_cross_info.value)
+                if pchange < 0.01:
+                    return
             cross_info = CrossInfo(self.cross.crossup_value,
                                    self.cross.crossup_ts,
                                    CrossInfo.CROSS_UP)
             self.cross_info_list.append(cross_info)
             self.cross_up = True
             self.update_cross_segments()
+            self.last_cross_info = cross_info
         elif self.cross.crossdown_detected():
+            if self.last_cross_info:
+                if self.last_cross_info.type == CrossInfo.CROSS_DOWN:
+                    return
+                pchange = abs(100.0*(self.last_cross_info.value - self.cross.crossdown_value) / self.last_cross_info.value)
+                if pchange < 0.01:
+                    return
             cross_info = CrossInfo(self.cross.crossdown_value,
                                    self.cross.crossdown_ts,
                                    CrossInfo.CROSS_DOWN)
             self.cross_info_list.append(cross_info)
             self.cross_down = False
             self.update_cross_segments()
+            self.last_cross_info = cross_info
 
     def update_cross_segments(self):
         if len(self.cross_info_list) < 2:
@@ -86,8 +101,15 @@ class CrossSegmentInfo(object):
         self.end_ts = end_ts
         self.percent = 0
         self.percent_per_hr = 0
+        self.seconds = 0
+        self.update_seconds()
         self.update_percent()
         self.update_percent_per_hr()
+
+    def update_seconds(self):
+        if not self.start_ts:
+            return
+        self.seconds = int((self.end_ts - self.start_ts) / 1000.0)
 
     def update_percent(self):
         if self.start_value:
