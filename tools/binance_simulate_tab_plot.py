@@ -36,29 +36,56 @@ class mainWindow(QtGui.QTabWidget):
     def __init__(self, parent = None):
         super(mainWindow, self).__init__(parent)
         self.tabs = {}
+        self.tab_name = None
+        self.trades = None
+        self.symbols = None
 
     def process(self, conn, trades):
-        symbols=trades.keys()
+        self.symbols=trades.keys()
         c = conn.cursor()
-        for s in symbols:
+        for s in self.symbols:
             data = []
             c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
             for row in c:
                 msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3], 'q': row[5], 'v': row[7]}
                 data.append(msg)
-            self.create_tab(s)
+            self.create_tab(s, self.symbols)
             self.plot_tab(s, data, trades[s])
+            self.tab_name = s
+            self.trades = trades
+            break
 
-    def create_tab(self, name):
+    def create_tab(self, name, symbols):
         tabtype = TabType(name)
         tabtype.tab = QtGui.QWidget()
         self.addTab(tabtype.tab, name)
         tabtype.figure = plt.figure(figsize=(10,5))
         tabtype.canvas = FigureCanvas(tabtype.figure)
         layout = QtGui.QVBoxLayout()
+        comboBox = QtGui.QComboBox()
+        comboBox.addItems(symbols)
+        comboBox.activated[str].connect(self.change_plot)
+        layout.addWidget(comboBox)
         layout.addWidget(tabtype.canvas)
         tabtype.tab.setLayout(layout)
         self.tabs[name] = tabtype
+        self.tab_name = name
+
+    def change_plot(self, s):
+        s = str(s)
+        print(s, self.tab_name)
+        c = conn.cursor()
+        data = []
+        c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(s))
+        for row in c:
+            msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3], 'q': row[5], 'v': row[7]}
+            data.append(msg)
+        #self.tabs[self.tab_name].figure = plt.figure(figsize=(10,5))
+        #self.tabs[self.tab_name].canvas = FigureCanvas(self.tabs[self.tab_name].figure)
+        self.removeTab(0) #self.tabs[self.tab_name].tab)
+        self.create_tab(s, self.symbols)
+        self.plot_tab(self.tab_name, data, self.trades[s])
+
 
     def plot_tab(self, name, data=None, trades=None):
         prices = []
