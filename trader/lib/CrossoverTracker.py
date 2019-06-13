@@ -44,7 +44,7 @@ class CrossoverTracker(object):
                                    self.cross.crossdown_ts,
                                    CrossInfo.CROSS_DOWN)
             self.cross_info_list.append(cross_info)
-            self.cross_down = False
+            self.cross_down = True
             self.update_cross_segments()
             self.last_cross_info = cross_info
 
