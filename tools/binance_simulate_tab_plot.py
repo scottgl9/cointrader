@@ -223,6 +223,7 @@ if __name__ == '__main__':
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)
     main = mainWindow()
+    main.showMaximized()
     main.process(conn, trades)
     main.show()
     sys.exit(app.exec_())

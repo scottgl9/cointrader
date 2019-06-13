@@ -55,6 +55,10 @@ class MTS_CrossoverTracker_Signal(SignalBase):
             else:
                 return False
 
+        # don't re-buy less than 1 hour after a sell
+        if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < self.accnt.hours_to_ts(2):
+            return False
+
         if self.cross_tracker.cross_up_detected():
             return True
 
