@@ -60,11 +60,11 @@ class Crossover3(object):
 
     # determine if values1 crossed up over both values3 and values2
     def crossup_detected(self, clear=True):
-        if not self.cross23_up_ts or not self.cross13_up_ts:
+        if not self.cross12_up_ts or not self.cross13_up_ts:
             return False
-        if self.cross23_down_ts > self.cross23_up_ts or self.cross12_down_ts > self.cross23_up_ts:
+        if self.cross12_down_ts > self.cross12_up_ts or self.cross13_down_ts > self.cross13_up_ts:
             return False
-        if self.cross23_up_ts < self.cross12_up_ts:
+        if self.cross13_up_ts < self.cross12_up_ts:
             if clear:
                 self.crossup = False
             else:
@@ -73,11 +73,11 @@ class Crossover3(object):
 
     # determine if values1 cross down over both values2 and values3
     def crossdown_detected(self, clear=True):
-        if not self.cross23_down_ts or not self.cross13_down_ts:
+        if not self.cross12_down_ts or not self.cross13_down_ts:
             return False
-        if self.cross23_down_ts < self.cross23_up_ts or self.cross12_down_ts < self.cross23_up_ts:
+        if self.cross12_down_ts < self.cross12_up_ts or self.cross13_down_ts < self.cross13_up_ts:
             return False
-        if self.cross12_down_ts < self.cross23_down_ts:
+        if self.cross12_down_ts < self.cross13_down_ts:
             if clear:
                 self.crossdown = False
             else:
