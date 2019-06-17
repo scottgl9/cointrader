@@ -333,11 +333,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.signal_handler.is_duplicate_buy(price, self.timestamp):
             return
 
-        if signal.get_flag() == SignalBase.FLAG_SELL_ALL:
-            balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
-            if balance_available != 0 and signal.sell_signal():
-                self.msg_handler.sell_market(self.ticker_id, price, balance_available, price, sig_id=signal.id)
-
         if not signal_completed and self.buy_signal(signal, price):
             self.buy_market(signal, price)
             return

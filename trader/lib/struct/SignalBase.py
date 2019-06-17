@@ -1,14 +1,18 @@
 from trader.lib.struct.SigType import SigType
 
 class SignalBase(object):
-    FLAG_SELL_BOUGHT = 1
-    FLAG_SELL_ALL = 2
+    # realtime signal
+    TYPE_SIGNAL_RT = 1
+    # hourly signal
+    TYPE_SIGNAL_HR = 2
+    # realtime and hourly signal
+    TYPE_SIGNAL_RT_HR = 3
 
-    def __init__(self, accnt=None, symbol=None, asset_info=None):
+    def __init__(self, accnt=None, symbol=None, asset_info=None, type=TYPE_SIGNAL_RT):
         self.id = 0
         self.asset_info = asset_info
         self.symbol = symbol
-        self.flag = self.FLAG_SELL_BOUGHT
+        self.type = type
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
         self.mm_enabled = False
@@ -74,24 +78,27 @@ class SignalBase(object):
     def set_symbol(self, symbol):
         self.symbol = symbol
 
-    def get_flag(self):
-        return self.flag
+    # hourly update
+    def update_hourly(self, hourly_ts):
+        pass
 
-    def set_flag(self, flag):
-        self.flag = flag
-
+    # realtime pre update
     def pre_update(self, close, volume, ts, cache_db=None):
         pass
 
+    # realtime post update
     def post_update(self, close, volume):
         pass
 
+    # realtime sell long signal
     def sell_long_signal(self):
         return False
 
+    # realtime buy signal
     def buy_signal(self):
         return False
 
+    # realtime sell signal
     def sell_signal(self):
         return False
 
