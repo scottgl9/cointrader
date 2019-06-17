@@ -3,7 +3,6 @@ import os
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
-from trader.CronManage import CronManage
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from datetime import datetime
@@ -62,6 +61,7 @@ class MultiTrader(object):
         if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
             # setup crontab for hourly kline updates
             if os.path.exists(self.hourly_klines_db_file):
+                from trader.CronManage import CronManage
                 exec_cmd_path = os.path.join(self.path, "tools/binance_update_hourly_kline_db.py")
                 exec_args = "--update -f {}"
                 cronmgr = CronManage()
