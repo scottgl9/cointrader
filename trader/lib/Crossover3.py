@@ -59,30 +59,28 @@ class Crossover3(object):
             self.cross13_down_ts = self.cross13.crossdown_ts
 
     # determine if values1 crossed up over both values3 and values2
-    def crossup_detected(self, clear=True):
-        if not self.cross12_up_ts or not self.cross13_up_ts:
+    def crossup_detected(self):
+        if not self.cross12_up_ts or not self.cross13_up_ts or not self.cross23_up_ts:
             return False
-        if self.cross12_down_ts > self.cross12_up_ts or self.cross13_down_ts > self.cross13_up_ts:
+        if self.cross12_down_ts > self.cross12_up_ts or self.cross13_down_ts > self.cross13_up_ts or self.cross23_down_ts > self.cross23_up_ts:
             return False
-        if self.cross13_up_ts < self.cross12_up_ts:
-            if clear:
-                self.crossup = False
-            else:
-                self.crossup = True
+        if self.cross13_up_ts <= self.cross23_up_ts and not self.crossup:
+            self.crossdown = False
+            self.crossup = True
             return True
+        return False
 
     # determine if values1 cross down over both values2 and values3
-    def crossdown_detected(self, clear=True):
-        if not self.cross12_down_ts or not self.cross13_down_ts:
+    def crossdown_detected(self):
+        if not self.cross12_down_ts or not self.cross13_down_ts or not self.cross23_down_ts:
             return False
-        if self.cross12_down_ts < self.cross12_up_ts or self.cross13_down_ts < self.cross13_up_ts:
+        if self.cross12_down_ts < self.cross12_up_ts or self.cross13_down_ts < self.cross13_up_ts or self.cross23_down_ts < self.cross23_up_ts:
             return False
-        if self.cross12_down_ts < self.cross13_down_ts:
-            if clear:
-                self.crossdown = False
-            else:
-                self.crossdown = True
+        if self.cross13_down_ts <= self.cross23_down_ts and not self.crossdown:
+            self.crossdown = True
+            self.crossup = False
             return True
+        return False
 
     # detect if value1 crosses up over value2
     def cross12_up_detected(self, clear=True):
