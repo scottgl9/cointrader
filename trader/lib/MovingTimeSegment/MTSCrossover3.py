@@ -3,7 +3,7 @@ from .MTSCrossover2 import MTSCrossover2
 
 
 class MTSCrossover3(object):
-    def __init__(self, win_secs=30):
+    def __init__(self, win_secs=60):
         self.win_secs = win_secs
         self.cross12 = MTSCrossover2(win_secs=self.win_secs)
         self.cross23 = MTSCrossover2(win_secs=self.win_secs)
@@ -26,6 +26,8 @@ class MTSCrossover3(object):
         self.cross13_down = False
         self.cross13_down_value = 0
         self.cross13_down_ts = 0
+        self.crossup = False
+        self.crossdown = False
 
     def update(self, value1, value2, value3, ts):
         self.cross12.update(value1, value2, ts)
@@ -56,7 +58,33 @@ class MTSCrossover3(object):
             self.cross13_down_value = self.cross13.crossdown_value
             self.cross13_down_ts = self.cross13.crossdown_ts
 
-    # detect if value1 crosses up over value2
+    # determine if values1 crossed up over both values3 and values2
+    def crossup_detected(self, clear=True):
+        if not self.cross23_up_ts or not self.cross13_up_ts:
+            return False
+        if self.cross23_down_ts > self.cross23_up_ts or self.cross12_down_ts > self.cross23_up_ts:
+            return False
+        if self.cross23_up_ts < self.cross12_up_ts:
+            if clear:
+                self.crossup = False
+            else:
+                self.crossup = True
+            return True
+
+    # determine if values1 cross down over both values2 and values3
+    def crossdown_detected(self, clear=True):
+        if not self.cross23_down_ts or not self.cross13_down_ts:
+            return False
+        if self.cross23_down_ts < self.cross23_up_ts or self.cross12_down_ts < self.cross23_up_ts:
+            return False
+        if self.cross12_down_ts < self.cross23_down_ts:
+            if clear:
+                self.crossdown = False
+            else:
+                self.crossdown = True
+            return True
+
+    # detect if values1 crosses up over values2
     def cross12_up_detected(self, clear=True):
         result = False
         if self.cross12_up:
@@ -74,7 +102,7 @@ class MTSCrossover3(object):
                 self.cross12_down = False
         return result
 
-    # detect if value2 crosses up over value3
+    # detect if values2 crosses up over values3
     def cross23_up_detected(self, clear=True):
         result = False
         if self.cross23_up:
@@ -92,7 +120,7 @@ class MTSCrossover3(object):
                 self.cross23_down = False
         return result
 
-    # detect if value1 crosses up over value3
+    # detect if values1 crosses up over values3
     def cross13_up_detected(self, clear=True):
         result = False
         if self.cross13_up:
