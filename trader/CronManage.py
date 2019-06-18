@@ -6,7 +6,7 @@ import getpass
 class CronManage(object):
     def __init__(self):
         self.username = getpass.getuser()
-        self.cron = CronTab(user=self.username)
+        self.cron = None
 
     def remove_all_jobs(self):
         for job in self.cron:
@@ -20,7 +20,7 @@ class CronManage(object):
 
     def add_hourly_job(self, cmd, args):
         tab = "0 */1 * * * python {} {}".format(cmd, args)
-        self.cron.new(tab=tab)
+        self.cron = CronTab(user=self.username, tab=tab)
         # run at the very beginning of each hour
         #job.every(1).hours()
         self.cron.write()
