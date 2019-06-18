@@ -3,6 +3,7 @@ import os
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.HourlyUpdateHandler import HourlyUpdateHandler
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from datetime import datetime
@@ -57,19 +58,15 @@ class MultiTrader(object):
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.usdt_value_cutoff = float(self.config.get('usdt_value_cutoff'))
         self.use_hourly_klines = self.config.get('use_hourly_klines')
+        self.hourly_update_handler = None
 
         if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
-            # setup crontab for hourly kline updates
+            # start thread for hourly kline db updates
             if os.path.exists(self.hourly_klines_db_file):
-                from trader.CronManage import CronManage
-                exec_cmd_path = os.path.join(self.path, "tools/binance_update_hourly_kline_db.py")
-                exec_args = "--update -f {}".format(self.hourly_klines_db_file)
-                cronmgr = CronManage()
-                cronmgr.remove_by_command(exec_cmd_path)
-                cronmgr.add_hourly_job(exec_cmd_path, exec_args)
-                self.logger.info("Setup hourly {} {}".format(exec_cmd_path, exec_args))
+                from trader.HourlyUpdateHandler import HourlyUpdateHandler
+                self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.hourly_klines_db_file, self.logger)
             else:
-                self.logger.info("Failed to setup cron update for {}".format(self.hourly_klines_db_file))
+                self.logger.info("Failed to setup hourly updates for {}".format(self.hourly_klines_db_file))
 
         self.logger.info("Setting USDT value cutoff to {}".format(self.usdt_value_cutoff))
 
