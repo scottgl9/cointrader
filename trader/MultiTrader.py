@@ -63,7 +63,7 @@ class MultiTrader(object):
             if os.path.exists(self.hourly_klines_db_file):
                 from trader.CronManage import CronManage
                 exec_cmd_path = os.path.join(self.path, "tools/binance_update_hourly_kline_db.py")
-                exec_args = "--update -f {}"
+                exec_args = "--update -f {}".format(self.hourly_klines_db_file)
                 cronmgr = CronManage()
                 cronmgr.remove_by_command(exec_cmd_path)
                 cronmgr.add_hourly_job(exec_cmd_path, exec_args)
