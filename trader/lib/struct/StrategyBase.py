@@ -123,55 +123,62 @@ class StrategyBase(object):
         self.hourly_klines_loaded = False
 
     @staticmethod
-    def select_signal_name(name, accnt=None, symbol=None, asset_info=None):
+    def select_signal_name(name, accnt=None, symbol=None, asset_info=None, hkdb=None):
+        signal = None
         if name == "BTC_USDT_Signal":
             from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
-            return BTC_USDT_Signal(accnt)
+            signal = BTC_USDT_Signal
         elif name == "AEMA_Crossover_Test":
             from trader.signal.AEMA_Crossover_Test import AEMA_Crossover_Test
-            return AEMA_Crossover_Test(accnt, symbol, asset_info)
+            signal = AEMA_Crossover_Test
         elif name == "Currency_Long_EMA":
             from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
-            return Currency_EMA_Long(accnt)
+            signal = Currency_EMA_Long
         elif name == "EFI_Breakout_Signal":
             from trader.signal.EFI_Breakout_Signal import EFI_Breakout_Signal
-            return EFI_Breakout_Signal(accnt, symbol)
+            signal = EFI_Breakout_Signal
         elif name == "EMA_OBV_Crossover":
             from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
-            return EMA_OBV_Crossover(accnt, symbol)
+            signal = EMA_OBV_Crossover
         elif name == "Hybrid_Crossover_Test":
             from trader.signal.Hybrid_Crossover_Test import Hybrid_Crossover_Test
-            return Hybrid_Crossover_Test(accnt, symbol, asset_info)
+            signal = Hybrid_Crossover_Test
         elif name == "Hybrid_Crossover_Test2":
             from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
-            return Hybrid_Crossover_Test2(accnt, symbol, asset_info)
+            signal = Hybrid_Crossover_Test2
         elif name == "KST_Crossover":
             from trader.signal.KST_Crossover import KST_Crossover
-            return KST_Crossover(accnt, symbol)
+            signal = KST_Crossover
         elif name == "MACD_Crossover":
             from trader.signal.MACD_Crossover import MACD_Crossover
-            return MACD_Crossover(accnt, symbol)
+            signal = MACD_Crossover
         elif name == "MTS_Crossover2_Signal":
             from trader.signal.MTS_Crossover2_Signal import MTS_Crossover2_Signal
-            return MTS_Crossover2_Signal(accnt, symbol)
+            signal = MTS_Crossover2_Signal
         elif name == "MTS_CrossoverTracker_Signal":
             from trader.signal.MTS_CrossoverTracker_Signal import MTS_CrossoverTracker_Signal
-            return MTS_CrossoverTracker_Signal(accnt, symbol)
+            signal = MTS_CrossoverTracker_Signal
         elif name == "PPO_OBV":
             from trader.signal.PPO_OBV import PPO_OBV
-            return PPO_OBV(accnt, symbol)
+            signal = PPO_OBV
         elif name == "PMO_Crossover":
             from trader.signal.PMO_Crossover import PMO_Crossover
-            return PMO_Crossover(accnt, symbol)
+            signal = PMO_Crossover
         elif name == "TrendStateTrack_Signal":
             from trader.signal.TrendStateTrack_Signal import TrendStateTrack_Signal
-            return TrendStateTrack_Signal(accnt, symbol, asset_info)
+            signal = TrendStateTrack_Signal
         elif name == "TSI_Signal":
             from trader.signal.TSI_Signal import TSI_Signal
-            return TSI_Signal(accnt, symbol)
+            signal = TSI_Signal
         elif name == "TSV_Signal":
             from trader.signal.TSV_Signal import TSV_Signal
-            return TSV_Signal(accnt, symbol)
+            signal = TSV_Signal
+
+        if signal:
+            return signal(accnt, symbol, asset_info, hkdb=hkdb)
+
+        return None
+
 
     def get_ticker_id(self):
         return self.ticker_id

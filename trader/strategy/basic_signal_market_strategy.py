@@ -56,7 +56,11 @@ class basic_signal_market_strategy(StrategyBase):
             for name in signal_names:
                 if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
                     continue
-                signal = StrategyBase.select_signal_name(name, self.accnt, self.ticker_id, asset_info)
+                signal = StrategyBase.select_signal_name(name,
+                                                         self.accnt,
+                                                         self.ticker_id,
+                                                         asset_info,
+                                                         hkdb=self.hourly_klines_handler)
                 if signal.mm_enabled:
                     self.mm_enabled = True
                 # don't add global signal if global_filter doesn't match ticker_id
@@ -69,7 +73,8 @@ class basic_signal_market_strategy(StrategyBase):
             self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover",
                                                                     self.accnt,
                                                                     self.ticker_id,
-                                                                    asset_info))
+                                                                    asset_info,
+                                                                    hkdb=self.hourly_klines_handler))
 
 
     # clear pending sell trades which have been bought

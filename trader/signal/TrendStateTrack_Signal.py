@@ -6,8 +6,8 @@ from trader.lib.struct.SignalBase import SignalBase
 
 
 class TrendStateTrack_Signal(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None):
-        super(TrendStateTrack_Signal, self).__init__(accnt, symbol, asset_info)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
+        super(TrendStateTrack_Signal, self).__init__(accnt, symbol, asset_info, hkdb)
         self.signal_name = "TrendStateTrack_Signal"
         self.disabled = False
         self.disabled_end_ts = 0

@@ -3,8 +3,8 @@ from trader.lib.Crossover import Crossover
 from trader.lib.struct.SignalBase import SignalBase
 
 class TSI_Signal(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None, window=26):
-        super(TSI_Signal, self).__init__(accnt, symbol, asset_info)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None, window=26):
+        super(TSI_Signal, self).__init__(accnt, symbol, asset_info, hkdb)
         self.signal_name = "TSI_Signal"
         self.window = window
         #self.obv = OBV()

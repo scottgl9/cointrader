@@ -5,8 +5,8 @@ from trader.lib.Crossover import Crossover
 from trader.lib.struct.SignalBase import SignalBase
 
 class KST_Crossover(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None, win_short=12, win_med=26, win_long=50):
-        super(KST_Crossover, self).__init__(accnt, symbol, asset_info)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None, win_short=12, win_med=26, win_long=50):
+        super(KST_Crossover, self).__init__(accnt, symbol, asset_info, hkdb)
         self.signal_name = "KST_Crossover"
         self.win_short = win_short
         self.win_med = win_med

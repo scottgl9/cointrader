@@ -8,10 +8,11 @@ class SignalBase(object):
     # realtime and hourly signal
     TYPE_SIGNAL_RT_HR = 3
 
-    def __init__(self, accnt=None, symbol=None, asset_info=None, type=TYPE_SIGNAL_RT):
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None, type=TYPE_SIGNAL_RT):
         self.id = 0
         self.asset_info = asset_info
         self.symbol = symbol
+        self.hkdb = hkdb
         self.type = type
         self.buy_type = SigType.SIGNAL_NONE
         self.sell_type = SigType.SIGNAL_NONE
