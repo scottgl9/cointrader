@@ -19,8 +19,8 @@ class CronManage(object):
         self.cron.write()
 
     def add_hourly_job(self, cmd, args):
-        cmd = "python {} {}".format(cmd, args)
-        job = self.cron.new(command=cmd)
+        tab = "0 */1 * * * python {} {}".format(cmd, args)
+        self.cron.new(tab=tab)
         # run at the very beginning of each hour
-        job.every(1).hours()
+        #job.every(1).hours()
         self.cron.write()
