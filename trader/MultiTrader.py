@@ -60,6 +60,14 @@ class MultiTrader(object):
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.hourly_update_handler = None
 
+        if accnt:
+            self.accnt = accnt
+        else:
+            self.accnt = AccountBinance(self.client,
+                                        simulation=simulate,
+                                        logger=logger)
+        self.assets_info = assets_info
+
         if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
             # start thread for hourly kline db updates
             if os.path.exists(self.hourly_klines_db_file):
@@ -70,13 +78,6 @@ class MultiTrader(object):
 
         self.logger.info("Setting USDT value cutoff to {}".format(self.usdt_value_cutoff))
 
-        if accnt:
-            self.accnt = accnt
-        else:
-            self.accnt = AccountBinance(self.client,
-                                        simulation=simulate,
-                                        logger=logger)
-        self.assets_info = assets_info
         self.tickers = None
         self.msg_handler = MessageHandler()
         self.hourly_klines_handler = None
