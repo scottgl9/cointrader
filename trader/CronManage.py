@@ -6,7 +6,7 @@ import getpass
 class CronManage(object):
     def __init__(self):
         self.username = getpass.getuser()
-        self.cron = None
+        self.cron = CronTab(user=self.username)
 
     def remove_all_jobs(self):
         for job in self.cron:
