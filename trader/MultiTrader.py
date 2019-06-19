@@ -7,6 +7,7 @@ from trader.HourlyUpdateHandler import HourlyUpdateHandler
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from datetime import datetime
+import time
 
 from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
 from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
@@ -121,10 +122,6 @@ class MultiTrader(object):
         self.global_en = global_en
         if self.global_en:
             self.global_strategy = global_obv_strategy()
-
-        #if not self.simulate and self.accnt.hourly_klines_handler:
-        #    self.logger.info("Updating hourly klines in {}...".format(self.hourly_klines_db_file))
-        #    self.accnt.hourly_klines_handler.update_all_tables()
 
         sigstr = None
 
@@ -249,6 +246,11 @@ class MultiTrader(object):
 
         # print alive check message once every hour
         if not self.accnt.simulate:
+            if self.hourly_update_handler and self.hourly_update_handler.ready():
+                last_hourly_ts = self.hourly_update_handler.last_hourly_update_ts()
+                if last_hourly_ts:
+                    self.last_hourly_ts = last_hourly_ts
+                    self.logger("Last hourly tables update completed {}".format(time.ctime(self.last_hourly_ts/1000)))
             # hourly_klines_handler = symbol_trader.hourly_klines_handler
             #
             # if hourly_klines_handler:
