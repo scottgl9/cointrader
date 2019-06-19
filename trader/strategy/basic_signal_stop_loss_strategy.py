@@ -142,24 +142,12 @@ class basic_signal_stop_loss_strategy(StrategyBase):
 
 
     # NOTE: low and high do not update for each kline with binance
-    ## mmkline is kline from MarketManager which is filtered and resampled
-    def run_update(self, kline, mmkline=None, cache_db=None):
-        # HACK REMOVE THIS
-        #if self.currency == 'USDT':
-        #    return
-        if mmkline:
-            close = mmkline.close
-            self.low = mmkline.low
-            self.high = mmkline.high
-            volume = mmkline.volume
-            self.timestamp = mmkline.ts
-            self.kline = kline
-        else:
-            close = kline.close
-            self.low = kline.low
-            self.high = kline.high
-            volume = kline.volume
-            self.timestamp = kline.ts
+    def run_update(self, kline, last_hourly_ts=0, cache_db=None):
+        close = kline.close
+        self.low = kline.low
+        self.high = kline.high
+        volume = kline.volume
+        self.timestamp = kline.ts
 
         if close == 0 or volume == 0:
             return

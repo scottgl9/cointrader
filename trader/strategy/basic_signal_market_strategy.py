@@ -282,7 +282,7 @@ class basic_signal_market_strategy(StrategyBase):
             self.accnt.loaded_model_count += 1
 
 
-    def run_update(self, kline, mmkline=None, cache_db=None):
+    def run_update(self, kline, last_hourly_ts=0, cache_db=None):
         close = kline.close
         self.low = kline.low
         self.high = kline.high

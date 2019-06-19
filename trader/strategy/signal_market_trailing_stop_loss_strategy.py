@@ -274,7 +274,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         return completed
 
 
-    def run_update(self, kline, mmkline=None, cache_db=None):
+    def run_update(self, kline, last_hourly_ts=0, cache_db=None):
         close = kline.close
         self.low = kline.low
         self.high = kline.high
