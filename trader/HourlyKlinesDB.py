@@ -78,6 +78,15 @@ class HourlyKlinesDB(object):
                 latest_hourly_ts = ts
         return latest_hourly_ts
 
+    # get list of table names which are not up to date
+    def get_outdated_table_names(self):
+        result = []
+        latest_hourly_ts = self.get_latest_db_hourly_ts()
+        for symbol in self.table_symbols:
+            if not self.ts_in_table(symbol, latest_hourly_ts):
+                result.append(symbol)
+        return result
+
     def get_last_update_ts(self, symbol):
         if not self.table_last_update_ts:
             return 0

@@ -172,6 +172,8 @@ if __name__ == '__main__':
     hkdb = HourlyKlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
+    #print(hkdb.get_outdated_table_names())
+
     if results.list_table_names:
         for symbol in hkdb.get_table_list():
             print(symbol)
