@@ -66,6 +66,18 @@ class HourlyKlinesDB(object):
                 result = last_ts
         return result
 
+    # iterate through all tables, and get latest hourly ts
+    def get_latest_db_hourly_ts(self):
+        latest_hourly_ts = 0
+        cur = self.conn.cursor()
+        for symbol in self.table_symbols:
+            cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+            result = cur.fetchone()
+            ts = int(result[0])
+            if ts > latest_hourly_ts:
+                latest_hourly_ts = ts
+        return latest_hourly_ts
+
     def get_last_update_ts(self, symbol):
         if not self.table_last_update_ts:
             return 0
