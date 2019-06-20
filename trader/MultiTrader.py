@@ -3,7 +3,6 @@ import os
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
-from trader.HourlyUpdateHandler import HourlyUpdateHandler
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from datetime import datetime
@@ -69,14 +68,6 @@ class MultiTrader(object):
                                         logger=logger)
         self.assets_info = assets_info
 
-        if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
-            # start thread for hourly kline db updates
-            if os.path.exists(self.hourly_klines_db_file):
-                from trader.HourlyUpdateHandler import HourlyUpdateHandler
-                self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.hourly_klines_db_file, self.logger)
-            else:
-                self.logger.info("Failed to setup hourly updates for {}".format(self.hourly_klines_db_file))
-
         self.logger.info("Setting USDT value cutoff to {}".format(self.usdt_value_cutoff))
 
         self.tickers = None
@@ -114,6 +105,14 @@ class MultiTrader(object):
                 self.hkdb.remove_outdated_tables()
             self.hkdb.close()
             self.hkdb = None
+
+        # start thread for hourly kline db updates
+        if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
+            if os.path.exists(self.hourly_klines_db_file):
+                from trader.HourlyUpdateHandler import HourlyUpdateHandler
+                self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.hourly_klines_db_file, self.logger)
+            else:
+                self.logger.info("Failed to setup hourly updates for {}".format(self.hourly_klines_db_file))
 
         # config options for AccountBinance
         btc_only = self.config.get('btc_only')
