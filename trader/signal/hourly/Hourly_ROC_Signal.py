@@ -2,7 +2,7 @@ from trader.lib.struct.HourlySignalBase import HourlySignalBase
 from trader.indicator.ROC import ROC
 from trader.lib.Crossover import Crossover
 from trader.lib.Crossover2 import Crossover2
-
+import time
 
 class Hourly_ROC_Signal(HourlySignalBase):
     def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
@@ -20,7 +20,11 @@ class Hourly_ROC_Signal(HourlySignalBase):
             close = float(kline['close'])
             self.roc.update(close)
         self.last_update_ts = ts
-        self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
+        if self.accnt.simulate:
+            self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
+        else:
+            ts = int(time.time() * 1000)
+            self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
         self.last_hourly_ts = self.first_hourly_ts
 
     def update(self, ts, last_hourly_ts=0):
