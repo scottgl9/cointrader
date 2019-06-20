@@ -30,8 +30,8 @@ class Hourly_ROC_Signal(HourlySignalBase):
     def update(self, ts, last_hourly_ts=0):
         self.last_ts = ts
 
-        # wait 1 hour + 1 minute before doing an update
-        if (ts - self.last_hourly_ts) < self.accnt.seconds_to_ts(3660):
+        # wait 1 hour + 2 minutes before doing an update
+        if (ts - self.last_hourly_ts) < self.accnt.seconds_to_ts(3720):
             return True
 
         hourly_ts = self.accnt.get_hourly_ts(ts)

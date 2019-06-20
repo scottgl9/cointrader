@@ -36,7 +36,8 @@ class HourlyUpdateHandler(object):
 
         while True:
             if (int(time.time()) - last_hourly_ts) >= 3600:
-                time.sleep(1)
+                # wait 15 seconds before updating tables
+                time.sleep(15)
                 logger.info("Updating hourly DB tables on {}".format(time.ctime(int(time.time()))))
                 hkdb.update_all_tables()
                 last_hourly_ts = int(time.time() / 3600) * 3600
