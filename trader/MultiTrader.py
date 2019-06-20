@@ -81,30 +81,39 @@ class MultiTrader(object):
 
         self.tickers = None
         self.msg_handler = MessageHandler()
-        self.hourly_klines_handler = None
+        self.hkdb = None
+        self.hkdb_table_symbols = []
         self.last_hourly_ts = 0
 
         hourly_symbols_only = False
 
         if self.use_hourly_klines:
             try:
-                self.hourly_klines_handler = HourlyKlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
+                self.hkdb = HourlyKlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
                 hourly_symbols_only = self.config.get('hourly_symbols_only')
+                self.hkdb_table_symbols = self.hkdb.table_symbols
+                self.latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
+                if self.simulate:
+                    self.hkdb.close()
+                    self.hkdb = None
             except IOError:
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
-                self.hourly_klines_handler = None
 
-        if not self.simulate and self.hourly_klines_handler:
-            latest_hourly_ts = self.hourly_klines_handler.get_latest_db_hourly_ts()
+        # update hourly kline tables on start if running in live mode
+        if not self.simulate and self.hkdb:
+            latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
             hourly_ts = self.accnt.get_hourly_ts(int(time.time() * 1000))
             if hourly_ts == latest_hourly_ts:
                 self.logger.info("Hourly kline tables up to date in {}...".format(self.hourly_klines_db_file))
             else:
+                self.last_hourly_ts = hourly_ts
                 self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
-                self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
+                self.hkdb.update_all_tables()
                 self.logger.info("Removing outdated hourly kline tables in {}...".format(self.hourly_klines_db_file))
-                self.hourly_klines_handler.remove_outdated_tables()
+                self.hkdb.remove_outdated_tables()
+            self.hkdb.close()
+            self.hkdb = None
 
         # config options for AccountBinance
         btc_only = self.config.get('btc_only')
@@ -174,7 +183,7 @@ class MultiTrader(object):
             return None
         elif self.accnt.bnb_only() and currency_name != 'BNB':
             return None
-        elif self.accnt.hourly_symbols_only() and symbol not in self.hourly_klines_handler.table_symbols:
+        elif self.accnt.hourly_symbols_only() and symbol not in self.hkdb_table_symbols:
             return None
 
         # check USDT value of base by calculating (base_currency) * (currency_usdt)
