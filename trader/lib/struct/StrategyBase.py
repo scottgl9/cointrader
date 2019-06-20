@@ -155,6 +155,9 @@ class StrategyBase(object):
         elif name == "MTS_Crossover2_Signal":
             from trader.signal.MTS_Crossover2_Signal import MTS_Crossover2_Signal
             signal = MTS_Crossover2_Signal
+        elif name == "MTS_Crossover3_Signal":
+            from trader.signal.MTS_Crossover3_Signal import MTS_Crossover3_Signal
+            signal = MTS_Crossover3_Signal
         elif name == "MTS_CrossoverTracker_Signal":
             from trader.signal.MTS_CrossoverTracker_Signal import MTS_CrossoverTracker_Signal
             signal = MTS_CrossoverTracker_Signal
