@@ -320,6 +320,10 @@ class basic_signal_market_strategy(StrategyBase):
                 self.logger.info("Hourly update FAILED 5 times for {}".format(self.ticker_id))
                 self.hourly_klines_disabled = True
 
+        # handle hourly signal updates for standard signals
+        #self.signal_handler.update_hourly(last_hourly_ts)
+
+        # handle realtime signal updates
         self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
 
         completed = self.handle_incoming_messages()

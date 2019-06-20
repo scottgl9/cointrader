@@ -253,11 +253,11 @@ class MultiTrader(object):
 
         # print alive check message once every hour
         if not self.accnt.simulate:
-            if self.hourly_update_handler and self.hourly_update_handler.ready():
-                last_hourly_ts = self.hourly_update_handler.last_hourly_update_ts()
-                if last_hourly_ts:
-                    self.last_hourly_ts = last_hourly_ts
-                    self.logger("Last hourly tables update completed {}".format(time.ctime(self.last_hourly_ts/1000)))
+            #if self.hourly_update_handler and self.hourly_update_handler.ready():
+            #    last_hourly_ts = self.hourly_update_handler.last_hourly_update_ts()
+            #    if last_hourly_ts:
+            #        self.last_hourly_ts = last_hourly_ts
+            #        self.logger("Last hourly tables update completed {}".format(time.ctime(self.last_hourly_ts/1000)))
             # hourly_klines_handler = symbol_trader.hourly_klines_handler
             #
             # if hourly_klines_handler:
