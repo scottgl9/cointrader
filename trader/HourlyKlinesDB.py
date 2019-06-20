@@ -96,7 +96,7 @@ class HourlyKlinesDB(object):
                 self.logger.info("Removing table {} from {}".format(symbol, self.filename))
             try:
                 del self.table_last_update_ts[symbol]
-            except KeyError:
+            except (KeyError, TypeError):
                 pass
             cur.execute("DROP TABLE {}".format(symbol))
         self.conn.commit()
