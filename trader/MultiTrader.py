@@ -96,10 +96,15 @@ class MultiTrader(object):
                 self.hourly_klines_handler = None
 
         if not self.simulate and self.hourly_klines_handler:
-            self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
-            self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
-            self.logger.info("Removing outdated hourly kline tables in {}...".format(self.hourly_klines_db_file))
-            self.hourly_klines_handler.remove_outdated_tables()
+            latest_hourly_ts = self.hourly_klines_handler.get_latest_db_hourly_ts()
+            hourly_ts = self.accnt.get_hourly_ts(int(time.time() * 1000))
+            if hourly_ts == latest_hourly_ts:
+                self.logger.info("Hourly kline tables up to date in {}...".format(self.hourly_klines_db_file))
+            else:
+                self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
+                self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
+                self.logger.info("Removing outdated hourly kline tables in {}...".format(self.hourly_klines_db_file))
+                self.hourly_klines_handler.remove_outdated_tables()
 
         # config options for AccountBinance
         btc_only = self.config.get('btc_only')
