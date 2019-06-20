@@ -6,14 +6,12 @@ from trader.lib.struct.SignalBase import SignalBase
 
 class basic_signal_market_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 hourly_klines_handler=None, config=None, asset_info=None,
-                 base_min_size=0.0, tick_size=0.0, logger=None):
+                 config=None, asset_info=None, base_min_size=0.0, tick_size=0.0, logger=None):
         super(basic_signal_market_strategy, self).__init__(client,
                                                            base,
                                                            currency,
                                                            account_handler,
                                                            order_handler,
-                                                           hourly_klines_handler,
                                                            base_min_size,
                                                            tick_size,
                                                            asset_info,
@@ -61,8 +59,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                          self.ticker_id,
                                                          asset_info,
                                                          hkdb=self.hourly_klines_handler)
-                if signal.mm_enabled:
-                    self.mm_enabled = True
+
                 # don't add global signal if global_filter doesn't match ticker_id
                 if signal.global_signal and signal.global_filter != self.ticker_id:
                     continue

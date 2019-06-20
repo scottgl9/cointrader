@@ -17,7 +17,7 @@ from trader.strategy.null_strategy import null_strategy
 
 
 def select_strategy(sname, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                    hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
+                    base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
     elif sname == 'multi_market_order_strategy': strategy = multi_market_order_strategy

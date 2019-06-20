@@ -35,7 +35,7 @@ class StrategyBase(object):
     MULTI_SIGNAL_MULTI_ORDER = 4
 
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 hourly_klines_handler=None, base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
+                 base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
         self.strategy_name = None
         # by default, only one executed buy order without matching sell order allowed for one signal
         self.order_method = StrategyBase.SINGLE_SIGNAL_SINGLE_ORDER
@@ -75,6 +75,7 @@ class StrategyBase(object):
         self.mm_enabled = False
         self.kline = None
         self.hourly_klines = None
+        self.hourly_klines_handler = None
         self.hourly_update_fail_count = 0
 
         self.use_hourly_klines = self.config.get('use_hourly_klines')

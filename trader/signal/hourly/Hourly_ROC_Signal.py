@@ -20,11 +20,11 @@ class Hourly_ROC_Signal(HourlySignalBase):
             close = float(kline['close'])
             self.roc.update(close)
         self.last_update_ts = ts
-        if self.accnt.simulate:
-            self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
-        else:
-            ts = int(time.time() * 1000)
-            self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
+        #if self.accnt.simulate:
+        self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
+        #else:
+        #    ts = int(time.time() * 1000)
+        #    self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
         self.last_hourly_ts = self.first_hourly_ts
 
     def update(self, ts, last_hourly_ts=0):
