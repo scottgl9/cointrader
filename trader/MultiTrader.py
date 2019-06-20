@@ -98,6 +98,8 @@ class MultiTrader(object):
         if not self.simulate and self.hourly_klines_handler:
             self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
             self.last_hourly_ts = self.hourly_klines_handler.update_all_tables()
+            self.logger.info("Removing outdated hourly kline tables in {}...".format(self.hourly_klines_db_file))
+            self.hourly_klines_handler.remove_outdated_tables()
 
         # config options for AccountBinance
         btc_only = self.config.get('btc_only')

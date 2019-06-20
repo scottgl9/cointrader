@@ -87,6 +87,21 @@ class HourlyKlinesDB(object):
                 result.append(symbol)
         return result
 
+    # remove outdated tables from sqlite db
+    def remove_outdated_tables(self):
+        cur = self.conn.cursor()
+        symbols = self.get_outdated_table_names()
+        for symbol in symbols:
+            if self.logger:
+                self.logger.info("Removing table {} from {}".format(symbol, self.filename))
+            try:
+                del self.table_last_update_ts[symbol]
+            except KeyError:
+                pass
+            cur.execute("DROP TABLE {}".format(symbol))
+        self.conn.commit()
+        self.table_symbols = self.get_table_list()
+
     def get_last_update_ts(self, symbol):
         if not self.table_last_update_ts:
             return 0
