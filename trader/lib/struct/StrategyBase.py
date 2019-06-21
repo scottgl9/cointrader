@@ -233,7 +233,7 @@ class StrategyBase(object):
     def set_buy_price_size(self, buy_price, buy_size, sig_id=0):
         pass
 
-    def run_update(self, kline, last_hourly_ts=0, cache_db=None):
+    def run_update(self, kline, cache_db=None):
         pass
 
     def run_update_signal(self, signal, price):

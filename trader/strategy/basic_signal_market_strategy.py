@@ -293,7 +293,7 @@ class basic_signal_market_strategy(StrategyBase):
             self.accnt.loaded_model_count += 1
 
 
-    def run_update(self, kline, last_hourly_ts=0, cache_db=None):
+    def run_update(self, kline, cache_db=None):
         close = kline.close
         self.low = kline.low
         self.high = kline.high
@@ -328,6 +328,8 @@ class basic_signal_market_strategy(StrategyBase):
             if (kline.ts - self.last_hourly_update_ts) >= self.accnt.seconds_to_ts(3720):
                 hourly_ts = self.accnt.get_hourly_ts(kline.ts)
                 if hourly_ts != self.last_hourly_update_ts:
+                    # handle hourly signal updates for standard signals
+                    self.signal_handler.update_hourly(hourly_ts)
                     if not self.hourly_klines_signal.update(hourly_ts=hourly_ts):
                         # hourly kline update failed
                         self.hourly_update_fail_count += 1
@@ -338,9 +340,6 @@ class basic_signal_market_strategy(StrategyBase):
                     if self.hourly_update_fail_count == 5:
                         self.logger.info("Hourly update FAILED 5 times for {}".format(self.ticker_id))
                         self.hourly_klines_disabled = True
-
-        # handle hourly signal updates for standard signals
-        #self.signal_handler.update_hourly(last_hourly_ts)
 
         # handle realtime signal updates
         self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)

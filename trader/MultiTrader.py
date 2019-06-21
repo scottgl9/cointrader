@@ -297,7 +297,7 @@ class MultiTrader(object):
                     timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
                     self.logger.info("MultiTrader running {}".format(timestr))
 
-        symbol_trader.run_update(kline, last_hourly_ts=self.last_hourly_ts, cache_db=cache_db)
+        symbol_trader.run_update(kline, cache_db=cache_db)
 
         if self.global_strategy:
             self.global_strategy.run_update(kline)

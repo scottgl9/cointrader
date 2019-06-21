@@ -140,7 +140,7 @@ class basic_signal_stop_loss_strategy(StrategyBase):
 
 
     # NOTE: low and high do not update for each kline with binance
-    def run_update(self, kline, last_hourly_ts=0, cache_db=None):
+    def run_update(self, kline, cache_db=None):
         close = kline.close
         self.low = kline.low
         self.high = kline.high

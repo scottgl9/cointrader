@@ -66,5 +66,5 @@ class null_strategy(StrategyBase):
         results += "sell_signal_count: {}<br>".format(self.sell_signal_count)
         return results
 
-    def run_update(self, kline, last_hourly_ts=0, cache_db=None):
+    def run_update(self, kline, cache_db=None):
         pass
