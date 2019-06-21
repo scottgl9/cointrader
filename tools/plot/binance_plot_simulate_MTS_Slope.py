@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from trader.indicator.AEMA import AEMA
 from trader.indicator.OBV import OBV
 from trader.lib.MovingTimeSegment.MTS_Slope import MTS_Slope
+from trader.lib.MovingTimeSegment.MTS_LSMA import MTS_LSMA
 import argparse
 
 
@@ -45,8 +46,12 @@ def simulate(conn, client, base, currency):
     aema50_values = []
     aema200 = AEMA(200, scale_interval_secs=60)
     aema200_values = []
+    mts_lsma = MTS_LSMA(win_secs=3600)
+    mts_lsma_values = []
+    mts_lsma_slopes = []
     mts_slope = MTS_Slope(win_secs=3600, slope_secs=900)
     mts_slope_values = []
+
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -67,6 +72,10 @@ def simulate(conn, client, base, currency):
         aema50_values.append(aema50.update(close, ts))
         aema200_values.append(aema200.update(close, ts))
 
+        mts_lsma.update(close, ts)
+        mts_lsma_values.append(mts_lsma.result)
+        mts_lsma_slopes.append(mts_lsma.m)
+
         mts_slope.update(aema200.result, ts)
         mts_slope_values.append(mts_slope.result)
 
@@ -82,13 +91,15 @@ def simulate(conn, client, base, currency):
 
     fig1, = plt.plot(aema50_values, label='AEMA50')
     fig2, = plt.plot(aema200_values, label='AEMA200')
-    plt.legend(handles=[symprice, fig1, fig2])
+    fig3, = plt.plot(mts_lsma_values, label="MTS_LSMA")
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
 
     #plt.subplot(312)
     #plt.plot(aema_diff_6_12)
 
     plt.subplot(212)
-    plt.plot(mts_slope_values)
+    #plt.plot(mts_slope_values)
+    plt.plot(mts_lsma_slopes)
     plt.show()
 
 if __name__ == '__main__':
