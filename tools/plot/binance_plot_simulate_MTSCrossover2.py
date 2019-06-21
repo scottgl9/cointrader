@@ -50,6 +50,8 @@ def simulate(conn, client, base, currency):
     aema26_values = []
     aema50 = AEMA(50, scale_interval_secs=60)
     aema50_values = []
+    aema200 = AEMA(200, scale_interval_secs=60)
+    aema200_values = []
 
     mts_cross = MTSCrossover2()
     up_crosses = []
@@ -75,15 +77,16 @@ def simulate(conn, client, base, currency):
         obv_aema12_values.append(obv_aema12.result)
         aema12_values.append(aema12.update(close, ts))
         aema50_values.append(aema50.update(close, ts))
+        aema200_values.append(aema200.update(close, ts))
 
-        mts_cross.update(aema12.result, aema50.result, ts)
+        mts_cross.update(aema12.result, aema200.result, ts)
         if mts_cross.crossup_detected():
             up_crosses.append(i)
-            if mts_cross.crossup_ts:
-                up_cross_points.append(timestamps.index(mts_cross.crossup_ts))
+            if mts_cross.crossup_ts and mts_cross.crossup_ts in timestamps:
+                    up_cross_points.append(timestamps.index(mts_cross.crossup_ts))
         if mts_cross.crossdown_detected():
             down_crosses.append(i)
-            if mts_cross.crossdown_ts:
+            if mts_cross.crossdown_ts and mts_cross.crossdown_ts in timestamps:
                 down_cross_points.append(timestamps.index(mts_cross.crossdown_ts))
 
         close_prices.append(close)
@@ -109,11 +112,11 @@ def simulate(conn, client, base, currency):
     fig1, = plt.plot(aema12_values, label='AEMA12')
     #fig2, = plt.plot(aema26_values, label='AEMA26')
     fig3, = plt.plot(aema50_values, label='AEMA50')
-    #fig4, = plt.plot(aema12_300_values, label='AEMA12_300')
+    fig4, = plt.plot(aema200_values, label='AEMA200')
     #plt.plot(low_prices)
     #plt.plot(high_prices)
 
-    plt.legend(handles=[symprice, fig1, fig3])
+    plt.legend(handles=[symprice, fig1, fig3, fig4])
     plt.subplot(212)
     plt.plot(obv_aema12_values)
     plt.show()
