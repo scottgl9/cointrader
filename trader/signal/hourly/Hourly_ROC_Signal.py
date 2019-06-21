@@ -27,16 +27,14 @@ class Hourly_ROC_Signal(HourlySignalBase):
         #    self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
         self.last_hourly_ts = self.first_hourly_ts
 
-    def update(self, ts, last_hourly_ts=0):
-        self.last_ts = ts
+    def update(self, hourly_ts):
+         # wait 1 hour + 2 minutes before doing an update
+        #if (ts - self.last_hourly_ts) < self.accnt.seconds_to_ts(3720):
+        #    return True
 
-        # wait 1 hour + 2 minutes before doing an update
-        if (ts - self.last_hourly_ts) < self.accnt.seconds_to_ts(3720):
-            return True
-
-        hourly_ts = self.accnt.get_hourly_ts(ts)
-        if hourly_ts == self.last_hourly_ts:
-            return True
+        #hourly_ts = self.accnt.get_hourly_ts(ts)
+        #if hourly_ts == self.last_hourly_ts:
+        #    return True
 
         #if not self.accnt.simulate and last_hourly_ts:
         #    # do not get kline from DB until all tables have been updated

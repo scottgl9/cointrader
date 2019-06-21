@@ -301,6 +301,9 @@ class basic_signal_market_strategy(StrategyBase):
 
         if not self.timestamp:
             if self.hourly_klines_signal and not self.hourly_klines_loaded:
+                # set initial hourly update ts
+                self.first_hourly_update_ts = self.accnt.get_hourly_ts(kline.ts)
+                self.last_hourly_update_ts = self.first_hourly_update_ts
                 if self.hourly_klines_signal.uses_models:
                     # limit maximum number of models to load, unless max_hourly_model_count is zero
                     if not self.max_hourly_model_count or self.accnt.loaded_model_count <= self.max_hourly_model_count:
@@ -321,15 +324,20 @@ class basic_signal_market_strategy(StrategyBase):
             return
 
         if self.hourly_klines_signal and not self.hourly_klines_disabled:
-            if not self.hourly_klines_signal.update(ts=self.timestamp):
-                # hourly kline update failed
-                self.hourly_update_fail_count += 1
-            else:
-                self.hourly_update_fail_count = 0
+            # wait 1 hour + 2 minutes before doing an update
+            if (kline.ts - self.last_hourly_update_ts) >= self.accnt.seconds_to_ts(3720):
+                hourly_ts = self.accnt.get_hourly_ts(kline.ts)
+                if hourly_ts != self.last_hourly_update_ts:
+                    if not self.hourly_klines_signal.update(hourly_ts=hourly_ts):
+                        # hourly kline update failed
+                        self.hourly_update_fail_count += 1
+                    else:
+                        self.hourly_update_fail_count = 0
+                        self.last_hourly_update_ts = hourly_ts
 
-            if self.hourly_update_fail_count == 5:
-                self.logger.info("Hourly update FAILED 5 times for {}".format(self.ticker_id))
-                self.hourly_klines_disabled = True
+                    if self.hourly_update_fail_count == 5:
+                        self.logger.info("Hourly update FAILED 5 times for {}".format(self.ticker_id))
+                        self.hourly_klines_disabled = True
 
         # handle hourly signal updates for standard signals
         #self.signal_handler.update_hourly(last_hourly_ts)

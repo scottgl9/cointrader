@@ -14,7 +14,7 @@ class HourlySignalBase(object):
     def load(self, start_ts=0, end_ts=0, ts=0):
         pass
 
-    def update(self, ts, last_hourly_ts=0):
+    def update(self, hourly_ts):
         pass
 
     # enable / disable buy orders for live market signals
