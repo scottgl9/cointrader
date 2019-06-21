@@ -158,6 +158,11 @@ class MultiTrader(object):
             self.logger.info("Running MultiTrade {} strategy {}".format(run_type, self.strategy_name))
 
 
+    def close(self):
+        if self.hourly_update_handler:
+            self.hourly_update_handler.stop()
+            self.hourly_update_handler.join(timeout=5)
+
     # create new tradepair handler and select strategy
     def add_trade_pair(self, symbol, price=0):
         base_name, currency_name = self.accnt.split_symbol(symbol)
