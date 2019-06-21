@@ -37,18 +37,53 @@ class mainWindow(QtGui.QDialog):
         layout.addWidget(self.canvas)
         self.setLayout(layout)
         self.trades = None
+        self.end_tickers = None
         self.symbols = None
         self.conn = None
 
-    def process(self, conn, trades):
+    def process(self, conn, trades, end_tickers):
         self.conn = conn
         self.trades = trades
+        self.end_tickers = end_tickers
         self.symbols=trades.keys()
-        self.comboBox.addItems(self.symbols)
-        self.change_plot(self.symbols[0])
+        # percent change for each symbol
+        self.symbols_percent = {}
+        for symbol in self.symbols:
+            # trades for a given symbol
+            strades = self.trades[symbol]
+            percents = []
+            # an extra buy without a matching sell
+            if (len(strades) & 1) != 0:
+                buy_price = strades[-1]['price']
+                last_price = end_tickers[symbol]
+                percents.append(100.0 * (last_price - buy_price) / buy_price)
+                for strade in strades[:-1]:
+                    if strade['type'] != 'sell':
+                        continue
+                    buy_price = float(strade['buy_price'])
+                    sell_price = float(strade['price'])
+                    percents.append(100.0 * (sell_price - buy_price) / buy_price)
+            else:
+                for strade in strades:
+                    if strade['type'] != 'sell':
+                        continue
+                    buy_price = float(strade['buy_price'])
+                    sell_price = float(strade['price'])
+                    percents.append(100.0 * (sell_price - buy_price) / buy_price)
+            percent = round(sum(percents), 2)
+            self.symbols_percent[symbol] = percent
+        first_text = None
+        for percent, symbol in sorted((value,key) for (key,value) in self.symbols_percent.items()):
+            text = "{}: {}%".format(symbol, percent)
+            if not first_text:
+                first_text = text
+            self.comboBox.addItem(text)
+
+        #self.comboBox.addItems(self.symbols)
+        self.change_plot(first_text)
 
     def change_plot(self, s):
-        s = str(s)
+        s = str(s).split(':')[0]
         print(s)
         c = conn.cursor()
         data = []
@@ -219,11 +254,12 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     trades = trade_cache[trade_cache_name]['trades']
+    end_tickers = trade_cache['end_tickers']
 
     logger.info("Plotting results...")
     app = QtGui.QApplication(sys.argv)
     main = mainWindow()
     main.showMaximized()
-    main.process(conn, trades)
+    main.process(conn, trades, end_tickers)
     main.show()
     sys.exit(app.exec_())
