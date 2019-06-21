@@ -111,6 +111,7 @@ class MultiTrader(object):
             if os.path.exists(self.hourly_klines_db_file):
                 from trader.HourlyUpdateHandler import HourlyUpdateHandler
                 self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.hourly_klines_db_file, self.logger)
+                self.hourly_update_handler.start()
             else:
                 self.logger.info("Failed to setup hourly updates for {}".format(self.hourly_klines_db_file))
 
