@@ -107,13 +107,6 @@ class mainWindow(QtGui.QDialog):
         aema50_values = []
         aema200_values = []
 
-        maavg = MAAvg()
-        #maavg.add(ema12)
-        #maavg.add(ema26)
-        #maavg.add(ema50)
-        maavg_x_values = []
-        maavg_values = []
-
         obv = OBV()
         volumes_base = []
         volumes_quote = []
@@ -165,11 +158,6 @@ class mainWindow(QtGui.QDialog):
             aema200.update(price, ts)
             aema200_values.append(aema200.result)
 
-            maavg.update()
-            if maavg.result:
-                maavg_values.append(maavg.result)
-                maavg_x_values.append(i)
-
             i += 1
 
 
@@ -185,11 +173,9 @@ class mainWindow(QtGui.QDialog):
         fig3, = ax.plot(aema12_values, label="AEMA12")
         fig4, = ax.plot(aema26_values, label="AEMA26")
         fig5, = ax.plot(aema50_values, label="AEMA50")
-        fig6, = ax.plot(maavg_x_values, maavg_values, label="MAAVG")
         fig7, = ax.plot(aema200_values, label="AEMA200")
-        #fig8, = ax.plot(low_values, label="low")
-        #fig9, = ax.plot(high_values, label="high")
-        for f in [fig1, fig2, fig3, fig4, fig5, fig6, fig7]:
+
+        for f in [fig1, fig2, fig3, fig4, fig5, fig7]:
             handles.append(f)
         ax.legend(handles=handles)
         #ax2 = self.tabs[name].figure.add_subplot(312)
