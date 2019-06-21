@@ -166,6 +166,7 @@ class BinanceTrader:
             except KeyboardInterrupt:
                 self.logger.info("Shutting down...")
                 self.bm.close()
+                self.multitrader.close()
                 #self.bm.join()
                 break
 

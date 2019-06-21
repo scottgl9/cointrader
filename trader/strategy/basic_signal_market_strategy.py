@@ -197,10 +197,14 @@ class basic_signal_market_strategy(StrategyBase):
                                                                                        msg.price,
                                                                                        msg.size))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    signal.buy_size = msg.size
-                    signal.buy_price = msg.price
-                    signal.buy_timestamp = self.timestamp
-                    signal.last_buy_ts = self.timestamp
+                    if signal:
+                        signal.buy_size = msg.size
+                        signal.buy_price = msg.price
+                        signal.buy_timestamp = self.timestamp
+                        signal.last_buy_ts = self.timestamp
+                    else:
+                        self.logger.warning("BUY_COMPLETE failed, no signal for {}".format(msg.dst_id))
+
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_SELL_COMPLETE:
@@ -209,17 +213,22 @@ class basic_signal_market_strategy(StrategyBase):
                                                                                                      msg.price,
                                                                                                      msg.buy_price,
                                                                                                      msg.size))
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    signal.last_sell_price = msg.price
+
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
 
-                    signal.last_buy_price = msg.buy_price
-                    signal.buy_price = 0.0
-                    signal.buy_size = 0.0
-                    signal.last_sell_price = msg.price
-                    signal.buy_timestamp = 0
-                    signal.last_sell_ts = self.timestamp
+                    signal = self.signal_handler.get_handler(id=msg.sig_id)
+
+                    if signal:
+                        signal.last_sell_price = msg.price
+                        signal.last_buy_price = msg.buy_price
+                        signal.buy_price = 0.0
+                        signal.buy_size = 0.0
+                        signal.last_sell_price = msg.price
+                        signal.buy_timestamp = 0
+                        signal.last_sell_ts = self.timestamp
+                    else:
+                        self.logger.warning("SELL_COMPLETE failed, no signal for {}".format(msg.dst_id))
 
                     # if buy price was loaded from trade.db, mark buy_loaded as fail since it was sold
                     self.buy_loaded = False
@@ -227,27 +236,32 @@ class basic_signal_market_strategy(StrategyBase):
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
                     self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
                                                                                  msg.price,
                                                                                  msg.size))
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
-                    signal.buy_price = 0.0
-                    signal.buy_size = 0.0
-                    signal.buy_timestamp = 0
-                    # for failed buy, disable buys for this symbol for 4 hours
-                    signal.disabled = True
-                    signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
+                    signal = self.signal_handler.get_handler(id=msg.sig_id)
+                    if signal:
+                        signal.buy_price = 0.0
+                        signal.buy_size = 0.0
+                        signal.buy_timestamp = 0
+                        # for failed buy, disable buys for this symbol for 4 hours
+                        signal.disabled = True
+                        signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
+                    else:
+                        self.logger.warning("BUY_FAILED failed, no signal for {}".format(msg.dst_id))
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_SELL_FAILED:
-                    id = msg.sig_id
-                    signal = self.signal_handler.get_handler(id=id)
                     self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
                                                                                                msg.price,
                                                                                                msg.buy_price,
                                                                                                msg.size))
-                    signal.buy_price = signal.last_buy_price
+                    signal = self.signal_handler.get_handler(id=msg.sig_id)
+                    if signal:
+                        signal.buy_price = signal.last_buy_price
+                    else:
+                        self.logger.warning("SELL_FAILED failed, no signal for {}".format(msg.dst_id))
                     msg.mark_read()
                 elif msg.cmd == Message.MSG_ORDER_SIZE_UPDATE:
                     id = msg.sig_id
