@@ -9,10 +9,10 @@ class ATR(IndicatorBase):
         self.last_close = 0.0
         self._tr_sum = 0
         self.count = 0
-        self.atr = 0.0
-        self.prior_atr = 0.0
+        self.atr = 0
+        self.prior_atr = 0
 
-    def update(self, close, low=0, high=0):
+    def update(self, close, low, high):
         if not self.count:
             tr = high - low
         else:
@@ -20,7 +20,7 @@ class ATR(IndicatorBase):
         if self.count < self.window - 1:
             self._tr_sum += tr
             self.count += 1
-        elif self.atr == 0.0:
+        elif not self.atr:
             self._tr_sum += tr
             self.atr = self._tr_sum / self.window
             self.count += 1
