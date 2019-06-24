@@ -39,8 +39,12 @@ def simulate(conn, client, base, currency):
     base_volumes = []
     quote_volumes = []
 
-    mts_roc = MTS_ROC2(win_secs=300, smoother=AEMA(12, scale_interval_secs=60))
-    mts_roc_values = []
+    mts12_roc = MTS_ROC2(win_secs=3600, smoother=AEMA(12, scale_interval_secs=60))
+    mts12_roc_values = []
+    mts50_roc = MTS_ROC2(win_secs=3600, smoother=AEMA(12, scale_interval_secs=60))
+    mts50_roc_values = []
+    mts200_roc = MTS_ROC2(win_secs=3600, smoother=AEMA(12, scale_interval_secs=60))
+    mts200_roc_values = []
     aema12 = AEMA(12, scale_interval_secs=60)
     aema12_values = []
     aema50 = AEMA(50, scale_interval_secs=60)
@@ -65,8 +69,12 @@ def simulate(conn, client, base, currency):
         aema50_values.append(aema50.update(close, ts))
         aema200_values.append(aema200.update(close, ts))
 
-        mts_roc.update(aema200.result, ts)
-        mts_roc_values.append(mts_roc.result)
+        mts12_roc.update(aema12.result, ts)
+        mts12_roc_values.append(mts12_roc.result)
+        mts50_roc.update(aema50.result, ts)
+        mts50_roc_values.append(mts50_roc.result)
+        mts200_roc.update(aema200.result, ts)
+        mts200_roc_values.append(mts200_roc.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -87,7 +95,12 @@ def simulate(conn, client, base, currency):
     #plt.plot(aema_diff_6_12)
 
     plt.subplot(212)
-    plt.plot(mts_roc_values)
+    fig21, = plt.plot(mts12_roc_values, label='MTS_ROC_12')
+    fig22, = plt.plot(mts50_roc_values, label="MTS_ROC_50")
+    fig23, = plt.plot(mts50_roc_values, label="MTS_ROC_200")
+    plt.legend(handles=[fig21, fig22, fig23])
+
+    plt.plot(mts200_roc_values)
     plt.show()
 
 if __name__ == '__main__':
