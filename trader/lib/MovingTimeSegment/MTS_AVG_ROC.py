@@ -5,6 +5,7 @@ class MTS_AVG_ROC(object):
         self.timestamps = []
         self._roc_sum = 0
         self._full = False
+        self.start_ts = 0
         self.last_value = 0
         self.last_ts = 0
         self.result = 0
@@ -13,7 +14,8 @@ class MTS_AVG_ROC(object):
         return self._full
 
     def update(self, value, ts):
-        if not self.last_ts:
+        if not self.last_ts or not self.start_ts:
+            self.start_ts = ts
             self.last_ts = ts
             self.last_value = value
             return self.result
@@ -35,8 +37,9 @@ class MTS_AVG_ROC(object):
         if cnt:
             self.rocs = self.rocs[cnt:]
             self.timestamps = self.timestamps[cnt:]
-            self._full = True
+            if not self._full:
+                self._full = True
 
         if self._full:
-            self.result = self._roc_sum / len(self.rocs)
+            self.result = sum(self.rocs) / len(self.rocs) #self._roc_sum / len(self.rocs)
         return self.result
