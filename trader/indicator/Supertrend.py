@@ -11,7 +11,7 @@ from .ATR import ATR
 
 
 class Supertrend(IndicatorBase):
-    def __init__(self, window=14, multiplier=4):
+    def __init__(self, window=14, multiplier=3):
         IndicatorBase.__init__(self, use_close=True, use_low=True, use_high=True)
         self.window = window
         self.multiplier = multiplier
