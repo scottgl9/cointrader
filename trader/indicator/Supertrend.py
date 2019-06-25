@@ -2,9 +2,8 @@
 # http://www.freebsensetips.com/blog/detail/7/What-is-supertrend-indicator-its-calculation
 #  BASIC UPPERBAND  =  (HIGH + LOW) / 2 + Multiplier * ATR
 #  BASIC LOWERBAND =  (HIGH + LOW) / 2 - Multiplier * ATR
-#  FINAL UPPERBAND = IF( (Current BASICUPPERBAND  < Previous FINAL UPPERBAND) and (Previous Close > Previous FINAL UPPERBAND)) THEN (Current BASIC UPPERBAND) ELSE Previous FINALUPPERBAND)
-#  FINAL LOWERBAND = IF( (Current BASIC LOWERBAND  > Previous FINAL LOWERBAND) and (Previous Close < Previous FINAL LOWERBAND)) THEN (Current BASIC LOWERBAND) ELSE Previous FINAL LOWERBAND)
-#  SUPERTREND = IF(Current Close <= Current FINAL UPPERBAND ) THEN Current FINAL UPPERBAND ELSE Current  FINAL LOWERBAND
+#  FINAL UPPERBAND = IF( (Current BASICUPPERBAND  < Previous FINAL UPPERBAND) or (Previous Close > Previous FINAL UPPERBAND)) THEN (Current BASIC UPPERBAND) ELSE Previous FINALUPPERBAND)
+#  FINAL LOWERBAND = IF( (Current BASIC LOWERBAND  > Previous FINAL LOWERBAND) or (Previous Close < Previous FINAL LOWERBAND)) THEN (Current BASIC LOWERBAND) ELSE Previous FINAL LOWERBAND)
 
 from .IndicatorBase import IndicatorBase
 from .ATR import ATR
@@ -24,6 +23,7 @@ class Supertrend(IndicatorBase):
         self.prev_final_lb = 0
         self.prev_close = 0
         self.result = 0
+        self.prev_result = 0
 
     def update(self, close, low, high):
         self.atr.update(close, low, high)
@@ -47,9 +47,20 @@ class Supertrend(IndicatorBase):
         else:
             self.final_lb = self.prev_final_lb
 
-        if close <= self.final_ub:
+        self.prev_result = self.result
+
+        if self.prev_result == self.prev_final_ub and close <= self.final_ub:
             self.result = self.final_ub
-        else:
+        elif self.prev_result == self.prev_final_ub and close > self.final_ub:
             self.result = self.final_lb
+        elif self.prev_result == self.prev_final_lb and close >= self.final_lb:
+            self.result = self.final_lb
+        elif self.prev_result == self.prev_final_lb and close < self.final_lb:
+            self.result = self.final_ub
+
+        #if close <= self.final_ub:
+        #    self.result = self.final_ub
+        #else:
+        #    self.result = self.final_lb
 
         return self.result
