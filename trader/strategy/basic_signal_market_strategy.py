@@ -328,6 +328,9 @@ class basic_signal_market_strategy(StrategyBase):
                     else:
                         self.hourly_klines_disabled = True
                 else:
+                    end_ts = self.accnt.get_hourly_ts(kline.ts)
+                    start_ts = end_ts - self.accnt.hours_to_ts(self.hourly_preload_hours)
+                    self.signal_handler.hourly_load(start_ts, end_ts, kline.ts)
                     self.load_hourly_klines(kline.ts)
                     self.hourly_klines_loaded = True
 
