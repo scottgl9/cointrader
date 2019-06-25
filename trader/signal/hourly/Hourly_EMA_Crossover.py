@@ -1,4 +1,5 @@
 from trader.lib.struct.SignalBase import SignalBase
+from trader.lib.Crossover3 import Crossover3
 from trader.indicator.EMA import EMA
 
 class Hourly_EMA_Crossover(SignalBase):
@@ -6,8 +7,9 @@ class Hourly_EMA_Crossover(SignalBase):
         super(Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, hkdb)
         self.name = "Hourly_EMA_Crossover"
         self.ema12 = EMA(12)
-        self.ema26 = EMA(26)
         self.ema50 = EMA(50)
+        self.ema200 = EMA(200)
+        self.cross = Crossover3(window=12)
 
     def hourly_load(self, start_ts=0, end_ts=0, ts=0):
         self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
@@ -15,8 +17,34 @@ class Hourly_EMA_Crossover(SignalBase):
             ts = int(kline['ts'])
             close = float(kline['close'])
             self.ema12.update(close)
-            self.ema26.update(close)
             self.ema50.update(close)
+            self.ema200.update(close)
+            self.cross.update(self.ema12.result, self.ema50.result, self.ema200.result, ts)
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
         self.last_hourly_ts = self.first_hourly_ts
+
+    def hourly_update(self, hourly_ts):
+        kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
+
+        # hourly kline not in db yet, wait until next update() call
+        if not kline:
+            return False
+
+        close = float(kline['close'])
+        self.ema12.update(close)
+        self.ema50.update(close)
+        self.ema200.update(close)
+        self.cross.update(self.ema12.result, self.ema50.result, self.ema200.result, hourly_ts)
+
+    def hourly_buy_signal(self):
+        if self.cross.crossup_detected():
+            return True
+        return False
+
+    def hourly_sell_signal(self):
+        if self.cross.crossdown_detected():
+            return True
+        if self.cross.cross12_down_detected():
+            return True
+        return False
