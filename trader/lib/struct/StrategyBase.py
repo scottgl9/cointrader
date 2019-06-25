@@ -25,6 +25,9 @@ def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
 
 
 class StrategyBase(object):
+    # signal modes
+    SIGNAL_MODE_HOURLY = 1
+    SIGNAL_MODE_REALTIME = 2
     # single signal, single open buy per signal
     SINGLE_SIGNAL_SINGLE_ORDER = 1
     # multiple signals, single open buy per signal
@@ -37,6 +40,11 @@ class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
                  base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
         self.strategy_name = None
+        # default setting for signal_modes
+        self.signal_modes = [StrategyBase.SIGNAL_MODE_REALTIME, StrategyBase.SIGNAL_MODE_HOURLY]
+        self.realtime_signals_enabled = True
+        self.hourly_signals_enabled = True
+
         # by default, only one executed buy order without matching sell order allowed for one signal
         self.order_method = StrategyBase.SINGLE_SIGNAL_SINGLE_ORDER
         self.logger = logger

@@ -20,6 +20,20 @@ class basic_signal_market_strategy(StrategyBase):
         self.strategy_name = 'hybrid_signal_market_strategy'
 
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
+
+        # set signal modes from config
+        self.realtime_signals_enabled = False
+        self.hourly_signals_enabled = False
+        self.signal_modes = []
+        signal_modes = self.config.get('signal_modes').split(',')
+        for mode in signal_modes:
+            if mode == 'realtime':
+                self.realtime_signals_enabled = True
+                self.signal_modes.append(StrategyBase.SIGNAL_MODE_REALTIME)
+            elif mode == 'hourly':
+                self.hourly_signals_enabled = True
+                self.signal_modes.append(StrategyBase.SIGNAL_MODE_HOURLY)
+
         signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('hourly_signal')
         self.use_hourly_klines = self.config.get('use_hourly_klines')
@@ -41,7 +55,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                    usdt=usdt_trade_size,
                                                    multiplier=trade_size_multiplier)
 
-        if self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
+        if self.hourly_signals_enabled and self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
                                                              hkdb=self.hourly_klines_handler,
                                                              accnt=self.accnt,
@@ -50,7 +64,8 @@ class basic_signal_market_strategy(StrategyBase):
         else:
             self.hourly_klines_signal = None
 
-        if signal_names:
+
+        if self.realtime_signals_enabled and signal_names:
             for name in signal_names:
                 if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
                     continue
@@ -66,7 +81,7 @@ class basic_signal_market_strategy(StrategyBase):
                 if not signal.global_signal and self.ticker_id.endswith('USDT'):
                     continue
                 self.signal_handler.add(signal)
-        else:
+        elif self.realtime_signals_enabled:
             self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover",
                                                                     self.accnt,
                                                                     self.ticker_id,
@@ -300,7 +315,7 @@ class basic_signal_market_strategy(StrategyBase):
         volume = kline.volume_quote
 
         if not self.timestamp:
-            if self.hourly_klines_signal and not self.hourly_klines_loaded:
+            if self.hourly_signals_enabled and self.hourly_klines_signal and not self.hourly_klines_loaded:
                 # set initial hourly update ts
                 self.first_hourly_update_ts = self.accnt.get_hourly_ts(kline.ts)
                 self.last_hourly_update_ts = self.first_hourly_update_ts
@@ -323,7 +338,7 @@ class basic_signal_market_strategy(StrategyBase):
         if self.timestamp == self.last_timestamp:
             return
 
-        if self.hourly_klines_signal and not self.hourly_klines_disabled:
+        if self.hourly_signals_enabled and self.hourly_klines_signal and not self.hourly_klines_disabled:
             # wait 1 hour + 2 minutes before doing an update
             if (kline.ts - self.last_hourly_update_ts) >= self.accnt.seconds_to_ts(3720):
                 hourly_ts = self.accnt.get_hourly_ts(kline.ts)
@@ -342,21 +357,23 @@ class basic_signal_market_strategy(StrategyBase):
                         self.hourly_klines_disabled = True
 
         # handle realtime signal updates
-        self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
+        if self.realtime_signals_enabled:
+            self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
 
         completed = self.handle_incoming_messages()
 
-        for signal in self.signal_handler.get_handlers():
-            if signal.is_global() and signal.global_filter == kline.symbol:
-                signal.pre_update(kline.close, kline.volume, kline.ts)
-                if signal.enable_buy and not self.enable_buy:
-                    self.msg_handler.buy_enable(self.ticker_id)
-                elif signal.disable_buy and not self.disable_buy:
-                    self.msg_handler.buy_disable(self.ticker_id)
-                self.disable_buy = signal.disable_buy
-                self.enable_buy = signal.enable_buy
-            else:
-                self.run_update_signal(signal, close, signal_completed=completed)
+        if self.realtime_signals_enabled:
+            for signal in self.signal_handler.get_handlers():
+                if signal.is_global() and signal.global_filter == kline.symbol:
+                    signal.pre_update(kline.close, kline.volume, kline.ts)
+                    if signal.enable_buy and not self.enable_buy:
+                        self.msg_handler.buy_enable(self.ticker_id)
+                    elif signal.disable_buy and not self.disable_buy:
+                        self.msg_handler.buy_disable(self.ticker_id)
+                    self.disable_buy = signal.disable_buy
+                    self.enable_buy = signal.enable_buy
+                else:
+                    self.run_update_signal(signal, close, signal_completed=completed)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
