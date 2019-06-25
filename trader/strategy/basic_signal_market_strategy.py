@@ -126,13 +126,13 @@ class basic_signal_market_strategy(StrategyBase):
             if not self.hourly_klines_handler or self.hourly_klines_disabled:
                 return False
 
-        if self.use_hourly_klines and self.hourly_klines_signal and not self.hourly_klines_signal.buy_enable():
-            return False
+        if self.use_hourly_klines and self.hourly_klines_signal:
+            if self.realtime_signals_enabled and not self.hourly_klines_signal.buy_enable():
+                return False
+            if self.hourly_signals_enabled and self.hourly_klines_signal.buy_signal():
+                return True
 
-        if self.use_hourly_klines and self.hourly_klines_signal and self.hourly_klines_signal.buy_signal():
-            return True
-
-        if signal.buy_signal():
+        if self.realtime_signals_enabled and signal.buy_signal():
             return True
 
         return False
@@ -171,13 +171,13 @@ class basic_signal_market_strategy(StrategyBase):
         if self.buy_loaded:
             return True
 
-        if self.use_hourly_klines and self.hourly_klines_signal and not self.hourly_klines_signal.sell_enable():
-            return False
+        if self.use_hourly_klines and self.hourly_klines_signal:
+            if self.realtime_signals_enabled and not self.hourly_klines_signal.sell_enable():
+                return False
+            if self.hourly_signals_enabled and self.hourly_klines_signal.sell_signal():
+                return True
 
-        if self.use_hourly_klines and self.hourly_klines_signal and self.hourly_klines_signal.sell_signal():
-            return True
-
-        if signal.sell_signal():
+        if self.realtime_signals_enabled and signal.sell_signal():
             return True
 
         return False
@@ -363,18 +363,17 @@ class basic_signal_market_strategy(StrategyBase):
 
         completed = self.handle_incoming_messages()
 
-        if self.realtime_signals_enabled:
-            for signal in self.signal_handler.get_handlers():
-                if signal.is_global() and signal.global_filter == kline.symbol:
-                    signal.pre_update(kline.close, kline.volume, kline.ts)
-                    if signal.enable_buy and not self.enable_buy:
-                        self.msg_handler.buy_enable(self.ticker_id)
-                    elif signal.disable_buy and not self.disable_buy:
-                        self.msg_handler.buy_disable(self.ticker_id)
-                    self.disable_buy = signal.disable_buy
-                    self.enable_buy = signal.enable_buy
-                else:
-                    self.run_update_signal(signal, close, signal_completed=completed)
+        for signal in self.signal_handler.get_handlers():
+            if signal.is_global() and signal.global_filter == kline.symbol:
+                signal.pre_update(kline.close, kline.volume, kline.ts)
+                if signal.enable_buy and not self.enable_buy:
+                    self.msg_handler.buy_enable(self.ticker_id)
+                elif signal.disable_buy and not self.disable_buy:
+                    self.msg_handler.buy_disable(self.ticker_id)
+                self.disable_buy = signal.disable_buy
+                self.enable_buy = signal.enable_buy
+            else:
+                self.run_update_signal(signal, close, signal_completed=completed)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
