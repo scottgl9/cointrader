@@ -18,6 +18,9 @@ def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
     elif sname == 'Hourly_ROC_Signal':
         from trader.signal.hourly.Hourly_ROC_Signal import Hourly_ROC_Signal
         signal = Hourly_ROC_Signal
+    elif sname == "None":
+        return None
+
     if not signal:
         return None
 
