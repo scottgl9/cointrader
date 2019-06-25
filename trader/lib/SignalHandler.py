@@ -32,9 +32,9 @@ class SignalHandler(object):
         if handler in self.handlers:
             self.handlers.remove(handler)
 
-    def update_hourly(self, hourly_ts):
+    def hourly_update(self, hourly_ts):
         for handler in self.handlers:
-            handler.update_hourly(hourly_ts)
+            handler.hourly_update(hourly_ts)
 
     def pre_update(self, close, volume, ts=0, cache_db=None):
         if self.empty():

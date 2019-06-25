@@ -127,9 +127,9 @@ class basic_signal_market_strategy(StrategyBase):
                 return False
 
         if self.use_hourly_klines and self.hourly_klines_signal:
-            if self.realtime_signals_enabled and not self.hourly_klines_signal.buy_enable():
+            if self.realtime_signals_enabled and not self.hourly_klines_signal.hourly_buy_enable():
                 return False
-            if self.hourly_signals_enabled and self.hourly_klines_signal.buy_signal():
+            if self.hourly_signals_enabled and self.hourly_klines_signal.hourly_buy_signal():
                 return True
 
         if self.realtime_signals_enabled and signal.buy_signal():
@@ -172,9 +172,9 @@ class basic_signal_market_strategy(StrategyBase):
             return True
 
         if self.use_hourly_klines and self.hourly_klines_signal:
-            if self.realtime_signals_enabled and not self.hourly_klines_signal.sell_enable():
+            if self.realtime_signals_enabled and not self.hourly_klines_signal.hourly_sell_enable():
                 return False
-            if self.hourly_signals_enabled and self.hourly_klines_signal.sell_signal():
+            if self.hourly_signals_enabled and self.hourly_klines_signal.hourly_sell_signal():
                 return True
 
         if self.realtime_signals_enabled and signal.sell_signal():
@@ -304,7 +304,7 @@ class basic_signal_market_strategy(StrategyBase):
         # end_ts is first hourly ts for simulation
         end_ts = self.accnt.get_hourly_ts(ts)
         start_ts = end_ts - self.accnt.hours_to_ts(self.hourly_preload_hours)
-        self.hourly_klines_signal.load(start_ts, end_ts, ts)
+        self.hourly_klines_signal.hourly_load(start_ts, end_ts, ts)
         if self.hourly_klines_signal.uses_models:
             self.accnt.loaded_model_count += 1
 
@@ -345,8 +345,8 @@ class basic_signal_market_strategy(StrategyBase):
                 hourly_ts = self.accnt.get_hourly_ts(kline.ts)
                 if hourly_ts != self.last_hourly_update_ts:
                     # handle hourly signal updates for standard signals
-                    self.signal_handler.update_hourly(hourly_ts)
-                    if not self.hourly_klines_signal.update(hourly_ts=hourly_ts):
+                    self.signal_handler.hourly_update(hourly_ts)
+                    if not self.hourly_klines_signal.hourly_update(hourly_ts=hourly_ts):
                         # hourly kline update failed
                         self.hourly_update_fail_count += 1
                     else:

@@ -1,9 +1,9 @@
-from trader.lib.struct.HourlySignalBase import HourlySignalBase
+from trader.lib.struct.SignalBase import SignalBase
 from trader.indicator.LSMA import LSMA
 
-class Hourly_LSMA_Crossover(HourlySignalBase):
+class Hourly_LSMA_Crossover(SignalBase):
     def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
-        super(Hourly_LSMA_Crossover, self).__init__(hkdb, accnt, symbol, asset_info)
+        super(Hourly_LSMA_Crossover, self).__init__(hkdb, accnt, symbol, asset_info, hkdb)
         self.name = "Hourly_LSMA_Crossover"
         self.lsma24 = LSMA(24)
         # 1 week LSMA
@@ -11,7 +11,7 @@ class Hourly_LSMA_Crossover(HourlySignalBase):
         # 1 month LSMA
         self.lsma720 = LSMA(720)
 
-    def load(self, start_ts=0, end_ts=0, ts=0):
+    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
         self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         for kline in self.klines:
             ts = int(kline['ts'])

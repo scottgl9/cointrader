@@ -8,7 +8,7 @@ class SignalBase(object):
     # realtime and hourly signal
     TYPE_SIGNAL_RT_HR = 3
 
-    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None, type=TYPE_SIGNAL_RT):
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None, type=TYPE_SIGNAL_RT, uses_models=False):
         self.id = 0
         self.asset_info = asset_info
         self.symbol = symbol
@@ -48,9 +48,14 @@ class SignalBase(object):
         self.last_buy_ts = 0
         self.last_sell_price = 0.0
         self.last_sell_ts = 0
-        # highest close price encountered after bought, to determine if there
-        # is no upward movement
         self.buy_price_high = 0.0
+
+        # hourly variables
+        self.uses_models = uses_models
+        self.klines = None
+        self.first_hourly_ts = 0
+        self.last_update_ts = 0
+        self.last_hourly_ts = 0
 
         # for limit / stop loss orders
         self.buy_pending = False
@@ -79,10 +84,6 @@ class SignalBase(object):
     def set_symbol(self, symbol):
         self.symbol = symbol
 
-    # hourly update
-    def update_hourly(self, hourly_ts):
-        pass
-
     # realtime pre update
     def pre_update(self, close, volume, ts, cache_db=None):
         pass
@@ -101,6 +102,34 @@ class SignalBase(object):
 
     # realtime sell signal
     def sell_signal(self):
+        return False
+
+    # hourly load
+    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
+        pass
+
+    # hourly update
+    def hourly_update(self, hourly_ts):
+        pass
+
+    # hourly enable / disable buy orders for live market signals
+    def hourly_buy_enable(self):
+        return True
+
+    # enable/disable sell orders for live market signals
+    def hourly_sell_enable(self):
+        return True
+
+    # hourly buy signal
+    def hourly_buy_signal(self):
+        return False
+
+    # hourly sell long signal
+    def hourly_sell_long_signal(self):
+        return False
+
+    # hourly sell signal
+    def hourly_sell_signal(self):
         return False
 
     def set_total_percent_profit(self, tpprofit):

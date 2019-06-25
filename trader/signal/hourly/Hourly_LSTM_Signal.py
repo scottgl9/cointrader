@@ -1,22 +1,22 @@
-from trader.lib.struct.HourlySignalBase import HourlySignalBase
+from trader.lib.struct.SignalBase import SignalBase
 from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 
 
-class Hourly_LSTM_Signal(HourlySignalBase):
+class Hourly_LSTM_Signal(SignalBase):
     def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
-        super(Hourly_LSTM_Signal, self).__init__(hkdb, accnt, symbol, asset_info, uses_models=True)
+        super(Hourly_LSTM_Signal, self).__init__(accnt, symbol, asset_info, hkdb, uses_models=True)
         self.name = "Hourly_LSTM_Signal"
         self.batch_size = 32
         self.hourly_lstm = HourlyLSTM(self.hkdb, self.symbol,
                                       simulate_db_filename=self.accnt.simulate_db_filename, batch_size=self.batch_size)
 
-    def load(self, start_ts=0, end_ts=0, ts=0):
+    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
         self.hourly_lstm.load(model_start_ts=0, model_end_ts=end_ts)
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(end_ts)
         self.last_hourly_ts = self.first_hourly_ts
 
-    def update(self, hourly_ts):
+    def hourly_update(self, hourly_ts):
         #if (ts - self.last_update_ts) < self.accnt.hours_to_ts(1):
         #    return
 
