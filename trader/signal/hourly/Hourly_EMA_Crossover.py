@@ -2,7 +2,7 @@ from trader.lib.struct.SignalBase import SignalBase
 from trader.indicator.EMA import EMA
 
 class Hourly_EMA_Crossover(SignalBase):
-    def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
         super(Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, hkdb)
         self.name = "Hourly_EMA_Crossover"
         self.ema12 = EMA(12)

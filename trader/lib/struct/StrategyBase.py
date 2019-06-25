@@ -21,7 +21,7 @@ def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
     if not signal:
         return None
 
-    return signal(hkdb, accnt, symbol, asset_info)
+    return signal(accnt, symbol, asset_info, hkdb)
 
 
 class StrategyBase(object):
@@ -136,7 +136,21 @@ class StrategyBase(object):
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None, hkdb=None):
         signal = None
-        if name == "BTC_USDT_Signal":
+        # hourly signals
+        if name == 'Hourly_EMA_Crossover':
+            from trader.signal.hourly.Hourly_EMA_Crossover import Hourly_EMA_Crossover
+            signal = Hourly_EMA_Crossover
+        elif name == 'Hourly_LSMA_Crossover':
+            from trader.signal.hourly.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
+            signal = Hourly_LSMA_Crossover
+        elif name == 'Hourly_LSTM_Signal':
+            from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
+            signal = Hourly_LSTM_Signal
+        elif name == 'Hourly_ROC_Signal':
+            from trader.signal.hourly.Hourly_ROC_Signal import Hourly_ROC_Signal
+            signal = Hourly_ROC_Signal
+        # realtime signals
+        elif name == "BTC_USDT_Signal":
             from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
             signal = BTC_USDT_Signal
         elif name == "AEMA_Crossover_Test":

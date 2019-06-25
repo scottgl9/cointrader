@@ -3,7 +3,7 @@ from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 
 
 class Hourly_LSTM_Signal(SignalBase):
-    def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
         super(Hourly_LSTM_Signal, self).__init__(accnt, symbol, asset_info, hkdb, uses_models=True)
         self.name = "Hourly_LSTM_Signal"
         self.batch_size = 32

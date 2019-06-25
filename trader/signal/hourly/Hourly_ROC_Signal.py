@@ -5,7 +5,7 @@ from trader.lib.Crossover2 import Crossover2
 import time
 
 class Hourly_ROC_Signal(SignalBase):
-    def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
         super(Hourly_ROC_Signal, self).__init__(accnt, symbol, asset_info, hkdb, uses_models=False)
         self.name = "Hourly_ROC_Signal"
         self.roc = ROC(window=24, use_sma=True)
