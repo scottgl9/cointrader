@@ -129,7 +129,7 @@ class basic_signal_market_strategy(StrategyBase):
         if self.use_hourly_klines and self.hourly_klines_signal:
             if self.realtime_signals_enabled and not self.hourly_klines_signal.hourly_buy_enable():
                 return False
-            if self.hourly_signals_enabled and self.hourly_klines_signal.hourly_buy_signal():
+            if self.hourly_signals_enabled and signal.hourly_buy_signal():
                 return True
 
         if self.realtime_signals_enabled and signal.buy_signal():
@@ -174,7 +174,7 @@ class basic_signal_market_strategy(StrategyBase):
         if self.use_hourly_klines and self.hourly_klines_signal:
             if self.realtime_signals_enabled and not self.hourly_klines_signal.hourly_sell_enable():
                 return False
-            if self.hourly_signals_enabled and self.hourly_klines_signal.hourly_sell_signal():
+            if self.hourly_signals_enabled and signal.hourly_sell_signal():
                 return True
 
         if self.realtime_signals_enabled and signal.sell_signal():
