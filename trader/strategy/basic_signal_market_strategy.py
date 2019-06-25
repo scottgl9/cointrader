@@ -66,7 +66,7 @@ class basic_signal_market_strategy(StrategyBase):
             self.hourly_klines_signal = None
 
 
-        if self.realtime_signals_enabled and signal_names:
+        if signal_names:
             for name in signal_names:
                 if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
                     continue
@@ -82,7 +82,7 @@ class basic_signal_market_strategy(StrategyBase):
                 if not signal.global_signal and self.ticker_id.endswith('USDT'):
                     continue
                 self.signal_handler.add(signal)
-        elif self.realtime_signals_enabled:
+        else:
             self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover",
                                                                     self.accnt,
                                                                     self.ticker_id,
