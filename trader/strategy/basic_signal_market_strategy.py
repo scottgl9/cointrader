@@ -38,6 +38,7 @@ class basic_signal_market_strategy(StrategyBase):
         hourly_signal_name = self.config.get('hourly_signal')
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
+        self.hourly_preload_hours = int(self.config.get('hourly_preload_hours'))
 
         btc_trade_size = float(self.config.get('btc_trade_size'))
         eth_trade_size = float(self.config.get('eth_trade_size'))
@@ -302,7 +303,7 @@ class basic_signal_market_strategy(StrategyBase):
 
         # end_ts is first hourly ts for simulation
         end_ts = self.accnt.get_hourly_ts(ts)
-        start_ts = end_ts - self.accnt.hours_to_ts(48)
+        start_ts = end_ts - self.accnt.hours_to_ts(self.hourly_preload_hours)
         self.hourly_klines_signal.load(start_ts, end_ts, ts)
         if self.hourly_klines_signal.uses_models:
             self.accnt.loaded_model_count += 1
