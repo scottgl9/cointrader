@@ -37,12 +37,12 @@ class Supertrend(IndicatorBase):
         self.prev_final_ub = self.final_ub
         self.prev_final_lb = self.final_lb
 
-        if self.basic_ub < self.prev_final_ub < self.prev_close:
+        if self.basic_ub < self.prev_final_ub or self.prev_final_ub < self.prev_close:
             self.final_ub = self.basic_ub
         else:
             self.final_ub = self.prev_final_ub
 
-        if self.basic_lb > self.prev_final_lb > self.prev_close:
+        if self.basic_lb > self.prev_final_lb or self.prev_final_lb > self.prev_close:
             self.final_lb = self.basic_lb
         else:
             self.final_lb = self.prev_final_lb
