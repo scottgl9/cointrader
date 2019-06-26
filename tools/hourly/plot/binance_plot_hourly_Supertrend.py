@@ -28,7 +28,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     obv_values = []
     atr = ATR()
     atr_values = []
-    st = Supertrend(window=9, multiplier=3)
+    st = Supertrend(window=10, multiplier=3)
     st_values = []
     st_x_values = []
     close_prices = []
