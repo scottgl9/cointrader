@@ -7,7 +7,7 @@ class FIR_Filter(IndicatorBase):
     def __init__(self, c1=1.0, c2=3.5, c3=4.5, c4=3, c5=0.5, c6=-0.5, c7=-1.5):
         IndicatorBase.__init__(self, use_close=True)
         self.window = 7
-        self.src = CircularArray(window=7)
+        self.src = CircularArray(window=7, reverse=True)
         # 7 coefficients
         self.c1 = c1
         self.c2 = c2
