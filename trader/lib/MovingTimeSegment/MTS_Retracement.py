@@ -10,6 +10,8 @@ class MTS_Retracement(object):
         self.cross_up = MTSCrossover2(win_secs=60)
         self.cross_down = MTSCrossover2(win_secs=60)
         self.result = 0
+        self.prev_trend_up = False
+        self.prev_trend_down = False
         self.trend_up = False
         self.trend_down = False
 
@@ -26,9 +28,25 @@ class MTS_Retracement(object):
         self.cross_down.update(self.mts2.last_value(), self.mts1.min(), ts)
 
         if self.cross_up.crossup_detected():
+            self.prev_trend_up = self.trend_up
+            self.prev_trend_down = self.trend_down
             self.trend_up = True
             self.trend_down = False
 
         if self.cross_down.crossdown_detected():
+            self.prev_trend_up = self.trend_up
+            self.prev_trend_down = self.trend_down
             self.trend_up = False
             self.trend_down = True
+
+    def crossup_detected(self, clear=False):
+        result = self.trend_up
+        if clear:
+            self.trend_up = False
+        return result
+
+    def crossdown_detected(self, clear=False):
+        result = self.trend_down
+        if clear:
+            self.trend_down = False
+        return result
