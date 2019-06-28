@@ -23,8 +23,10 @@ class MovingTimeSegment(object):
         self.percent_smoother = percent_smoother
         self.min_value = 0
         self.min_value_index = -1
+        self.min_value_ts = 0
         self.max_value = 0
         self.max_value_index = -1
+        self.max_value_ts = 0
         # track moving sum of time segment values
         self._sum = 0
         self._sum_count = 0
@@ -76,6 +78,9 @@ class MovingTimeSegment(object):
         if not self.disable_fmm:
             self.min_value = self.fmm.min()
             self.max_value = self.fmm.max()
+            if self.track_ts:
+                self.min_value_ts = self.fmm.min_ts()
+                self.max_value_ts = self.fmm.max_ts()
 
     # remove all values and timestamps before argument ts
     def remove_before_ts(self, ts):
@@ -96,6 +101,9 @@ class MovingTimeSegment(object):
         if not self.disable_fmm:
             self.min_value = self.fmm.min()
             self.max_value = self.fmm.max()
+            if self.track_ts:
+                self.min_value_ts = self.fmm.min_ts()
+                self.max_value_ts = self.fmm.max_ts()
 
     def get_sum(self):
         return float(self._sum)
@@ -106,14 +114,18 @@ class MovingTimeSegment(object):
     def min(self):
         if not self.ready():
             return 0
-        #return min(self.values)
         return self.min_value
 
     def max(self):
         if not self.ready():
             return 0
-        #return max(self.values)
         return self.max_value
+
+    def min_ts(self):
+        return self.min_value_ts
+
+    def max_ts(self):
+        return self.max_value_ts
 
     def get_values(self):
         return self.values
