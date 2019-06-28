@@ -9,6 +9,7 @@ class MTS_Retracement(object):
         self.mts2 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False)
         self.cross_up = MTSCrossover2(win_secs=60)
         self.cross_down = MTSCrossover2(win_secs=60)
+        self.cross = MTSCrossover2(win_secs=60)
         self.result = 0
         self.prev_trend_up = False
         self.prev_trend_down = False
@@ -24,16 +25,19 @@ class MTS_Retracement(object):
         if not self.mts2.ready():
             return self.result
 
-        self.cross_up.update(self.mts2.last_value(), self.mts1.max(), ts)
-        self.cross_down.update(self.mts2.last_value(), self.mts1.min(), ts)
+        #self.cross_up.update(self.mts1.last_value(), self.mts2.max(), ts)
+        #self.cross_down.update(self.mts1.last_value(), self.mts2.min(), ts)
 
-        if self.cross_up.crossup_detected():
+        self.cross.update(self.mts1.last_value(), self.mts2.first_value(), ts)
+        #self.cross_down.update(self.mts1.last_value(), self.mts2.first_value(), ts)
+
+        if self.cross.crossup_detected():
             self.prev_trend_up = self.trend_up
             self.prev_trend_down = self.trend_down
             self.trend_up = True
             self.trend_down = False
 
-        if self.cross_down.crossdown_detected():
+        if self.cross.crossdown_detected():
             self.prev_trend_up = self.trend_up
             self.prev_trend_down = self.trend_down
             self.trend_up = False
