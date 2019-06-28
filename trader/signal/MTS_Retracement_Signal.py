@@ -5,7 +5,10 @@ except ImportError:
     from trader.indicator.AEMA import AEMA
     from trader.indicator.EMA import EMA
 
+from trader.indicator.OBV import OBV
 from trader.lib.MovingTimeSegment.MTS_Retracement import MTS_Retracement
+from trader.lib.MovingTimeSegment.MTS_LSMA import MTS_LSMA
+from trader.lib.MovingTimeSegment.MTSCrossover import MTSCrossover
 from trader.lib.struct.SignalBase import SignalBase
 
 
@@ -22,6 +25,10 @@ class MTS_Retracement_Signal(SignalBase):
         self.aema1 = AEMA(12, scale_interval_secs=60)
         self.aema2 = AEMA(50, scale_interval_secs=60)
         self.mts_retrace = MTS_Retracement(win_secs=3600)
+
+        self.obv = OBV()
+        self.lsma_obv = MTS_LSMA(3600)
+        self.lsma_obv_cross_zero = MTSCrossover(result_secs=3600)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -44,6 +51,12 @@ class MTS_Retracement_Signal(SignalBase):
         self.last_close = close
         self.last_volume = volume
 
+        #self.obv.update(close=close, volume=volume)
+        #self.lsma_obv.update(self.obv.result, ts)
+
+        #if self.lsma_obv.ready():
+        #    self.lsma_obv_cross_zero.update(self.lsma_obv.result, 0, ts)
+
         self.aema1.update(close, ts)
         self.aema2.update(close, ts)
         self.mts_retrace.update(self.aema1.result, ts)
@@ -62,6 +75,9 @@ class MTS_Retracement_Signal(SignalBase):
         # don't re-buy less than 30 minutes after a sell
         if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
             return False
+
+        #if self.lsma_obv_cross_zero.crossdown_detected():
+        #    return False
 
         if self.mts_retrace.crossup_detected(clear=True):
             return True
