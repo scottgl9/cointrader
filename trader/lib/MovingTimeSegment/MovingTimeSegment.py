@@ -4,7 +4,7 @@ from trader.lib.FastMinMax import FastMinMax
 
 class MovingTimeSegment(object):
     def __init__(self, seconds=0, minutes=0, value_smoother=None, percent_smoother=None,
-                 disable_fmm=False, enable_volume=False):
+                 disable_fmm=False, enable_volume=False, track_ts=False):
         self.seconds = seconds
         if minutes != 0:
             self.seconds += minutes * 60
@@ -12,7 +12,8 @@ class MovingTimeSegment(object):
         self.values = []
         self.volumes = None
         self.timestamps = []
-        self.fmm = FastMinMax()
+        self.track_ts = track_ts
+        self.fmm = FastMinMax(track_ts=self.track_ts)
         self.full = False
         self.enable_volume = enable_volume
         if self.enable_volume:
