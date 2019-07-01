@@ -23,8 +23,8 @@ class MTS_Retracement_Signal(SignalBase):
         self.last_volume = 0
 
         self.aema1 = AEMA(12, scale_interval_secs=60)
-        self.aema2 = AEMA(50, scale_interval_secs=60)
-        self.mts_retrace = MTS_Retracement(win_secs=3600)
+        self.aema2 = AEMA(200, scale_interval_secs=60)
+        self.mts_retrace = MTS_Retracement(win_secs=3600, short_smoother=self.aema1, long_smoother=self.aema2)
 
         self.obv = OBV()
         self.lsma_obv = MTS_LSMA(3600)
@@ -57,9 +57,9 @@ class MTS_Retracement_Signal(SignalBase):
         #if self.lsma_obv.ready():
         #    self.lsma_obv_cross_zero.update(self.lsma_obv.result, 0, ts)
 
-        self.aema1.update(close, ts)
-        self.aema2.update(close, ts)
-        self.mts_retrace.update(self.aema1.result, ts)
+        #self.aema1.update(close, ts)
+        #self.aema2.update(close, ts)
+        self.mts_retrace.update(close, ts)
 
     def buy_signal(self):
         if self.is_currency_pair:
@@ -72,13 +72,6 @@ class MTS_Retracement_Signal(SignalBase):
             else:
                 return False
 
-        # don't re-buy less than 30 minutes after a sell
-        if self.last_sell_ts != 0 and (self.timestamp - self.last_sell_ts) < 1000 * 3600:
-            return False
-
-        #if self.lsma_obv_cross_zero.crossdown_detected():
-        #    return False
-
         if self.mts_retrace.crossup_detected(clear=True):
             return True
 
@@ -90,7 +83,7 @@ class MTS_Retracement_Signal(SignalBase):
         return False
 
     def sell_signal(self):
-        if self.mts_retrace.long_crossdown_detected(clear=True):
+        if self.mts_retrace.crossdown2_detected(clear=True):
             return True
 
         if self.mts_retrace.crossdown_detected(clear=True):
