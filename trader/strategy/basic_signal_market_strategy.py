@@ -244,6 +244,7 @@ class basic_signal_market_strategy(StrategyBase):
                         signal.buy_size = 0.0
                         signal.last_sell_price = msg.price
                         signal.buy_timestamp = 0
+                        signal.prev_last_sell_ts = signal.last_sell_ts
                         signal.last_sell_ts = self.timestamp
                     else:
                         self.logger.warning("SELL_COMPLETE failed, no signal for {}".format(msg.dst_id))
@@ -422,6 +423,14 @@ class basic_signal_market_strategy(StrategyBase):
             self.signal_handler.clear_handler_signaled()
             return
 
+        # don't re-buy less than 60 minutes after a sell
+        if signal.last_sell_ts != 0 and (self.timestamp - signal.last_sell_ts) < 1000 * 3600:
+            return
+
+        # don't re-buy less than 60 minutes after start of sell
+        if signal.last_start_sell_ts != 0 and (self.timestamp - signal.last_start_sell_ts) < 1000 * 3600:
+            return
+
         min_trade_size = self.min_trade_size
 
         if self.min_trade_size_qty != 1.0:
@@ -451,6 +460,9 @@ class basic_signal_market_strategy(StrategyBase):
             return
 
         sell_price = price
+
+        # track ts for start of sell order
+        signal.last_start_sell_ts = self.timestamp
 
         # for more accurate simulation, delay sell message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered

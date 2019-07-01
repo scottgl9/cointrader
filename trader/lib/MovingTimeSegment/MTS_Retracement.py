@@ -8,6 +8,9 @@ class MTS_Retracement(object):
         self.mts1 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=True)
         self.mts2 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=True)
         self.mts3 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=True)
+        self._mts1_slope = 0
+        self._mts2_slope = 0
+        self._mts3_slope = 0
         self.cross_up = MTSCrossover2(win_secs=60)
         self.cross_down = MTSCrossover2(win_secs=60)
         self.long_cross_down =  MTSCrossover2(win_secs=60)
@@ -36,6 +39,9 @@ class MTS_Retracement(object):
         self.cross_up.update(self.mts1.last_value(), self.mts2.max(), ts)
         self.cross_down.update(self.mts1.last_value(), self.mts2.min(), ts)
 
+        self._mts1_slope = self.mts1.last_value() - self.mts1.first_value()
+        self._mts2_slope = self.mts2.last_value() - self.mts2.first_value()
+
         #self.cross.update(self.mts1.last_value(), self.mts2.first_value(), ts)
         #self.cross_down.update(self.mts1.last_value(), self.mts2.first_value(), ts)
 
@@ -57,6 +63,7 @@ class MTS_Retracement(object):
 
         self.mts3.update(self.mts2.first_value(), ts)
         if self.mts3.ready():
+            self._mts3_slope = self.mts3.last_value() - self.mts3.first_value()
             self.long_cross_down.update(self.mts1.last_value(), self.mts3.min(), ts)
             if self.long_cross_down.crossdown_detected():
                 self._crossup = False

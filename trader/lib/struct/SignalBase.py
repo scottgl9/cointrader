@@ -48,6 +48,7 @@ class SignalBase(object):
         self.last_buy_ts = 0
         self.last_sell_price = 0.0
         self.last_sell_ts = 0
+        self.last_start_sell_ts = 0
         self.buy_price_high = 0.0
 
         # hourly variables
