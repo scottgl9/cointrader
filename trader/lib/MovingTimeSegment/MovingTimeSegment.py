@@ -121,6 +121,11 @@ class MovingTimeSegment(object):
             return 0
         return self.max_value
 
+    def min_max_diff(self):
+        if not self.ready():
+            return 0
+        return self.max_value - self.min_value
+
     def min_ts(self):
         return self.min_value_ts
 
