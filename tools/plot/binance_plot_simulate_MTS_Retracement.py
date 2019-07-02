@@ -33,6 +33,8 @@ def simulate(conn, client, base, currency):
 
     aema12 = AEMA(50, scale_interval_secs=60)
     mts_retracement = MTS_Retracement(win_secs=3600)
+    mts_avg1_values = []
+    mts_avg2_values = []
 
     aema12_values = []
     lsma_values = []
@@ -65,6 +67,10 @@ def simulate(conn, client, base, currency):
         elif mts_retracement.crossdown_detected(clear=True):
             peaks.append(i)
 
+        if mts_retracement.mts1_avg() != 0:
+            mts_avg1_values.append(mts_retracement.mts1_avg())
+            mts_avg2_values.append(mts_retracement.mts2_avg())
+
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -82,6 +88,9 @@ def simulate(conn, client, base, currency):
     fig2, = plt.plot(lsma_values, label="LSMA")
 
     plt.legend(handles=[symprice, fig1, fig2])
+    plt.subplot(212)
+    plt.plot(mts_avg1_values)
+    plt.plot(mts_avg2_values)
     plt.show()
 
 if __name__ == '__main__':
