@@ -7,20 +7,49 @@ class MTS_Retracement(object):
     def __init__(self, win_secs=3600, short_smoother=None, long_smoother=None):
         self.win_secs = win_secs
         self.tracker1 = MTS_Track(win_secs=win_secs, smoother=short_smoother)
+        self.tracker2 = MTS_Track(win_secs=win_secs, smoother=long_smoother)
 
     def update(self, value, ts):
         self.tracker1.update(value, ts)
+        self.tracker2.update(value, ts)
+
+    def get_short_mts1(self):
+        return self.tracker1.mts1
+
+    def get_short_mts2(self):
+        return self.tracker1.mts2
+
+    def get_long_mts1(self):
+        return self.tracker1.mts1
+
+    def get_long_mts2(self):
+        return self.tracker1.mts2
 
     def crossup_detected(self, clear=True):
         if self.tracker1.mts1_slope < 0 and self.tracker1.mts2_slope < 0:
             return False
-        return self.tracker1.cross_up_mts2_detected(clear=clear)
+        if (self.tracker1.mts1.max() <= self.tracker1.mts2.max() or
+            self.tracker1.mts1.min() <= self.tracker1.mts2.min()):
+            return False
+        return self.tracker1.cross_up_mts2_up_detected(clear=clear)
 
     def crossdown_detected(self, clear=True):
-        return self.tracker1.cross_down_mts2_detected(clear=clear)
+        #if self.tracker1.cross_up_mts2_down_detected(clear=clear):
+        #    return True
+        if self.tracker1.cross_down_mts2_down_detected(clear=clear):
+            return True
+        return False
 
     def crossdown2_detected(self, clear=True):
-        return self.tracker1.cross_down_mts3_detected(clear=clear)
+        return self.tracker1.cross_down_mts3_down_detected(clear=clear)
+
+    def long_crossdown_detected(self, clear=True):
+        if (self.tracker2.mts1.max() >= self.tracker2.mts2.max() or
+            self.tracker2.mts1.min() >= self.tracker2.mts2.min()):
+            return False
+        if self.tracker2.mts1_slope < 0 and self.tracker2.mts2_slope < 0:
+            return self.tracker2.cross_down_mts3_down_detected(clear=clear)
+        return False
 
     def mts1_avg(self):
         return self.tracker1.mts1_avg()
@@ -117,19 +146,25 @@ class MTS_Track(object):
         elif self.cross_down_mts3.crossup_detected():
             self._cross_down_mts3_up = True
 
-    def cross_up_mts2_detected(self, clear=True):
+    def cross_up_mts2_up_detected(self, clear=True):
         result = self._cross_up_mts2_up
         if clear:
             self._cross_up_mts2_up = False
         return result
 
-    def cross_down_mts2_detected(self, clear=True):
+    def cross_up_mts2_down_detected(self, clear=True):
+        result = self._cross_up_mts2_down
+        if clear:
+            self._cross_up_mts2_down = False
+        return result
+
+    def cross_down_mts2_down_detected(self, clear=True):
         result = self._cross_down_mts2_down
         if clear:
             self._cross_down_mts2_down = False
         return result
 
-    def cross_down_mts3_detected(self, clear=True):
+    def cross_down_mts3_down_detected(self, clear=True):
         result = self._cross_down_mts3_down
         if clear:
             self._cross_down_mts3_down = False

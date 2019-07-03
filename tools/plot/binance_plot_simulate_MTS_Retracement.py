@@ -35,6 +35,12 @@ def simulate(conn, client, base, currency):
     mts_retracement = MTS_Retracement(win_secs=3600)
     mts_avg1_values = []
     mts_avg2_values = []
+    mts_mts1_min_values = []
+    mts_mts1_max_values = []
+    mts_mts1_x_values = []
+    mts_mts2_min_values = []
+    mts_mts2_max_values = []
+    mts_mts2_x_values = []
 
     mts1_max_value_diff_values = []
     mts1_value_min_diff_values = []
@@ -74,6 +80,20 @@ def simulate(conn, client, base, currency):
             mts_avg1_values.append(mts_retracement.mts1_avg())
             mts_avg2_values.append(mts_retracement.mts2_avg())
 
+        mts1 = mts_retracement.get_short_mts1()
+        if mts1.ready() and mts1.min():
+            mts_mts1_min_values.append(mts1.min())
+            mts_mts1_x_values.append(i)
+        if mts1.ready() and mts1.max():
+            mts_mts1_max_values.append(mts1.max())
+
+        mts2 = mts_retracement.get_short_mts2()
+        if mts2.ready() and mts2.min():
+            mts_mts2_min_values.append(mts2.min())
+            mts_mts2_x_values.append(i)
+        if mts2.ready() and mts2.max():
+            mts_mts2_max_values.append(mts2.max())
+
         #if mts_retracement.mts1_max_value_diff():
         #    mts1_max_value_diff_values.append(mts_retracement.mts1_max_value_diff())
 
@@ -94,9 +114,13 @@ def simulate(conn, client, base, currency):
         plt.axvline(x=valley, color='green')
     symprice, = plt.plot(close_prices, label=ticker_id)
     fig1, = plt.plot(aema12_values, label="AEMA12")
-    fig2, = plt.plot(lsma_values, label="LSMA")
+    #fig2, = plt.plot(lsma_values, label="LSMA")
+    #fig2, = plt.plot(mts_mts1_x_values, mts_mts1_min_values, label="MTS1_MIN")
+    #fig3, = plt.plot(mts_mts1_x_values, mts_mts1_max_values, label="MTS1_MAX")
+    fig4, = plt.plot(mts_mts2_x_values, mts_mts2_min_values, label="MTS2_MIN")
+    fig5, = plt.plot(mts_mts2_x_values, mts_mts2_max_values, label="MTS2_MAX")
 
-    plt.legend(handles=[symprice, fig1, fig2])
+    plt.legend(handles=[symprice, fig1, fig4, fig5])
     plt.subplot(212)
     plt.plot(mts_avg1_values)
     plt.plot(mts_avg2_values)
