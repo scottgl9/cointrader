@@ -34,7 +34,7 @@ def simulate(conn, client, base, currency):
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
     obv = OBV()
-    mts_sma = MTS_SMA()
+    mts_sma = MTS_SMA(seconds=3600)
     ema12 = EMA(12, scale=24)
     ema26 = EMA(26, scale=24)
     ema50 = EMA(50, scale=24)
@@ -63,6 +63,7 @@ def simulate(conn, client, base, currency):
     high_prices = []
     volumes = []
     mts_sma_values = []
+    mts_sma_x_values = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -99,7 +100,9 @@ def simulate(conn, client, base, currency):
         ema500_values.append(ema500.result)
 
         mts_sma.update(close, ts)
-        mts_sma_values.append(mts_sma.result)
+        if mts_sma.ready():
+            mts_sma_values.append(mts_sma.result)
+            mts_sma_x_values.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -114,7 +117,7 @@ def simulate(conn, client, base, currency):
 
     symprice, = plt.plot(close_prices, label=ticker_id)
 
-    fig1, = plt.plot(mts_sma_values, label='MTS_SMA')
+    fig1, = plt.plot(mts_sma_x_values, mts_sma_values, label='MTS_SMA')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
