@@ -4,7 +4,7 @@ from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 class MTS_SMA(object):
     def __init__(self, seconds=60):
         self.seconds = seconds
-        self.mts = MovingTimeSegment(seconds=self.seconds)
+        self.mts = MovingTimeSegment(seconds=self.seconds, disable_fmm=False)
         self.result = 0
 
     def ready(self):
@@ -27,3 +27,12 @@ class MTS_SMA(object):
 
     def last_value(self):
         return self.mts.last_value()
+
+    def diff(self):
+        return self.mts.last_value() - self.mts.first_value()
+
+    def min(self):
+        return self.mts.min()
+
+    def max(self):
+        return self.mts.max()

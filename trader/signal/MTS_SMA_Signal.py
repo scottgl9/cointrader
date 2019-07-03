@@ -23,7 +23,9 @@ class MTS_SMA_Signal(SignalBase):
         self.last_volume = 0
         self.mts1 = MTS_SMA(seconds=3600)
         self.mts2 = MovingTimeSegment(seconds=3600)
+        self.mts3 = MovingTimeSegment(seconds=3600)
         self.cross = MTSCrossover2(win_secs=60)
+        self.cross_long = MTSCrossover2(win_secs=60)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
@@ -54,6 +56,11 @@ class MTS_SMA_Signal(SignalBase):
             return False
         self.cross.update(self.mts1.last_value(), self.mts2.first_value(), ts)
 
+        self.mts3.update(self.mts2.first_value(), ts)
+        if not self.mts3.ready():
+            return False
+        self.cross_long.update(self.mts1.last_value(), self.mts3.first_value(), ts)
+
     def buy_signal(self):
         if self.is_currency_pair:
             return False
@@ -71,6 +78,16 @@ class MTS_SMA_Signal(SignalBase):
         return False
 
     def sell_long_signal(self):
+        if not self.mts3.ready():
+            return False
+        if self.mts1.diff() >= 0 or self.mts2.diff() >= 0 or self.mts3.diff() >= 0:
+            return False
+        if self.mts1.min() >= self.mts2.min() or self.mts1.min() >= self.mts3.min():
+            return False
+        if self.mts1.max() < self.mts3.min() and self.cross_long.crossdown_detected():
+            self.disabled = True
+            self.disabled_end_ts = self.timestamp + 8000 * 3600
+            return True
         return False
 
     def sell_signal(self):
