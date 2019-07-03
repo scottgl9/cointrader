@@ -1,3 +1,4 @@
+from trader.indicator.EMA import EMA
 from .MovingTimeSegment import MovingTimeSegment
 from .MTSCrossover2 import MTSCrossover2
 
@@ -32,6 +33,8 @@ class MTS_Track(object):
         self.mts1 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts2 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts3 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
+        self.ema_max_value_diff = EMA(12, scale=24)
+        self.ema_value_min_diff = EMA(12, scale=24)
         self._mts1_slope = 0
         self._mts2_slope = 0
         self._mts3_slope = 0
@@ -73,6 +76,12 @@ class MTS_Track(object):
         self._mts2_slope = self.mts2.last_value() - self.mts2.first_value()
         self._mts1_avg = self.mts1.get_sum() / self.mts1.get_sum_count()
         self._mts2_avg = self.mts2.get_sum() / self.mts2.get_sum_count()
+
+        if self.mts1.max_value_diff():
+            self.ema_max_value_diff.update(self.mts1.max_value_diff())
+
+        if self.mts1.value_min_diff():
+            self.ema_value_min_diff.update(self.mts1.min_max_diff())
 
         if  self.cross_up.crossup_detected():
             self._prev_crossup = self._crossup

@@ -27,6 +27,7 @@ class MovingTimeSegment(object):
         self.max_value = 0
         self.max_value_index = -1
         self.max_value_ts = 0
+        self.prev_value = 0
         # track moving sum of time segment values
         self._sum = 0
         self._sum_count = 0
@@ -44,6 +45,8 @@ class MovingTimeSegment(object):
             svalue = self.value_smoother.update(value)
         else:
             svalue = value
+
+        self.prev_value = svalue
 
         if self.enable_volume:
             self.volumes.append(volume)
@@ -125,6 +128,20 @@ class MovingTimeSegment(object):
         if not self.ready():
             return 0
         return self.max_value - self.min_value
+
+    def value_min_diff(self):
+        if not self.ready():
+            return 0
+        if not self.min_value or not self.max_value:
+            return 0
+        return self.max_value - self.prev_value
+
+    def max_value_diff(self):
+        if not self.ready():
+            return 0
+        if not self.min_value or not self.max_value:
+            return 0
+        return self.prev_value - self.min_value
 
     def min_ts(self):
         return self.min_value_ts
