@@ -12,19 +12,20 @@ class MTS_Retracement(object):
         self.tracker1.update(value, ts)
 
     def crossup_detected(self, clear=True):
-        return self.tracker1.crossup_detected(clear=clear)
+        return self.tracker1.cross_up_mts2_detected(clear=clear)
 
     def crossdown_detected(self, clear=True):
-        return self.tracker1.crossdown_detected(clear=clear)
+        return self.tracker1.cross_down_mts2_detected(clear=clear)
 
     def crossdown2_detected(self, clear=True):
-        return self.tracker1.crossdown2_detected(clear=clear)
+        return self.tracker1.cross_down_mts3_detected(clear=clear)
 
     def mts1_avg(self):
         return self.tracker1.mts1_avg()
 
     def mts2_avg(self):
         return self.tracker1.mts2_avg()
+
 
 class MTS_Track(object):
     def __init__(self, win_secs, smoother=None):
@@ -33,22 +34,25 @@ class MTS_Track(object):
         self.mts1 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts2 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts3 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
-        self.ema_max_value_diff = EMA(12, scale=24)
-        self.ema_value_min_diff = EMA(12, scale=24)
+
         self._mts1_slope = 0
         self._mts2_slope = 0
         self._mts3_slope = 0
         self._mts1_avg = 0
         self._mts2_avg = 0
-        self.cross_up = MTSCrossover2(win_secs=60)
-        self.cross_down = MTSCrossover2(win_secs=60)
-        self.cross_down2 =  MTSCrossover2(win_secs=60)
+        self.cross_up_mts2 = MTSCrossover2(win_secs=60)
+        self.cross_down_mts2 = MTSCrossover2(win_secs=60)
+        self.cross_up_mts3 = MTSCrossover2(win_secs=60)
+        self.cross_down_mts3 =  MTSCrossover2(win_secs=60)
         self.result = 0
-        self._prev_crossup = False
-        self._prev_crossdown = False
-        self._crossup = False
-        self._crossdown = False
-        self._crossdown2 = False
+        self._cross_up_mts2_up = False
+        self._cross_up_mts2_down = False
+        self._cross_down_mts2_up = False
+        self._cross_down_mts2_down = False
+        self._cross_up_mts3_up = False
+        self._cross_up_mts3_down = False
+        self._cross_down_mts3_up = False
+        self._cross_down_mts3_down = False
         self._crossup_value = 0
         self._crossdown_value = 0
         self._crossup_ts = 0
@@ -69,62 +73,64 @@ class MTS_Track(object):
         if not self.mts2.ready():
             return self.result
 
-        self.cross_up.update(self.mts1.last_value(), self.mts2.max(), ts)
-        self.cross_down.update(self.mts1.last_value(), self.mts2.min(), ts)
+        self.cross_up_mts2.update(self.mts1.last_value(), self.mts2.max(), ts)
+        self.cross_down_mts2.update(self.mts1.last_value(), self.mts2.min(), ts)
 
-        self._mts1_slope = self.mts1.last_value() - self.mts1.first_value()
-        self._mts2_slope = self.mts2.last_value() - self.mts2.first_value()
+        self._mts1_slope = self.mts1.diff()
+        self._mts2_slope = self.mts2.diff()
         self._mts1_avg = self.mts1.get_sum() / self.mts1.get_sum_count()
         self._mts2_avg = self.mts2.get_sum() / self.mts2.get_sum_count()
 
-        if self.mts1.max_value_diff():
-            self.ema_max_value_diff.update(self.mts1.max_value_diff())
-
-        if self.mts1.value_min_diff():
-            self.ema_value_min_diff.update(self.mts1.min_max_diff())
-
-        if  self.cross_up.crossup_detected():
-            self._prev_crossup = self._crossup
-            self._prev_crossdown = self._crossdown
-            self._crossup = True
-            self._crossdown = False
+        if  self.cross_up_mts2.crossup_detected():
+            self._cross_up_mts2_up = True
+            self._cross_down_mts2_down = False
             self._crossup_ts = ts
             self._crossup_value = self.mts1.last_value()
+        elif self.cross_up_mts2.crossdown_detected():
+            self._cross_up_mts2_down = True
 
-        if self.cross_down.crossdown_detected():
-            self._prev_crossup = self._crossup
-            self._prev_crossdown = self._crossdown
-            self._crossup = False
-            self._crossdown = True
+        if self.cross_down_mts2.crossdown_detected():
+            self._cross_up_mts2_up = False
+            self._cross_down_mts2_down = True
             self._crossdown_ts = ts
             self._crossdown_value = self.mts1.last_value()
+        elif self.cross_down_mts2.crossup_detected():
+            self._cross_down_mts2_up = True
 
         self.mts3.update(self.mts2.first_value(), ts)
         if not self.mts3.ready():
             return self.result
 
-        self._mts3_slope = self.mts3.last_value() - self.mts3.first_value()
-        self.cross_down2.update(self.mts1.last_value(), self.mts3.min(), ts)
-        if self.cross_down2.crossdown_detected():
-            self._crossup = False
-            self._crossdown2 = True
+        self._mts3_slope = self.mts3.diff()
+        self.cross_down_mts3.update(self.mts1.last_value(), self.mts3.min(), ts)
+        self.cross_up_mts3.update(self.mts1.last_value(), self.mts3.min(), ts)
 
-    def crossup_detected(self, clear=True):
-        result = self._crossup
+        if self.cross_up_mts3.crossup_detected():
+            self._cross_up_mts3_up = True
+        elif self.cross_up_mts3.crossdown_detected():
+            self._cross_up_mts3_down = True
+
+        if self.cross_down_mts3.crossdown_detected():
+            self._cross_down_mts3_down = True
+        elif self.cross_down_mts3.crossup_detected():
+            self._cross_down_mts3_up = True
+
+    def cross_up_mts2_detected(self, clear=True):
+        result = self._cross_up_mts2_up
         if clear:
-            self._crossup = False
+            self._cross_up_mts2_up = False
         return result
 
-    def crossdown_detected(self, clear=True):
-        result = self._crossdown
+    def cross_down_mts2_detected(self, clear=True):
+        result = self._cross_down_mts2_down
         if clear:
-            self._crossdown = False
+            self._cross_down_mts2_down = False
         return result
 
-    def crossdown2_detected(self, clear=True):
-        result = self._crossdown2
+    def cross_down_mts3_detected(self, clear=True):
+        result = self._cross_down_mts3_down
         if clear:
-            self._crossdown2 = False
+            self._cross_down_mts3_down = False
         return result
 
     def mts1_avg(self):

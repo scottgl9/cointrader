@@ -36,6 +36,9 @@ def simulate(conn, client, base, currency):
     mts_avg1_values = []
     mts_avg2_values = []
 
+    mts1_max_value_diff_values = []
+    mts1_value_min_diff_values = []
+
     aema12_values = []
     lsma_values = []
     open_prices = []
@@ -71,6 +74,12 @@ def simulate(conn, client, base, currency):
             mts_avg1_values.append(mts_retracement.mts1_avg())
             mts_avg2_values.append(mts_retracement.mts2_avg())
 
+        #if mts_retracement.mts1_max_value_diff():
+        #    mts1_max_value_diff_values.append(mts_retracement.mts1_max_value_diff())
+
+        #if mts_retracement.mts1_value_min_diff():
+        #    mts1_value_min_diff_values.append(mts_retracement.mts1_value_min_diff())
+
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -91,6 +100,8 @@ def simulate(conn, client, base, currency):
     plt.subplot(212)
     plt.plot(mts_avg1_values)
     plt.plot(mts_avg2_values)
+    #plt.plot(mts1_max_value_diff_values)
+    #plt.plot(mts1_value_min_diff_values)
     plt.show()
 
 if __name__ == '__main__':
