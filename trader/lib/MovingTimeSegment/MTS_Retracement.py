@@ -12,6 +12,8 @@ class MTS_Retracement(object):
         self.tracker1.update(value, ts)
 
     def crossup_detected(self, clear=True):
+        if self.tracker1.mts1_slope < 0 and self.tracker1.mts2_slope < 0:
+            return False
         return self.tracker1.cross_up_mts2_detected(clear=clear)
 
     def crossdown_detected(self, clear=True):
@@ -35,9 +37,9 @@ class MTS_Track(object):
         self.mts2 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts3 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
 
-        self._mts1_slope = 0
-        self._mts2_slope = 0
-        self._mts3_slope = 0
+        self.mts1_slope = 0
+        self.mts2_slope = 0
+        self.mts3_slope = 0
         self._mts1_avg = 0
         self._mts2_avg = 0
         self.cross_up_mts2 = MTSCrossover2(win_secs=60)
@@ -76,8 +78,8 @@ class MTS_Track(object):
         self.cross_up_mts2.update(self.mts1.last_value(), self.mts2.max(), ts)
         self.cross_down_mts2.update(self.mts1.last_value(), self.mts2.min(), ts)
 
-        self._mts1_slope = self.mts1.diff()
-        self._mts2_slope = self.mts2.diff()
+        self.mts1_slope = self.mts1.diff()
+        self.mts2_slope = self.mts2.diff()
         self._mts1_avg = self.mts1.get_sum() / self.mts1.get_sum_count()
         self._mts2_avg = self.mts2.get_sum() / self.mts2.get_sum_count()
 
@@ -101,7 +103,7 @@ class MTS_Track(object):
         if not self.mts3.ready():
             return self.result
 
-        self._mts3_slope = self.mts3.diff()
+        self.mts3_slope = self.mts3.diff()
         self.cross_down_mts3.update(self.mts1.last_value(), self.mts3.min(), ts)
         self.cross_up_mts3.update(self.mts1.last_value(), self.mts3.min(), ts)
 
