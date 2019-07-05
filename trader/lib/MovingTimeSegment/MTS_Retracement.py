@@ -1,3 +1,4 @@
+#                                         192 hour moving time frame
 #+---------------+------------------------------------------------------------------------------------------------+
 #|               |              cur 96 hr                                                                         |
 #|               +---------------+--------------------------------------------------------------------------------+
@@ -51,6 +52,12 @@ class MTS_Retracement(object):
         self._crossdown_value = 0
         self._crossup_ts = 0
         self._crossdown_ts = 0
+
+        # hourly vars
+        self.hourly_ema_high = EMA(12)
+        self.hourly_ema_low = EMA(12)
+        self.hourly_highs = []
+        self.hourly_lows = []
         self.pre_load_hours = 192
         self.first_hourly_ts = 0
         self.last_hourly_ts = 0
@@ -65,8 +72,15 @@ class MTS_Retracement(object):
 
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
-        start_ts = end_ts - self.accnt.hours_to_ts(self.pre_load_hours)
+        start_ts = end_ts - self.accnt.hours_to_ts(self.pre_load_hours - 1)
         self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
+        for kline in self.klines:
+            low = float(kline['low'])
+            high = float(kline['high'])
+            self.hourly_ema_low.update(low)
+            self.hourly_ema_high.update(high)
+            self.hourly_lows.append(self.hourly_ema_low.result)
+            self.hourly_highs.append(self.hourly_ema_high.result)
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
         self.last_hourly_ts = self.first_hourly_ts
@@ -78,8 +92,16 @@ class MTS_Retracement(object):
         if not kline:
             return False
 
+        self.hourly_ema_low.update(float(kline['low']))
+        self.hourly_ema_high.update(float(kline['high']))
+        self.hourly_lows = self.hourly_lows[1:]
+        self.hourly_highs = self.hourly_highs[1:]
+        self.hourly_lows.append(self.hourly_ema_low.result)
+        self.hourly_highs.append(self.hourly_ema_high.result)
+
         # remove oldest kline, and add new kline to end
-        self.klines = self.klines[1:].append(kline)
+        self.klines = self.klines[1:]
+        self.klines.append(kline)
 
         self.last_hourly_ts = hourly_ts
         return False
