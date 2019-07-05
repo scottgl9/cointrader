@@ -32,9 +32,9 @@ class SignalHandler(object):
         if handler in self.handlers:
             self.handlers.remove(handler)
 
-    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
+    def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         for handler in self.handlers:
-            handler.hourly_load(start_ts, end_ts, ts)
+            handler.hourly_load(hourly_ts, pre_load_hours, ts)
 
     def hourly_update(self, hourly_ts):
         for handler in self.handlers:

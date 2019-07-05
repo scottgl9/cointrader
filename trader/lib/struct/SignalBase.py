@@ -106,7 +106,7 @@ class SignalBase(object):
         return False
 
     # hourly load
-    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
+    def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         pass
 
     # hourly update

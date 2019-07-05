@@ -1,6 +1,7 @@
 from trader.lib.struct.SignalBase import SignalBase
 from trader.indicator.LSMA import LSMA
 
+
 class Hourly_LSMA_Crossover(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
         super(Hourly_LSMA_Crossover, self).__init__(hkdb, accnt, symbol, asset_info, hkdb)
@@ -11,7 +12,9 @@ class Hourly_LSMA_Crossover(SignalBase):
         # 1 month LSMA
         self.lsma720 = LSMA(720)
 
-    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
+    def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
+        end_ts = hourly_ts
+        start_ts = end_ts - self.accnt.hours_to_ts(pre_load_hours)
         self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         for kline in self.klines:
             ts = int(kline['ts'])

@@ -305,9 +305,8 @@ class basic_signal_market_strategy(StrategyBase):
             return
 
         # end_ts is first hourly ts for simulation
-        end_ts = self.accnt.get_hourly_ts(ts)
-        start_ts = end_ts - self.accnt.hours_to_ts(self.hourly_preload_hours)
-        self.hourly_klines_signal.hourly_load(start_ts, end_ts, ts)
+        hourly_ts = self.accnt.get_hourly_ts(ts)
+        self.hourly_klines_signal.hourly_load(hourly_ts, self.hourly_preload_hours, ts)
         if self.hourly_klines_signal.uses_models:
             self.accnt.loaded_model_count += 1
 
@@ -323,6 +322,7 @@ class basic_signal_market_strategy(StrategyBase):
                 # set initial hourly update ts
                 self.first_hourly_update_ts = self.accnt.get_hourly_ts(kline.ts)
                 self.last_hourly_update_ts = self.first_hourly_update_ts
+                # hourly klines with model loading
                 if self.hourly_klines_signal and self.hourly_klines_signal.uses_models:
                     # limit maximum number of models to load, unless max_hourly_model_count is zero
                     if not self.max_hourly_model_count or self.accnt.loaded_model_count <= self.max_hourly_model_count:

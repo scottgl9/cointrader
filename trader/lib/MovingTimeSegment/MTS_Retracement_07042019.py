@@ -4,13 +4,68 @@ from .MTSCrossover2 import MTSCrossover2
 
 
 class MTS_Retracement(object):
-    def __init__(self, win_secs=3600, short_smoother=None, symbol=None, accnt=None, hkdb=None):
+    def __init__(self, win_secs=3600, short_smoother=None, long_smoother=None):
         self.win_secs = win_secs
+        self.tracker1 = MTS_Track(win_secs=win_secs, smoother=short_smoother)
+        self.tracker2 = MTS_Track(win_secs=win_secs, smoother=long_smoother)
+
+    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
+        pass
+
+    def hourly_update(self, hourly_ts):
+        pass
+
+    def update(self, value, ts):
+        self.tracker1.update(value, ts)
+        self.tracker2.update(value, ts)
+
+    def get_short_mts1(self):
+        return self.tracker1.mts1
+
+    def get_short_mts2(self):
+        return self.tracker1.mts2
+
+    def get_long_mts1(self):
+        return self.tracker1.mts1
+
+    def get_long_mts2(self):
+        return self.tracker1.mts2
+
+    def crossup_detected(self, clear=True):
+        if self.tracker1.mts1_slope < 0 and self.tracker1.mts2_slope < 0:
+            return False
+        if (self.tracker1.mts1.max() <= self.tracker1.mts2.max() or
+            self.tracker1.mts1.min() <= self.tracker1.mts2.min()):
+            return False
+        return self.tracker1.cross_up_mts2_up_detected(clear=clear)
+
+    def crossdown_detected(self, clear=True):
+        if self.tracker1.cross_down_mts2_down_detected(clear=clear):
+            return True
+        return False
+
+    def crossdown2_detected(self, clear=True):
+        return self.tracker1.cross_down_mts3_down_detected(clear=clear)
+
+    def long_crossdown_detected(self, clear=True):
+        if (self.tracker2.mts1.max() >= self.tracker2.mts2.max() or
+            self.tracker2.mts1.min() >= self.tracker2.mts2.min()):
+            return False
+        if self.tracker2.mts1_slope < 0 and self.tracker2.mts2_slope < 0:
+            return self.tracker2.cross_down_mts3_down_detected(clear=clear)
+        return False
+
+    def mts1_avg(self):
+        return self.tracker1.mts1_avg()
+
+    def mts2_avg(self):
+        return self.tracker1.mts2_avg()
+
+
+class MTS_Track(object):
+    def __init__(self, win_secs, smoother=None):
         self.win_secs = win_secs
-        self.smoother = short_smoother
-        self.symbol = symbol
-        self.accnt = accnt
-        self.hkdb = hkdb
+        self.smoother = smoother
         self.mts1 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts2 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts3 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
@@ -23,7 +78,7 @@ class MTS_Retracement(object):
         self.cross_up_mts2 = MTSCrossover2(win_secs=60)
         self.cross_down_mts2 = MTSCrossover2(win_secs=60)
         self.cross_up_mts3 = MTSCrossover2(win_secs=60)
-        self.cross_down_mts3 = MTSCrossover2(win_secs=60)
+        self.cross_down_mts3 =  MTSCrossover2(win_secs=60)
         self.result = 0
         self._cross_up_mts2_up = False
         self._cross_up_mts2_down = False
@@ -37,44 +92,17 @@ class MTS_Retracement(object):
         self._crossdown_value = 0
         self._crossup_ts = 0
         self._crossdown_ts = 0
-        self.pre_load_hours = 192
-        self.first_hourly_ts = 0
-        self.last_hourly_ts = 0
-        self.last_update_ts = 0
-        self.klines = None
 
     def update(self, value, ts):
         result = value
         if self.smoother:
             result = self.smoother.update(value, ts)
-        self.update_mts(result, ts)
 
-    def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
-        end_ts = hourly_ts
-        start_ts = end_ts - self.accnt.hours_to_ts(self.pre_load_hours)
-        self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
-        self.last_update_ts = ts
-        self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
-        self.last_hourly_ts = self.first_hourly_ts
-
-    def hourly_update(self, hourly_ts):
-        kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
-
-        # hourly kline not in db yet, wait until next update() call
-        if not kline:
-            return False
-
-        # remove oldest kline, and add new kline to end
-        self.klines = self.klines[1:].append(kline)
-
-        self.last_hourly_ts = hourly_ts
-        return False
-
-    # handle updates for the three MTS segments
-    def update_mts(self, value, ts):
-        self.mts1.update(value, ts)
+        self.mts1.update(result, ts)
         if not self.mts1.ready():
             return self.result
+
+        self.mts1.get_sum()
 
         self.mts2.update(self.mts1.first_value(), ts)
         if not self.mts2.ready():
@@ -88,7 +116,7 @@ class MTS_Retracement(object):
         self._mts1_avg = self.mts1.get_sum() / self.mts1.get_sum_count()
         self._mts2_avg = self.mts2.get_sum() / self.mts2.get_sum_count()
 
-        if self.cross_up_mts2.crossup_detected():
+        if  self.cross_up_mts2.crossup_detected():
             self._cross_up_mts2_up = True
             self._cross_down_mts2_down = False
             self._crossup_ts = ts
@@ -121,17 +149,6 @@ class MTS_Retracement(object):
             self._cross_down_mts3_down = True
         elif self.cross_down_mts3.crossup_detected():
             self._cross_down_mts3_up = True
-
-    def crossup_detected(self, clear=True):
-        return self.cross_up_mts2_up_detected(clear=clear)
-
-    def crossdown_detected(self, clear=True):
-        if self.cross_down_mts2_down_detected(clear=clear):
-            return True
-        return False
-
-    def crossdown2_detected(self, clear=True):
-        return self.cross_down_mts3_down_detected(clear=clear)
 
     def cross_up_mts2_up_detected(self, clear=True):
         result = self._cross_up_mts2_up

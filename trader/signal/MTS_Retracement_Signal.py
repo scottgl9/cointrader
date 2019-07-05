@@ -24,16 +24,22 @@ class MTS_Retracement_Signal(SignalBase):
 
         self.aema1 = AEMA(12, scale_interval_secs=60)
         self.aema2 = AEMA(200, scale_interval_secs=60)
-        self.mts_retrace = MTS_Retracement(win_secs=3600, short_smoother=self.aema1, long_smoother=self.aema2)
-
-        self.obv = OBV()
-        self.lsma_obv = MTS_LSMA(3600)
-        self.lsma_obv_cross_zero = MTSCrossover(result_secs=3600)
+        self.mts_retrace = MTS_Retracement(win_secs=3600,
+                                           short_smoother=self.aema1,
+                                           symbol=self.symbol,
+                                           accnt=self.accnt,
+                                           hkdb=self.hkdb)
 
     def get_cache_list(self):
         if not self.accnt.simulate:
             return None
         return self.cache.get_cache_list()
+
+    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
+        self.mts_retrace.hourly_load(start_ts, end_ts, ts)
+
+    def hourly_update(self, hourly_ts):
+        self.mts_retrace.hourly_update(hourly_ts)
 
     def pre_update(self, close, volume, ts, cache_db=None):
         if self.is_currency_pair:
@@ -51,14 +57,6 @@ class MTS_Retracement_Signal(SignalBase):
         self.last_close = close
         self.last_volume = volume
 
-        #self.obv.update(close=close, volume=volume)
-        #self.lsma_obv.update(self.obv.result, ts)
-
-        #if self.lsma_obv.ready():
-        #    self.lsma_obv_cross_zero.update(self.lsma_obv.result, 0, ts)
-
-        #self.aema1.update(close, ts)
-        #self.aema2.update(close, ts)
         self.mts_retrace.update(close, ts)
 
     def buy_signal(self):
@@ -78,8 +76,8 @@ class MTS_Retracement_Signal(SignalBase):
         return False
 
     def sell_long_signal(self):
-        if self.mts_retrace.long_crossdown_detected(clear=True):
-            return True
+        #if self.mts_retrace.long_crossdown_detected(clear=True):
+        #    return True
         return False
 
     def sell_signal(self):

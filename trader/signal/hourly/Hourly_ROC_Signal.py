@@ -4,6 +4,7 @@ from trader.lib.Crossover import Crossover
 from trader.lib.Crossover2 import Crossover2
 import time
 
+
 class Hourly_ROC_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
         super(Hourly_ROC_Signal, self).__init__(accnt, symbol, asset_info, hkdb, uses_models=False)
@@ -13,7 +14,9 @@ class Hourly_ROC_Signal(SignalBase):
         self.cross_down = False
         self.cross_up = False
 
-    def hourly_load(self, start_ts=0, end_ts=0, ts=0):
+    def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
+        end_ts = hourly_ts
+        start_ts = end_ts - self.accnt.hours_to_ts(pre_load_hours)
         self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         for kline in self.klines:
             ts = int(kline['ts'])
