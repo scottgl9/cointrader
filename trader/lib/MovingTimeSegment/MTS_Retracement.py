@@ -255,6 +255,14 @@ class MTS_Retracement(object):
             self._cross_down_mts3_up = True
 
     def crossup_detected(self, clear=True):
+        #if self.cur_12hr_low == self.cur_24hr_low:
+        #    return False
+        if self.mts1.min() <= self.cur_24hr_low:
+            return False
+        if self.mts1.min() <= self.cur_48hr_low:
+            return False
+        if self.mts1.min() <= self.cur_96hr_low:
+            return False
         return self.cross_up_mts2_up_detected(clear=clear)
 
     def crossdown_detected(self, clear=True):
@@ -264,6 +272,17 @@ class MTS_Retracement(object):
 
     def crossdown2_detected(self, clear=True):
         return self.cross_down_mts3_down_detected(clear=clear)
+
+    def long_crossdown_detected(self, clear=True):
+        #if self.mts1.min() > self.cur_24hr_low:
+        #    return False
+        #if self.mts1.min() > self.cur_48hr_low:
+        #    return False
+        #if self.mts1.min() > self.cur_96hr_low:
+        #    return False
+        if self.mts1.max < self.mts2.min() and self.mts1.max() < self.mts3.min():
+            return True
+        return False
 
     def cross_up_mts2_up_detected(self, clear=True):
         result = self._cross_up_mts2_up

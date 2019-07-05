@@ -76,8 +76,8 @@ class MTS_Retracement_Signal(SignalBase):
         return False
 
     def sell_long_signal(self):
-        #if self.mts_retrace.long_crossdown_detected(clear=True):
-        #    return True
+        if self.mts_retrace.long_crossdown_detected(clear=True):
+            return True
         return False
 
     def sell_signal(self):
