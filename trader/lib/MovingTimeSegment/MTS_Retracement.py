@@ -280,7 +280,7 @@ class MTS_Retracement(object):
         #    return False
         #if self.mts1.min() > self.cur_96hr_low:
         #    return False
-        if self.mts1.max < self.mts2.min() and self.mts1.max() < self.mts3.min():
+        if self.mts1.max < self.mts2.min() or self.mts1.max() < self.mts3.min():
             return True
         return False
 
