@@ -1,17 +1,17 @@
 #                                         192 hourly min max
-#+---------------+-------------------------------------------------------------------------------+
-#|               |              cur 96 hr                                                        |
-#|               +---------------+---------------------------------------------------------------+
-#|               |               |            cur 48hr                                           |
-#|               |               +-------------+-------------------------------------------------+
-#|               |               |             |            cur 24hr                             |
-#|               |               |             +----------------+--------------------------------+
-#|               |               |             |                |             cur 12hr           |
-#|               |               |             |                +-------------+------------------+
-#|  prev 96hr    |  prev 48hr    |  prev 24hr  |  prev 12hr     |             |                  |
-#|               |               |             |                |  prev 8hr   |    cur 4hr       |
-#|               |               |             |                |             |                  |
-#+---------------+---------------+-------------+----------------+-------------+------------------+
+#+---------------+---------------------------------------------------------------------------+
+#|               |              cur 96 hr                                                    |
+#|               +---------------+-----------------------------------------------------------+
+#|               |               |            cur 48hr                                       |
+#|               |               +-------------+---------------------------------------------+
+#|               |               |             |            cur 24hr                         |
+#|               |               |             +----------------+----------------------------+
+#|               |               |             |                |             cur 12hr       |
+#|               |               |             |                +-------------+--------------+
+#|  prev 96hr    |  prev 48hr    |  prev 24hr  |  prev 12hr     |  prev 8hr   |              |
+#|               |               |             |                +-------------+    cur 4hr   |
+#|               |               |             |                |  | prev 4hr |              |
+#+---------------+---------------+-------------+----------------+-------------+--------------+
 
 class HourlyMinMax(object):
     def __init__(self, symbol=None, accnt=None, hkdb=None):
@@ -109,6 +109,8 @@ class HourlyMinMax(object):
         self.cur_12hr_high = 0
         self.prev_8hr_low = 0
         self.prev_8hr_high = 0
+        self.prev_4hr_low = 0
+        self.prev_4hr_high = 0
         self.cur_4hr_low = 0
         self.cur_4hr_high = 0
 
@@ -169,6 +171,11 @@ class HourlyMinMax(object):
 
             if j >= 0:
                 if j < 8:
+                    if j >= 3:
+                        if not self.prev_4hr_low or self.hourly_lows[i] < self.prev_4hr_low:
+                            self.prev_4hr_low = self.hourly_lows[i]
+                        if self.hourly_highs[i] > self.prev_4hr_high:
+                            self.prev_4hr_high = self.hourly_highs[i]
                     if not self.prev_8hr_low or self.hourly_lows[i] < self.prev_8hr_low:
                         self.prev_8hr_low = self.hourly_lows[i]
                     if self.hourly_highs[i] > self.prev_8hr_high:
