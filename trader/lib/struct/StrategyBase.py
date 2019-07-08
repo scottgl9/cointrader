@@ -15,6 +15,9 @@ def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
     elif sname == 'Hourly_LSTM_Signal':
         from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
         signal = Hourly_LSTM_Signal
+    elif sname == 'Hourly_MinMax_Signal':
+        from trader.signal.hourly.Hourly_MinMax_Signal import Hourly_MinMax_Signal
+        signal = Hourly_MinMax_Signal
     elif sname == 'Hourly_ROC_Signal':
         from trader.signal.hourly.Hourly_ROC_Signal import Hourly_ROC_Signal
         signal = Hourly_ROC_Signal
@@ -149,6 +152,9 @@ class StrategyBase(object):
         elif name == 'Hourly_LSTM_Signal':
             from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
             signal = Hourly_LSTM_Signal
+        elif name == 'Hourly_MinMax_Signal':
+            from trader.signal.hourly.Hourly_MinMax_Signal import Hourly_MinMax_Signal
+            signal = Hourly_MinMax_Signal
         elif name == 'Hourly_ROC_Signal':
             from trader.signal.hourly.Hourly_ROC_Signal import Hourly_ROC_Signal
             signal = Hourly_ROC_Signal

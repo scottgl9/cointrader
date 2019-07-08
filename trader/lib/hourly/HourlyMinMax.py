@@ -171,7 +171,7 @@ class HourlyMinMax(object):
 
             if j >= 0:
                 if j < 8:
-                    if j >= 3:
+                    if j >= 4:
                         if not self.prev_4hr_low or self.hourly_lows[i] < self.prev_4hr_low:
                             self.prev_4hr_low = self.hourly_lows[i]
                         if self.hourly_highs[i] > self.prev_4hr_high:
