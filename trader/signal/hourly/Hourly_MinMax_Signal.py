@@ -9,10 +9,10 @@ class Hourly_MinMax_Signal(SignalBase):
         self.hourly_minmax = HourlyMinMax(self.symbol, self.accnt, self.hkdb)
 
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
-        self.hourly_minmax.hourly_load(hourly_ts, pre_load_hours, ts)
+        return self.hourly_minmax.hourly_load(hourly_ts, pre_load_hours, ts)
 
     def hourly_update(self, hourly_ts):
-        self.hourly_minmax.hourly_update(hourly_ts)
+        return self.hourly_minmax.hourly_update(hourly_ts)
 
     def hourly_buy_enable(self):
         if self.hourly_minmax.cur_4hr_high < self.hourly_minmax.prev_8hr_low:
