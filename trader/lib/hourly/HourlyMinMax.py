@@ -87,7 +87,7 @@ class HourlyMinMax(object):
         self.compute_hourly_lows_highs()
 
         self.last_hourly_ts = hourly_ts
-        return False
+        return True
 
 
     def compute_hourly_lows_highs(self):
