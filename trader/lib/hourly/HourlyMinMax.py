@@ -43,6 +43,10 @@ class HourlyMinMax(object):
         self.prev_12hr_high = 0
         self.cur_12hr_low = 0
         self.cur_12hr_high = 0
+        self.prev_8hr_low = 0
+        self.prev_8hr_high = 0
+        self.cur_4hr_low = 0
+        self.cur_4hr_high = 0
 
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
