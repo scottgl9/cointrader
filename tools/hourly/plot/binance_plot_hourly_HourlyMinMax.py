@@ -27,7 +27,7 @@ except ImportError:
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    hourly_minmax = HourlyMinMax(symbol, hkdb.accnt, hkdb)
+    hourly_minmax = HourlyMinMax(symbol, None, hkdb)
     obv = OBV()
     obv_ema12 = EMA(12)
     obv_ema26 = EMA(26)
@@ -40,6 +40,18 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     low_prices = []
     high_prices = []
     volumes = []
+
+    prev_8hr_highs = []
+    prev_8hr_lows = []
+    prev_24hr_highs = []
+    prev_24hr_lows = []
+    cur_24hr_highs = []
+    cur_24hr_lows = []
+    prev_96hr_highs = []
+    prev_96hr_lows = []
+    cur_96hr_highs = []
+    cur_96hr_lows = []
+    hourly_x_values = []
 
     i=0
     for msg in msgs: #get_rows_as_msgs(c):
@@ -57,7 +69,18 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         obv_ema50_values.append(obv_ema50.update(obv_value))
 
         hourly_minmax.hourly_update(ts)
-
+        if hourly_minmax.ready():
+            prev_8hr_highs.append(hourly_minmax.prev_8hr_high)
+            prev_8hr_lows.append(hourly_minmax.prev_8hr_low)
+            prev_24hr_highs.append(hourly_minmax.prev_24hr_high)
+            prev_24hr_lows.append(hourly_minmax.prev_24hr_low)
+            cur_24hr_highs.append(hourly_minmax.cur_24hr_high)
+            cur_24hr_lows.append(hourly_minmax.cur_24hr_low)
+            prev_96hr_highs.append(hourly_minmax.prev_96hr_high)
+            prev_96hr_lows.append(hourly_minmax.prev_96hr_low)
+            cur_96hr_highs.append(hourly_minmax.cur_96hr_high)
+            cur_96hr_lows.append(hourly_minmax.cur_96hr_low)
+            hourly_x_values.append(i)
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -67,11 +90,11 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
 
-    #fig1, = plt.plot(ema12_values, label='EMA12')
-    #fig2, = plt.plot(ema26_values, label='EMA26')
-    #fig3, = plt.plot(ema50_values, label='EMA50')
-    #fig4, = plt.plot(ema200_values, label='EMA200')
-    #plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
+    fig1, = plt.plot(hourly_x_values, cur_24hr_highs, label='CUR_24HR_HIGH')
+    fig2, = plt.plot(hourly_x_values, cur_24hr_lows, label='CUR_24HR_LOW')
+    fig3, = plt.plot(hourly_x_values, cur_96hr_highs, label='CUR_96HR_HIGH')
+    fig4, = plt.plot(hourly_x_values, cur_96hr_lows, label='CUR_96HR_LOW')
+    plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
     plt.subplot(212)
     fig21, = plt.plot(obv_ema12_values, label='OBV12')
     fig22, = plt.plot(obv_ema26_values, label='OBV26')

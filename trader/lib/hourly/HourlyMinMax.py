@@ -12,6 +12,7 @@
 #|               |               |             |                +-------------+    cur 4hr   |
 #|               |               |             |                |  | prev 4hr |              |
 #+---------------+---------------+-------------+----------------+-------------+--------------+
+from trader.indicator.EMA import EMA
 
 class HourlyMinMax(object):
     def __init__(self, symbol=None, accnt=None, hkdb=None):
@@ -19,6 +20,8 @@ class HourlyMinMax(object):
         self.accnt = accnt
         self.hkdb = hkdb
         self.pre_load_hours = 192
+        self.ema_high = EMA(26)
+        self.ema_low = EMA(26)
 
         # hourly vars
         self.hourly_highs = []
@@ -71,8 +74,8 @@ class HourlyMinMax(object):
         self.last_hourly_ts = self.first_hourly_ts
 
     def hourly_update(self, hourly_ts):
-        if not self.klines:
-            return False
+        #if not self.klines:
+        #    return False
 
         kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
 
@@ -83,8 +86,11 @@ class HourlyMinMax(object):
         if self.klines_loaded:
             self.hourly_lows = self.hourly_lows[1:]
             self.hourly_highs = self.hourly_highs[1:]
-        self.hourly_lows.append(float(kline['low']))
-        self.hourly_highs.append(float(kline['high']))
+
+        low = float(kline['low']) #self.ema_low.update(float(kline['low']))
+        high = float(kline['high']) #self.ema_low.update(float(kline['high']))
+        self.hourly_lows.append(low)
+        self.hourly_highs.append(high)
 
         if self.klines_loaded:
             # remove oldest kline, and add new kline to end
