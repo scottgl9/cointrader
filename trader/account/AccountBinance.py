@@ -736,6 +736,16 @@ class AccountBinance(AccountBase):
 
         return total_balance_btc
 
+    def get_total_bnb_value(self, tickers=None):
+        if not tickers:
+            tickers = self._tickers
+
+        if 'BNBBTC' not in tickers.keys():
+            return 0
+        bnb_btc_value = float(self.balances['BNBBTC']['balance'])
+        total_balance_btc = self.get_total_btc_value(tickers)
+        return total_balance_btc / bnb_btc_value
+
     def get_account_status(self):
         return self.client.get_account_status()
 
