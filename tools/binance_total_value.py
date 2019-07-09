@@ -19,4 +19,6 @@ if __name__ == '__main__':
     for asset in assets:
         print("{: >5}: {: >15} {: >10} USD\t{: >20} BTC".format(asset, accnt_assets[asset]['amount'], round(accnt_assets[asset]['usd'], 2), accnt_assets[asset]['btc']))
 
-    print("\nTotal balance USD = {}, BTC={}".format(accnt_info['total']['usd'], accnt_info['total']['btc']))
+    print("\nTotal balance USD = {}, BTC={}, BNB={}".format(accnt_info['total']['usd'],
+                                                            accnt_info['total']['btc'],
+                                                            accnt_info['total']['bnb']))

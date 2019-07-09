@@ -658,8 +658,10 @@ class AccountBinance(AccountBase):
         tickers = self.get_all_tickers()
 
         btc_usd_price = float(tickers['BTCUSDT'])
+        bnb_btc_price = float(tickers['BNBBTC'])
         total_balance_usd = 0.0
         total_balance_btc = 0.0
+
         for accnt in self.client.get_account()['balances']:
             if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
                 if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
@@ -690,6 +692,8 @@ class AccountBinance(AccountBase):
         if not total_btc_only:
             result['total'] = {}
             result['total']['btc'] = total_balance_btc
+            if bnb_btc_price:
+                result['total']['bnb'] = total_balance_btc / bnb_btc_price
             result['total']['usd'] = total_balance_usd
             return result
         return total_balance_btc
