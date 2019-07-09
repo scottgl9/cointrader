@@ -255,10 +255,11 @@ class basic_signal_market_strategy(StrategyBase):
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
-                    self.logger.info("BUY_FAILED for {} price={} size={} round_size={}".format(msg.dst_id,
+                    self.logger.info("BUY_FAILED for {} price={} size={} round_base={} round_quote={}".format(msg.dst_id,
                                                                                  msg.price,
                                                                                  msg.size,
-                                                                                 self.round_base(float(msg.size))))
+                                                                                 self.round_base(float(msg.size)),
+                                                                                 self.round_quote(float(msg.size))))
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
@@ -438,7 +439,7 @@ class basic_signal_market_strategy(StrategyBase):
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
         signal.buy_price = price
-        signal.buy_size = min_trade_size
+        signal.buy_size = self.accnt.round_base_symbol(self.ticker_id, min_trade_size)
 
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
