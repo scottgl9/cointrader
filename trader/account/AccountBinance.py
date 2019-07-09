@@ -218,7 +218,9 @@ class AccountBinance(AccountBase):
     def round_base(self, price, base_min_size=0):
         if base_min_size:
             try:
-                precision = '{:.8f}'.format(float(base_min_size)).index('1') - 1
+                precision = '{:.8f}'.format(float(base_min_size)).index('1')
+                if float(base_min_size) < 1.0:
+                    precision -= 1
             except ValueError:
                 self.logger.warning("round_base(): index not found in {}, price={}".format(base_min_size, price))
                 return price
@@ -229,7 +231,9 @@ class AccountBinance(AccountBase):
     def round_quote(self, price, quote_increment=0):
         if quote_increment:
             try:
-                precision = '{:.8f}'.format(float(quote_increment)).index('1') - 1
+                precision = '{:.8f}'.format(float(quote_increment)).index('1')
+                if float(quote_increment) < 1.0:
+                    precision -= 1
             except ValueError:
                 self.logger.warning("round_quote(): index not found in {}, price={}".format(quote_increment, price))
                 return price
