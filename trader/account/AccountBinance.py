@@ -216,13 +216,24 @@ class AccountBinance(AccountBase):
         return self._currency_buy_size[name]
 
     def round_base(self, price, base_min_size=0):
-        if base_min_size != 0.0:
-            return round(float(price), '{:.8f}'.format(float(base_min_size)).index('1') - 1)
+        if base_min_size:
+            try:
+                precision = '{:.8f}'.format(float(base_min_size)).index('1') - 1
+            except ValueError:
+                self.logger.warning("round_base(): index not found in {}, price={}".format(base_min_size, price))
+                return price
+
+            return round(float(price), precision)
         return price
 
     def round_quote(self, price, quote_increment=0):
-        if quote_increment != 0.0:
-            return round(float(price), '{:.8f}'.format(float(quote_increment)).index('1') - 1)
+        if quote_increment:
+            try:
+                precision = '{:.8f}'.format(float(quote_increment)).index('1') - 1
+            except ValueError:
+                self.logger.warning("round_quote(): index not found in {}, price={}".format(quote_increment, price))
+                return price
+            return round(float(price), precision)
         return price
 
     def round_base_symbol(self, symbol, price):
@@ -370,9 +381,11 @@ class AccountBinance(AccountBase):
             symbol = self.make_ticker_id(base, currency)
 
         if not self.info_all_assets or symbol not in self.info_all_assets.keys():
+            self.logger.warning("symbol {} not found in assets".format(symbol))
             return None
         if field:
             if field not in self.info_all_assets[symbol]:
+                self.logger.warning("field {} not found in assets for symbol {}".format(field, symbol))
                 return None
             return self.info_all_assets[symbol][field]
         return self.info_all_assets[symbol]

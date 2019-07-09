@@ -26,7 +26,8 @@ class HourlyMinMax(object):
         self.first_hourly_ts = 0
         self.last_hourly_ts = 0
         self.last_update_ts = 0
-        self.klines = None
+        self.klines = []
+        self.klines_loaded = False
         self.prev_96hr_low = 0
         self.prev_96hr_high = 0
         self.cur_96hr_low = 0
@@ -48,6 +49,9 @@ class HourlyMinMax(object):
         self.cur_4hr_low = 0
         self.cur_4hr_high = 0
 
+    def ready(self):
+        return self.klines_loaded
+
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
         start_ts = end_ts - self.accnt.hours_to_ts(self.pre_load_hours - 1)
@@ -60,6 +64,7 @@ class HourlyMinMax(object):
             high = float(kline['high'])
             self.hourly_lows.append(low)
             self.hourly_highs.append(high)
+        self.klines_loaded = True
         self.compute_hourly_lows_highs()
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
@@ -67,7 +72,7 @@ class HourlyMinMax(object):
 
     def hourly_update(self, hourly_ts):
         if not self.klines:
-            return
+            return False
 
         kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
 
@@ -75,16 +80,23 @@ class HourlyMinMax(object):
         if not kline:
             return False
 
-        self.hourly_lows = self.hourly_lows[1:]
-        self.hourly_highs = self.hourly_highs[1:]
+        if self.klines_loaded:
+            self.hourly_lows = self.hourly_lows[1:]
+            self.hourly_highs = self.hourly_highs[1:]
         self.hourly_lows.append(float(kline['low']))
         self.hourly_highs.append(float(kline['high']))
 
-        # remove oldest kline, and add new kline to end
-        self.klines = self.klines[1:]
+        if self.klines_loaded:
+            # remove oldest kline, and add new kline to end
+            self.klines = self.klines[1:]
+
         self.klines.append(kline)
 
-        self.compute_hourly_lows_highs()
+        if self.klines_loaded:
+            self.compute_hourly_lows_highs()
+
+        if not self.klines_loaded and len(self.klines) >= self.pre_load_hours:
+            self.klines_loaded = True
 
         self.last_hourly_ts = hourly_ts
         return True
