@@ -255,9 +255,10 @@ class basic_signal_market_strategy(StrategyBase):
                     msg.mark_read()
                     completed = True
                 elif msg.cmd == Message.MSG_BUY_FAILED:
-                    self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
+                    self.logger.info("BUY_FAILED for {} price={} size={} round_size={}".format(msg.dst_id,
                                                                                  msg.price,
-                                                                                 msg.size))
+                                                                                 msg.size,
+                                                                                 self.round_base(float(msg.size))))
                     if self.min_trade_size_qty != 1.0:
                         self.min_trade_size_qty = 1.0
                     signal = self.signal_handler.get_handler(id=msg.sig_id)

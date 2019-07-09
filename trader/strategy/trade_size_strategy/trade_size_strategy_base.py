@@ -5,6 +5,7 @@ class trade_size_strategy_base(object):
         self.base = asset_info.base
         self.currency = asset_info.currency
         self.symbol = self.accnt.make_ticker_id(self.base, self.currency)
+        self.min_qty = float(asset_info.min_qty)
         self.base_step_size = float(asset_info.base_step_size)
         self.currency_step_size = float(asset_info.currency_step_size)
         self.tickers = None
