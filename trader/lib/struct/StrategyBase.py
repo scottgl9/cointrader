@@ -62,10 +62,12 @@ class StrategyBase(object):
         self.asset_info = asset_info
         self.base_precision = 8
         self.quote_precision = 8
+        self.min_qty = 0
 
         if self.asset_info:
             self.base_precision = self.asset_info.baseAssetPrecision
             self.quote_precision = self.asset_info.quotePrecision
+            self.min_qty = float(self.asset_info.min_qty)
 
         self.base_fmt = "{:." + str(self.base_precision) + "f}"
         self.quote_fmt = "{:." + str(self.quote_precision) + "f}"
@@ -248,6 +250,14 @@ class StrategyBase(object):
         if self.quote_increment != 0.0:
             return round(price, self.quote_fmt.format(self.quote_increment).index('1') - 1)
         return price
+
+    def round_quantity(self, size):
+        if float(self.min_qty) != 0.0:
+            precision = "{:.8f}".format(self.min_qty).index('1')
+            if float(self.min_qty) < 1.0:
+                precision -= 1
+            return round(float(size), precision)
+        return size
 
     # is_base == False: quote value, is_base == True: base value
     def my_float(self, value, is_base=True):

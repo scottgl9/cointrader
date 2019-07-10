@@ -438,13 +438,16 @@ class basic_signal_market_strategy(StrategyBase):
         if self.min_trade_size_qty != 1.0:
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
-        signal.buy_price = price
-
         # fix rounding issues for BNB currency symbols
         if self.currency == 'BNB':
-            signal.buy_size = self.accnt.round_quantity_symbol(self.ticker_id, min_trade_size)
+            signal.buy_size = self.round_quantity(min_trade_size)
         else:
             signal.buy_size = min_trade_size
+
+        if not float(signal.buy_size):
+            return
+
+        signal.buy_price = price
 
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
