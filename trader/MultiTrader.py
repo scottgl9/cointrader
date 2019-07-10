@@ -169,19 +169,6 @@ class MultiTrader(object):
 
         if not base_name or not currency_name: return None
 
-        # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
-        if not self.simulate and not self.use_hourly_klines:
-            if self.accnt.deposit_asset_disabled(base_name):
-                # if an asset has deposit disabled, means its probably suspended
-                # or de-listed so DO NOT trade this coin
-                self.logger.info("Asset {} disabled".format(base_name))
-                return None
-
-        asset_info = self.accnt.get_asset_info_dict(symbol)
-        if not self.simulate and not asset_info:
-            self.logger.info("No asset info for {}".format(symbol))
-            return None
-
         if self.accnt.btc_only() and currency_name != 'BTC':
             return None
         elif self.accnt.eth_only() and currency_name != 'ETH':
@@ -198,8 +185,20 @@ class MultiTrader(object):
             if usdt_value < self.usdt_value_cutoff:
                 return None
 
-        # *FIXME* use AssetInfo class instead
+        # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
+        if not self.simulate and not self.use_hourly_klines:
+            if self.accnt.deposit_asset_disabled(base_name):
+                # if an asset has deposit disabled, means its probably suspended
+                # or de-listed so DO NOT trade this coin
+                self.logger.info("Asset {} disabled".format(base_name))
+                return None
 
+        asset_info = self.accnt.get_asset_info_dict(symbol)
+        if not self.simulate and not asset_info:
+            self.logger.info("No asset info for {}".format(symbol))
+            return None
+
+        # *FIXME* use AssetInfo class instead
         try:
             base_min_size = float(asset_info['stepSize'])
             tick_size = float(asset_info['tickSize'])
