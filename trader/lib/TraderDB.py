@@ -139,7 +139,7 @@ class TraderDB(object):
 
         values = [ts, symbol, price, qty, bought, sig_id, sig_oid]
         cur = self.db.cursor()
-        sql = """INSERT INTO trades (ts, symbol, price, qty, bought, sigid) values(?, ?, ?, ?, ?, ?, ?)"""
+        sql = """INSERT INTO trades (ts, symbol, price, qty, bought, sigid, sigoid) values(?, ?, ?, ?, ?, ?, ?)"""
         try:
             cur.execute(sql, values)
             self.db.commit()
