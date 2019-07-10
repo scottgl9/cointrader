@@ -756,10 +756,10 @@ class AccountBinance(AccountBase):
     def get_total_bnb_value(self, tickers=None):
         if not tickers:
             tickers = self._tickers
-
-        if 'BNBBTC' not in tickers.keys():
+        try:
+            bnb_btc_value = tickers['BNBBTC']
+        except KeyError:
             return 0
-        bnb_btc_value = float(self.balances['BNBBTC']['balance'])
         total_balance_btc = self.get_total_btc_value(tickers)
         return total_balance_btc / bnb_btc_value
 
@@ -951,8 +951,6 @@ class AccountBinance(AccountBase):
         return self.client.get_order(orderId=order_id, symbol=ticker_id)
 
     def get_orders(self, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
         return self.client.get_open_orders(symbol=ticker_id)
 
     def get_account_history(self):

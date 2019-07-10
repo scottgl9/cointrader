@@ -441,7 +441,7 @@ class basic_signal_market_strategy(StrategyBase):
         signal.buy_price = price
 
         # fix rounding issues for BNB currency symbols
-        if self.currency == 'BNB':
+        if not self.simulate and self.currency == 'BNB':
             signal.buy_size = self.round_base(float(min_trade_size))
         else:
             signal.buy_size = min_trade_size

@@ -200,6 +200,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 
     logger.info("\nTrade Symbol Profits:")
     final_btc_total = multitrader.accnt.get_total_btc_value()
+    final_bnb_total = multitrader.accnt.get_total_bnb_value()
     total_pprofit = 0
     if initial_btc_total:
         total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
@@ -218,6 +219,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     logger.info("Total Capture Time:\t{} hours".format(round(total_time_hours, 2)))
     logger.info("Initial BTC total:\t{}".format(initial_btc_total))
     logger.info("Final BTC total:\t{}".format(final_btc_total))
+    if final_bnb_total:
+        logger.info("Final BNB total:\t{}".format(final_bnb_total))
     logger.info("Percent Profit: \t{}%".format(total_pprofit))
 
     run_time = int(time.time() - start_time)
