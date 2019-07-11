@@ -26,12 +26,16 @@ if __name__ == '__main__':
     trades = traderdb.get_all_trades()
     traderdb.close()
 
-    tickers = client.get_all_tickers()
+    tickers = {}
+    for ticker in client.get_all_tickers():
+        symbol = ticker['symbol']
+        price = float(ticker['price'])
+        tickers[symbol] = price
 
     for trade in trades:
         symbol = trade['symbol']
         buy_price = float(trade['price'])
-        buy_size = float(trade['size'])
+        #buy_size = float(trade['size'])
         try:
             price = float(tickers[symbol])
         except KeyError:
