@@ -2,9 +2,9 @@
     "assetDetail": {
         "AGI": {
             "withdrawStatus": true, 
-            "withdrawFee": 17.59, 
+            "withdrawFee": 61.35, 
             "depositStatus": true, 
-            "minWithdrawAmount": 35.18
+            "minWithdrawAmount": 122.7
         }, 
         "NEO": {
             "withdrawStatus": true, 
@@ -14,9 +14,9 @@
         }, 
         "PAX": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.9, 
+            "withdrawFee": 1.8, 
             "depositStatus": true, 
-            "minWithdrawAmount": 1.8
+            "minWithdrawAmount": 3.6
         }, 
         "EON": {
             "withdrawStatus": true, 
@@ -26,9 +26,9 @@
         }, 
         "OST": {
             "withdrawStatus": true, 
-            "withdrawFee": 36.0, 
+            "withdrawFee": 90.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 72.0
+            "minWithdrawAmount": 180.0
         }, 
         "EOS": {
             "withdrawStatus": true, 
@@ -60,30 +60,36 @@
             "depositStatus": true, 
             "minWithdrawAmount": 42.0
         }, 
+        "BNB": {
+            "withdrawStatus": true, 
+            "withdrawFee": 0.001, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 0.1
+        }, 
         "LLT": {
             "withdrawStatus": true, 
             "withdrawFee": 67.8, 
             "depositTip": "Delisted, Deposit Suspended", 
             "depositStatus": false, 
-            "minWithdrawAmount": 2.0
+            "minWithdrawAmount": 67.8
         }, 
         "IOST": {
             "withdrawStatus": true, 
-            "withdrawFee": 153.1, 
+            "withdrawFee": 1.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 306.2
+            "minWithdrawAmount": 100.0
         }, 
         "OAX": {
             "withdrawStatus": true, 
-            "withdrawFee": 9.5, 
+            "withdrawFee": 12.5, 
             "depositStatus": true, 
-            "minWithdrawAmount": 19.0
+            "minWithdrawAmount": 25.0
         }, 
         "IOTX": {
             "withdrawStatus": true, 
-            "withdrawFee": 108.5, 
+            "withdrawFee": 206.2, 
             "depositStatus": true, 
-            "minWithdrawAmount": 217.0
+            "minWithdrawAmount": 412.4
         }, 
         "STRAT": {
             "withdrawStatus": true, 
@@ -99,9 +105,9 @@
         }, 
         "MANA": {
             "withdrawStatus": true, 
-            "withdrawFee": 19.0, 
+            "withdrawFee": 36.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 38.0
+            "minWithdrawAmount": 72.0
         }, 
         "WTC": {
             "withdrawStatus": true, 
@@ -122,9 +128,10 @@
             "minWithdrawAmount": 0.02
         }, 
         "IOTA": {
-            "withdrawStatus": true, 
+            "withdrawStatus": false, 
             "withdrawFee": 0.5, 
-            "depositStatus": true, 
+            "depositTip": "Wallet Maintenance, Deposit and Withdrawal Suspended", 
+            "depositStatus": false, 
             "minWithdrawAmount": 10.0
         }, 
         "BCHABC": {
@@ -133,24 +140,29 @@
             "depositStatus": true, 
             "minWithdrawAmount": 0.002
         }, 
+        "REQ": {
+            "withdrawStatus": true, 
+            "withdrawFee": 99.1, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 198.2
+        }, 
         "NXS": {
-            "withdrawStatus": false, 
+            "withdrawStatus": true, 
             "withdrawFee": 0.02, 
-            "depositTip": "Wallet Maintenance, Deposit and Withdrawal Suspended", 
-            "depositStatus": false, 
+            "depositStatus": true, 
             "minWithdrawAmount": 0.04
         }, 
         "KNC": {
             "withdrawStatus": true, 
-            "withdrawFee": 5.3, 
+            "withdrawFee": 7.6, 
             "depositStatus": true, 
-            "minWithdrawAmount": 10.6
+            "minWithdrawAmount": 15.2
         }, 
         "BNT": {
             "withdrawStatus": true, 
-            "withdrawFee": 1.4, 
+            "withdrawFee": 2.6, 
             "depositStatus": true, 
-            "minWithdrawAmount": 2.8
+            "minWithdrawAmount": 5.2
         }, 
         "DASH": {
             "withdrawStatus": true, 
@@ -158,11 +170,23 @@
             "depositStatus": true, 
             "minWithdrawAmount": 0.004
         }, 
+        "WABI": {
+            "withdrawStatus": true, 
+            "withdrawFee": 9.9, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 19.8
+        }, 
         "VIA": {
             "withdrawStatus": true, 
             "withdrawFee": 0.01, 
             "depositStatus": true, 
             "minWithdrawAmount": 1.0
+        }, 
+        "DLT": {
+            "withdrawStatus": true, 
+            "withdrawFee": 22.6, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 45.2
         }, 
         "GO": {
             "withdrawStatus": true, 
@@ -170,47 +194,53 @@
             "depositStatus": true, 
             "minWithdrawAmount": 1.0
         }, 
-        "BNB": {
+        "BTCB": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.14, 
+            "withdrawFee": 3e-06, 
             "depositStatus": true, 
-            "minWithdrawAmount": 0.28
+            "minWithdrawAmount": 6e-06
         }, 
         "ZIL": {
             "withdrawStatus": true, 
-            "withdrawFee": 40.8, 
+            "withdrawFee": 0.01, 
             "depositStatus": true, 
-            "minWithdrawAmount": 81.6
+            "minWithdrawAmount": 1.0
         }, 
         "BQX": {
             "withdrawStatus": true, 
-            "withdrawFee": 7.2, 
+            "withdrawFee": 13.9, 
             "depositStatus": true, 
-            "minWithdrawAmount": 14.4
+            "minWithdrawAmount": 27.8
         }, 
         "VIB": {
             "withdrawStatus": true, 
-            "withdrawFee": 36.0, 
+            "withdrawFee": 45.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 72.0
+            "minWithdrawAmount": 90.0
         }, 
         "LOOM": {
             "withdrawStatus": true, 
-            "withdrawFee": 18.6, 
+            "withdrawFee": 32.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 37.2
+            "minWithdrawAmount": 64.2
         }, 
         "SNGLS": {
             "withdrawStatus": true, 
-            "withdrawFee": 82.0, 
+            "withdrawFee": 148.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 164.0
+            "minWithdrawAmount": 296.0
+        }, 
+        "PHB": {
+            "withdrawStatus": true, 
+            "withdrawFee": 3.5, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 7.0
         }, 
         "SNM": {
             "withdrawStatus": true, 
-            "withdrawFee": 39.0, 
+            "withdrawFee": 102.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 78.0
+            "minWithdrawAmount": 204.0
         }, 
         "SYS": {
             "withdrawStatus": true, 
@@ -220,15 +250,9 @@
         }, 
         "SNT": {
             "withdrawStatus": true, 
-            "withdrawFee": 48.0, 
+            "withdrawFee": 70.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 96.0
-        }, 
-        "PHX": {
-            "withdrawStatus": true, 
-            "withdrawFee": 1.0, 
-            "depositStatus": true, 
-            "minWithdrawAmount": 2.0
+            "minWithdrawAmount": 140.0
         }, 
         "GXS": {
             "withdrawStatus": true, 
@@ -238,21 +262,22 @@
         }, 
         "TUSD": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.85, 
+            "withdrawFee": 1.74, 
             "depositStatus": true, 
-            "minWithdrawAmount": 1.7
+            "minWithdrawAmount": 3.48
         }, 
-        "BCX": {
-            "withdrawStatus": true, 
-            "withdrawFee": 0.5, 
+        "ETF": {
+            "withdrawStatus": false, 
+            "withdrawFee": 1.0, 
+            "depositTip": "Waiting for wallet development of ETF team", 
             "depositStatus": false, 
-            "minWithdrawAmount": 0.5
+            "minWithdrawAmount": 2.0
         }, 
         "XLM": {
             "withdrawStatus": true, 
             "withdrawFee": 0.01, 
             "depositStatus": true, 
-            "minWithdrawAmount": 21.0
+            "minWithdrawAmount": 3.0
         }, 
         "SKY": {
             "withdrawStatus": true, 
@@ -263,20 +288,21 @@
         "CLOAK": {
             "withdrawStatus": true, 
             "withdrawFee": 0.02, 
-            "depositStatus": true, 
-            "minWithdrawAmount": 0.04
+            "depositTip": "Delisted, Deposit Suspended", 
+            "depositStatus": false, 
+            "minWithdrawAmount": 0.02
         }, 
         "MTH": {
             "withdrawStatus": true, 
-            "withdrawFee": 51.0, 
+            "withdrawFee": 87.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 102.0
+            "minWithdrawAmount": 174.0
         }, 
         "FUN": {
             "withdrawStatus": true, 
-            "withdrawFee": 199.0, 
+            "withdrawFee": 453.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 398.0
+            "minWithdrawAmount": 906.0
         }, 
         "HC": {
             "withdrawStatus": true, 
@@ -292,9 +318,9 @@
         }, 
         "CDT": {
             "withdrawStatus": true, 
-            "withdrawFee": 108.0, 
+            "withdrawFee": 69.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 216.0
+            "minWithdrawAmount": 138.0
         }, 
         "NEBL": {
             "withdrawStatus": true, 
@@ -304,21 +330,21 @@
         }, 
         "APPC": {
             "withdrawStatus": true, 
-            "withdrawFee": 19.5, 
+            "withdrawFee": 26.3, 
             "depositStatus": true, 
-            "minWithdrawAmount": 39.0
+            "minWithdrawAmount": 52.6
         }, 
         "MTL": {
             "withdrawStatus": true, 
-            "withdrawFee": 3.3, 
+            "withdrawFee": 3.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 6.6
+            "minWithdrawAmount": 6.0
         }, 
         "AMB": {
             "withdrawStatus": true, 
-            "withdrawFee": 11.2, 
+            "withdrawFee": 50.8, 
             "depositStatus": true, 
-            "minWithdrawAmount": 22.4
+            "minWithdrawAmount": 101.6
         }, 
         "LSK": {
             "withdrawStatus": true, 
@@ -328,27 +354,27 @@
         }, 
         "ENG": {
             "withdrawStatus": true, 
-            "withdrawFee": 2.7, 
+            "withdrawFee": 2.8, 
             "depositStatus": true, 
-            "minWithdrawAmount": 5.4
+            "minWithdrawAmount": 5.6
         }, 
         "DENT": {
             "withdrawStatus": true, 
-            "withdrawFee": 703.0, 
+            "withdrawFee": 1588.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 1406.0
+            "minWithdrawAmount": 3176.0
         }, 
         "MFT": {
             "withdrawStatus": true, 
-            "withdrawFee": 291.0, 
+            "withdrawFee": 730.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 582.0
+            "minWithdrawAmount": 1460.0
         }, 
         "NPXS": {
             "withdrawStatus": true, 
-            "withdrawFee": 1930.0, 
+            "withdrawFee": 2326.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 3860.0
+            "minWithdrawAmount": 4652.0
         }, 
         "AION": {
             "withdrawStatus": true, 
@@ -364,21 +390,21 @@
         }, 
         "BLZ": {
             "withdrawStatus": true, 
-            "withdrawFee": 19.8, 
+            "withdrawFee": 35.5, 
             "depositStatus": true, 
-            "minWithdrawAmount": 39.6
+            "minWithdrawAmount": 71.0
         }, 
         "ENJ": {
             "withdrawStatus": true, 
-            "withdrawFee": 21.0, 
+            "withdrawFee": 16.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 42.0
+            "minWithdrawAmount": 32.0
         }, 
         "USDT": {
             "withdrawStatus": true, 
-            "withdrawFee": 1.9, 
+            "withdrawFee": 1.8, 
             "depositStatus": true, 
-            "minWithdrawAmount": 3.8
+            "minWithdrawAmount": 3.6
         }, 
         "TRX": {
             "withdrawStatus": true, 
@@ -386,11 +412,17 @@
             "depositStatus": true, 
             "minWithdrawAmount": 10.0
         }, 
-        "DLT": {
+        "USDS": {
             "withdrawStatus": true, 
-            "withdrawFee": 20.4, 
+            "withdrawFee": 0.64, 
             "depositStatus": true, 
-            "minWithdrawAmount": 40.8
+            "minWithdrawAmount": 1.28
+        }, 
+        "FTM": {
+            "withdrawStatus": true, 
+            "withdrawFee": 7.9, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 15.8
         }, 
         "XRP": {
             "withdrawStatus": true, 
@@ -398,11 +430,17 @@
             "depositStatus": true, 
             "minWithdrawAmount": 22.0
         }, 
+        "BTT": {
+            "withdrawStatus": true, 
+            "withdrawFee": 100.0, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 200.0
+        }, 
         "LRC": {
             "withdrawStatus": true, 
-            "withdrawFee": 20.0, 
+            "withdrawFee": 33.2, 
             "depositStatus": true, 
-            "minWithdrawAmount": 40.0
+            "minWithdrawAmount": 66.4
         }, 
         "BTS": {
             "withdrawStatus": true, 
@@ -412,27 +450,27 @@
         }, 
         "STORJ": {
             "withdrawStatus": true, 
-            "withdrawFee": 5.8, 
+            "withdrawFee": 7.7, 
             "depositStatus": true, 
-            "minWithdrawAmount": 11.6
+            "minWithdrawAmount": 15.4
         }, 
-        "WABI": {
+        "DOGE": {
             "withdrawStatus": true, 
-            "withdrawFee": 6.9, 
+            "withdrawFee": 50.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 13.8
+            "minWithdrawAmount": 100.0
         }, 
         "CND": {
             "withdrawStatus": true, 
-            "withdrawFee": 86.0, 
+            "withdrawFee": 135.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 172.0
+            "minWithdrawAmount": 270.0
         }, 
         "INS": {
             "withdrawStatus": true, 
-            "withdrawFee": 3.1, 
+            "withdrawFee": 6.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 6.2
+            "minWithdrawAmount": 12.2
         }, 
         "SBTC": {
             "withdrawStatus": true, 
@@ -452,6 +490,12 @@
             "depositStatus": true, 
             "minWithdrawAmount": 10.0
         }, 
+        "ALGO": {
+            "withdrawStatus": true, 
+            "withdrawFee": 0.01, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 1.0
+        }, 
         "BTC": {
             "withdrawStatus": true, 
             "withdrawFee": 0.0005, 
@@ -463,13 +507,14 @@
             "withdrawFee": 5.0, 
             "depositTip": "Delisted, Deposit Suspended", 
             "depositStatus": false, 
-            "minWithdrawAmount": 10.0
+            "minWithdrawAmount": 5.0
         }, 
         "MOD": {
             "withdrawStatus": true, 
-            "withdrawFee": 3.0, 
-            "depositStatus": true, 
-            "minWithdrawAmount": 6.0
+            "withdrawFee": 5.0, 
+            "depositTip": "Delisted, Deposit Suspended", 
+            "depositStatus": false, 
+            "minWithdrawAmount": 5.0
         }, 
         "STEEM": {
             "withdrawStatus": true, 
@@ -492,16 +537,17 @@
         }, 
         "SUB": {
             "withdrawStatus": true, 
-            "withdrawFee": 17.1, 
-            "depositStatus": true, 
-            "minWithdrawAmount": 34.2
+            "withdrawFee": 40.0, 
+            "depositTip": "Delisted, Deposit Suspended", 
+            "depositStatus": false, 
+            "minWithdrawAmount": 40.0
         }, 
         "CTR": {
             "withdrawStatus": true, 
             "withdrawFee": 35.0, 
             "depositTip": "Delisted, Deposit Suspended", 
             "depositStatus": false, 
-            "minWithdrawAmount": 70.0
+            "minWithdrawAmount": 35.0
         }, 
         "BCD": {
             "withdrawStatus": true, 
@@ -515,17 +561,17 @@
             "depositStatus": true, 
             "minWithdrawAmount": 0.4
         }, 
-        "REQ": {
+        "TNB": {
             "withdrawStatus": true, 
-            "withdrawFee": 38.5, 
+            "withdrawFee": 313.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 77.0
+            "minWithdrawAmount": 626.0
         }, 
         "POLY": {
             "withdrawStatus": true, 
-            "withdrawFee": 6.0, 
+            "withdrawFee": 24.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 12.0
+            "minWithdrawAmount": 48.0
         }, 
         "ETC": {
             "withdrawStatus": true, 
@@ -533,12 +579,11 @@
             "depositStatus": true, 
             "minWithdrawAmount": 0.02
         }, 
-        "ETF": {
-            "withdrawStatus": false, 
-            "withdrawFee": 1.0, 
-            "depositTip": "Waiting for wallet development of ETF team", 
+        "BCX": {
+            "withdrawStatus": true, 
+            "withdrawFee": 0.5, 
             "depositStatus": false, 
-            "minWithdrawAmount": 2.0
+            "minWithdrawAmount": 0.5
         }, 
         "CHAT": {
             "withdrawStatus": true, 
@@ -555,27 +600,27 @@
         }, 
         "LUN": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.54, 
+            "withdrawFee": 1.03, 
             "depositStatus": true, 
-            "minWithdrawAmount": 1.08
+            "minWithdrawAmount": 2.06
         }, 
         "DGD": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.05, 
+            "withdrawFee": 0.08, 
             "depositStatus": true, 
-            "minWithdrawAmount": 0.1
+            "minWithdrawAmount": 0.16
         }, 
         "AST": {
             "withdrawStatus": true, 
-            "withdrawFee": 30.9, 
+            "withdrawFee": 32.7, 
             "depositStatus": true, 
-            "minWithdrawAmount": 61.8
+            "minWithdrawAmount": 65.4
         }, 
         "POWR": {
             "withdrawStatus": true, 
-            "withdrawFee": 10.2, 
+            "withdrawFee": 18.8, 
             "depositStatus": true, 
-            "minWithdrawAmount": 20.4
+            "minWithdrawAmount": 37.6
         }, 
         "QTUM": {
             "withdrawStatus": true, 
@@ -585,33 +630,35 @@
         }, 
         "MDA": {
             "withdrawStatus": true, 
-            "withdrawFee": 1.1, 
+            "withdrawFee": 2.2, 
             "depositStatus": true, 
-            "minWithdrawAmount": 2.2
+            "minWithdrawAmount": 4.4
         }, 
         "WPR": {
             "withdrawStatus": true, 
-            "withdrawFee": 65.1, 
+            "withdrawFee": 190.7, 
             "depositStatus": true, 
-            "minWithdrawAmount": 130.2
+            "minWithdrawAmount": 381.4
         }, 
         "GVT": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.21, 
+            "withdrawFee": 0.69, 
             "depositStatus": true, 
-            "minWithdrawAmount": 0.42
+            "minWithdrawAmount": 1.38
         }, 
         "SALT": {
             "withdrawStatus": true, 
-            "withdrawFee": 3.6, 
-            "depositStatus": true, 
-            "minWithdrawAmount": 7.2
+            "withdrawFee": 5.2, 
+            "depositTip": "Delisted, Deposit Suspended", 
+            "depositStatus": false, 
+            "minWithdrawAmount": 5.2
         }, 
         "BCHSV": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.01, 
-            "depositStatus": true, 
-            "minWithdrawAmount": 0.02
+            "withdrawFee": 0.0001, 
+            "depositTip": "Delisted, Deposit Suspended", 
+            "depositStatus": false, 
+            "minWithdrawAmount": 0.0001
         }, 
         "VET": {
             "withdrawStatus": true, 
@@ -624,37 +671,37 @@
             "withdrawFee": 0.0005, 
             "depositTip": "Delisted, Deposit Suspended", 
             "depositStatus": false, 
-            "minWithdrawAmount": 0.001
+            "minWithdrawAmount": 0.0005
         }, 
         "TRIG": {
             "withdrawStatus": true, 
             "withdrawFee": 50.0, 
             "depositStatus": false, 
-            "minWithdrawAmount": 55.0
+            "minWithdrawAmount": 51.0
         }, 
         "ELF": {
             "withdrawStatus": true, 
-            "withdrawFee": 7.5, 
+            "withdrawFee": 9.4, 
             "depositStatus": true, 
-            "minWithdrawAmount": 15.0
+            "minWithdrawAmount": 18.8
         }, 
         "BCPT": {
             "withdrawStatus": true, 
-            "withdrawFee": 24.0, 
+            "withdrawFee": 0.7, 
             "depositStatus": true, 
-            "minWithdrawAmount": 48.0
+            "minWithdrawAmount": 1.4
         }, 
         "ADX": {
             "withdrawStatus": true, 
-            "withdrawFee": 8.1, 
+            "withdrawFee": 14.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 16.2
+            "minWithdrawAmount": 28.0
         }, 
         "GTO": {
             "withdrawStatus": true, 
-            "withdrawFee": 34.0, 
+            "withdrawFee": 1.4, 
             "depositStatus": true, 
-            "minWithdrawAmount": 68.0
+            "minWithdrawAmount": 2.8
         }, 
         "LTC": {
             "withdrawStatus": true, 
@@ -664,15 +711,15 @@
         }, 
         "DNT": {
             "withdrawStatus": true, 
-            "withdrawFee": 73.0, 
+            "withdrawFee": 132.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 146.0
+            "minWithdrawAmount": 264.0
         }, 
-        "ADD": {
+        "FET": {
             "withdrawStatus": true, 
-            "withdrawFee": 100.0, 
-            "depositStatus": false, 
-            "minWithdrawAmount": 200.0
+            "withdrawFee": 5.0, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 10.0
         }, 
         "ADA": {
             "withdrawStatus": true, 
@@ -682,15 +729,15 @@
         }, 
         "THETA": {
             "withdrawStatus": true, 
-            "withdrawFee": 24.0, 
+            "withdrawFee": 0.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 48.0
+            "minWithdrawAmount": 2.0
         }, 
         "RDN": {
             "withdrawStatus": true, 
-            "withdrawFee": 3.6, 
+            "withdrawFee": 6.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 7.2
+            "minWithdrawAmount": 12.2
         }, 
         "XMR": {
             "withdrawStatus": true, 
@@ -706,9 +753,9 @@
         }, 
         "OMG": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.6, 
+            "withdrawFee": 0.78, 
             "depositStatus": true, 
-            "minWithdrawAmount": 1.2
+            "minWithdrawAmount": 1.56
         }, 
         "XEM": {
             "withdrawStatus": true, 
@@ -724,15 +771,15 @@
         }, 
         "EDO": {
             "withdrawStatus": true, 
-            "withdrawFee": 1.1, 
+            "withdrawFee": 2.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 2.2
+            "minWithdrawAmount": 4.2
         }, 
         "RLC": {
             "withdrawStatus": true, 
-            "withdrawFee": 4.4, 
+            "withdrawFee": 5.8, 
             "depositStatus": true, 
-            "minWithdrawAmount": 8.8
+            "minWithdrawAmount": 11.6
         }, 
         "MEETONE": {
             "withdrawStatus": true, 
@@ -742,15 +789,15 @@
         }, 
         "KEY": {
             "withdrawStatus": true, 
-            "withdrawFee": 304.0, 
+            "withdrawFee": 657.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 608.0
+            "minWithdrawAmount": 1314.0
         }, 
         "WAVES": {
             "withdrawStatus": true, 
             "withdrawFee": 0.002, 
             "depositStatus": true, 
-            "minWithdrawAmount": 0.1
+            "minWithdrawAmount": 0.004
         }, 
         "SC": {
             "withdrawStatus": true, 
@@ -760,21 +807,28 @@
         }, 
         "BRD": {
             "withdrawStatus": true, 
-            "withdrawFee": 4.2, 
+            "withdrawFee": 4.9, 
             "depositStatus": true, 
-            "minWithdrawAmount": 8.4
+            "minWithdrawAmount": 9.8
         }, 
         "WINGS": {
             "withdrawStatus": true, 
-            "withdrawFee": 10.9, 
+            "withdrawFee": 17.4, 
+            "depositTip": "Delisted, Deposit Suspended", 
+            "depositStatus": false, 
+            "minWithdrawAmount": 17.5
+        }, 
+        "USDSB": {
+            "withdrawStatus": true, 
+            "withdrawFee": 0.032, 
             "depositStatus": true, 
-            "minWithdrawAmount": 21.8
+            "minWithdrawAmount": 0.064
         }, 
         "BAT": {
             "withdrawStatus": true, 
-            "withdrawFee": 7.0, 
+            "withdrawFee": 6.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 14.0
+            "minWithdrawAmount": 12.0
         }, 
         "NULS": {
             "withdrawStatus": true, 
@@ -784,9 +838,9 @@
         }, 
         "GNT": {
             "withdrawStatus": true, 
-            "withdrawFee": 12.6, 
+            "withdrawFee": 22.8, 
             "depositStatus": true, 
-            "minWithdrawAmount": 25.2
+            "minWithdrawAmount": 45.6
         }, 
         "WAN": {
             "withdrawStatus": true, 
@@ -794,17 +848,29 @@
             "depositStatus": true, 
             "minWithdrawAmount": 0.2
         }, 
+        "ERD": {
+            "withdrawStatus": true, 
+            "withdrawFee": 50.0, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 100.0
+        }, 
         "RCN": {
             "withdrawStatus": true, 
-            "withdrawFee": 69.0, 
+            "withdrawFee": 67.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 138.0
+            "minWithdrawAmount": 134.0
+        }, 
+        "TFUEL": {
+            "withdrawStatus": true, 
+            "withdrawFee": 1.0, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 2.0
         }, 
         "MITH": {
             "withdrawStatus": true, 
-            "withdrawFee": 13.58, 
+            "withdrawFee": 5.18, 
             "depositStatus": true, 
-            "minWithdrawAmount": 27.16
+            "minWithdrawAmount": 10.36
         }, 
         "CBM": {
             "withdrawStatus": true, 
@@ -814,15 +880,15 @@
         }, 
         "DATA": {
             "withdrawStatus": true, 
-            "withdrawFee": 45.8, 
+            "withdrawFee": 99.5, 
             "depositStatus": true, 
-            "minWithdrawAmount": 91.6
+            "minWithdrawAmount": 199.0
         }, 
         "CVC": {
             "withdrawStatus": true, 
-            "withdrawFee": 15.6, 
+            "withdrawFee": 26.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 31.2
+            "minWithdrawAmount": 52.0
         }, 
         "NANO": {
             "withdrawStatus": true, 
@@ -832,15 +898,15 @@
         }, 
         "VIBE": {
             "withdrawStatus": true, 
-            "withdrawFee": 30.2, 
+            "withdrawFee": 62.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 60.4
+            "minWithdrawAmount": 124.2
         }, 
         "PIVX": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.02, 
+            "withdrawFee": 0.2, 
             "depositStatus": true, 
-            "minWithdrawAmount": 0.1
+            "minWithdrawAmount": 0.4
         }, 
         "GAS": {
             "withdrawStatus": true, 
@@ -854,6 +920,18 @@
             "depositStatus": true, 
             "minWithdrawAmount": 1.0
         }, 
+        "CELR": {
+            "withdrawStatus": true, 
+            "withdrawFee": 100.0, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 200.0
+        }, 
+        "ONE": {
+            "withdrawStatus": true, 
+            "withdrawFee": 20.0, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 40.0
+        }, 
         "ARDR": {
             "withdrawStatus": true, 
             "withdrawFee": 2.0, 
@@ -862,21 +940,21 @@
         }, 
         "PPT": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.57, 
+            "withdrawFee": 2.28, 
             "depositStatus": true, 
-            "minWithdrawAmount": 1.14
+            "minWithdrawAmount": 4.56
         }, 
         "NCASH": {
             "withdrawStatus": true, 
-            "withdrawFee": 442.9, 
+            "withdrawFee": 745.4, 
             "depositStatus": true, 
-            "minWithdrawAmount": 885.8
+            "minWithdrawAmount": 1490.8
         }, 
         "POE": {
             "withdrawStatus": true, 
-            "withdrawFee": 159.0, 
+            "withdrawFee": 373.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 318.0
+            "minWithdrawAmount": 746.0
         }, 
         "ONT": {
             "withdrawStatus": true, 
@@ -892,28 +970,28 @@
         }, 
         "TNT": {
             "withdrawStatus": true, 
-            "withdrawFee": 71.0, 
+            "withdrawFee": 30.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 142.0
+            "minWithdrawAmount": 60.0
         }, 
         "AE": {
             "withdrawStatus": true, 
-            "withdrawFee": 2.2, 
+            "withdrawFee": 0.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 4.4
+            "minWithdrawAmount": 1.0
         }, 
         "ICN": {
             "withdrawStatus": true, 
             "withdrawFee": 3.4, 
             "depositTip": "Delisted, Deposit Suspended", 
             "depositStatus": false, 
-            "minWithdrawAmount": 3.5
+            "minWithdrawAmount": 3.4
         }, 
         "LEND": {
             "withdrawStatus": true, 
-            "withdrawFee": 108.0, 
+            "withdrawFee": 260.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 216.0
+            "minWithdrawAmount": 520.0
         }, 
         "IQ": {
             "withdrawStatus": true, 
@@ -923,27 +1001,27 @@
         }, 
         "USDC": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.84, 
+            "withdrawFee": 1.74, 
             "depositStatus": true, 
-            "minWithdrawAmount": 1.68
+            "minWithdrawAmount": 3.48
         }, 
         "ZRX": {
             "withdrawStatus": true, 
-            "withdrawFee": 2.7, 
+            "withdrawFee": 6.5, 
             "depositStatus": true, 
-            "minWithdrawAmount": 5.4
+            "minWithdrawAmount": 13.0
         }, 
         "DOCK": {
             "withdrawStatus": true, 
-            "withdrawFee": 96.0, 
+            "withdrawFee": 141.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 192.0
+            "minWithdrawAmount": 282.0
         }, 
         "HOT": {
             "withdrawStatus": true, 
-            "withdrawFee": 1835.0, 
+            "withdrawFee": 1093.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 3670.0
+            "minWithdrawAmount": 2186.0
         }, 
         "ICX": {
             "withdrawStatus": true, 
@@ -953,15 +1031,15 @@
         }, 
         "STORM": {
             "withdrawStatus": true, 
-            "withdrawFee": 290.0, 
+            "withdrawFee": 575.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 580.0
+            "minWithdrawAmount": 1150.0
         }, 
-        "TNB": {
+        "ATOM": {
             "withdrawStatus": true, 
-            "withdrawFee": 265.0, 
+            "withdrawFee": 0.005, 
             "depositStatus": true, 
-            "minWithdrawAmount": 530.0
+            "minWithdrawAmount": 0.01
         }, 
         "XVG": {
             "withdrawStatus": true, 
@@ -971,45 +1049,57 @@
         }, 
         "MCO": {
             "withdrawStatus": true, 
-            "withdrawFee": 0.38, 
+            "withdrawFee": 0.3, 
             "depositStatus": true, 
-            "minWithdrawAmount": 0.76
+            "minWithdrawAmount": 0.6
         }, 
         "REN": {
             "withdrawStatus": true, 
-            "withdrawFee": 38.48, 
+            "withdrawFee": 16.78, 
             "depositStatus": true, 
-            "minWithdrawAmount": 76.96
+            "minWithdrawAmount": 33.56
         }, 
         "EVX": {
             "withdrawStatus": true, 
-            "withdrawFee": 3.6, 
+            "withdrawFee": 3.2, 
             "depositStatus": true, 
-            "minWithdrawAmount": 7.2
+            "minWithdrawAmount": 6.4
+        }, 
+        "ADD": {
+            "withdrawStatus": true, 
+            "withdrawFee": 100.0, 
+            "depositStatus": false, 
+            "minWithdrawAmount": 200.0
         }, 
         "LINK": {
             "withdrawStatus": true, 
-            "withdrawFee": 2.9, 
+            "withdrawFee": 0.6, 
             "depositStatus": true, 
-            "minWithdrawAmount": 5.8
+            "minWithdrawAmount": 1.2
         }, 
         "QKC": {
             "withdrawStatus": true, 
-            "withdrawFee": 21.19, 
+            "withdrawFee": 104.74, 
             "depositStatus": true, 
-            "minWithdrawAmount": 42.38
+            "minWithdrawAmount": 209.48
         }, 
         "QSP": {
             "withdrawStatus": true, 
-            "withdrawFee": 57.0, 
+            "withdrawFee": 94.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 114.0
+            "minWithdrawAmount": 188.0
+        }, 
+        "MATIC": {
+            "withdrawStatus": true, 
+            "withdrawFee": 100.0, 
+            "depositStatus": true, 
+            "minWithdrawAmount": 200.0
         }, 
         "FUEL": {
             "withdrawStatus": true, 
-            "withdrawFee": 108.0, 
+            "withdrawFee": 282.0, 
             "depositStatus": true, 
-            "minWithdrawAmount": 216.0
+            "minWithdrawAmount": 564.0
         }, 
         "ARK": {
             "withdrawStatus": true, 
@@ -1025,9 +1115,9 @@
         }, 
         "ARN": {
             "withdrawStatus": true, 
-            "withdrawFee": 3.1, 
+            "withdrawFee": 0.1, 
             "depositStatus": true, 
-            "minWithdrawAmount": 6.2
+            "minWithdrawAmount": 0.2
         }
     }, 
     "success": true

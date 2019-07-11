@@ -93,7 +93,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     c = conn.cursor()
     c.execute("SELECT * FROM miniticker ORDER BY E ASC")
 
-    if not os.path.exists("asset_info.json"):
+    if not os.path.exists("asset_info.json") or not os.path.exists("asset_detail.json"):
         client = Client(MY_API_KEY, MY_API_SECRET)
     else:
         client = None
@@ -102,6 +102,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                            simulation=True,
                            logger=logger,
                            simulate_db_filename=simulate_db_filename)
+    accnt.load_info_all_assets()
+    accnt.load_detail_all_assets()
 
     if not config.section_exists('binance.simulate'):
         print("Section binance.simulate does not exist")

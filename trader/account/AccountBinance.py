@@ -320,6 +320,10 @@ class AccountBinance(AccountBase):
                     quotePrecision = asset['quotePrecision']
 
                 for filter in asset['filters']:
+                    # skip MARKET_LOT_SIZE
+                    if filter['filterType'] == 'MARKET_LOT_SIZE':
+                        continue
+
                     if 'minQty' in filter:
                         minQty = filter['minQty']
                     if 'minPrice' in filter:
