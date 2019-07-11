@@ -8,22 +8,41 @@ try:
 except ImportError:
     sys.path.append('.')
 
+import argparse
 from trader.account.AccountBinance import AccountBinance
 from trader.account.binance import client
 from trader.lib.TraderDB import TraderDB
 from trader.config import *
 
 if __name__ == '__main__':
-    client = client.Client(MY_API_KEY, MY_API_SECRET)
+    parser = argparse.ArgumentParser()
 
-    if not os.path.exists('trade.db'):
-        print("trade.db doesn't exist, exiting")
+    parser.add_argument('--db', action='store', dest='trade_db_path',
+                        default='trade.db',
+                        help='Path to trade.db')
+
+    parser.add_argument('--remove', action='store', dest='remove_symbol',
+                        default='',
+                        help='Remove symbol entry from trade.db')
+
+    results = parser.parse_args()
+
+    trade_db_path = results.trade_db_path
+
+    if not os.path.exists(trade_db_path):
+        print("{} doesn't exist, exiting".format(trade_db_path))
         sys.exit(-1)
 
+    client = client.Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client)
-    traderdb = TraderDB(filename='trade.db')
+    traderdb = TraderDB(filename=trade_db_path)
     traderdb.connect()
     trades = traderdb.get_all_trades()
+
+    if results.remove_symbol:
+        print("Removing {} from {}".format(results.remove_symbol, trade_db_path))
+        traderdb.remove_trade(results.remove_symbol)
+
     traderdb.close()
 
     tickers = {}
