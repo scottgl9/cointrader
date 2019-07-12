@@ -16,6 +16,7 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
+from trader.account.AccountBinance import AccountBinance
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.hourly.Hourly24hrStats import Hourly24hrStats
 from trader.indicator.OBV import OBV
@@ -27,7 +28,11 @@ except ImportError:
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    hourly_24hr_stats = Hourly24hrStats(symbol, None, hkdb)
+    accnt = AccountBinance(None, simulation=True)
+
+    hourly_24hr_stats = Hourly24hrStats(symbol, accnt, hkdb)
+    if start_ts != 0:
+        hourly_24hr_stats.hourly_load(hourly_ts=start_ts)
     obv = OBV()
     obv_ema12 = EMA(12)
     obv_ema26 = EMA(26)
