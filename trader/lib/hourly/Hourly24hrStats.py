@@ -15,6 +15,8 @@ class Hourly24hrStats(object):
         self._base_volume_sum = 0
         self._quote_volume_sum = 0
 
+    def ready(self):
+        return self.klines_loaded
 
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
@@ -24,13 +26,13 @@ class Hourly24hrStats(object):
             return
         for kline in klines:
             self._base_volume_sum += float(kline['base_volume'])
-            self._quote_volume_sum += float(kline['base_volume'])
+            self._quote_volume_sum += float(kline['quote_volume'])
         self.klines = klines
         self.klines_loaded = True
 
     def hourly_update(self, hourly_ts):
-        if not self.klines:
-            return False
+        #if not self.klines:
+        #    return False
 
         kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
 
@@ -40,13 +42,13 @@ class Hourly24hrStats(object):
 
         if self.klines_loaded:
             self._base_volume_sum -= float(self.klines[0]['base_volume'])
-            self._quote_volume_sum -= float(self.klines[0]['base_volume'])
+            self._quote_volume_sum -= float(self.klines[0]['quote_volume'])
             # remove oldest kline, and add new kline to end
             self.klines = self.klines[1:]
 
         self.klines.append(kline)
         self._base_volume_sum += float(kline['base_volume'])
-        self._quote_volume_sum += float(kline['base_volume'])
+        self._quote_volume_sum += float(kline['quote_volume'])
 
         if not self.klines_loaded and len(self.klines) >= self.pre_load_hours:
             self.klines_loaded = True
