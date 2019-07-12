@@ -526,7 +526,8 @@ class AccountBinance(AccountBase):
         if self.simulate:
             return None
 
-        self.logger.info("parse_order_update={}".format(result))
+        # maybe use for debug
+        #self.logger.info("parse_order_update={}".format(result))
 
         if 'c' in result: order_id = result['c']
         if 'C' in result: orig_id = result['C']
@@ -584,7 +585,8 @@ class AccountBinance(AccountBase):
         if self.simulate:
             return None
 
-        self.logger.info("parse_order_result={}".format(result))
+        # maybe use for debug
+        #self.logger.info("parse_order_result={}".format(result))
 
         if 'orderId' in result: orderid = result['orderId']
         if 'origQty' in result: origqty = result['origQty']
@@ -640,7 +642,8 @@ class AccountBinance(AccountBase):
                       commission=commission,
                       sig_id=sigid)
 
-        self.logger.info("order: {}".format(str(order)))
+        # maybe use for debug
+        #self.logger.info("order: {}".format(str(order)))
         return order
 
 
