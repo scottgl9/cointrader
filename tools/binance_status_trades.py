@@ -37,12 +37,12 @@ if __name__ == '__main__':
     accnt = AccountBinance(client)
     traderdb = TraderDB(filename=trade_db_path)
     traderdb.connect()
-    trades = traderdb.get_all_trades()
 
     if results.remove_symbol:
         print("Removing {} from {}".format(results.remove_symbol, trade_db_path))
         traderdb.remove_trade(results.remove_symbol)
 
+    trades = traderdb.get_all_trades()
     traderdb.close()
 
     tickers = {}

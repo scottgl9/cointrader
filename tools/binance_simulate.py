@@ -134,6 +134,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     found = False
 
     initial_btc_total = 0.0
+    initial_bnb_total = 0.0
 
     first_ts = None
     last_ts = None
@@ -165,6 +166,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                 found = True
                 total_btc = multitrader.accnt.get_total_btc_value()
                 initial_btc_total = total_btc
+                initial_bnb_total = multitrader.accnt.get_total_bnb_value()
                 multitrader.update_initial_btc()
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
@@ -204,8 +206,12 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     final_btc_total = multitrader.accnt.get_total_btc_value()
     final_bnb_total = multitrader.accnt.get_total_bnb_value()
     total_pprofit = 0
+    total_bnb_pprofit = 0
     if initial_btc_total:
         total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
+
+    if initial_bnb_total and final_bnb_total:
+        total_bnb_pprofit = round(100.0 * (final_bnb_total - initial_bnb_total) / initial_bnb_total, 2)
 
     for pair in multitrader.trade_pairs.values():
         for signal in pair.get_signals():
@@ -221,9 +227,12 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     logger.info("Total Capture Time:\t{} hours".format(round(total_time_hours, 2)))
     logger.info("Initial BTC total:\t{}".format(initial_btc_total))
     logger.info("Final BTC total:\t{}".format(final_btc_total))
+    if initial_bnb_total:
+        logger.info("Initial BNB total:\t{}".format(initial_bnb_total))
     if final_bnb_total:
         logger.info("Final BNB total:\t{}".format(final_bnb_total))
-    logger.info("Percent Profit: \t{}%".format(total_pprofit))
+    logger.info("Percent Profit (BTC): \t{}%".format(total_pprofit))
+    logger.info("Percent Profit (BNB): \t{}%".format(total_bnb_pprofit))
 
     run_time = int(time.time() - start_time)
     print("Simulation Run Time:\t{} seconds".format(run_time))
