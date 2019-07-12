@@ -44,7 +44,7 @@ class StrategyBase(object):
     MULTI_SIGNAL_MULTI_ORDER = 4
 
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
+                 asset_info=None, config=None, logger=None):
         self.strategy_name = None
         # default setting for signal_modes
         self.signal_modes = [StrategyBase.SIGNAL_MODE_REALTIME, StrategyBase.SIGNAL_MODE_HOURLY]
@@ -63,17 +63,19 @@ class StrategyBase(object):
         self.base_precision = 8
         self.quote_precision = 8
         self.min_qty = 0
+        self.base_min_size = 0
+        self.quote_increment = 0
 
         if self.asset_info:
             self.base_precision = self.asset_info.baseAssetPrecision
             self.quote_precision = self.asset_info.quotePrecision
             self.min_qty = float(self.asset_info.min_qty)
+            self.base_min_size = float(self.asset_info.base_step_size)
+            self.quote_increment = float(self.asset_info.currency_step_size)
 
         self.base_fmt = "{:." + str(self.base_precision) + "f}"
         self.quote_fmt = "{:." + str(self.quote_precision) + "f}"
 
-        self.base_min_size = float(base_min_size)
-        self.quote_increment = float(tick_size)
         self.client = client
         self.accnt = account_handler
         self.order_handler = order_handler

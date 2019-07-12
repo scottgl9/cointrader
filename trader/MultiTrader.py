@@ -1,4 +1,4 @@
-# handle multiple TraiePairs, one for each base / currency we want to trade
+# handle running strategy for each base / currency pair we want to trade
 import os
 from trader.account.AccountBinance import AccountBinance
 from trader.OrderHandler import OrderHandler
@@ -16,7 +16,7 @@ from trader.strategy.null_strategy import null_strategy
 
 
 def select_strategy(sname, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                    base_min_size=0.0, tick_size=0.0, asset_info=None, config=None, logger=None):
+                    asset_info=None, config=None, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
     elif sname == 'multi_market_order_strategy': strategy = multi_market_order_strategy
@@ -32,8 +32,6 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
                     account_handler,
                     order_handler=order_handler,
                     asset_info=asset_info,
-                    base_min_size=base_min_size,
-                    tick_size=tick_size,
                     config=config,
                     logger=logger)
 
@@ -198,10 +196,8 @@ class MultiTrader(object):
             self.logger.info("No asset info for {}".format(symbol))
             return None
 
-        # *FIXME* use AssetInfo class instead
         try:
             base_min_size = float(asset_info['stepSize'])
-            tick_size = float(asset_info['tickSize'])
             min_notional = float(asset_info['minNotional'])
         except (KeyError, TypeError):
             if not self.simulate:
@@ -217,8 +213,6 @@ class MultiTrader(object):
                                      currency_name,
                                      account_handler=self.accnt,
                                      order_handler=self.order_handler,
-                                     base_min_size=base_min_size,
-                                     tick_size=tick_size,
                                      asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
                                      config=self.config,
                                      logger=self.logger)
