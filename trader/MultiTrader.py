@@ -5,6 +5,7 @@ from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.MessageHandler import Message, MessageHandler
 from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
+from trader.symbol_filter.SymbolFilterHandler import SymbolFilterHandler
 from datetime import datetime
 import time
 
@@ -136,6 +137,9 @@ class MultiTrader(object):
         self.global_en = global_en
         if self.global_en:
             self.global_strategy = global_obv_strategy()
+
+        self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb)
+        self.symbol_filter.add_filter('filter_min_usdt_value')
 
         sigstr = None
 
