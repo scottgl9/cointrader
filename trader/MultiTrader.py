@@ -253,6 +253,10 @@ class MultiTrader(object):
         # keep track of all current price values for all symbols being processed
         self.accnt.update_ticker(kline.symbol, kline.close, kline.ts)
 
+        # if symbol filter applies, then no further processing required
+        if self.symbol_filter.apply_filters(kline):
+            return None
+
         symbol_trader = self.get_trader(kline.symbol, kline.close)
         if not symbol_trader:
             return None

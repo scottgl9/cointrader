@@ -1,7 +1,8 @@
 class symbol_filter_base(object):
-    def __init__(self, accnt=None, hkdb=None):
+    def __init__(self, accnt=None, config=None, hkdb=None):
         self.name = None
         self.accnt = accnt
+        self.config = config
         self.hkdb = hkdb
 
     # return True if filter is applied, False if not applied
