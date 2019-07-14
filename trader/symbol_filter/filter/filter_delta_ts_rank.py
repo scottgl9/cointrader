@@ -1,4 +1,4 @@
-# rank symbols by time between realtime price updates
+# rank symbols by average of time between realtime price updates
 from .symbol_filter_base import symbol_filter_base
 from trader.lib.MovingTimeSegment.MTS_SMA import MTS_SMA
 
@@ -10,17 +10,26 @@ class filter_delta_ts_rank(symbol_filter_base):
         self.prev_ts_symbol = {}
         self.mts_sma_symbol = {}
         self.avg_delta_ts_symbol = {}
+        self.sorted_avg_symbols = None
+        print(self.hkdb.table_symbols)
+
+    def get_sorted_avg_symbols(self, ts=0):
+        self.sorted_avg_symbols = sorted((value, key) for (key, value) in self.avg_delta_ts_symbol.items())
+        return self.sorted_avg_symbols
 
     # return True if filter is applied, False if not applied
     def apply_filter(self, kline, asset_info=None):
         result = False
+        if self.hkdb and self.accnt.hourly_symbols_only() and kline.symbol not in self.hkdb.table_symbols:
+            return result
+
         try:
             prev_ts = self.prev_ts_symbol[kline.symbol]
         except KeyError:
             self.prev_ts_symbol[kline.symbol] = kline.ts
             return result
 
-        delta_ts = kline.ts - prev_ts
+        delta_ts = self.accnt.ts_to_seconds(kline.ts - prev_ts)
         try:
             mts_sma = self.mts_sma_symbol[kline.symbol]
         except KeyError:
@@ -30,6 +39,8 @@ class filter_delta_ts_rank(symbol_filter_base):
         mts_sma.update(delta_ts, kline.ts)
         if mts_sma.ready():
             self.avg_delta_ts_symbol[kline.symbol] = mts_sma.result
+            if len(self.avg_delta_ts_symbol) > 10:
+                print(self.get_sorted_avg_symbols())
 
         self.prev_ts_symbol[kline.symbol] = kline.ts
         return result

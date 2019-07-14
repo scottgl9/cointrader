@@ -81,9 +81,9 @@ class MultiTrader(object):
                 hourly_symbols_only = self.config.get('hourly_symbols_only')
                 self.hkdb_table_symbols = self.hkdb.table_symbols
                 self.latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
-                if self.simulate:
-                    self.hkdb.close()
-                    self.hkdb = None
+                #if self.simulate:
+                #    self.hkdb.close()
+                #    self.hkdb = None
             except IOError:
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
 
@@ -99,8 +99,8 @@ class MultiTrader(object):
                 self.hkdb.update_all_tables()
                 self.logger.info("Removing outdated hourly kline tables in {}...".format(self.hourly_klines_db_file))
                 self.hkdb.remove_outdated_tables()
-            self.hkdb.close()
-            self.hkdb = None
+            #self.hkdb.close()
+            #self.hkdb = None
 
         # start thread for hourly kline db updates
         if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
@@ -137,6 +137,7 @@ class MultiTrader(object):
 
         self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb)
         self.symbol_filter.add_filter('filter_min_usdt_value')
+        self.symbol_filter.add_filter('filter_delta_ts_rank')
 
         sigstr = None
 
@@ -156,13 +157,15 @@ class MultiTrader(object):
         else:
             self.logger.info("Running MultiTrade {} strategy {}".format(run_type, self.strategy_name))
 
-
+    # close() called when exiting MultiTrader
     def close(self):
+        if self.hkdb:
+            self.hkdb.close()
         if self.hourly_update_handler:
             self.hourly_update_handler.stop()
             self.hourly_update_handler.join(timeout=5)
 
-    # create new tradepair handler and select strategy
+    # create new trade pair handler and select strategy
     def add_trade_pair(self, symbol, price=0):
         base_name, currency_name = self.accnt.split_symbol(symbol)
 
