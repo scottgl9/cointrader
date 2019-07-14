@@ -55,7 +55,6 @@ class MultiTrader(object):
         self.signal_names = [self.config.get('signals')]
         self.hourly_signal_name = self.config.get('hourly_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
-        self.usdt_value_cutoff = float(self.config.get('usdt_value_cutoff'))
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.hourly_update_handler = None
 
@@ -66,8 +65,6 @@ class MultiTrader(object):
                                         simulation=simulate,
                                         logger=logger)
         self.assets_info = assets_info
-
-        self.logger.info("Setting USDT value cutoff to {}".format(self.usdt_value_cutoff))
 
         self.tickers = None
         self.msg_handler = MessageHandler()
@@ -179,13 +176,6 @@ class MultiTrader(object):
             return None
         elif self.accnt.hourly_symbols_only() and symbol not in self.hkdb_table_symbols:
             return None
-
-        # check USDT value of base by calculating (base_currency) * (currency_usdt)
-        # verify that USDT value >= self.usdt_value_cutoff, if less do not buy
-        usdt_value = self.accnt.get_usdt_value_symbol(symbol, float(price))
-        if usdt_value:
-            if usdt_value < self.usdt_value_cutoff:
-                return None
 
         # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
         if not self.simulate and not self.use_hourly_klines:

@@ -36,3 +36,6 @@ class MTS_SMA(object):
 
     def max(self):
         return self.mts.max()
+
+    def avg(self):
+        return self.result
