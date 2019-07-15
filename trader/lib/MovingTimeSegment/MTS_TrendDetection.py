@@ -13,6 +13,9 @@ class MTS_TrendDetection(object):
         self._prev_trend_up = False
         self._prev_trend_down = False
 
+    def ready(self):
+        return self.mts.ready()
+
     def update(self, value, ts):
         self.mts.update(value, ts)
 
