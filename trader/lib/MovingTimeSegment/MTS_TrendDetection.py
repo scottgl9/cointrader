@@ -25,25 +25,28 @@ class MTS_TrendDetection(object):
         if self.mts.max() >= self.last_max_high_value:
             self.last_max_high_value = value
             self.last_max_high_ts = ts
-            self._prev_trend_up = self._trend_up
-            self._prev_trend_down = self._trend_down
-            self._trend_up = True
-            self._trend_down = False
         if not self.last_min_low_value or self.mts.min() <= self.last_min_low_value:
             self.last_min_low_value = value
             self.last_min_low_ts = ts
-            self._prev_trend_up = self._trend_up
-            self._prev_trend_down = self._trend_down
-            self._trend_up = False
-            self._trend_down = True
 
         if self.last_min_low_ts and self.last_max_high_ts:
-            if ((ts - self.last_max_high_ts) >= self.win_secs * 1000 or
-                (ts - self.last_min_low_ts) >= self.win_secs * 1000):
+            if self.last_min_low_ts - self.last_max_high_ts > self.win_secs * 1000:
                 self._prev_trend_up = self._trend_up
                 self._prev_trend_down = self._trend_down
                 self._trend_up = False
+                if (ts - self.last_min_low_ts) >= self.win_secs * 1000:
+                    self._trend_down = False
+                else:
+                    self._trend_down = True
+
+            elif self.last_max_high_ts - self.last_min_low_ts > self.win_secs * 1000:
+                self._prev_trend_up = self._trend_up
+                self._prev_trend_down = self._trend_down
                 self._trend_down = False
+                if (ts - self.last_max_high_ts) >= self.win_secs * 1000:
+                    self._trend_up = False
+                else:
+                    self._trend_up = True
 
     def trending_up(self):
         return self._trend_up
