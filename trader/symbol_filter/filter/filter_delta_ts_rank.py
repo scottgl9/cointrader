@@ -4,14 +4,16 @@ from trader.lib.MovingTimeSegment.MTS_SMA import MTS_SMA
 
 
 class filter_delta_ts_rank(symbol_filter_base):
-    def __init__(self, accnt=None, config=None, hkdb=None):
-        super(filter_delta_ts_rank, self).__init__(accnt, config, hkdb)
+    def __init__(self, accnt=None, config=None, hkdb=None, logger=None, min_table_size=10, max_secs=60):
+        super(filter_delta_ts_rank, self).__init__(accnt, config, hkdb, logger)
         self.name = "filter_delta_ts_rank"
         self.prev_ts_symbol = {}
         self.mts_sma_symbol = {}
         self.avg_delta_ts_symbol = {}
         self.sorted_avg_symbols = None
-        print(self.hkdb.table_symbols)
+        self.min_table_size = min_table_size
+        # cutoff for maximum amount of seconds average between trades
+        self.max_secs = max_secs
 
     def get_sorted_avg_symbols(self, ts=0):
         self.sorted_avg_symbols = sorted((value, key) for (key, value) in self.avg_delta_ts_symbol.items())
@@ -19,7 +21,7 @@ class filter_delta_ts_rank(symbol_filter_base):
 
     # return True if filter is applied, False if not applied
     def apply_filter(self, kline, asset_info=None):
-        result = False
+        result = True
         if self.hkdb and self.accnt.hourly_symbols_only() and kline.symbol not in self.hkdb.table_symbols:
             return result
 
@@ -39,8 +41,14 @@ class filter_delta_ts_rank(symbol_filter_base):
         mts_sma.update(delta_ts, kline.ts)
         if mts_sma.ready():
             self.avg_delta_ts_symbol[kline.symbol] = mts_sma.result
-            if len(self.avg_delta_ts_symbol) > 10:
-                print(self.get_sorted_avg_symbols())
+            if len(self.avg_delta_ts_symbol) > self.min_table_size:
+                try:
+                    avg_delta_ts = self.avg_delta_ts_symbol[kline.symbol]
+                    if avg_delta_ts <= self.max_secs:
+                        result = False
+                except KeyError:
+                    pass
+                #print(self.get_sorted_avg_symbols())
 
         self.prev_ts_symbol[kline.symbol] = kline.ts
         return result

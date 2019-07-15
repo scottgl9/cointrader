@@ -56,6 +56,7 @@ class MultiTrader(object):
         self.hourly_signal_name = self.config.get('hourly_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.use_hourly_klines = self.config.get('use_hourly_klines')
+        self.symbol_filter_names = self.config.get('symbol_filters').split(',')
         self.hourly_update_handler = None
 
         if accnt:
@@ -135,9 +136,9 @@ class MultiTrader(object):
         if self.global_en:
             self.global_strategy = global_obv_strategy()
 
-        self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb)
-        self.symbol_filter.add_filter('filter_min_usdt_value')
-        self.symbol_filter.add_filter('filter_delta_ts_rank')
+        self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb, logger=self.logger)
+        for filter_name in self.symbol_filter_names:
+            self.symbol_filter.add_filter(filter_name)
 
         sigstr = None
 

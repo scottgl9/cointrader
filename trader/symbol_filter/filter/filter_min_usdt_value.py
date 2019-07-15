@@ -2,8 +2,8 @@ from .symbol_filter_base import symbol_filter_base
 
 
 class filter_min_usdt_value(symbol_filter_base):
-    def __init__(self, accnt=None, config=None, hkdb=None):
-        super(filter_min_usdt_value, self).__init__(accnt, config, hkdb)
+    def __init__(self, accnt=None, config=None, hkdb=None, logger=None):
+        super(filter_min_usdt_value, self).__init__(accnt, config, hkdb, logger)
         self.name = "filter_min_usdt_value"
         self.usdt_value_cutoff = float(self.config.get('usdt_value_cutoff'))
         print(self.usdt_value_cutoff)
