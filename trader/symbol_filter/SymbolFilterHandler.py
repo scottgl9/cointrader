@@ -19,7 +19,8 @@ class SymbolFilterHandler(object):
         if filter_type:
             filter = filter_type(self.accnt, self.config, self.hkdb, self.logger)
             self.filters.append(filter)
-            print("Loaded filter {}".format(filter_name))
+            if self.logger:
+                self.logger.info("Loaded filter {}".format(filter_name))
             return True
         return False
 

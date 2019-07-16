@@ -234,6 +234,15 @@ class MultiTrader(object):
     def get_stored_trades(self):
         return self.order_handler.get_stored_trades()
 
+    # check if trader exists
+    def trader_exists(self, symbol):
+        try:
+            result = self.trade_pairs[symbol]
+        except KeyError:
+            return False
+        return True
+
+    # get existing trader, or create new if it doesn't exist
     def get_trader(self, symbol, price):
         try:
             result = self.trade_pairs[symbol]
@@ -248,7 +257,8 @@ class MultiTrader(object):
         self.accnt.update_ticker(kline.symbol, kline.close, kline.ts)
 
         # if symbol filter applies, then no further processing required
-        if self.symbol_filter.apply_filters(kline):
+        # 1) if the trader already exists, there could be open orders, so ignore filters
+        if not self.trader_exists(kline.symbol) and self.symbol_filter.apply_filters(kline):
             return None
 
         symbol_trader = self.get_trader(kline.symbol, kline.close)
