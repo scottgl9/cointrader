@@ -319,17 +319,18 @@ if __name__ == '__main__':
 
     config = TraderConfig("trader.ini")
     config.select_section('binance.simulate')
-    strategy = config.get('strategy')
-    signal_name = config.get('signals')
 
     if results.strategy:
-        strategy = results.strategy
+        config.set('strategy', results.strategy)
 
     if results.signal_name:
-        signal_name = results.signal_name
+        config.set('signals', results.signal_name)
 
     if results.hourly_signal_name:
         config.set('hourly_signal', results.hourly_signal_name)
+
+    strategy = config.get('strategy')
+    signal_name = config.get('signals')
 
     trade_cache = {}
 
