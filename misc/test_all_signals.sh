@@ -11,6 +11,8 @@ DB_FILE=$CURPWD/$1
 echo "Testing all signals on $DB_FILE..."
 SIGNALS_PATH=$CURPWD/trader/signal
 
+mkdir -p test_cache
+
 for filename in $(find $SIGNALS_PATH -maxdepth 1 -name "*.py")
 do
 	signal=$(basename $filename | sed 's/.py//')
@@ -20,5 +22,5 @@ do
 	       	continue
        	fi
 	echo "Testing signal $signal..."
-	python $CURPWD/tools/binance_simulate.py -f $DB_FILE -g $signal 
+	python $CURPWD/tools/binance_simulate.py -f $DB_FILE -g $signal -c test_cache
 done

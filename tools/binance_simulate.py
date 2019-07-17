@@ -336,11 +336,14 @@ if __name__ == '__main__':
 
     trade_cache_name = "{}-{}".format(strategy, signal_name)
 
-    trade_log_filename = results.filename.replace(".db", "_{}.log".format(trade_cache_name))
-    trade_log_filepath = os.path.join(results.cache_dir, trade_log_filename)
+    trade_log_filename = os.path.basename(results.filename.replace(".db", "_{}.log".format(trade_cache_name)))
+    trade_log_filepath = "{}/{}".format(results.cache_dir, trade_log_filename)
+    print(results.cache_dir)
+    print(trade_log_filepath)
 
-    trade_result_filename = results.filename.replace(".db", "_result_{}.txt".format(trade_cache_name))
-    trade_result_filepath = os.path.join(results.cache_dir, trade_result_filename)
+    trade_result_filename = os.path.basename(results.filename.replace(".db", "_result_{}.txt".format(trade_cache_name)))
+    trade_result_filepath = "{}/{}".format(results.cache_dir, trade_result_filename)
+    print(trade_result_filepath)
 
     # remove old trade log before re-running
     if os.path.exists(trade_log_filepath):
@@ -363,7 +366,8 @@ if __name__ == '__main__':
     #thread.start()
 
     # if we already ran simulation, load the results
-    trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
+    trade_json_filename = os.path.basename(results.filename.replace('.db', '.json'))
+    trade_cache_filename = "{}/{}".format(results.cache_dir, trade_json_filename)
     if os.path.exists(trade_cache_filename):
         logger.info("Loading {}".format(trade_cache_filename))
         with open(trade_cache_filename, "r") as f:
