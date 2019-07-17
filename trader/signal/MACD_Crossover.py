@@ -57,7 +57,7 @@ class MACD_Crossover(SignalBase):
         self.obv_ema50.update(obv_value)
 
         self.macd.update(close)
-        self.macd_cross.update(self.macd.result, self.macd.result_signal)
+        self.macd_cross.update(self.macd.result, self.macd.signal.result)
         self.macd_zero_cross.update(self.macd.result, 0)
 
     def post_update(self, close, volume):
