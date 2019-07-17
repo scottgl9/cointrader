@@ -172,9 +172,6 @@ class StrategyBase(object):
         elif name == "Currency_Long_EMA":
             from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
             signal = Currency_EMA_Long
-        elif name == "EFI_Breakout_Signal":
-            from trader.signal.EFI_Breakout_Signal import EFI_Breakout_Signal
-            signal = EFI_Breakout_Signal
         elif name == "EMA_OBV_Crossover":
             from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
             signal = EMA_OBV_Crossover
@@ -184,9 +181,6 @@ class StrategyBase(object):
         elif name == "Hybrid_Crossover_Test2":
             from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
             signal = Hybrid_Crossover_Test2
-        elif name == "KST_Crossover":
-            from trader.signal.KST_Crossover import KST_Crossover
-            signal = KST_Crossover
         elif name == "MACD_Crossover":
             from trader.signal.MACD_Crossover import MACD_Crossover
             signal = MACD_Crossover
