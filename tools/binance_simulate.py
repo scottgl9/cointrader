@@ -404,5 +404,5 @@ if __name__ == '__main__':
         #    results = sorted(trade_result[symbol])
         #    f.write("{}: {}\n".format(symbol, results))
         f.write("Initial BTC Total: {}\n".format(initial_btc_total))
-        f.write("Total Profit: {}%".format(total_pprofit))
+        f.write("Total Profit: {}%\n".format(total_pprofit))
 
