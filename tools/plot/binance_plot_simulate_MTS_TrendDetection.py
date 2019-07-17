@@ -50,8 +50,8 @@ def simulate(conn, client, base, currency):
     aema200_values = []
 
     mts_td = MTS_TrendDetection(win_secs=3600)
-    mts_reverse_up_points = []
-    mts_reverse_down_points = []
+    mts_uptrend_points = []
+    mts_downtrend_points = []
 
     i=0
     for msg in get_rows_as_msgs(c):
@@ -75,10 +75,10 @@ def simulate(conn, client, base, currency):
 
         mts_td.update(aema12.result, ts)
         if mts_td.ready():
-            if mts_td.trend_up_reverse():
-                mts_reverse_up_points.append(i)
-            if mts_td.trend_down_reverse():
-                mts_reverse_down_points.append(i)
+            if mts_td.uptrend_started():
+                mts_uptrend_points.append(i)
+            if mts_td.downtrend_started():
+                mts_downtrend_points.append(i)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -87,12 +87,15 @@ def simulate(conn, client, base, currency):
         timestamps.append(ts)
         i += 1
 
+    print(mts_uptrend_points)
+    print(mts_downtrend_points)
+
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
 
-    for i in mts_reverse_down_points:
+    for i in mts_uptrend_points:
         plt.axvline(x=i, color='green')
-    for i in mts_reverse_up_points:
+    for i in mts_downtrend_points:
         plt.axvline(x=i, color='red')
 
     fig1, = plt.plot(aema12_values, label='AEMA12')
