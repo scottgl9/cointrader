@@ -175,9 +175,6 @@ class StrategyBase(object):
         elif name == "EMA_OBV_Crossover":
             from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
             signal = EMA_OBV_Crossover
-        elif name == "Hybrid_Crossover_Test":
-            from trader.signal.Hybrid_Crossover_Test import Hybrid_Crossover_Test
-            signal = Hybrid_Crossover_Test
         elif name == "Hybrid_Crossover_Test2":
             from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
             signal = Hybrid_Crossover_Test2
