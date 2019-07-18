@@ -397,4 +397,4 @@ if __name__ == '__main__':
 
         for name, item in profit_results.items():
             for k,v in item.items():
-                writer.writerow({'filename': filename, 'signal_name': k, 'profit': v})
+                writer.writerow({'filename': name, 'signal_name': k, 'profit': v})
