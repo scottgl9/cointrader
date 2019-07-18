@@ -292,6 +292,8 @@ def get_signal_names():
         name = path.replace('.py', '')
         if name == '__init__' or name == 'NULL_Signal':
             continue
+        if name == 'TrendStateTrack_Signal':
+            continue
         result.append(name)
     return result
 
@@ -347,7 +349,25 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.DEBUG)
 
-    profit_result_list = {}
+    profit_results = {}
+
+    if os.path.exists('out.csv'):
+        with open('out.csv', 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                filename = row['filename']
+                signal_name = row['signal_name']
+                profit = row['profit']
+                if filename not in profit_results:
+                    profit_results[filename] = {}
+                profit_results[filename][signal_name] = profit
+    print(profit_results)
+
+    filename = os.path.basename(results.filename)
+
+    if filename in profit_results:
+        logger.info("{} results exist, exiting".format(filename))
+        sys.exit(0)
 
     for signal in get_signal_names():
         conn = sqlite3.connect(results.filename)
@@ -365,7 +385,9 @@ if __name__ == '__main__':
             conn.close()
             sys.exit(0)
         conn.close()
-        profit_result_list[profit_entry_name] = total_pprofit
+        if filename not in profit_results:
+            profit_results[filename] = {}
+        profit_results[filename][profit_entry_name] = total_pprofit
 
     with open('out.csv', 'w') as csvfile:
         fieldnames = ['filename', 'signal_name', 'profit']
@@ -373,5 +395,6 @@ if __name__ == '__main__':
 
         writer.writeheader()
 
-        for k,v in profit_result_list.items():
-            writer.writerow({'filename': results.filename, 'signal_name': k, 'profit': v})
+        for name, item in profit_results.items():
+            for k,v in item.items():
+                writer.writerow({'filename': filename, 'signal_name': k, 'profit': v})
