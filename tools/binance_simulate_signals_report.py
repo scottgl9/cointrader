@@ -320,6 +320,10 @@ if __name__ == '__main__':
                         default='binance_hourly_klines.db',
                         help='binance hourly klines DB file')
 
+    parser.add_argument('--csv', action='store', dest='csv_file',
+                        default='out.csv',
+                        help='output CSV file')
+
     results = parser.parse_args()
 
     if not os.path.exists(results.filename):
@@ -351,9 +355,11 @@ if __name__ == '__main__':
 
     profit_results = {}
 
-    if os.path.exists('out.csv'):
-        with open('out.csv', 'r') as csvfile:
-            reader = csv.DictReader(csvfile)
+    csv_file = results.csv_file
+
+    if os.path.exists(csv_file):
+        with open(csv_file, 'r') as f:
+            reader = csv.DictReader(f)
             for row in reader:
                 filename = row['filename']
                 signal_name = row['signal_name']
@@ -389,7 +395,7 @@ if __name__ == '__main__':
             profit_results[filename] = {}
         profit_results[filename][profit_entry_name] = total_pprofit
 
-    with open('out.csv', 'w') as csvfile:
+    with open(csv_file, 'w') as csvfile:
         fieldnames = ['filename', 'signal_name', 'profit']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
