@@ -53,9 +53,10 @@ class HourlyLSTM2(object):
             self.models_path = os.path.join("models", "live")
         if not os.path.exists(self.models_path):
             os.mkdir(self.models_path)
-        self.columns = ['close', 'quote_volume', 'EMA_CLOSE']
+        self.columns = ['EMA_CLOSE']
         self.max_close = 0
         self.max_quote = 0
+        self.batch_size = batch_size
 
         self.weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
         self.arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
@@ -70,6 +71,10 @@ class HourlyLSTM2(object):
         self.test_model = None
         self.ema_close = None
         self.volume_close = None
+        self.indicators_loaded = False
+        self.actual_result = 0
+        self.predict_result = 0
+        self.testX = None
 
     def load_model(self):
         if not os.path.exists(self.weights_file):
@@ -93,15 +98,16 @@ class HourlyLSTM2(object):
         self.test_start_ts = test_start_ts
         self.test_end_ts = test_end_ts
 
+        self.max_quote = hkdb.get_max_field_value(symbol, 'quote_volume', model_start_ts, model_end_ts)
+        self.max_close = hkdb.get_max_field_value(symbol, 'close', model_start_ts, model_end_ts)
+        print("Max close={}".format(self.max_close))
+        print("Max quote_volume={}".format(self.max_quote))
+
         self.model = self.load_model()
         if self.model:
             # create test model from original model
             self.test_model = self.create_model(batch_size=1, model=self.model)
             return
-        self.max_quote = hkdb.get_max_field_value(symbol, 'quote_volume', model_start_ts, model_end_ts)
-        self.max_close = hkdb.get_max_field_value(symbol, 'close', model_start_ts, model_end_ts)
-        print("Max close={}".format(self.max_close))
-        print("Max quote_volume={}".format(self.max_quote))
 
         self.df = self.hkdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
         # normalize close and quote_volume to [0, 1]
@@ -109,11 +115,59 @@ class HourlyLSTM2(object):
         self.df['quote_volume'] /= self.max_quote
 
         self.start_ts = self.df['ts'].values.tolist()[-1]
-        #self.df = self.create_features(self.df)
+        self.df = self.create_features(self.df)
+        trainX, trainY = self.create_train_dataset(self.df, column='EMA_CLOSE')
+
+        batch_adjusted_start  = len(trainX) - int(len(trainX) / self.batch_size) * self.batch_size
+        trainX = trainX[batch_adjusted_start:]
+        trainY = trainY[batch_adjusted_start:]
+
+        # reshape for training
+        trainX = np.reshape(trainX, (-1, len(self.columns), 1))
+
+        self.model = self.train_model(trainX, trainY, epoch=10, batch_size=self.batch_size)
+        self.indicators_loaded = True
+        self.save_model(self.model)
+        print("Saved {} model".format(self.symbol))
+        # free up memory from self.df
+        self.df = None
+        # create test model from original model
+        self.test_model = self.create_model(batch_size=1, model=self.model)
+
+    def update(self, hourly_ts):
+        # if we loaded the model from files, then self.indicators_loaded will be False
+        # we need to run the indicators on a dataset to get them in a good state before
+        # using the indicators to build features for test/predict
+        if not self.indicators_loaded:
+            self.init_indicators(start_ts=0, end_ts=self.model_end_ts)
+            self.indicators_loaded = True
+
+        df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+
+        # normalize close and quote_volume to [0, 1]
+        df_update['close'] /= self.max_close
+        df_update['quote_volume'] /= self.max_quote
+
+        #self.last_ts = df_update['ts'].values.tolist()[-1]
+        self.df_update = self.create_features(df_update, store=True)
+        if not len(self.df_update):
+            return
+
+        self.actual_result = self.df_update['EMA_CLOSE'].values[0]
+        self.testX = self.create_test_dataset(self.df_update)
+        predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
+        self.predict_result = predictY[0][0]
+
+    # initialize indicators if model loaded from file
+    def init_indicators(self, start_ts, end_ts):
+        df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+        df['close'] /= self.max_close
+        df['quote_volume'] /= self.max_quote
+        self.create_features(df, store=False)
 
     def create_features(self, df, store=True):
         # process EMA close values
-        ema_close = Indicator(EMA, 12, scale=24)
+        ema_close = Indicator(EMA, 12, scale=6)
         if self.ema_close:
             ema_close_indicator = self.ema_close
             ema_close.set_indicator(ema_close_indicator)
@@ -130,7 +184,7 @@ class HourlyLSTM2(object):
             return df.dropna()
         return None
 
-    def create_model(self, columns=3, rows=1, batch_size=32, model=None):
+    def create_model(self, columns=1, rows=1, batch_size=32, model=None):
         new_model = Sequential()
 
         new_model.add(LSTM(units=50, return_sequences=True, batch_input_shape=(batch_size, columns, rows)))
@@ -160,6 +214,22 @@ class HourlyLSTM2(object):
         model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
         return model
 
+    def create_train_dataset(self, dataset, column='close'):
+        dataX = dataset.shift(1).dropna().values
+        dataY = dataset[column].shift(-1).dropna().values
+
+        dataY = dataY.reshape(-1, 1)
+
+        #self.model_columns = len(self.columns)
+        #self.model_rows = 1
+
+        return dataX, dataY
+
+    def create_test_dataset(self, dataset):
+        dataX = dataset.dropna().values
+        testX = np.reshape(np.array(dataX), (-1, len(self.columns), 1))
+        return testX
+
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     hourly_lstm = HourlyLSTM2(hkdb, symbol)
@@ -172,22 +242,24 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     count = 0
 
     ts = start_ts
-    #while ts <= end_ts:
-    #    ts += 3600 * 1000
-    #    hourly_lstm.update(ts)
-    #    testy.append(hourly_lstm.actual_result)
-    #    predicty.append(hourly_lstm.predict_result)
-    #    count += 1
+    while ts <= end_ts:
+        ts += 3600 * 1000
+        hourly_lstm.update(ts)
+        print(hourly_lstm.actual_result)
+        print(hourly_lstm.predict_result)
+        testy.append(hourly_lstm.actual_result)
+        predicty.append(hourly_lstm.predict_result)
+        count += 1
 
     plt.subplot(211)
-    #fig1, = plt.plot(testy, label='TESTY')
-    #fig2, = plt.plot(predicty, label='PREDICTY')
-    fig1, = plt.plot(hourly_lstm.df['close'].values.tolist(), label='close')
+    fig1, = plt.plot(testy, label='TESTY')
+    fig2, = plt.plot(predicty, label='PREDICTY')
+    #fig1, = plt.plot(hourly_lstm.df['close'].values.tolist(), label='close')
     #fig2, = plt.plot(hourly_lstm.df['EMA_CLOSE'].values.tolist(), label='EMA')
-    plt.legend(handles=[fig1])
+    plt.legend(handles=[fig1, fig2])
     plt.subplot(212)
-    fig21, = plt.plot(hourly_lstm.df['quote_volume'].values.tolist(), label='volume')
-    plt.legend(handles=[fig21])
+    #fig21, = plt.plot(hourly_lstm.df['quote_volume'].values.tolist(), label='volume')
+    #plt.legend(handles=[fig21])
     plt.show()
 
 # get first timestamp from kline sqlite db
