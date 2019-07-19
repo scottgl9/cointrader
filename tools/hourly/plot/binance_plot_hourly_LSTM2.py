@@ -17,6 +17,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import time
 from trader.account.binance.client import Client
 from trader.config import *
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
@@ -29,6 +31,7 @@ from sklearn.externals import joblib
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.LSMA import LSMA
+from trader.indicator.EMA import EMA
 from trader.lib.Indicator import Indicator
 
 try:
@@ -50,7 +53,7 @@ class HourlyLSTM2(object):
             self.models_path = os.path.join("models", "live")
         if not os.path.exists(self.models_path):
             os.mkdir(self.models_path)
-        self.columns = ['close', 'quote_volume']
+        self.columns = ['close', 'quote_volume', 'EMA_CLOSE']
         self.max_close = 0
         self.max_quote = 0
 
@@ -65,6 +68,8 @@ class HourlyLSTM2(object):
         self.df = None
         self.model = None
         self.test_model = None
+        self.ema_close = None
+        self.volume_close = None
 
     def load_model(self):
         if not os.path.exists(self.weights_file):
@@ -102,6 +107,28 @@ class HourlyLSTM2(object):
         # normalize close and quote_volume to [0, 1]
         self.df['close'] /= self.max_close
         self.df['quote_volume'] /= self.max_quote
+
+        self.start_ts = self.df['ts'].values.tolist()[-1]
+        #self.df = self.create_features(self.df)
+
+    def create_features(self, df, store=True):
+        # process EMA close values
+        ema_close = Indicator(EMA, 12, scale=24)
+        if self.ema_close:
+            ema_close_indicator = self.ema_close
+            ema_close.set_indicator(ema_close_indicator)
+        ema_close.load_dataframe(df)
+        if store:
+            df['EMA_CLOSE'] = np.array(ema_close.results())
+        else:
+            ema_close.process()
+
+        self.ema_close = ema_close.indicator
+
+        if store:
+            df = pd.DataFrame(df, columns=self.columns)
+            return df.dropna()
+        return None
 
     def create_model(self, columns=3, rows=1, batch_size=32, model=None):
         new_model = Sequential()
@@ -156,6 +183,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     #fig1, = plt.plot(testy, label='TESTY')
     #fig2, = plt.plot(predicty, label='PREDICTY')
     fig1, = plt.plot(hourly_lstm.df['close'].values.tolist(), label='close')
+    #fig2, = plt.plot(hourly_lstm.df['EMA_CLOSE'].values.tolist(), label='EMA')
     plt.legend(handles=[fig1])
     plt.subplot(212)
     fig21, = plt.plot(hourly_lstm.df['quote_volume'].values.tolist(), label='volume')
