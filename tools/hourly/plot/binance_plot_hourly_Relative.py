@@ -12,6 +12,7 @@ import sys
 import os
 from datetime import datetime
 import time
+import numpy as np
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
@@ -46,12 +47,8 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     ema200 = EMA(200, scale=scale)
     ema300 = EMA(300, scale=scale)
     ema500 = EMA(500, scale=scale)
-    obv_ema12 = EMA(12)
-    obv_ema26 = EMA(26)
-    obv_ema50 = EMA(50)
-    obv_ema12_values = []
-    obv_ema26_values = []
-    obv_ema50_values = []
+    vol_ema12 = EMA(12)
+    vol_ema12_values = []
     ema12_values = []
     ema26_values = []
     ema50_values = []
@@ -68,17 +65,12 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     i=0
     for msg in msgs: #get_rows_as_msgs(c):
         ts = int(msg['ts'])
-        close = float(msg['close'])
+        close = float(msg['close']) / max_close
         low = float(msg['low'])
         high = float(msg['high'])
         open = float(msg['open'])
-        volume = float(msg['quote_volume'])
-        volumes.append(volume / max_quote)
-
-        obv_value = obv.update(close=close, volume=volume)
-        obv_ema12_values.append(obv_ema12.update(obv_value))
-        obv_ema26_values.append(obv_ema26.update(obv_value))
-        obv_ema50_values.append(obv_ema50.update(obv_value))
+        volume = float(msg['quote_volume']) / max_quote
+        volumes.append(volume)
 
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
@@ -94,7 +86,10 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         ema500.update(close)
         ema500_values.append(ema500.result)
 
-        close_prices.append(close / max_close)
+        vol_ema12.update(volume)
+        vol_ema12_values.append(vol_ema12.result)
+
+        close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
@@ -102,10 +97,12 @@ def simulate(hkdb, symbol, start_ts, end_ts):
 
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
-    plt.legend(handles=[symprice])
+    fig11, = plt.plot(ema12_values, label='EMA12')
+    plt.legend(handles=[symprice, fig11])
     plt.subplot(212)
     fig21, = plt.plot(volumes, label='VOL')
-    plt.legend(handles=[fig21])
+    fig22, = plt.plot(vol_ema12_values, label='VOL_EMA12')
+    plt.legend(handles=[fig21, fig22])
     plt.show()
 
 # get first timestamp from kline sqlite db

@@ -21,12 +21,13 @@ try:
 except ImportError:
     from trader.indicator.EMA import EMA
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import numpy as np
 import pandas as pd
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential, load_model
-from sklearn.cross_validation import  train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import talib
 from trader.indicator.RSI import RSI
@@ -58,6 +59,31 @@ def get_index_column(dataset, column='close'):
     column_index = names.index(column)
     return column_index
 
+def create_model(columns=3, rows=1, batch_size=32, model=None):
+    new_model = Sequential()
+
+    new_model.add(LSTM(units=50, return_sequences=True, batch_input_shape=(batch_size, columns, rows)))
+    new_model.add(Dropout(0.2))
+
+    new_model.add(LSTM(units=50, return_sequences=True))
+    new_model.add(Dropout(0.2))
+
+    new_model.add(LSTM(units=50, return_sequences=True))
+    new_model.add(Dropout(0.2))
+
+    new_model.add(LSTM(units=50))
+    new_model.add(Dropout(0.2))
+
+    new_model.add(Dense(units=1))
+
+    #for reshaping batch_size from a previously created model
+    if model:
+        weights = model.get_weights()
+        new_model.set_weights(weights)
+
+    new_model.compile(optimizer='adam', loss='mean_squared_error')
+    return new_model
+
 
 def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
     filename = "models/{}.h5".format(symbol)
@@ -65,25 +91,9 @@ def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
         model = load_model(filename)
         return model
 
-    model = Sequential()
-
-    model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
-    model.add(Dropout(0.2))
-
-    model.add(LSTM(units=50, return_sequences=True))
-    model.add(Dropout(0.2))
-
-    model.add(LSTM(units=50, return_sequences=True))
-    model.add(Dropout(0.2))
-
-    model.add(LSTM(units=50))
-    model.add(Dropout(0.2))
-
-    model.add(Dense(units=1))
-
-    model.compile(optimizer='adam', loss='mean_squared_error')
-
-    model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
+    model = create_model(columns=X_train.shape[1], rows=X_train.shape[2], batch_size=batch_size)
+    for i in range(epoch):
+        model.fit(X_train, Y_train, epochs=1, batch_size=batch_size)
     model.save(filename)
     return model
 
@@ -125,12 +135,17 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     x_scaler = MinMaxScaler(feature_range = (0, 1))
     y_scaler = MinMaxScaler(feature_range = (0, 1))
 
-    train_size = int(len(df) * 0.80)
-    test_size = len(df) - train_size
-    train, test = df.iloc[0:train_size], df.iloc[train_size:len(df)]
+    train_size = int(int(len(df) * 0.80) / 32) * 32 + 1
+    test_size = int(int(len(df) * 0.20) / 32) * 32 + 1
+    #validate_size = int(int(len(df) * 0.20) / 32) * 32 + 1
+    #validate_start = train_size + test_size
+    train = df.iloc[0:train_size]
+    test = df.iloc[train_size:train_size+test_size]
+    #validate = df.iloc[validate_start:validate_start+validate_size]
 
     trainX, trainY = create_dataset(train, x_scaler, y_scaler, column='LSMA_CLOSE')
     testX, testY = create_dataset(test, x_scaler, y_scaler, column='LSMA_CLOSE')
+    #validateX, validateY = create_dataset(validate, x_scaler, y_scaler, column='LSMA_CLOSE')
 
     # reshape for training
     trainX = np.reshape(trainX, (-1, len(columns), 1))
@@ -138,16 +153,19 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     model = train_model(symbol, trainX, trainY, epoch=15)
 
     testX = np.reshape(testX, (-1, len(columns), 1))
-    predictY = model.predict(testX)
-    predictY = y_scaler.inverse_transform(predictY)
-    scores = model.evaluate(testX, testY, verbose=0)
-    print(scores)
+    score = model.evaluate(testX, testY, verbose=0, batch_size=32) * 100.0
+    print("test score: {}".format(score))
 
-    plot_predict_y = predictY.reshape(1, -1)[0]
+    test_model = create_model(batch_size=1, model=model)
+
+    plot_predict_y = []
+    #validateX = np.reshape(validateX, (-1, len(columns), 1))
+    for X in testX:
+        Y = test_model.predict(np.array( [X,] ))
+        predictY = y_scaler.inverse_transform(Y)
+        plot_predict_y.append(predictY[0][0])
+
     plot_test_y = y_scaler.inverse_transform(testY).reshape(1, -1)[0]
-
-    #print(plot_predict_y)
-    #print(plot_test_y)
 
     #train_close_values = y_scaler.inverse_transform(trainY).reshape(1, -1)[0]
     #compute_real_predict(model, close_values=train_close_values, count=test_size, x_scaler=x_scaler, y_scaler=y_scaler)
