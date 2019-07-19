@@ -219,6 +219,38 @@ class HourlyKlinesDB(object):
         sql += "ORDER BY ts ASC"
         return sql
 
+    # get minimum value of a table field from db table
+    def get_min_field_value(self, symbol, field, start_ts=0, end_ts=0):
+        sql = "SELECT MIN({}) FROM {}".format(field, symbol)
+        if start_ts and end_ts:
+            sql += " WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
+        elif not start_ts and end_ts:
+            sql += " WHERE ts <= {} ".format(end_ts)
+        elif start_ts and not end_ts:
+            sql += " WHERE {} <= ts ".format(start_ts)
+        cur = self.conn.cursor()
+        cur.execute(sql)
+        result = cur.fetchone()
+        if result:
+            return result[0]
+        return 0
+
+    # get maximum value of a table field from db table
+    def get_max_field_value(self, symbol, field, start_ts=0, end_ts=0):
+        sql = "SELECT MAX({}) FROM {}".format(field, symbol)
+        if start_ts and end_ts:
+            sql += " WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
+        elif not start_ts and end_ts:
+            sql += " WHERE ts <= {} ".format(end_ts)
+        elif start_ts and not end_ts:
+            sql += " WHERE {} <= ts ".format(start_ts)
+        cur = self.conn.cursor()
+        cur.execute(sql)
+        result = cur.fetchone()
+        if result:
+            return result[0]
+        return 0
+
     # get klines as list of rows from db table
     def get_raw_klines(self, symbol, start_ts=0, end_ts=0):
         result = []
