@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.account.AccountBinance import AccountBinance
+from trader.lib.DataFrameMLHelper import DataFrameMLHelper
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential, load_model, model_from_json
@@ -57,6 +58,8 @@ class HourlyLSTM2(object):
         self.max_close = 0
         self.max_quote = 0
         self.batch_size = batch_size
+
+        self.df_ml_helper = DataFrameMLHelper()
 
         self.weights_file = os.path.join(self.models_path, "{}_weights.h5".format(self.symbol))
         self.arch_file = os.path.join(self.models_path, "{}_arch.json".format(self.symbol))
@@ -116,9 +119,13 @@ class HourlyLSTM2(object):
 
         self.start_ts = self.df['ts'].values.tolist()[-1]
         self.df = self.create_features(self.df)
+
+        print(self.df)
+        print(self.df_ml_helper.get_split_dataset_by_column(column_name='EMA_CLOSE', count=3, df=self.df))
+
         trainX, trainY = self.create_train_dataset(self.df, column='EMA_CLOSE')
 
-        batch_adjusted_start  = len(trainX) - int(len(trainX) / self.batch_size) * self.batch_size
+        batch_adjusted_start = len(trainX) - int(len(trainX) / self.batch_size) * self.batch_size
         trainX = trainX[batch_adjusted_start:]
         trainY = trainY[batch_adjusted_start:]
 
@@ -215,6 +222,7 @@ class HourlyLSTM2(object):
         return model
 
     def create_train_dataset(self, dataset, column='close'):
+        # need to split dataX into close[-1, -2, -3] with dataY as close[0] to train with previous 3 values of close
         dataX = dataset.shift(1).dropna().values
         dataY = dataset[column].shift(-1).dropna().values
 
