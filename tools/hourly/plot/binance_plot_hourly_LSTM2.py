@@ -54,7 +54,7 @@ class HourlyLSTM2(object):
             self.models_path = os.path.join("models", "live")
         if not os.path.exists(self.models_path):
             os.mkdir(self.models_path)
-        self.columns = ['EMA_CLOSE']
+        self.column_count = 3
         self.max_close = 0
         self.max_quote = 0
         self.batch_size = batch_size
@@ -120,8 +120,8 @@ class HourlyLSTM2(object):
         self.start_ts = self.df['ts'].values.tolist()[-1]
         self.df = self.create_features(self.df)
 
-        print(self.df)
-        print(self.df_ml_helper.get_split_dataset_by_column(column_name='EMA_CLOSE', count=3, df=self.df))
+        #print(self.df['EMA_CLOSE'].shift(-3).dropna())
+        #print(self.df_ml_helper.get_split_dataset_by_column(column_name='EMA_CLOSE', count=3, df=self.df))
 
         trainX, trainY = self.create_train_dataset(self.df, column='EMA_CLOSE')
 
@@ -130,7 +130,7 @@ class HourlyLSTM2(object):
         trainY = trainY[batch_adjusted_start:]
 
         # reshape for training
-        trainX = np.reshape(trainX, (-1, len(self.columns), 1))
+        trainX = np.reshape(trainX, (-1, self.column_count, 1))
 
         self.model = self.train_model(trainX, trainY, epoch=10, batch_size=self.batch_size)
         self.indicators_loaded = True
@@ -149,7 +149,10 @@ class HourlyLSTM2(object):
             self.init_indicators(start_ts=0, end_ts=self.model_end_ts)
             self.indicators_loaded = True
 
-        df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+        hourly_end_ts = hourly_ts
+        hourly_start_ts = hourly_ts - 1000 * 3600 * self.column_count
+        df_update = self.hkdb.get_pandas_klines(self.symbol, hourly_start_ts, hourly_end_ts)
+        #df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
 
         # normalize close and quote_volume to [0, 1]
         df_update['close'] /= self.max_close
@@ -161,7 +164,8 @@ class HourlyLSTM2(object):
             return
 
         self.actual_result = self.df_update['EMA_CLOSE'].values[0]
-        self.testX = self.create_test_dataset(self.df_update)
+        self.testX = self.create_test_dataset(self.df_update, column='EMA_CLOSE')
+        print(self.testX)
         predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
         self.predict_result = predictY[0][0]
 
@@ -187,7 +191,7 @@ class HourlyLSTM2(object):
         self.ema_close = ema_close.indicator
 
         if store:
-            df = pd.DataFrame(df, columns=self.columns)
+            df = pd.DataFrame(df, columns=['EMA_CLOSE'])
             return df.dropna()
         return None
 
@@ -217,15 +221,19 @@ class HourlyLSTM2(object):
         return new_model
 
     def train_model(self, X_train, Y_train, epoch=25, batch_size=32):
-        model = self.create_model(columns=len(self.columns), rows=X_train.shape[2], batch_size=batch_size)
+        model = self.create_model(columns=self.column_count, rows=X_train.shape[2], batch_size=batch_size)
         model.fit(X_train, Y_train, epochs=epoch, batch_size=batch_size)
         return model
 
     def create_train_dataset(self, dataset, column='close'):
         # need to split dataX into close[-1, -2, -3] with dataY as close[0] to train with previous 3 values of close
-        dataX = dataset.shift(1).dropna().values
-        dataY = dataset[column].shift(-1).dropna().values
+        #dataX = dataset.shift(1).dropna().values
+        #dataY = dataset[column].shift(-1).dropna().values
 
+        dataX = self.df_ml_helper.get_split_dataset_by_column(column_name=column,
+                                                              count=self.column_count,
+                                                              df=dataset).values
+        dataY = dataset[column].shift(-3).dropna().values
         dataY = dataY.reshape(-1, 1)
 
         #self.model_columns = len(self.columns)
@@ -233,9 +241,14 @@ class HourlyLSTM2(object):
 
         return dataX, dataY
 
-    def create_test_dataset(self, dataset):
-        dataX = dataset.dropna().values
-        testX = np.reshape(np.array(dataX), (-1, len(self.columns), 1))
+    def create_test_dataset(self, dataset, column='close'):
+        #dataX = dataset.dropna().values
+        dataX = self.df_ml_helper.get_split_dataset_by_column(column_name=column,
+                                                              count=self.column_count,
+                                                              train=False,
+                                                              df=dataset).values
+        print(dataX)
+        testX = np.reshape(np.array(dataX), (-1, self.column_count, 1))
         return testX
 
 
