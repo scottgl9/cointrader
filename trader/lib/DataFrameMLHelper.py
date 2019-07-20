@@ -33,8 +33,16 @@ class DataFrameMLHelper(object):
         #if not df:
         #    df = self.df
         new_df = pd.DataFrame()
-        for shift in range(0, count):
+        if train:
+            shift_start = 0
+        else:
+            shift_start = 1
+        for shift in range(shift_start, count + shift_start):
             cname = "{}{}".format(column_name, shift)
-            new_df[cname] = df[column_name].values[shift:-(count - shift)]
+            shift_end = -(count - shift)
+            if shift_end:
+                new_df[cname] = df[column_name].values[shift:shift_end]
+            else:
+                new_df[cname] = df[column_name].values[shift:]
         #df = df.drop(columns=column_name)
         return new_df
