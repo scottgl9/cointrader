@@ -109,7 +109,7 @@ class HourlyLSTM2(object):
         self.model = self.load_model()
         if self.model:
             # create test model from original model
-            self.test_model = self.create_model(batch_size=1, model=self.model)
+            self.test_model = self.create_model(columns=self.column_count, batch_size=1, model=self.model)
             return
 
         self.df = self.hkdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
@@ -139,7 +139,7 @@ class HourlyLSTM2(object):
         # free up memory from self.df
         self.df = None
         # create test model from original model
-        self.test_model = self.create_model(batch_size=1, model=self.model)
+        self.test_model = self.create_model(columns=self.column_count, batch_size=1, model=self.model)
 
     def update(self, hourly_ts):
         # if we loaded the model from files, then self.indicators_loaded will be False
@@ -163,11 +163,11 @@ class HourlyLSTM2(object):
         if not len(self.df_update):
             return
 
-        self.actual_result = self.df_update['EMA_CLOSE'].values[0]
+        self.actual_result = self.df_update['EMA_CLOSE'].values[-1]
         self.testX = self.create_test_dataset(self.df_update, column='EMA_CLOSE')
-        print(self.testX)
         predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
-        self.predict_result = predictY[0][0]
+        if predictY:
+            self.predict_result = predictY[0][0]
 
     # initialize indicators if model loaded from file
     def init_indicators(self, start_ts, end_ts):
@@ -247,7 +247,7 @@ class HourlyLSTM2(object):
                                                               count=self.column_count,
                                                               train=False,
                                                               df=dataset).values
-        print(dataX)
+        #print(dataX)
         testX = np.reshape(np.array(dataX), (-1, self.column_count, 1))
         return testX
 
