@@ -138,13 +138,18 @@ class OrderLimitHandler(object):
         if float(buy_price) != 0:
             pprofit = 100.0 * (float(price) - float(buy_price)) / float(buy_price)
 
-        if not self.accnt.simulate and not self.accnt.total_btc_available():
-            self.logger.info("total_btc_available False for {}".format(ticker_id))
+        #if not self.accnt.simulate and not self.accnt.total_btc_available():
+        #    self.logger.info("total_btc_available False for {}".format(ticker_id))
         if not self.accnt.simulate and not self.accnt.initial_btc:
             self.logger.info("initial_btc = 0 for {}".format(ticker_id))
 
-        if self.accnt.total_btc_available() and self.accnt.initial_btc:
-            current_btc = self.accnt.get_total_btc_value()
+        if (self.accnt.initial_btc and
+                ((self.accnt.simulate and self.accnt.total_btc_available()) or not self.accnt.simulate)):
+            if self.accnt.simulate:
+                current_btc = self.accnt.get_total_btc_value()
+            else:
+                #self.accnt.get_account_balances()
+                current_btc = self.accnt.get_account_total_btc_value()
             tpprofit = 100.0 * (current_btc - self.accnt.initial_btc) / self.accnt.initial_btc
             self.accnt.set_total_percent_profit(tpprofit)
             message = "{}({}, {}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sell_type,
