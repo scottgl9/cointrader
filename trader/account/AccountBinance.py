@@ -287,9 +287,20 @@ class AccountBinance(AccountBase):
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
 
-
     def split_symbol(self, symbol):
         return self.split_ticker_id(symbol)
+
+    def get_symbol_base(self, symbol):
+        result = self.split_ticker_id(symbol)
+        if result:
+            return result[0]
+        return None
+
+    def get_symbol_currency(self, symbol):
+        result = self.split_ticker_id(symbol)
+        if result:
+            return result[1]
+        return None
 
     def get_detail_all_assets(self):
         return self.client.get_asset_details()

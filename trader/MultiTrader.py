@@ -149,6 +149,10 @@ class MultiTrader(object):
             run_type = "simulation"
         else:
             run_type = "live"
+            #self.accnt.load_detail_all_assets()
+            # purge trades from TraderDB which have been sold
+            self.accnt.load_info_all_assets()
+            self.purge_trade_db()
 
         if sigstr:
             self.logger.info("Running MultiTrade {} strategy {} signal(s) {} hourly signal: {}".format(run_type,
@@ -298,9 +302,15 @@ class MultiTrader(object):
                     # keep asset details up to date
                     self.accnt.load_detail_all_assets()
 
+                    # keep asset info up to date
+                    self.accnt.load_info_all_assets()
+
                     self.last_ts = self.current_ts
                     timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
                     self.logger.info("MultiTrader running {}".format(timestr))
+
+                    # purge trades from TraderDB which have been sold
+                    self.purge_trade_db()
 
         symbol_trader.run_update(kline, cache_db=cache_db)
 
@@ -316,6 +326,38 @@ class MultiTrader(object):
         if self.accnt.simulate:
             return symbol_trader
         return None
+
+    # purge trades from TraderDB which have been sold
+    def purge_trade_db(self):
+        trades = self.order_handler.trader_db.get_all_trades()
+        for trade in trades:
+            symbol = trade['symbol']
+            sigid = trade['sigid']
+            price = trade['price']
+            qty = trade['qty']
+            base = self.accnt.get_symbol_base(symbol)
+            if not base:
+                continue
+            asset_info = self.accnt.get_asset_info_dict(symbol)
+            if not asset_info:
+                continue
+            try:
+                base_min_size = float(asset_info['stepSize'])
+                min_notional = float(asset_info['minNotional'])
+            except (KeyError, TypeError):
+                continue
+
+            if min_notional > base_min_size:
+                base_min_size = min_notional
+
+            # if balance is less than minimum balance, then remove from trade db and send sell complete
+            balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base)['balance']))
+            if balance < base_min_size:
+                self.logger.info("Removing {} from trade db".format(symbol))
+                self.order_handler.trader_db.remove_trade(symbol, sigid)
+                self.order_handler.remove_open_order(symbol)
+                self.order_handler.send_sell_complete(symbol, price, qty, price, sigid, order_type=Message.TYPE_MARKET)
+
 
     # process message from user event socket
     # cmd: NEW, PARTIALLY_FILLED, FILLED, CANCELED
