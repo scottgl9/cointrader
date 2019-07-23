@@ -7,6 +7,8 @@ from trader.lib.ValueLag import ValueLag
 
 class EMA(IndicatorBase):
     def __init__(self, weight=26, scale=1.0, lag_window=3, slope_window=0, custom=False):
+        self.result_count = 1
+        #super(EMA, self).__init__(use_close=True)
         IndicatorBase.__init__(self, use_close=True)
         self.result = 0.0
         self.last_result = 0.0

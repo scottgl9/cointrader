@@ -16,10 +16,7 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
-try:
-    from trader.indicator.native.EMA import EMA
-except ImportError:
-    from trader.indicator.EMA import EMA
+from trader.indicator.EMA import EMA
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 

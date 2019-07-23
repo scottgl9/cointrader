@@ -22,7 +22,12 @@ class Indicator(object):
         self.ts_values = None
         self.count = 0
         self._results = None
-        self.result_count = self.indicator.result_count
+
+        try:
+            self.result_count = self.indicator.result_count
+        except AttributeError:
+            self.result_count = 1
+
         self.close_only = False
         self.close_ts = False
         self.close_volume = False
@@ -88,7 +93,7 @@ class Indicator(object):
             else:
                 if use_ts:
                     self.close_ts = True
-                else:
+                elif use_close:
                     self.close_only = True
         else:
             if use_volume:

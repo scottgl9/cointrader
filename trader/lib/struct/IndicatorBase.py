@@ -1,4 +1,4 @@
-class IndicatorBase:
+class IndicatorBase(object):
     def __init__(self, use_close=True, use_open=False, use_volume=False, use_low=False, use_high=False, use_ts=False,
                  result_count=1):
         self.use_close = use_close

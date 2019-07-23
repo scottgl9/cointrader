@@ -32,13 +32,8 @@ from sklearn.externals import joblib
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
 from trader.indicator.LSMA import LSMA
-from trader.indicator.EMA import EMA
 from trader.lib.Indicator import Indicator
-
-try:
-    from trader.indicator.native.EMA import EMA
-except ImportError:
-    from trader.indicator.EMA import EMA
+from trader.indicator.EMA import EMA
 
 
 class HourlyLSTM2(object):
