@@ -11,9 +11,6 @@ class LargestPriceChange(object):
         self.tree = None
         self.root = None
         self._price_segment_percents = None
-        self._price_segment_score1 = None
-        self._price_segment_score2 = None
-        self._price_segment_score3 = None
         self.start_index = 0
         if prices and timestamps:
             self.reset(prices, timestamps)
@@ -28,9 +25,6 @@ class LargestPriceChange(object):
             self.timestamps = timestamps
         self.tree = PriceSegmentTree(self.prices, self.timestamps)
         self._price_segment_percents = []
-        self._price_segment_score1 = []
-        self._price_segment_score2 = []
-        self._price_segment_score3 = []
 
     def divide_price_segments(self):
         self.tree.split()
@@ -40,23 +34,23 @@ class LargestPriceChange(object):
         self.price_segments(node=self.tree.root, leaves_only=leaves_only)
         return self._price_segment_percents
 
-    def get_price_segments_percent_sorted(self, leaves_only=False):
+    def get_price_segments_percent_sorted(self, leaves_only=False, reverse=False):
         self.get_price_segments(leaves_only)
         # sort by percent
         if self.use_dict:
-            self._price_segment_percents.sort(key=lambda x: x['percent'])
+            self._price_segment_percents.sort(key=lambda x: x['percent'], reverse=reverse)
         else:
-            self._price_segment_percents.sort(key=lambda x: x.percent)
+            self._price_segment_percents.sort(key=lambda x: x.percent, reverse=reverse)
 
         return self._price_segment_percents
 
-    def get_price_segments_score_sorted(self, leaves_only=False):
+    def get_price_segments_score_sorted(self, leaves_only=False, reverse=False):
         self.get_price_segments(leaves_only)
         # sort by percent
         if self.use_dict:
-            self._price_segment_percents.sort(key=lambda x: x['score'])
+            self._price_segment_percents.sort(key=lambda x: x['score'], reverse=reverse)
         else:
-            self._price_segment_percents.sort(key=lambda x: x.score)
+            self._price_segment_percents.sort(key=lambda x: x.score, reverse=reverse)
 
         return self._price_segment_percents
 
@@ -126,7 +120,8 @@ class LPCSegment(object):
     TYPE_SEGMENT_MID = 2
     TYPE_SEGMENT_END = 3
 
-    def __init__(self, percent=0, start_ts=0, end_ts=0, start_price=0, end_price=0, type=0, score=0.0, depth=0, leaf=False):
+    def __init__(self, percent=0, start_ts=0, end_ts=0, start_price=0, end_price=0, type=0, score=0.0, depth=0,
+                 leaf=False):
         self.start_ts = int(start_ts)
         self.end_ts = int(end_ts)
         self.percent = float(percent)
