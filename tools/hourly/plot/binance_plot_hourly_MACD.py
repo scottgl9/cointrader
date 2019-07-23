@@ -18,21 +18,20 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
-try:
-    from trader.indicator.native.EMA import EMA
-except ImportError:
-    from trader.indicator.EMA import EMA
-
+from trader.indicator.EMA import EMA
 from trader.indicator.MACD import MACD
+from trader.lib.Crossover2 import Crossover2
+from trader.lib.Crossover import Crossover
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
+    cross = Crossover2()
     obv = OBV()
     scale = 24
     if start_ts and end_ts:
         scale = 1
-    macd = MACD(short_weight=50, long_weight=200, scale=scale)
+    macd = MACD(short_weight=12, long_weight=26, scale=scale)
     macd_values = []
     macd_signal_values = []
     obv_ema12 = EMA(12)
@@ -46,6 +45,8 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     low_prices = []
     high_prices = []
     volumes = []
+    crossups = []
+    crossdowns = []
 
     i=0
     for msg in msgs: #get_rows_as_msgs(c):
@@ -66,6 +67,12 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         macd_values.append(macd.result)
         macd_signal_values.append(macd.signal.result)
 
+        cross.update(macd.result, macd.signal.result)
+
+        if cross.crossup_detected():
+            crossups.append(i)
+        if cross.crossdown_detected():
+            crossdowns.append(i)
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -73,6 +80,10 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         i += 1
 
     plt.subplot(211)
+    for i in crossups:
+        plt.axvline(x=i, color='green')
+    for i in crossdowns:
+        plt.axvline(x=i, color='red')
     symprice, = plt.plot(close_prices, label=symbol)
     plt.legend(handles=[symprice])
     plt.subplot(212)

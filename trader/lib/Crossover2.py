@@ -25,7 +25,7 @@ class Crossover2(object):
         self.crossup_ts = 0
         self.crossdown_ts = 0
 
-    def update(self, value1, value2, ts):
+    def update(self, value1, value2, ts=0):
         self.values1.add(float(value1))
         self.values2.add(float(value2))
         self.timestamps.add(ts)
@@ -38,7 +38,7 @@ class Crossover2(object):
             if self.values1.last_value() == values2_last_value:
                 self.crossup_value = values2_last_value
                 self.crossup_ts = ts
-            else:
+            elif ts:
                 # find exact cross up point
                 index_low = -1
                 index_high = -1
@@ -60,7 +60,7 @@ class Crossover2(object):
             if self.values1.first_value() == values2_last_value:
                 self.crossdown_value = values2_last_value
                 self.crossdown_ts = ts
-            else:
+            elif ts:
                 # find exact cross down point
                 index_low = -1
                 index_high = -1
