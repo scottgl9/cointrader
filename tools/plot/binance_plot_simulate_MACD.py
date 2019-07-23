@@ -82,7 +82,7 @@ def simulate(conn, client, base, currency):
         macd.update(close)
         #if macd.result_signal == 0:
         #    print(i)
-        if macd.result != 0 and macd.result_signal != 0:
+        if macd.result != 0 and macd.signal.result != 0:
             value = macd_signal.update(macd.diff)
             macd_diff_values.append(macd.result)
             macd_signal_values.append(value)
