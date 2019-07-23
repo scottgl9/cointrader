@@ -1,5 +1,5 @@
 # Acceleration
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 from trader.lib.Velocity import Velocity
 

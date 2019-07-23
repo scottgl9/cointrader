@@ -1,5 +1,5 @@
 # combined DTWMA/EMA indicator: result = EMA(DTWMA(value))
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.EMA import EMA
 

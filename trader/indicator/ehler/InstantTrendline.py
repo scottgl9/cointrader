@@ -1,7 +1,7 @@
 # John Ehler's Instantaneous Trendline
 # https://c.mql5.com/forextsd/forum/59/023inst.pdf
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-instantaneous-trendline/
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.struct.CircularArray import CircularArray
 

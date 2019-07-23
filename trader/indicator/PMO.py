@@ -1,7 +1,6 @@
 # DecisionPoint Price Momentum Oscillator (PMO)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.EMA import EMA
-from trader.lib.ValueLag import ValueLag
 
 
 class PMO(IndicatorBase):

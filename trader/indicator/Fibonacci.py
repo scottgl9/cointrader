@@ -1,5 +1,5 @@
 # Fibonacci pivot points (support / resistance lines)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class Fibonacci(IndicatorBase):

@@ -1,4 +1,4 @@
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.lib.struct.CircularArray import CircularArray
 
 

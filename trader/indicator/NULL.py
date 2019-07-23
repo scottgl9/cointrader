@@ -1,5 +1,5 @@
 # NULL indicator, returns price with no operations
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class NULL(IndicatorBase):

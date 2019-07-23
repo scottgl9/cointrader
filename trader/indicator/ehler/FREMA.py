@@ -1,6 +1,6 @@
 # Forward Reverse EMA (FREMA)
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-forward-reverse-ema/
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.struct.CircularArray import CircularArray
 

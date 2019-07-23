@@ -1,8 +1,7 @@
 # Bollinger Bands (BB)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.indicator.STDDEV import STDDEV
-from trader.lib.ValueLag import ValueLag
 
 
 class BollingerBands(IndicatorBase):

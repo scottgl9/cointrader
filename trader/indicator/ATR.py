@@ -1,5 +1,5 @@
 # Average True Range (ATR)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 class ATR(IndicatorBase):
     def __init__(self, window=14):

@@ -1,5 +1,5 @@
 # my idea of ROC weighted moving average
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class RMA(IndicatorBase):

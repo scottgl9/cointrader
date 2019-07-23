@@ -1,6 +1,6 @@
 # https://www.tradingview.com/script/mvXfI6Yf-Finite-Impulse-Response-FIR-Filter
 
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.lib.struct.CircularArray import CircularArray
 
 class FIR_Filter(IndicatorBase):

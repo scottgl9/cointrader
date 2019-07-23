@@ -1,6 +1,6 @@
 # Indicator I designed called Delta Time/Timestamp Weighted Moving Average
 from trader.lib.struct.CircularArray import CircularArray
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class DTWMA(IndicatorBase):

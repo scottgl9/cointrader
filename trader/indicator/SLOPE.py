@@ -1,5 +1,5 @@
 # simple moving slope indicator
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class SLOPE(IndicatorBase):

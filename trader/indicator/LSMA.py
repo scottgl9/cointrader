@@ -1,6 +1,6 @@
 # linear least squares moving average
 # https://stackoverflow.com/questions/5083465/fast-efficient-least-squares-fit-algorithm-in-c
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class LSMA(IndicatorBase):

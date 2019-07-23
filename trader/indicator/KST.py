@@ -1,5 +1,5 @@
 # Know Sure Thing (KST) Oscillator indicator
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.indicator.EMA import EMA
 from trader.indicator.ROC import ROC

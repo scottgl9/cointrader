@@ -1,5 +1,5 @@
 # R-Squared Index
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 
 

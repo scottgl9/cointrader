@@ -1,6 +1,5 @@
 # Hourly velocity
-from trader.indicator.IndicatorBase import IndicatorBase
-from trader.indicator.EMA import EMA
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.lib.MovingTimeSegment.MovingTimeSegment import MovingTimeSegment
 
 class Velocity(IndicatorBase):

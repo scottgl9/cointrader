@@ -1,7 +1,7 @@
 # Adaptive Relative Strength Index (RSI)
 # Rocket Science for Traders: Digital Signal Processing Applications
 # https://www.prorealcode.com/prorealtime-indicators/john-ehlers-adaptive-rsi/
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.struct.CircularArray import CircularArray
 

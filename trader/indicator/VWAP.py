@@ -8,7 +8,7 @@
 # 4. Create a Cumulative Total of Volume. Cumulative(Volume)
 # 5. Divide the Cumulative Totals.
 # VWAP = Cumulative(Typical Price x Volume) / Cumulative(Volume)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class VWAP(IndicatorBase):

@@ -1,7 +1,7 @@
 # Keltner Channels Indicator
 # https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:keltner_channels
 
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from .ATR import ATR
 from .EMA import EMA
 

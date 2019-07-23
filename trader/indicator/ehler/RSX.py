@@ -1,6 +1,6 @@
 # Corrected RSX
 # https://www.prorealcode.com/prorealtime-indicators/corrected-rsx/
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class RSX(IndicatorBase):

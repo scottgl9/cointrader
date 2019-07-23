@@ -1,5 +1,5 @@
 # Elder's Force Index (EFI)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.lib.ValueLag import ValueLag
 from trader.indicator.EMA import EMA
 

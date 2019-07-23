@@ -1,5 +1,5 @@
 # Bollinger BandWidth
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.BB import BollingerBands
 
 class BollingerBandwidth(IndicatorBase):

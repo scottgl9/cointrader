@@ -1,5 +1,5 @@
 # Relative Volatility Index (RVI)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.indicator.STDDEV import STDDEV
 

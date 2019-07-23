@@ -1,5 +1,5 @@
 # Compute the rate of change (ROC) from current price and price N values ago
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 
 

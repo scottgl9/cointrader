@@ -1,5 +1,5 @@
 # Arnaud Legoux Moving Average (ALMA)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 
 class ALMA(IndicatorBase):

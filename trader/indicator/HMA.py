@@ -1,5 +1,5 @@
 # Hull Moving Average
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.indicator.WMA import WMA
 

@@ -4,7 +4,7 @@
 # It accomplishes this adaptation by modifying the alpha term of an EMA byt he amplitude of an oscillator scaled
 # in standard deviations from the mean. The DSMA's responsiveness can be changed by using different values
 # for the input parameter period.
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.lib.struct.CircularArray import CircularArray
 

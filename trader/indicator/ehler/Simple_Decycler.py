@@ -1,5 +1,5 @@
 # https://www.tradingview.com/script/ZuIZPR4q-Ehlers-Simple-Decycler/
-from trader.indicator.IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.lib.struct.CircularArray import CircularArray
 import math
 

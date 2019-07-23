@@ -1,5 +1,5 @@
 # Linear Regression (for moving average)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 import numpy as np
 from trader.indicator.EMA import EMA
 

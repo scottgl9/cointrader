@@ -1,5 +1,5 @@
 # Regularized Exponential Moving Average (REMA)
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.SMA import SMA
 from trader.lib.ValueLag import ValueLag
 

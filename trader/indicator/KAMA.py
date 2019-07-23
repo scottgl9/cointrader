@@ -1,4 +1,4 @@
-from .IndicatorBase import IndicatorBase
+from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.lib.ValueLag import ValueLag
 # ER = Change/Volatility
 # Change = ABS(Close - Close (10 periods ago))
