@@ -14,6 +14,7 @@ from keras.utils import to_categorical
 from trader.indicator.EMA import EMA
 from trader.lib.Indicator import Indicator
 from trader.lib.Crossover import Crossover
+from trader.lib.Crossover2 import Crossover2
 
 class HourlyLSTMSignals(object):
     def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
@@ -53,6 +54,9 @@ class HourlyLSTMSignals(object):
         self.actual_result = 0
         self.predict_result = 0
         self.testX = None
+        self.n_features = 0
+        self.n_input = 0
+        self.n_outputs = 0
 
     def load(self, model_start_ts=0, model_end_ts=0, test_start_ts=0, test_end_ts=0):
         self.model_start_ts = model_start_ts
@@ -83,15 +87,18 @@ class HourlyLSTMSignals(object):
         in_seq2 = in_seq2.reshape((len(in_seq2), 1))
 
         dataset = hstack((in_seq1, in_seq2))
-        print(dataset)
-        out_seq = to_categorical(out_seq.reshape((len(out_seq), 1)))
-        n_features = dataset.shape[1]
-        n_input = self.column_count
-        n_outputs = 3
+        out_seq = out_seq.reshape((len(out_seq), 1))
+        self.n_features = dataset.shape[1]
+        self.n_input = self.column_count
+        self.n_outputs = 1
 
-        generator = TimeseriesGenerator(dataset, out_seq, length=n_input, batch_size=self.batch_size)
-
-        self.model = self.create_model(n_input, n_features, n_outputs)
+        generator = TimeseriesGenerator(dataset, out_seq, length=self.n_input, batch_size=8)
+        # for i in range(len(generator)):
+        #     x, y = generator[i]
+        #     print('%s => %s' % (x, y))
+        #     if i == 100:
+        #         break
+        self.model = self.create_model(self.n_input, self.n_features, self.n_outputs)
         self.model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
         #model.fit(dataset, out_seq, epochs=500, batch_size=8, verbose=True)
 
@@ -99,7 +106,7 @@ class HourlyLSTMSignals(object):
         # free up memory from self.df
         self.df = None
         # create test model from original model
-        self.test_model = self.create_model(n_input, n_features, n_outputs)
+        #self.test_model = self.create_model(n_input, n_features, n_outputs)
 
     def update(self, hourly_ts):
         # if we loaded the model from files, then self.indicators_loaded will be False
@@ -110,7 +117,7 @@ class HourlyLSTMSignals(object):
             self.indicators_loaded = True
 
         hourly_end_ts = hourly_ts
-        hourly_start_ts = hourly_ts - 1000 * 3600 * self.column_count
+        hourly_start_ts = hourly_ts - 1000 * 3600 * (self.column_count - 1)
         df_update = self.hkdb.get_pandas_klines(self.symbol, hourly_start_ts, hourly_end_ts)
         #df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
 
@@ -122,36 +129,51 @@ class HourlyLSTMSignals(object):
         self.df_update = self.create_features(df_update, store=True)
         if not len(self.df_update):
             return
-
-        self.actual_result = self.df_update['EMA_CLOSE1'].values[-1]
-        self.testX = self.create_test_dataset(self.df_update, column='EMA_CLOSE')
-        predictY = self.test_model.predict(self.testX) #np.array( [self.testX,] ))
+        values1 = self.df_update['EMA_CLOSE1'].values
+        values2 = self.df_update['EMA_CLOSE2'].values
+        if len(values1) != self.column_count or len(values2) != self.column_count:
+            return
+        self.testX = np.array([values1, values2]).reshape((1, self.n_input, self.n_features))
+        predictY = self.model.predict(self.testX)
         if predictY:
             self.predict_result = predictY[0][0]
+            if self.predict_result < 0.4 or self.predict_result > 0.6:
+                print(self.predict_result)
 
     def create_model(self, n_input, n_features, n_outputs):
-        model = Sequential()
-        model.add(LSTM(100, input_shape=(n_input, n_features)))
-        model.add(Dropout(0.5))
-        model.add(Dense(100, activation='relu'))
-        model.add(Dense(n_outputs, activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-        return model
+        new_model = Sequential()
+
+        new_model.add(LSTM(units=50, return_sequences=True, input_shape=(n_input, n_features)))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(LSTM(units=50, return_sequences=True))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(LSTM(units=50, return_sequences=True))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(LSTM(units=50))
+        new_model.add(Dropout(0.2))
+
+        new_model.add(Dense(units=1))
+
+        new_model.compile(optimizer='adam', loss='mean_squared_error')
+        return new_model
 
     def generate_labels(self, in_seq1, in_seq2, timestamps):
         out_seq = []
         in_size = len(in_seq1)
-        cross = Crossover()
+        cross = Crossover(window=5)
         for i in range(0, in_size):
-            cross.update(in_seq1[i], in_seq2[i]) #, ts=timestamps[i])
+            cross.update(in_seq1[i], in_seq2[i])#, ts=timestamps[i])
             if cross.crossup_detected():
                 print("CROSSUP")
-                out_seq.append(1)
+                out_seq.append(0.9)
             elif cross.crossdown_detected():
                 print("CROSSDOWN")
-                out_seq.append(2)
+                out_seq.append(0.1)
             else:
-                out_seq.append(0)
+                out_seq.append(0.5)
         return np.array(out_seq)
 
     # initialize indicators if model loaded from file
