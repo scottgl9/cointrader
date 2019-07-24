@@ -126,6 +126,10 @@ class HourlyKlinesDB(object):
             result.append(name[0])
         return result
 
+    def get_table_row_count(self, symbol):
+        res = self.conn.execute("SELECT count(*) FROM {}".format(symbol))
+        return res.fetchone()[0]
+
     # determine if timestamp already exists in table
     def ts_in_table(self, symbol, ts):
         cur = self.conn.cursor()
@@ -185,6 +189,12 @@ class HourlyKlinesDB(object):
             if end_ts and row[0] >= end_ts:
                 break
         return result
+
+    def get_table_ts_by_offset(self, symbol, offset=0):
+        cur = self.conn.cursor()
+        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1 OFFSET {}".format(symbol, offset))
+        result = cur.fetchone()
+        return int(result[0])
 
     # get first timestamp in symbol table
     def get_table_start_ts(self, symbol):
