@@ -26,9 +26,40 @@ from trader.lib.DataFrameMLHelper import DataFrameMLHelper
 from trader.lib.Crossover2 import Crossover2
 from trader.indicator.EMA import EMA
 from trader.indicator.MACD import MACD
+from numpy import hstack
 
-def create_labels(ema_values, timestamps, cross_timestamps, cross_up_timestamps, cross_down_timestamps):
-    pass
+def create_labels(ema_values, timestamps, cross_up_timestamps, cross_down_timestamps):
+    # get rid of last cross up
+    if len(cross_up_timestamps) > len(cross_down_timestamps):
+        len_diff = len(cross_down_timestamps) - len(cross_up_timestamps)
+        cross_up_timestamps = cross_up_timestamps[:len_diff]
+
+    labels = []
+    last_label_index = 0
+    offset = 4
+
+    for i in range(0, len(cross_up_timestamps)):
+        cross_up_ts = cross_up_timestamps[i]
+        cross_down_ts = cross_down_timestamps[i]
+        cross_up_index = list(timestamps).index(cross_up_ts)
+        cross_down_index = list(timestamps).index(cross_down_ts)
+
+        cross_up_value = ema_values[cross_up_index]
+        cross_down_value = ema_values[cross_down_index]
+        pchange = 100.0 * (cross_down_value - cross_up_value) / cross_up_value
+        if pchange <= 1.0:
+            continue
+        for i in range(last_label_index, cross_down_index + 1):
+            if cross_up_index - offset <= i <= cross_up_index + offset:
+                labels.append(2)
+            elif cross_down_index - offset <= i <= cross_down_index + offset:
+                labels.append(1)
+            else:
+                labels.append(0)
+        last_label_index = cross_down_index + 1
+    for i in range(last_label_index, len(ema_values)):
+        labels.append(0)
+    return labels
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
@@ -37,13 +68,13 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     crossdowns = []
     cross_up_timestamps = []
     cross_down_timestamps = []
-    cross_timestamps = []
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     macd = MACD(short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=24.0)
     ema = EMA(12, scale=24)
     ema_values = []
     macd_values = []
     macd_signal_values = []
+    last_cross_type = 0
 
     i = 0
     close_values = df['close'].values
@@ -53,22 +84,25 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         ema_values.append(ema.result)
         macd.update(close)
         cross.update(macd.result, macd.signal.result)
-        if cross.crossup_detected():
+        if cross.crossup_detected() and last_cross_type != 1:
             ts = timestamps[i]
             crossups.append(i)
             cross_up_timestamps.append(ts)
-            cross_timestamps.append(ts)
-        if cross.crossdown_detected():
+            last_cross_type = 1
+        if cross.crossdown_detected() and last_cross_type != -1:
             ts = timestamps[i]
             crossdowns.append(i)
             cross_down_timestamps.append(ts)
-            cross_timestamps.append(ts)
+            last_cross_type = -1
         macd_values.append(macd.result)
         macd_signal_values.append(macd.signal.result)
         i += 1
 
+    labels = create_labels(ema_values, timestamps, cross_up_timestamps, cross_down_timestamps)
+
     macd_df = mlhelper.series_to_supervised(macd_values, 3, 0).values
     macd_signal_df = mlhelper.series_to_supervised(macd_signal_values, 3, 0).values
+    print(hstack((macd_df, macd_signal_df)))
     print(macd_df)
     print(macd_signal_df)
     testy = []
