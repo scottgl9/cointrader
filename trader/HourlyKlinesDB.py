@@ -179,15 +179,14 @@ class HourlyKlinesDB(object):
         return last_ts
 
     # return list of specific kline column by specifying which column to select
-    def get_kline_values_by_column(self, symbol, column='close', end_ts=0):
+    def get_kline_values_by_column(self, symbol, column='close', start_ts=0, end_ts=0):
         result = []
         cindex = self.cnames.index(column)
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {} ORDER by ts ASC".format(self.scnames, symbol))
+        sql = self.build_sql_select_field_query(symbol, column, start_ts, end_ts)
+        cur.execute(sql)
         for row in cur:
-            result.append(row[cindex])
-            if end_ts and row[0] >= end_ts:
-                break
+            result.append(row[0])
         return result
 
     def get_table_ts_by_offset(self, symbol, offset=0):
@@ -215,6 +214,20 @@ class HourlyKlinesDB(object):
         start_ts = self.get_table_start_ts(symbol)
         end_ts = self.get_table_end_ts(symbol)
         return start_ts, end_ts
+
+    # select individual field from symbol table with start_ts <= ts <= end_ts
+    def build_sql_select_field_query(self, symbol, field, start_ts, end_ts):
+        sql = "SELECT {} FROM {} ".format(field, symbol)
+
+        if start_ts and end_ts:
+            sql += "WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
+        elif not start_ts and end_ts:
+            sql += "WHERE ts <= {} ".format(end_ts)
+        elif start_ts and not end_ts:
+            sql += "WHERE {} <= ts ".format(start_ts)
+
+        sql += "ORDER BY ts ASC"
+        return sql
 
     def build_sql_select_query(self, symbol, start_ts, end_ts):
         sql = "SELECT {} FROM {} ".format(self.scnames, symbol)
