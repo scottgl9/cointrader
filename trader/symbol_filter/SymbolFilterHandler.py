@@ -15,7 +15,9 @@ class SymbolFilterHandler(object):
         elif filter_name == 'filter_delta_ts_rank':
             from .filter.filter_delta_ts_rank import filter_delta_ts_rank
             filter_type = filter_delta_ts_rank
-
+        elif filter_name == 'filter_24hr_volume_rank':
+            from .filter.filter_24hr_volume_rank import filter_24hr_volume_rank
+            filter_type = filter_24hr_volume_rank
         if filter_type:
             filter = filter_type(self.accnt, self.config, self.hkdb, self.logger)
             self.filters.append(filter)
