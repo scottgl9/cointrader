@@ -110,14 +110,16 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
 
     labels = create_labels(train_ema_values, train_timestamps, cross_up_timestamps, cross_down_timestamps)
 
-    scaler = MinMaxScaler(feature_range=(0, 1))
+    scaler1 = MinMaxScaler(feature_range=(0, 1))
+    scaler2 = MinMaxScaler(feature_range=(0, 1))
+
 
     in_seq1 = np.array(train_macd_values)
     in_seq2 = np.array(train_macd_signal_values)
     in_seq1 = in_seq1.reshape((len(in_seq1), 1))
     in_seq2 = in_seq2.reshape((len(in_seq2), 1))
-    #in_seq1 = scaler.fit_transform(in_seq1)
-    #in_seq2 = scaler.fit_transform(in_seq2)
+    in_seq1 = scaler1.fit_transform(in_seq1)
+    in_seq2 = scaler2.fit_transform(in_seq2)
 
     dataset = hstack((in_seq1, in_seq2))
 
@@ -154,8 +156,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     in_seq2 = np.array(test_macd_signal_values)
     in_seq1 = in_seq1.reshape((len(in_seq1), 1))
     in_seq2 = in_seq2.reshape((len(in_seq2), 1))
-    #in_seq1 = scaler.fit_transform(in_seq1)
-    #in_seq2 = scaler.fit_transform(in_seq2)
+    in_seq1 = scaler1.transform(in_seq1)
+    in_seq2 = scaler2.transform(in_seq2)
 
     in_seq1_df = mlhelper.series_to_supervised(in_seq1, n_input, 0)
     in_seq2_df = mlhelper.series_to_supervised(in_seq2, n_input, 0)
