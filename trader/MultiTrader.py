@@ -260,11 +260,6 @@ class MultiTrader(object):
         # keep track of all current price values for all symbols being processed
         self.accnt.update_ticker(kline.symbol, kline.close, kline.ts)
 
-        # if symbol filter applies, then no further processing required
-        # 1) if the trader already exists, there could be open orders, so ignore filters
-        if not self.trader_exists(kline.symbol) and self.symbol_filter.apply_filters(kline):
-            return None
-
         symbol_trader = self.get_trader(kline.symbol, kline.close)
         if not symbol_trader:
             return None
@@ -311,6 +306,12 @@ class MultiTrader(object):
 
                     # purge trades from TraderDB which have been sold
                     self.purge_trade_db()
+
+        # if apply_filters() returns True, then disable buys for this trader
+        if self.symbol_filter.apply_filters(kline):
+            symbol_trader.filter_buy_disabled = True
+        elif symbol_trader.filter_buy_disabled:
+            symbol_trader.filter_buy_disabled = False
 
         symbol_trader.run_update(kline, cache_db=cache_db)
 

@@ -65,6 +65,8 @@ class StrategyBase(object):
         self.min_qty = 0
         self.base_min_size = 0
         self.quote_increment = 0
+        # disable ability to buy in a strategy based on filters
+        self.filter_buy_disabled = False
 
         if self.asset_info:
             self.base_precision = self.asset_info.baseAssetPrecision
@@ -263,6 +265,8 @@ class StrategyBase(object):
             if is_base:
                 return self.base_fmt.format(float(value))
             return self.quote_fmt.format(float(value))
+
+
 
     def reset(self):
         pass

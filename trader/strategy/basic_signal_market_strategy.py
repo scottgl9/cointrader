@@ -97,6 +97,10 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def buy_signal(self, signal, price):
+        # buy signal disabled by filter
+        if self.filter_buy_disabled:
+            return False
+
         if self.accnt.trades_disabled():
             return False
 
