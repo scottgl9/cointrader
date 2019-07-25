@@ -35,6 +35,7 @@ from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
 from keras.utils import to_categorical
+from sklearn.preprocessing import MinMaxScaler
 
 
 def create_labels(ema_values, timestamps, cross_up_timestamps, cross_down_timestamps):
@@ -78,41 +79,45 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     cross_up_timestamps = []
     cross_down_timestamps = []
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
-    macd = MACD(short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=24.0)
+    macd = MACD(short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0)
     ema = EMA(12, scale=24)
-    ema_values = []
-    macd_values = []
-    macd_signal_values = []
+    train_ema_values = []
+    train_macd_values = []
+    train_macd_signal_values = []
     last_cross_type = 0
 
     i = 0
-    close_values = df['close'].values
-    timestamps = df['ts'].values
-    for close in close_values:
+    train_close_values = df['close'].values
+    train_timestamps = df['ts'].values
+    for close in train_close_values:
         ema.update(close)
-        ema_values.append(ema.result)
+        train_ema_values.append(ema.result)
         macd.update(close)
         cross.update(macd.result, macd.signal.result)
         if cross.crossup_detected() and last_cross_type != 1:
-            ts = timestamps[i]
+            ts = train_timestamps[i]
             crossups.append(i)
             cross_up_timestamps.append(ts)
             last_cross_type = 1
         if cross.crossdown_detected() and last_cross_type != -1:
-            ts = timestamps[i]
+            ts = train_timestamps[i]
             crossdowns.append(i)
             cross_down_timestamps.append(ts)
             last_cross_type = -1
-        macd_values.append(macd.result)
-        macd_signal_values.append(macd.signal.result)
+        train_macd_values.append(macd.result)
+        train_macd_signal_values.append(macd.signal.result)
         i += 1
 
-    labels = create_labels(ema_values, timestamps, cross_up_timestamps, cross_down_timestamps)
+    labels = create_labels(train_ema_values, train_timestamps, cross_up_timestamps, cross_down_timestamps)
 
-    in_seq1 = np.array(macd_values)
-    in_seq2 = np.array(macd_signal_values)
+    scaler = MinMaxScaler(feature_range=(0, 1))
+
+    in_seq1 = np.array(train_macd_values)
+    in_seq2 = np.array(train_macd_signal_values)
     in_seq1 = in_seq1.reshape((len(in_seq1), 1))
     in_seq2 = in_seq2.reshape((len(in_seq2), 1))
+    in_seq1 = scaler.fit_transform(in_seq1)
+    in_seq2 = scaler.fit_transform(in_seq2)
 
     dataset = hstack((in_seq1, in_seq2))
 
@@ -120,7 +125,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     out_seq = to_categorical(out_seq.reshape((len(out_seq), 1)))
     # define generator
     n_features = dataset.shape[1]
-    n_input = 3
+    n_input = 4
     n_outputs = out_seq.shape[1]
     generator = TimeseriesGenerator(dataset, out_seq, length=n_input, batch_size=8)
     # define model
@@ -132,27 +137,49 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
     column_count = 3
-    count = 0
-    ts = test_start_ts
-    while ts <= test_end_ts:
-        end_ts = ts
-        start_ts = ts - 1000 * 3600 * (column_count - 1)
-        #df_test = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
-        #print(df_test)
-        ts += 3600 * 1000
-        count += 1
+
+    df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
+    test_close_values = df_test['close'].values
+    test_timestamps = df_test['ts'].values
+    test_ema_values = []
+    test_macd_values = []
+    test_macd_signal_values = []
+    for close in test_close_values:
+        ema.update(close)
+        test_ema_values.append(ema.result)
+        macd.update(close)
+        test_macd_values.append(macd.result)
+        test_macd_signal_values.append(macd.signal.result)
+
+    in_seq1 = np.array(test_macd_values)
+    in_seq2 = np.array(test_macd_signal_values)
+    in_seq1 = in_seq1.reshape((len(in_seq1), 1))
+    in_seq2 = in_seq2.reshape((len(in_seq2), 1))
+    in_seq1 = scaler.fit_transform(in_seq1)
+    in_seq2 = scaler.fit_transform(in_seq2)
+
+    in_seq1_df = mlhelper.series_to_supervised(in_seq1, n_input, 0)
+    in_seq2_df = mlhelper.series_to_supervised(in_seq2, n_input, 0)
+    print(in_seq1_df.count().iloc[0])
+    for i in range(0, in_seq1_df.count().iloc[0]):
+        values1 = in_seq1_df.iloc[i].values
+        values2 = in_seq2_df.iloc[i].values
+        values1 = values1.reshape((len(values1), 1))
+        values2 = values2.reshape((len(values2), 1))
+        test_dataset = hstack((values1, values2)).reshape((1, n_input, n_features))
+        print(model.predict(test_dataset, batch_size=1))
 
     plt.subplot(211)
-    for i in crossups:
-        plt.axvline(x=i, color='green')
-    for i in crossdowns:
-        plt.axvline(x=i, color='red')
-    fig1, = plt.plot(close_values, label=symbol)
-    fig2, = plt.plot(ema_values, label="EMA12")
+    #for i in crossups:
+    #    plt.axvline(x=i, color='green')
+    #for i in crossdowns:
+    #    plt.axvline(x=i, color='red')
+    fig1, = plt.plot(test_close_values, label=symbol)
+    fig2, = plt.plot(test_ema_values, label="EMA12")
     plt.legend(handles=[fig1, fig2])
     plt.subplot(212)
-    fig1, = plt.plot(macd_values, label='MACD')
-    fig2, = plt.plot(macd_signal_values, label='MACD_SIGNAL')
+    fig1, = plt.plot(test_macd_values, label='MACD')
+    fig2, = plt.plot(test_macd_signal_values, label='MACD_SIGNAL')
     plt.legend(handles=[fig1, fig2])
     plt.show()
 
@@ -165,7 +192,7 @@ if __name__ == '__main__':
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('-p', action='store', dest='split_percent',
-                        default='70',
+                        default='60',
                         help='Percent of klines to use for training (remaining used for test')
 
     parser.add_argument('-s', action='store', dest='symbol',
