@@ -61,11 +61,11 @@ def create_labels(ema_values, timestamps, cross_up_timestamps, cross_down_timest
             continue
         for i in range(last_label_index, cross_down_index + 1):
             if cross_up_index - offset <= i <= cross_up_index + offset:
-                labels.append(2)
+                labels.append(1.0)
             elif cross_down_index - offset <= i <= cross_down_index + offset:
-                labels.append(1)
+                labels.append(-1.0)
             else:
-                labels.append(0)
+                labels.append(0.0)
         last_label_index = cross_down_index + 1
     for i in range(last_label_index, len(ema_values)):
         labels.append(0)
@@ -116,16 +116,16 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     in_seq2 = np.array(train_macd_signal_values)
     in_seq1 = in_seq1.reshape((len(in_seq1), 1))
     in_seq2 = in_seq2.reshape((len(in_seq2), 1))
-    in_seq1 = scaler.fit_transform(in_seq1)
-    in_seq2 = scaler.fit_transform(in_seq2)
+    #in_seq1 = scaler.fit_transform(in_seq1)
+    #in_seq2 = scaler.fit_transform(in_seq2)
 
     dataset = hstack((in_seq1, in_seq2))
 
     out_seq = np.array(labels)
-    out_seq = to_categorical(out_seq.reshape((len(out_seq), 1)))
+    out_seq = out_seq.reshape((len(out_seq), 1))
     # define generator
     n_features = dataset.shape[1]
-    n_input = 4
+    n_input = 32
     n_outputs = out_seq.shape[1]
     generator = TimeseriesGenerator(dataset, out_seq, length=n_input, batch_size=8)
     # define model
@@ -133,10 +133,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     model.add(LSTM(100, input_shape=(n_input, n_features)))
     model.add(Dropout(0.5))
     model.add(Dense(100, activation='relu'))
-    model.add(Dense(n_outputs, activation='softmax'))
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.add(Dense(n_outputs, activation='relu'))
+    model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
     model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
-    column_count = 3
 
     df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     test_close_values = df_test['close'].values
@@ -155,8 +154,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     in_seq2 = np.array(test_macd_signal_values)
     in_seq1 = in_seq1.reshape((len(in_seq1), 1))
     in_seq2 = in_seq2.reshape((len(in_seq2), 1))
-    in_seq1 = scaler.fit_transform(in_seq1)
-    in_seq2 = scaler.fit_transform(in_seq2)
+    #in_seq1 = scaler.fit_transform(in_seq1)
+    #in_seq2 = scaler.fit_transform(in_seq2)
 
     in_seq1_df = mlhelper.series_to_supervised(in_seq1, n_input, 0)
     in_seq2_df = mlhelper.series_to_supervised(in_seq2, n_input, 0)
@@ -167,7 +166,10 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         values1 = values1.reshape((len(values1), 1))
         values2 = values2.reshape((len(values2), 1))
         test_dataset = hstack((values1, values2)).reshape((1, n_input, n_features))
-        print(model.predict(test_dataset, batch_size=1))
+        prediction = model.predict(test_dataset, batch_size=1)[0][0]
+        if prediction != 0:
+            print(prediction)
+
 
     plt.subplot(211)
     #for i in crossups:
