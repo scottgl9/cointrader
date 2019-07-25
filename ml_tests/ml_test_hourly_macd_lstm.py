@@ -15,6 +15,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import time
+import numpy as np
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
@@ -27,6 +28,14 @@ from trader.lib.Crossover2 import Crossover2
 from trader.indicator.EMA import EMA
 from trader.indicator.MACD import MACD
 from numpy import hstack
+from numpy import insert
+from keras.preprocessing.sequence import TimeseriesGenerator
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import LSTM
+from keras.layers import Dropout
+from keras.utils import to_categorical
+
 
 def create_labels(ema_values, timestamps, cross_up_timestamps, cross_down_timestamps):
     # get rid of last cross up
@@ -100,14 +109,28 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
 
     labels = create_labels(ema_values, timestamps, cross_up_timestamps, cross_down_timestamps)
 
-    macd_df = mlhelper.series_to_supervised(macd_values, 3, 0).values
-    macd_signal_df = mlhelper.series_to_supervised(macd_signal_values, 3, 0).values
-    print(hstack((macd_df, macd_signal_df)))
-    print(macd_df)
-    print(macd_signal_df)
-    testy = []
-    predicty = []
+    in_seq1 = np.array(macd_values)
+    in_seq2 = np.array(macd_signal_values)
+    in_seq1 = in_seq1.reshape((len(in_seq1), 1))
+    in_seq2 = in_seq2.reshape((len(in_seq2), 1))
 
+    dataset = hstack((in_seq1, in_seq2))
+
+    out_seq = np.array(labels)
+    out_seq = to_categorical(out_seq.reshape((len(out_seq), 1)))
+    # define generator
+    n_features = dataset.shape[1]
+    n_input = 3
+    n_outputs = out_seq.shape[1]
+    generator = TimeseriesGenerator(dataset, out_seq, length=n_input, batch_size=8)
+    # define model
+    model = Sequential()
+    model.add(LSTM(100, input_shape=(n_input, n_features)))
+    model.add(Dropout(0.5))
+    model.add(Dense(100, activation='relu'))
+    model.add(Dense(n_outputs, activation='softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
     column_count = 3
     count = 0
     ts = test_start_ts
