@@ -37,12 +37,13 @@ from keras.layers import LSTM
 from keras.layers import Dropout
 from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
-    lsma = LSMA(window=12)
+    lsma = LSMA(window=30)
     train_lsma_values = []
     train_close_values = df['close'].values
     train_ts_values = df['ts'].values
@@ -54,32 +55,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         train_lsma_values.append(lsma.result)
 
     scaler = MinMaxScaler(feature_range=(0, 1))
+    train_lsma_values = scaler.fit_transform(np.array(train_lsma_values).reshape(-1, 1))
 
-    # in_seq1 = np.array(train_macd_values)
-    # in_seq2 = np.array(train_macd_signal_values)
-    # in_seq1 = in_seq1.reshape((len(in_seq1), 1))
-    # in_seq2 = in_seq2.reshape((len(in_seq2), 1))
-    # #in_seq1 = scaler.fit_transform(in_seq1)
-    # #in_seq2 = scaler.fit_transform(in_seq2)
-    #
-    # dataset = hstack((in_seq1, in_seq2))
-    #
-    # out_seq = np.array(labels)
-    # out_seq = out_seq.reshape((len(out_seq), 1))
-    # # define generator
-    # n_features = dataset.shape[1]
-    # n_input = 32
-    # n_outputs = out_seq.shape[1]
-    # generator = TimeseriesGenerator(dataset, out_seq, length=n_input, batch_size=8)
-    # # define model
-    # model = Sequential()
-    # model.add(LSTM(100, input_shape=(n_input, n_features)))
-    # model.add(Dropout(0.5))
-    # model.add(Dense(100, activation='relu'))
-    # model.add(Dense(n_outputs, activation='relu'))
-    # model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-    # model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
-    #
     df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     test_close_values = df_test['close'].values
     test_timestamps = df_test['ts'].values
@@ -89,36 +66,31 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         ts = test_timestamps[i]
         lsma.update(close, ts)
         test_lsma_values.append(lsma.result)
-    # test_ema_values = []
-    # test_macd_values = []
-    # test_macd_signal_values = []
-    # for close in test_close_values:
-    #     ema.update(close)
-    #     test_ema_values.append(ema.result)
-    #     macd.update(close)
-    #     test_macd_values.append(macd.result)
-    #     test_macd_signal_values.append(macd.signal.result)
-    #
-    # in_seq1 = np.array(test_macd_values)
-    # in_seq2 = np.array(test_macd_signal_values)
-    # in_seq1 = in_seq1.reshape((len(in_seq1), 1))
-    # in_seq2 = in_seq2.reshape((len(in_seq2), 1))
-    # #in_seq1 = scaler.fit_transform(in_seq1)
-    # #in_seq2 = scaler.fit_transform(in_seq2)
-    #
-    # in_seq1_df = mlhelper.series_to_supervised(in_seq1, n_input, 0)
-    # in_seq2_df = mlhelper.series_to_supervised(in_seq2, n_input, 0)
-    # print(in_seq1_df.count().iloc[0])
-    # for i in range(0, in_seq1_df.count().iloc[0]):
-    #     values1 = in_seq1_df.iloc[i].values
-    #     values2 = in_seq2_df.iloc[i].values
-    #     values1 = values1.reshape((len(values1), 1))
-    #     values2 = values2.reshape((len(values2), 1))
-    #     test_dataset = hstack((values1, values2)).reshape((1, n_input, n_features))
-    #     prediction = model.predict(test_dataset, batch_size=1)[0][0]
-    #     if prediction != 0:
-    #         print(prediction)
+    y_act = test_lsma_values
+    test_lsma_values = scaler.transform(np.array(test_lsma_values).reshape(-1, 1))
 
+    # define generator
+    n_features = 1
+    n_input = 8
+    generator = TimeseriesGenerator(train_lsma_values, train_lsma_values, length=n_input, batch_size=32)
+    # define model
+    model = Sequential()
+    model.add(LSTM(100, activation='relu', input_shape=(n_input, n_features)))
+    model.add(Dense(1))
+    model.compile(optimizer='adam', loss='mse')
+    # fit model
+    model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
+    # make a one step prediction out of sample
+    x_input = mlhelper.series_to_supervised(test_lsma_values, n_input, 0).values
+    y_pred = []
+    for i in range(0, len(x_input)):
+        yhat = model.predict(x_input[i].reshape((1, n_input, n_features)), verbose=0)
+        yhat = scaler.inverse_transform(yhat)
+        y_pred.append(yhat[0][0])
+
+    y_act = y_act[n_input:len(y_pred)+n_input]
+    print(len(y_act))
+    print(len(y_pred))
 
     plt.subplot(211)
     #for i in crossups:
@@ -126,10 +98,11 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #for i in crossdowns:
     #    plt.axvline(x=i, color='red')
     fig1, = plt.plot(test_close_values, label=symbol)
-    fig2, = plt.plot(test_lsma_values, label="LSMA")
-    plt.legend(handles=[fig1, fig2])
+    plt.legend(handles=[fig1])
     plt.subplot(212)
-    #plt.legend(handles=[fig1, fig2])
+    fig21, = plt.plot(y_act, label="LSMA_ACT")
+    fig22, = plt.plot(y_pred, label="LSMA_PRED")
+    plt.legend(handles=[fig21, fig22])
     plt.show()
 
 
