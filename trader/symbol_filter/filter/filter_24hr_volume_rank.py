@@ -4,12 +4,13 @@ from trader.lib.MovingTimeSegment.MTS_SMA import MTS_SMA
 
 
 class filter_24hr_volume_rank(symbol_filter_base):
-    def __init__(self, accnt=None, config=None, hkdb=None, logger=None):
+    def __init__(self, accnt=None, config=None, hkdb=None, logger=None, cutoff_volume=50.0):
         super(filter_24hr_volume_rank, self).__init__(accnt, config, hkdb, logger)
         self.name = "filter_24hr_volume_rank"
         self.hourly_klines_by_symbol = {}
         self.volume_24hr_by_symbol = {}
         self.sorted_24hr_volumes = None
+        self.cutoff_volume = cutoff_volume
 
     def get_sorted_24hr_volumes(self):
         return sorted(((value, key) for (key, value) in self.volume_24hr_by_symbol.items()), reverse=True)
@@ -33,8 +34,8 @@ class filter_24hr_volume_rank(symbol_filter_base):
                     self.volume_24hr_by_symbol[kline.symbol] += new_kline.volume_quote
                     klines.append(new_kline)
                     self.hourly_klines_by_symbol[kline.symbol] = klines[1:]
-                    sorted_24hr_volumes = self.get_sorted_24hr_volumes()
-                    self.sorted_24hr_volumes = dict(sorted_24hr_volumes[:len(sorted_24hr_volumes)*3/4])
+                    #sorted_24hr_volumes = self.get_sorted_24hr_volumes()
+                    #self.sorted_24hr_volumes = dict(sorted_24hr_volumes[:len(sorted_24hr_volumes)*3/4])
         except KeyError:
             end_ts = self.accnt.get_hourly_ts(kline.ts)
             start_ts = end_ts - int(self.accnt.hours_to_ts(24 - 1))
@@ -45,7 +46,13 @@ class filter_24hr_volume_rank(symbol_filter_base):
                 volume_24hr += k.volume_quote
             self.volume_24hr_by_symbol[kline.symbol] = volume_24hr
 
-        if self.sorted_24hr_volumes and kline.symbol in self.sorted_24hr_volumes.values():
-            result = False
+        #if self.sorted_24hr_volumes and kline.symbol in self.sorted_24hr_volumes.values():
+        #    result = False
+        try:
+            volume_24hr = self.volume_24hr_by_symbol[kline.symbol]
+            if volume_24hr >= self.cutoff_volume:
+                result = False
+        except KeyError:
+            pass
 
         return result

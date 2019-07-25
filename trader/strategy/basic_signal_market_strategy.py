@@ -162,6 +162,10 @@ class basic_signal_market_strategy(StrategyBase):
         if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
             return False
 
+        # if buy signal disabled by filter, and price above profit cutoff, then sell
+        if self.filter_buy_disabled:
+            return True
+
         # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0
         if (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
             return True
