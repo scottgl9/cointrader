@@ -86,31 +86,52 @@ def create_features(df, indicators=None, train=True):
 
     return df_result, indicators
 
+def convert_features_to_dataset(df):
+    train_sets = []
+    for column in df.columns:
+        in_seq = df[column].values
+        in_seq = in_seq.reshape((len(in_seq), 1))
+        train_sets.append(in_seq)
+    dataset = hstack(tuple(train_sets))
+    return dataset
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     df_train, indicators = create_features(df, train=True)
-    print(df_train)
+    train_close_values = df['close'].values[:df_train.count().iloc[0]]
+    dataset = df_train.values
+    xscaler = MinMaxScaler(feature_range=(0, 1))
+    yscaler = MinMaxScaler(feature_range=(0, 1))
+    trainX = xscaler.fit_transform(dataset)
+    trainY = yscaler.fit_transform(train_close_values.reshape(-1, 1))
+    #print(trainX)
+    #print(train_close_values)
 
-    scaler = MinMaxScaler(feature_range=(0, 1))
-    #train_lsma_values = scaler.fit_transform(np.array(train_lsma_values).reshape(-1, 1))
+    y_act = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)['close'].values
 
-    df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
-    y_act = df_test['close'].values
     #test_lsma_values = scaler.transform(np.array(test_lsma_values).reshape(-1, 1))
 
     # define generator
-    n_features = 1
+    n_features = trainX.shape[1]
     n_input = 8
-    #generator = TimeseriesGenerator(train_lsma_values, train_lsma_values, length=n_input, batch_size=32)
+    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=32)
     # define model
     model = Sequential()
     model.add(LSTM(100, activation='relu', input_shape=(n_input, n_features)))
     model.add(Dense(1))
     model.compile(optimizer='adam', loss='mse')
     # fit model
-    #model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
+    model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
+
+    ts = test_start_ts
+    while ts <= test_end_ts:
+        start_ts = ts
+        end_ts = ts + 1000 * 3600 * (n_input - 1)
+        df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
+        test_df, indicators = create_features(df2, indicators)
+        test_dataset = xscaler.transform(test_df.values)
+        ts += 1000 * 3600
     # make a one step prediction out of sample
     #x_input = mlhelper.series_to_supervised(test_lsma_values, n_input, 0).values
     #for i in range(0, len(x_input)):
