@@ -16,6 +16,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import time
 import numpy as np
+import pandas as pd
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
@@ -25,9 +26,12 @@ from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.account.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
 from trader.lib.Crossover2 import Crossover2
+from trader.lib.Indicator import Indicator
 from trader.indicator.EMA import EMA
 from trader.indicator.MACD import MACD
 from trader.indicator.LSMA import LSMA
+from trader.indicator.RSI import RSI
+from trader.indicator.OBV import OBV
 from numpy import hstack
 from numpy import insert
 from keras.preprocessing.sequence import TimeseriesGenerator
@@ -39,70 +43,92 @@ from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
+def create_features(df, indicators=None, train=True):
+    df_result = pd.DataFrame()
+    # process MACD values
+    macd = Indicator(MACD)
+    if indicators:
+        macd_indicator = indicators['MACD']
+        macd.set_indicator(macd_indicator)
+    macd.load_dataframe(df)
+    df_result['MACD'] = np.array(macd.results())
+    indicator_macd = macd.indicator
+
+    # process OBV values
+    obv = Indicator(OBV, use_log10=False)
+    obv.volume_key = 'quote_volume'
+    if indicators:
+        obv_indicator = indicators['OBV']
+        obv.set_indicator(obv_indicator)
+    obv.load_dataframe(df)
+    df_result['OBV'] = np.array(obv.results())
+    indicator_obv = obv.indicator
+
+    # process RSI values
+    rsi = Indicator(RSI, 14)
+    rsi.close_key = 'close'
+    if indicators:
+        rsi_indicator = indicators['RSI']
+        rsi.set_indicator(rsi_indicator)
+    rsi.load_dataframe(df)
+    rsi_result = np.array(rsi.results())
+    rsi_result[rsi_result == 0] = np.nan
+    df_result['RSI'] = rsi_result
+    indicator_rsi = rsi.indicator
+
+    if not indicators:
+        indicators = {}
+    indicators['MACD'] = indicator_macd
+    indicators['OBV'] = indicator_obv
+    indicators['RSI'] = indicator_rsi
+
+    return df_result, indicators
+
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
-    lsma = LSMA(window=30)
-    train_lsma_values = []
-    train_close_values = df['close'].values
-    train_ts_values = df['ts'].values
-
-    for i in range(0, len(train_close_values)):
-        close = train_close_values[i]
-        ts = train_ts_values[i]
-        lsma.update(close, ts)
-        train_lsma_values.append(lsma.result)
+    df_train, indicators = create_features(df, train=True)
+    print(df_train)
 
     scaler = MinMaxScaler(feature_range=(0, 1))
-    train_lsma_values = scaler.fit_transform(np.array(train_lsma_values).reshape(-1, 1))
+    #train_lsma_values = scaler.fit_transform(np.array(train_lsma_values).reshape(-1, 1))
 
     df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
-    test_close_values = df_test['close'].values
-    test_timestamps = df_test['ts'].values
-    test_lsma_values = []
-    for i in range(0, len(test_close_values)):
-        close = test_close_values[i]
-        ts = test_timestamps[i]
-        lsma.update(close, ts)
-        test_lsma_values.append(lsma.result)
-    y_act = test_lsma_values
-    test_lsma_values = scaler.transform(np.array(test_lsma_values).reshape(-1, 1))
+    y_act = df_test['close'].values
+    #test_lsma_values = scaler.transform(np.array(test_lsma_values).reshape(-1, 1))
 
     # define generator
     n_features = 1
     n_input = 8
-    generator = TimeseriesGenerator(train_lsma_values, train_lsma_values, length=n_input, batch_size=32)
+    #generator = TimeseriesGenerator(train_lsma_values, train_lsma_values, length=n_input, batch_size=32)
     # define model
     model = Sequential()
     model.add(LSTM(100, activation='relu', input_shape=(n_input, n_features)))
     model.add(Dense(1))
     model.compile(optimizer='adam', loss='mse')
     # fit model
-    model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
+    #model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
     # make a one step prediction out of sample
-    x_input = mlhelper.series_to_supervised(test_lsma_values, n_input, 0).values
-    y_pred = []
-    for i in range(0, len(x_input)):
-        yhat = model.predict(x_input[i].reshape((1, n_input, n_features)), verbose=0)
-        yhat = scaler.inverse_transform(yhat)
-        y_pred.append(yhat[0][0])
+    #x_input = mlhelper.series_to_supervised(test_lsma_values, n_input, 0).values
+    #for i in range(0, len(x_input)):
+    #    yhat = model.predict(x_input[i].reshape((1, n_input, n_features)), verbose=0)
+    #    yhat = scaler.inverse_transform(yhat)
+    #    y_pred.append(yhat[0][0])
 
-    y_act = y_act[n_input:len(y_pred)+n_input]
-    print(len(y_act))
-    print(len(y_pred))
+    #y_act = y_act[n_input:len(y_pred)+n_input]
+    #print(len(y_act))
+    #print(len(y_pred))
 
     plt.subplot(211)
     #for i in crossups:
     #    plt.axvline(x=i, color='green')
     #for i in crossdowns:
     #    plt.axvline(x=i, color='red')
-    fig1, = plt.plot(test_close_values, label=symbol)
+    fig1, = plt.plot(y_act, label=symbol)
     plt.legend(handles=[fig1])
     plt.subplot(212)
-    fig21, = plt.plot(y_act, label="LSMA_ACT")
-    fig22, = plt.plot(y_pred, label="LSMA_PRED")
-    plt.legend(handles=[fig21, fig22])
+    #plt.legend(handles=[fig21, fig22])
     plt.show()
 
 
