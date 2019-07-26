@@ -55,7 +55,7 @@ def create_features(df, indicators=None, train=True):
     indicator_macd = macd.indicator
 
     # process OBV values
-    obv = Indicator(OBV, use_log10=False)
+    obv = Indicator(OBV)
     obv.volume_key = 'quote_volume'
     if indicators:
         obv_indicator = indicators['OBV']
@@ -81,6 +81,8 @@ def create_features(df, indicators=None, train=True):
     indicators['MACD'] = indicator_macd
     indicators['OBV'] = indicator_obv
     indicators['RSI'] = indicator_rsi
+
+    df_result = df_result.dropna()
 
     return df_result, indicators
 
