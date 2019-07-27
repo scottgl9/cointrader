@@ -95,6 +95,9 @@ def convert_features_to_dataset(df):
     dataset = hstack(tuple(train_sets))
     return dataset
 
+def transform_multi_feature_to_lagged(n_features, n_input):
+    pass
+
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
@@ -104,6 +107,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     xscaler = MinMaxScaler(feature_range=(0, 1))
     yscaler = MinMaxScaler(feature_range=(0, 1))
     trainX = xscaler.fit_transform(dataset)
+    #print(trainX)
     trainY = yscaler.fit_transform(train_close_values.reshape(-1, 1))
     #print(trainX)
     #print(train_close_values)
@@ -115,8 +119,13 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     # define generator
     n_features = trainX.shape[1]
     n_input = 8
-    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=32)
-    # define model
+    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=1)
+    last_generated, _ = generator[len(generator) - 1]
+    #print(last_generated[0][-1])
+    #for i in range(len(generator)):
+    #    x, y = generator[i]
+    #    print('{}'.format(x))
+
     model = Sequential()
     model.add(LSTM(100, activation='relu', input_shape=(n_input, n_features)))
     model.add(Dense(1))
@@ -124,13 +133,19 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     # fit model
     model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
 
+    y_pred = []
     ts = test_start_ts
     while ts <= test_end_ts:
         start_ts = ts
         end_ts = ts + 1000 * 3600 * (n_input - 1)
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
         test_df, indicators = create_features(df2, indicators)
-        test_dataset = xscaler.transform(test_df.values)
+        try:
+            test_dataset = np.array([xscaler.transform(test_df.values)])
+            prediction = yscaler.inverse_transform(model.predict(test_dataset))
+            y_pred.append(prediction[0][0])
+        except ValueError:
+            pass
         ts += 1000 * 3600
     # make a one step prediction out of sample
     #x_input = mlhelper.series_to_supervised(test_lsma_values, n_input, 0).values
@@ -149,7 +164,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #for i in crossdowns:
     #    plt.axvline(x=i, color='red')
     fig1, = plt.plot(y_act, label=symbol)
-    plt.legend(handles=[fig1])
+    fig2, = plt.plot(y_pred, label='pred')
+    plt.legend(handles=[fig1, fig2])
     plt.subplot(212)
     #plt.legend(handles=[fig21, fig22])
     plt.show()
