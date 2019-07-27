@@ -32,6 +32,9 @@ from trader.indicator.MACD import MACD
 from trader.indicator.LSMA import LSMA
 from trader.indicator.RSI import RSI
 from trader.indicator.OBV import OBV
+from trader.indicator.ATR import ATR
+from trader.indicator.PPO import PPO
+from trader.indicator.EFI import EFI
 from numpy import hstack
 from numpy import insert
 from keras.preprocessing.sequence import TimeseriesGenerator
@@ -45,13 +48,24 @@ from sklearn.preprocessing import StandardScaler
 
 def create_features(df, indicators=None, train=True):
     df_result = pd.DataFrame()
+    # process LSMA close values
+    lsma_close = Indicator(LSMA, 12)
+    if indicators:
+        lsma_close_indicator = indicators['LSMA']
+        lsma_close.set_indicator(lsma_close_indicator)
+    lsma_close.load_dataframe(df)
+    df_result['LSMA_CLOSE'] = np.array(lsma_close.results())
+    df['LSMA_CLOSE'] = df_result['LSMA_CLOSE']
+    indicator_lsma = lsma_close.indicator
+
     # process MACD values
     macd = Indicator(MACD)
     if indicators:
         macd_indicator = indicators['MACD']
         macd.set_indicator(macd_indicator)
     macd.load_dataframe(df)
-    df_result['MACD'] = np.array(macd.results())
+    #df_result['MACD'] = np.array(macd.results())
+    df_result['MACDHIST'] = np.array(macd.results()) - np.array(macd.results(1))
     indicator_macd = macd.indicator
 
     # process OBV values
@@ -63,9 +77,10 @@ def create_features(df, indicators=None, train=True):
     obv.load_dataframe(df)
     df_result['OBV'] = np.array(obv.results())
     indicator_obv = obv.indicator
+    #df_result['VOLUME'] = df['quote_volume']
 
     # process RSI values
-    rsi = Indicator(RSI, 14)
+    rsi = Indicator(RSI, 20)
     rsi.close_key = 'close'
     if indicators:
         rsi_indicator = indicators['RSI']
@@ -76,11 +91,48 @@ def create_features(df, indicators=None, train=True):
     df_result['RSI'] = rsi_result
     indicator_rsi = rsi.indicator
 
+    # process ATR values
+    # atr = Indicator(ATR, 14)
+    # if indicators:
+    #     atr_indicator = indicators['ATR']
+    #     atr.set_indicator(atr_indicator)
+    # atr.load_dataframe(df)
+    # atr_result = np.array(atr.results())
+    # #rsi_result[rsi_result == 0] = np.nan
+    # df_result['ATR'] = atr_result
+    # indicator_atr = atr.indicator
+
+    # process PPO values
+    # ppo = Indicator(PPO)
+    # if indicators:
+    #     ppo_indicator = indicators['PPO']
+    #     ppo.set_indicator(ppo_indicator)
+    # ppo.load_dataframe(df)
+    # ppo_result = np.array(ppo.results())
+    # df_result['PPO'] = ppo_result
+    # indicator_ppo = ppo.indicator
+
+    # process PPO values
+    # efi = Indicator(EFI)
+    # efi.volume_key = 'quote_volume'
+    # if indicators:
+    #     efi_indicator = indicators['EFI']
+    #     efi.set_indicator(efi_indicator)
+    # efi.load_dataframe(df)
+    # efi_result = np.array(efi.results())
+    # df_result['EFI'] = efi_result
+    # indicator_efi = efi.indicator
+
     if not indicators:
         indicators = {}
+    indicators['LSMA'] = indicator_lsma
     indicators['MACD'] = indicator_macd
     indicators['OBV'] = indicator_obv
     indicators['RSI'] = indicator_rsi
+    #indicators['PPO'] = indicator_ppo
+    #indicators['EFI'] = indicator_efi
+
+    #indicators['ATR'] = indicator_atr
 
     df_result = df_result.dropna()
 
@@ -102,6 +154,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     df_train, indicators = create_features(df, train=True)
+    df_train = df_train.drop(columns="LSMA_CLOSE")
     train_close_values = df['close'].values[:df_train.count().iloc[0]]
     dataset = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
@@ -112,14 +165,14 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #print(trainX)
     #print(train_close_values)
 
-    y_act = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)['close'].values
+    y_act = [] #hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)['close'].values
 
     #test_lsma_values = scaler.transform(np.array(test_lsma_values).reshape(-1, 1))
 
     # define generator
     n_features = trainX.shape[1]
     n_input = 8
-    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=1)
+    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=n_input)
     last_generated, _ = generator[len(generator) - 1]
     #print(last_generated[0][-1])
     #for i in range(len(generator)):
@@ -140,6 +193,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         end_ts = ts + 1000 * 3600 * (n_input - 1)
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
         test_df, indicators = create_features(df2, indicators)
+        if test_df['LSMA_CLOSE'].size:
+            y_act.append(test_df['LSMA_CLOSE'].values[-1])
+        test_df = test_df.drop(columns="LSMA_CLOSE")
         try:
             test_dataset = np.array([xscaler.transform(test_df.values)])
             prediction = yscaler.inverse_transform(model.predict(test_dataset))
@@ -179,7 +235,7 @@ if __name__ == '__main__':
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('-p', action='store', dest='split_percent',
-                        default='60',
+                        default='70',
                         help='Percent of klines to use for training (remaining used for test')
 
     parser.add_argument('-s', action='store', dest='symbol',

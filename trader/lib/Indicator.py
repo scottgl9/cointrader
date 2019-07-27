@@ -22,6 +22,7 @@ class Indicator(object):
         self.ts_values = None
         self.count = 0
         self._results = None
+        self._results2 = None
 
         try:
             self.result_count = self.indicator.result_count
@@ -191,6 +192,8 @@ class Indicator(object):
 
     def process(self):
         self._results = []
+        if self.result_count > 0:
+            self._results2 = []
         self.detect_indicator_type()
 
         for i in range(0, self.count):
@@ -231,9 +234,13 @@ class Indicator(object):
             else:
                 return None
             self._results.append(self.indicator.result)
+            if self.result_count > 1:
+                self._results2.append(self.indicator.result2)
 
 
-    def results(self):
+    def results(self, index=0):
         if not self._results or not len(self._results):
             self.process()
+        if index:
+            return self._results2
         return self._results
