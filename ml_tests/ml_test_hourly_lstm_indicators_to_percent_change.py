@@ -49,7 +49,7 @@ from sklearn.preprocessing import StandardScaler
 def create_features(df, indicators=None, train=True):
     df_result = pd.DataFrame()
     # process LSMA close values
-    lsma_close = Indicator(LSMA, 12)
+    lsma_close = Indicator(LSMA, 26)
     if indicators:
         lsma_close_indicator = indicators['LSMA']
         lsma_close.set_indicator(lsma_close_indicator)
@@ -59,7 +59,8 @@ def create_features(df, indicators=None, train=True):
     indicator_lsma = lsma_close.indicator
 
     # process MACD values
-    macd = Indicator(MACD)
+    macd = Indicator(MACD) #, scale=12)
+    macd.close_key = "LSMA_CLOSE"
     if indicators:
         macd_indicator = indicators['MACD']
         macd.set_indicator(macd_indicator)
@@ -70,6 +71,7 @@ def create_features(df, indicators=None, train=True):
 
     # process OBV values
     obv = Indicator(OBV)
+    obv.close_key = 'LSMA_CLOSE'
     obv.volume_key = 'quote_volume'
     if indicators:
         obv_indicator = indicators['OBV']
@@ -80,8 +82,8 @@ def create_features(df, indicators=None, train=True):
     #df_result['VOLUME'] = df['quote_volume']
 
     # process RSI values
-    rsi = Indicator(RSI, 20)
-    rsi.close_key = 'close'
+    rsi = Indicator(RSI, 14) #, smoother=EMA(12, scale=12))
+    rsi.close_key = 'LSMA_CLOSE'
     if indicators:
         rsi_indicator = indicators['RSI']
         rsi.set_indicator(rsi_indicator)
