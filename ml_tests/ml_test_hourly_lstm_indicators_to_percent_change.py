@@ -48,30 +48,30 @@ from sklearn.preprocessing import StandardScaler
 
 def create_features(df, indicators=None, train=True):
     df_result = pd.DataFrame()
-    # process LSMA close values
-    lsma_close = Indicator(LSMA, 26)
+    # process EMA close values
+    ema_close = Indicator(EMA, 12)
     if indicators:
-        lsma_close_indicator = indicators['LSMA']
-        lsma_close.set_indicator(lsma_close_indicator)
-    lsma_close.load_dataframe(df)
-    df_result['LSMA_CLOSE'] = np.array(lsma_close.results())
-    df['LSMA_CLOSE'] = df_result['LSMA_CLOSE']
-    indicator_lsma = lsma_close.indicator
+        ema_close_indicator = indicators['EMA']
+        ema_close.set_indicator(ema_close_indicator)
+    ema_close.load_dataframe(df)
+    df_result['EMA_CLOSE'] = np.array(ema_close.results())
+    df['EMA_CLOSE'] = df_result['EMA_CLOSE']
+    indicator_ema = ema_close.indicator
 
     # process MACD values
     macd = Indicator(MACD) #, scale=12)
-    macd.close_key = "LSMA_CLOSE"
+    macd.close_key = "EMA_CLOSE"
     if indicators:
         macd_indicator = indicators['MACD']
         macd.set_indicator(macd_indicator)
     macd.load_dataframe(df)
-    #df_result['MACD'] = np.array(macd.results())
+    df_result['MACD'] = np.array(macd.results())
     df_result['MACDHIST'] = np.array(macd.results()) - np.array(macd.results(1))
     indicator_macd = macd.indicator
 
     # process OBV values
     obv = Indicator(OBV)
-    obv.close_key = 'LSMA_CLOSE'
+    obv.close_key = 'EMA_CLOSE'
     obv.volume_key = 'quote_volume'
     if indicators:
         obv_indicator = indicators['OBV']
@@ -82,8 +82,8 @@ def create_features(df, indicators=None, train=True):
     #df_result['VOLUME'] = df['quote_volume']
 
     # process RSI values
-    rsi = Indicator(RSI, 14) #, smoother=EMA(12, scale=12))
-    rsi.close_key = 'LSMA_CLOSE'
+    rsi = Indicator(RSI, 14, smoother=EMA(12, scale=24))
+    rsi.close_key = 'EMA_CLOSE'
     if indicators:
         rsi_indicator = indicators['RSI']
         rsi.set_indicator(rsi_indicator)
@@ -115,24 +115,25 @@ def create_features(df, indicators=None, train=True):
     # indicator_ppo = ppo.indicator
 
     # process PPO values
-    # efi = Indicator(EFI)
-    # efi.volume_key = 'quote_volume'
-    # if indicators:
-    #     efi_indicator = indicators['EFI']
-    #     efi.set_indicator(efi_indicator)
-    # efi.load_dataframe(df)
-    # efi_result = np.array(efi.results())
-    # df_result['EFI'] = efi_result
-    # indicator_efi = efi.indicator
+    efi = Indicator(EFI, 13, scale=24)
+    efi.close_key = 'EMA_CLOSE'
+    efi.volume_key = 'quote_volume'
+    if indicators:
+        efi_indicator = indicators['EFI']
+        efi.set_indicator(efi_indicator)
+    efi.load_dataframe(df)
+    efi_result = np.array(efi.results())
+    df_result['EFI'] = efi_result
+    indicator_efi = efi.indicator
 
     if not indicators:
         indicators = {}
-    indicators['LSMA'] = indicator_lsma
+    indicators['EMA'] = indicator_ema
     indicators['MACD'] = indicator_macd
     indicators['OBV'] = indicator_obv
     indicators['RSI'] = indicator_rsi
     #indicators['PPO'] = indicator_ppo
-    #indicators['EFI'] = indicator_efi
+    indicators['EFI'] = indicator_efi
 
     #indicators['ATR'] = indicator_atr
 
@@ -156,7 +157,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     df_train, indicators = create_features(df, train=True)
-    df_train = df_train.drop(columns="LSMA_CLOSE")
+    df_train = df_train.drop(columns="EMA_CLOSE")
     train_close_values = df['close'].values[:df_train.count().iloc[0]]
     dataset = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
@@ -182,7 +183,10 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #    print('{}'.format(x))
 
     model = Sequential()
-    model.add(LSTM(100, activation='relu', input_shape=(n_input, n_features)))
+    model.add(LSTM(200, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
+    model.add(Dropout(0.2))
+    #model.add(LSTM(units=50, input_shape=(n_input, n_features))) #, return_sequences=True))
+    #model.add(Dropout(0.2))
     model.add(Dense(1))
     model.compile(optimizer='adam', loss='mse')
     # fit model
@@ -195,9 +199,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         end_ts = ts + 1000 * 3600 * (n_input - 1)
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
         test_df, indicators = create_features(df2, indicators)
-        if test_df['LSMA_CLOSE'].size:
-            y_act.append(test_df['LSMA_CLOSE'].values[-1])
-        test_df = test_df.drop(columns="LSMA_CLOSE")
+        if test_df['EMA_CLOSE'].size:
+            y_act.append(test_df['EMA_CLOSE'].values[-1])
+        test_df = test_df.drop(columns="EMA_CLOSE")
         try:
             test_dataset = np.array([xscaler.transform(test_df.values)])
             prediction = yscaler.inverse_transform(model.predict(test_dataset))

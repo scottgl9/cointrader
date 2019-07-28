@@ -77,7 +77,11 @@ class RSI(IndicatorBase):
             if not rs2:
                 self.result = 100.0
             else:
-                self.result = 100.0 - (100.0 / (1.0 + self.rs))
+                result = 100.0 - (100.0 / (1.0 + self.rs))
+                if self.smoother:
+                    self.result = self.smoother.update(result)
+                else:
+                    self.result = result
 
         self.last_close = float(close)
 

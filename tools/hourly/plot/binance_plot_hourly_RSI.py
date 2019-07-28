@@ -19,11 +19,12 @@ import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
 from trader.indicator.RSI import RSI
+from trader.indicator.EMA import EMA
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    rsi = RSI(14)
+    rsi = RSI(14, smoother=EMA(1, scale=24))
     rsi_values = []
     close_prices = []
     open_prices = []
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # used to get first timestamp for symbol from precaptured live market data
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='',
                         help='filename of kline sqlite db')
 
     parser.add_argument('--hours', action='store', dest='hours',

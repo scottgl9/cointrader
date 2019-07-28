@@ -23,7 +23,7 @@ from trader.indicator.EFI import EFI
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    efi = EFI(13, scale=1)
+    efi = EFI(13, scale=24)
     efi_values = []
     close_prices = []
     open_prices = []
