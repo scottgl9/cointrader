@@ -35,6 +35,7 @@ from trader.indicator.OBV import OBV
 from trader.indicator.ATR import ATR
 from trader.indicator.PPO import PPO
 from trader.indicator.EFI import EFI
+from trader.indicator.McGinleyDynamic import McGinleyDynamic
 from numpy import hstack
 from numpy import insert
 from keras.preprocessing.sequence import TimeseriesGenerator
@@ -46,21 +47,21 @@ from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
-def create_features(df, indicators=None, train=True):
+def create_features(df, indicators=None):
     df_result = pd.DataFrame()
     # process EMA close values
-    ema_close = Indicator(EMA, 12)
+    indicator_close = Indicator(EMA, 12) #McGinleyDynamic, 14, k=1.0)
     if indicators:
-        ema_close_indicator = indicators['EMA']
-        ema_close.set_indicator(ema_close_indicator)
-    ema_close.load_dataframe(df)
-    df_result['EMA_CLOSE'] = np.array(ema_close.results())
-    df['EMA_CLOSE'] = df_result['EMA_CLOSE']
-    indicator_ema = ema_close.indicator
+        indicator_close_indicator = indicators['CLOSE']
+        indicator_close.set_indicator(indicator_close_indicator)
+    indicator_close.load_dataframe(df)
+    df_result['CLOSE'] = np.array(indicator_close.results())
+    df['CLOSE'] = df_result['CLOSE']
+    indicator_close_indicator = indicator_close.indicator
 
     # process MACD values
     macd = Indicator(MACD) #, scale=12)
-    macd.close_key = "EMA_CLOSE"
+    macd.close_key = "CLOSE"
     if indicators:
         macd_indicator = indicators['MACD']
         macd.set_indicator(macd_indicator)
@@ -71,7 +72,7 @@ def create_features(df, indicators=None, train=True):
 
     # process OBV values
     obv = Indicator(OBV)
-    obv.close_key = 'EMA_CLOSE'
+    obv.close_key = 'CLOSE'
     obv.volume_key = 'quote_volume'
     if indicators:
         obv_indicator = indicators['OBV']
@@ -83,7 +84,7 @@ def create_features(df, indicators=None, train=True):
 
     # process RSI values
     rsi = Indicator(RSI, 14, smoother=EMA(12, scale=24))
-    rsi.close_key = 'EMA_CLOSE'
+    rsi.close_key = 'CLOSE'
     if indicators:
         rsi_indicator = indicators['RSI']
         rsi.set_indicator(rsi_indicator)
@@ -114,27 +115,26 @@ def create_features(df, indicators=None, train=True):
     # df_result['PPO'] = ppo_result
     # indicator_ppo = ppo.indicator
 
-    # process PPO values
-    efi = Indicator(EFI, 13, scale=24)
-    efi.close_key = 'EMA_CLOSE'
-    efi.volume_key = 'quote_volume'
-    if indicators:
-        efi_indicator = indicators['EFI']
-        efi.set_indicator(efi_indicator)
-    efi.load_dataframe(df)
-    efi_result = np.array(efi.results())
-    df_result['EFI'] = efi_result
-    indicator_efi = efi.indicator
+    # process EFI values
+    # efi = Indicator(EFI, 13, scale=24)
+    # efi.close_key = 'CLOSE'
+    # efi.volume_key = 'quote_volume'
+    # if indicators:
+    #     efi_indicator = indicators['EFI']
+    #     efi.set_indicator(efi_indicator)
+    # efi.load_dataframe(df)
+    # efi_result = np.array(efi.results())
+    # df_result['EFI'] = efi_result
+    # indicator_efi = efi.indicator
 
     if not indicators:
         indicators = {}
-    indicators['EMA'] = indicator_ema
+    indicators['CLOSE'] = indicator_close_indicator
     indicators['MACD'] = indicator_macd
     indicators['OBV'] = indicator_obv
     indicators['RSI'] = indicator_rsi
     #indicators['PPO'] = indicator_ppo
-    indicators['EFI'] = indicator_efi
-
+    #indicators['EFI'] = indicator_efi
     #indicators['ATR'] = indicator_atr
 
     df_result = df_result.dropna()
@@ -156,17 +156,14 @@ def transform_multi_feature_to_lagged(n_features, n_input):
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
-    df_train, indicators = create_features(df, train=True)
-    df_train = df_train.drop(columns="EMA_CLOSE")
+    df_train, indicators = create_features(df)
+    df_train = df_train.drop(columns="CLOSE")
     train_close_values = df['close'].values[:df_train.count().iloc[0]]
     dataset = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
     yscaler = MinMaxScaler(feature_range=(0, 1))
     trainX = xscaler.fit_transform(dataset)
-    #print(trainX)
     trainY = yscaler.fit_transform(train_close_values.reshape(-1, 1))
-    #print(trainX)
-    #print(train_close_values)
 
     y_act = [] #hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)['close'].values
 
@@ -199,9 +196,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         end_ts = ts + 1000 * 3600 * (n_input - 1)
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
         test_df, indicators = create_features(df2, indicators)
-        if test_df['EMA_CLOSE'].size:
-            y_act.append(test_df['EMA_CLOSE'].values[-1])
-        test_df = test_df.drop(columns="EMA_CLOSE")
+        if test_df['CLOSE'].size:
+            y_act.append(test_df['CLOSE'].values[-1])
+        test_df = test_df.drop(columns="CLOSE")
         try:
             test_dataset = np.array([xscaler.transform(test_df.values)])
             prediction = yscaler.inverse_transform(model.predict(test_dataset))
@@ -209,16 +206,6 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         except ValueError:
             pass
         ts += 1000 * 3600
-    # make a one step prediction out of sample
-    #x_input = mlhelper.series_to_supervised(test_lsma_values, n_input, 0).values
-    #for i in range(0, len(x_input)):
-    #    yhat = model.predict(x_input[i].reshape((1, n_input, n_features)), verbose=0)
-    #    yhat = scaler.inverse_transform(yhat)
-    #    y_pred.append(yhat[0][0])
-
-    #y_act = y_act[n_input:len(y_pred)+n_input]
-    #print(len(y_act))
-    #print(len(y_pred))
 
     plt.subplot(211)
     #for i in crossups:

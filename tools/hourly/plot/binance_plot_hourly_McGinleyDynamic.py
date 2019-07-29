@@ -19,12 +19,15 @@ import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
 from trader.indicator.McGinleyDynamic import McGinleyDynamic
+from trader.indicator.EMA import EMA
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    mgd = McGinleyDynamic(14)
+    mgd = McGinleyDynamic(26, k=1.0)
     mgd_values = []
+    ema = EMA(14)
+    ema_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -44,6 +47,9 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         mgd.update(close)
         mgd_values.append(mgd.result)
 
+        ema.update(close)
+        ema_values.append(ema.result)
+
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
@@ -53,7 +59,8 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
     fig2, = plt.plot(mgd_values, label="MGD")
-    plt.legend(handles=[symprice, fig2])
+    fig3, = plt.plot(ema_values, label="EMA")
+    plt.legend(handles=[symprice, fig2, fig3])
     plt.subplot(212)
     #fig21, = plt.plot(efi_values, label='EFI')
     #plt.legend(handles=[fig21])
