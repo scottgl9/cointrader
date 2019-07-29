@@ -203,19 +203,12 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     trainX = xscaler.fit_transform(dataset)
     trainY = yscaler.fit_transform(train_close_values.reshape(-1, 1))
 
-    y_act = [] #hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)['close'].values
-
-    #test_lsma_values = scaler.transform(np.array(test_lsma_values).reshape(-1, 1))
+    y_act = []
 
     # define generator
     n_features = trainX.shape[1]
     n_input = 8
     generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=n_input)
-    #last_generated, _ = generator[len(generator) - 1]
-    #print(last_generated[0][-1])
-    #for i in range(len(generator)):
-    #    x, y = generator[i]
-    #    print('{}'.format(x))
 
     model = Sequential()
     model.add(LSTM(250, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
