@@ -27,15 +27,19 @@ from trader.account.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.Indicator import Indicator
-from trader.indicator.EMA import EMA
-from trader.indicator.MACD import MACD
 from trader.indicator.LSMA import LSMA
-from trader.indicator.RSI import RSI
-from trader.indicator.OBV import OBV
+from trader.indicator.ADL import ADL
 from trader.indicator.ATR import ATR
-from trader.indicator.PPO import PPO
 from trader.indicator.EFI import EFI
+from trader.indicator.EMA import EMA
+from trader.indicator.KST import KST
+from trader.indicator.MACD import MACD
 from trader.indicator.McGinleyDynamic import McGinleyDynamic
+from trader.indicator.OBV import OBV
+from trader.indicator.PPO import PPO
+from trader.indicator.RSI import RSI
+from trader.indicator.TSI import TSI
+
 from numpy import hstack
 from numpy import insert
 from keras.preprocessing.sequence import TimeseriesGenerator
@@ -61,7 +65,7 @@ def create_features(df, indicators=None):
 
     # process MACD values
     macd = Indicator(MACD) #, scale=12)
-    macd.close_key = "CLOSE"
+    macd.close_key = "close"
     if indicators:
         macd_indicator = indicators['MACD']
         macd.set_indicator(macd_indicator)
@@ -72,7 +76,7 @@ def create_features(df, indicators=None):
 
     # process OBV values
     obv = Indicator(OBV)
-    obv.close_key = 'CLOSE'
+    obv.close_key = 'close'
     obv.volume_key = 'quote_volume'
     if indicators:
         obv_indicator = indicators['OBV']
@@ -83,8 +87,8 @@ def create_features(df, indicators=None):
     #df_result['VOLUME'] = df['quote_volume']
 
     # process RSI values
-    rsi = Indicator(RSI, 14, smoother=EMA(12, scale=24))
-    rsi.close_key = 'CLOSE'
+    rsi = Indicator(RSI, 14) #, smoother=EMA(1, scale=24))
+    rsi.close_key = 'close'
     if indicators:
         rsi_indicator = indicators['RSI']
         rsi.set_indicator(rsi_indicator)
@@ -93,6 +97,18 @@ def create_features(df, indicators=None):
     rsi_result[rsi_result == 0] = np.nan
     df_result['RSI'] = rsi_result
     indicator_rsi = rsi.indicator
+
+    # process adl values
+    adl = Indicator(ADL)
+    adl.close_key = 'close'
+    adl.volume_key = 'quote_volume'
+    if indicators:
+        adl_indicator = indicators['ADL']
+        adl.set_indicator(adl_indicator)
+    adl.load_dataframe(df)
+    adl_result = np.array(adl.results())
+    #df_result['ADL'] = adl_result
+    indicator_adl = adl.indicator
 
     # process ATR values
     # atr = Indicator(ATR, 14)
@@ -127,12 +143,37 @@ def create_features(df, indicators=None):
     # df_result['EFI'] = efi_result
     # indicator_efi = efi.indicator
 
+    # process KST values
+    kst = Indicator(KST)
+    kst.close_key = 'close'
+    if indicators:
+        kst_indicator = indicators['KST']
+        kst.set_indicator(kst_indicator)
+    kst.load_dataframe(df)
+    kst_result = np.array(kst.results())
+    df_result['KST'] = kst_result
+    indicator_kst = kst.indicator
+
+    # process TSI values
+    tsi = Indicator(TSI)
+    tsi.close_key = 'close'
+    if indicators:
+        tsi_indicator = indicators['TSI']
+        tsi.set_indicator(tsi_indicator)
+    tsi.load_dataframe(df)
+    tsi_result = np.array(tsi.results())
+    df_result['TSI'] = tsi_result
+    indicator_tsi = tsi.indicator
+
     if not indicators:
         indicators = {}
     indicators['CLOSE'] = indicator_close_indicator
     indicators['MACD'] = indicator_macd
     indicators['OBV'] = indicator_obv
     indicators['RSI'] = indicator_rsi
+    indicators['ADL'] = indicator_adl
+    indicators['TSI'] = indicator_tsi
+    indicators['KST'] = indicator_kst
     #indicators['PPO'] = indicator_ppo
     #indicators['EFI'] = indicator_efi
     #indicators['ATR'] = indicator_atr
@@ -149,9 +190,6 @@ def convert_features_to_dataset(df):
         train_sets.append(in_seq)
     dataset = hstack(tuple(train_sets))
     return dataset
-
-def transform_multi_feature_to_lagged(n_features, n_input):
-    pass
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
@@ -173,7 +211,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     n_features = trainX.shape[1]
     n_input = 8
     generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=n_input)
-    last_generated, _ = generator[len(generator) - 1]
+    #last_generated, _ = generator[len(generator) - 1]
     #print(last_generated[0][-1])
     #for i in range(len(generator)):
     #    x, y = generator[i]

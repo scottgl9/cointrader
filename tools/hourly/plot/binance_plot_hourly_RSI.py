@@ -24,8 +24,10 @@ from trader.indicator.EMA import EMA
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    rsi = RSI(14, smoother=EMA(1, scale=24))
+    rsi = RSI(14) #, smoother=EMA(1, scale=24))
     rsi_values = []
+    ema = EMA(12, scale=24)
+    ema_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -42,7 +44,8 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         volume = float(msg['quote_volume'])
         volumes.append(volume)
 
-        rsi.update(close)
+        ema.update(close)
+        rsi.update(ema.result)
         rsi_values.append(rsi.result)
 
         close_prices.append(close)
