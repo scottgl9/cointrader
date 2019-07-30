@@ -25,7 +25,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
     obv = OBV()
-    #scale = 24
+    scale = 24
     if start_ts and end_ts:
         scale = 1
     ema12 = EMA(12, scale=scale)
@@ -35,7 +35,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     ema200 = EMA(200, scale=scale)
     ema300 = EMA(300, scale=scale)
     ema500 = EMA(500, scale=scale)
-    roc = ROC(window=24, use_sma=True)
+    roc = ROC(window=24, smoother=EMA(1, scale=24))
     roc_values = []
     ema12_values = []
     ema26_values = []
