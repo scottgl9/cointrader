@@ -86,7 +86,7 @@ def create_features(df, indicators=None):
     indicator_macd = macd.indicator
 
     # process OBV values
-    obv = Indicator(OBV)
+    obv = Indicator(OBV, use_log10=False)
     obv.close_key = 'close'
     obv.volume_key = 'quote_volume'
     try:
@@ -176,7 +176,7 @@ def create_features(df, indicators=None):
         pass
     kst.load_dataframe(df)
     kst_result = np.array(kst.results())
-    df_result['KST'] = kst_result
+    #df_result['KST'] = kst_result
     indicator_kst = kst.indicator
 
     # process TSI values
@@ -189,7 +189,7 @@ def create_features(df, indicators=None):
         pass
     tsi.load_dataframe(df)
     tsi_result = np.array(tsi.results())
-    df_result['TSI'] = tsi_result
+    #df_result['TSI'] = tsi_result
     indicator_tsi = tsi.indicator
 
     if not indicators:

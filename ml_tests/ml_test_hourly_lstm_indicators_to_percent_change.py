@@ -37,6 +37,7 @@ from trader.indicator.MACD import MACD
 from trader.indicator.McGinleyDynamic import McGinleyDynamic
 from trader.indicator.OBV import OBV
 from trader.indicator.PPO import PPO
+from trader.indicator.ROC import ROC
 from trader.indicator.RSI import RSI
 from trader.indicator.TSI import TSI
 
@@ -69,6 +70,23 @@ def process_raw_klines(df, indicators=None):
     return df, indicators
 
 
+def create_labels(df, indicators=None):
+    df_result = pd.DataFrame()
+    # process ROC values
+    roc = Indicator(ROC, window=1, smoother=EMA(12)) #, scale=12)
+    roc.close_key = "CLOSE"
+    try:
+        roc_indicator = indicators['ROC']
+        roc.set_indicator(roc_indicator)
+    except KeyError:
+        pass
+    roc.load_dataframe(df)
+    df_result['ROC'] = np.array(roc.results())
+    indicator_roc = roc.indicator
+    indicators['ROC'] = indicator_roc
+    return df_result, indicators
+
+
 def create_features(df, indicators=None):
     df_result = pd.DataFrame()
 
@@ -86,7 +104,7 @@ def create_features(df, indicators=None):
     indicator_macd = macd.indicator
 
     # process OBV values
-    obv = Indicator(OBV)
+    obv = Indicator(OBV, use_log10=True)
     obv.close_key = 'close'
     obv.volume_key = 'quote_volume'
     try:
@@ -110,7 +128,7 @@ def create_features(df, indicators=None):
     rsi.load_dataframe(df)
     rsi_result = np.array(rsi.results())
     rsi_result[rsi_result == 0] = np.nan
-    df_result['RSI'] = rsi_result
+    #df_result['RSI'] = rsi_result
     indicator_rsi = rsi.indicator
 
     # process adl values
@@ -176,7 +194,7 @@ def create_features(df, indicators=None):
         pass
     kst.load_dataframe(df)
     kst_result = np.array(kst.results())
-    df_result['KST'] = kst_result
+    #df_result['KST'] = kst_result
     indicator_kst = kst.indicator
 
     # process TSI values
@@ -189,7 +207,7 @@ def create_features(df, indicators=None):
         pass
     tsi.load_dataframe(df)
     tsi_result = np.array(tsi.results())
-    df_result['TSI'] = tsi_result
+    #df_result['TSI'] = tsi_result
     indicator_tsi = tsi.indicator
 
     if not indicators:
@@ -223,16 +241,13 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     df, indicators = process_raw_klines(df)
     df_train, indicators = create_features(df, indicators)
     #df_train = df_train.drop(columns="CLOSE")
-    train_close_values = df['close'].values[:df_train.count().iloc[0]]
+    df_labels, indicators = create_labels(df, indicators)
+    train_label_values = df_labels['ROC'].values[:df_train.count().iloc[0]]
     dataset = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
     yscaler = MinMaxScaler(feature_range=(0, 1))
     trainX = xscaler.fit_transform(dataset)
-    trainY = yscaler.fit_transform(train_close_values.reshape(-1, 1))
-
-    y_act = [] #hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)['close'].values
-
-    #test_lsma_values = scaler.transform(np.array(test_lsma_values).reshape(-1, 1))
+    trainY = yscaler.fit_transform(train_label_values.reshape(-1, 1))
 
     # define generator
     n_features = trainX.shape[1]
@@ -254,7 +269,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     # fit model
     model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
 
+    y_act = []
     y_pred = []
+    prices = []
     ts = test_start_ts
     while ts <= test_end_ts:
         start_ts = ts
@@ -262,8 +279,11 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
         df2, indicators = process_raw_klines(df2, indicators)
         test_df, indicators = create_features(df2, indicators)
+        test_labels_df, indicators = create_labels(df2, indicators)
+        if test_labels_df['ROC'].size:
+            y_act.append(test_labels_df['ROC'].values[-1])
         if df2['CLOSE'].size:
-            y_act.append(df2['CLOSE'].values[-1])
+            prices.append(df2['CLOSE'].values[-1])
        # test_df = test_df.drop(columns="CLOSE")
         try:
             test_dataset = np.array([xscaler.transform(test_df.values)])
@@ -278,11 +298,12 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #    plt.axvline(x=i, color='green')
     #for i in crossdowns:
     #    plt.axvline(x=i, color='red')
-    fig1, = plt.plot(y_act, label=symbol)
-    fig2, = plt.plot(y_pred, label='pred')
-    plt.legend(handles=[fig1, fig2])
+    fig1, = plt.plot(prices, label=symbol)
+    plt.legend(handles=[fig1])
     plt.subplot(212)
-    #plt.legend(handles=[fig21, fig22])
+    fig21, = plt.plot(y_act, label='act')
+    fig22, = plt.plot(y_pred, label='pred')
+    plt.legend(handles=[fig21, fig22])
     plt.show()
 
 
