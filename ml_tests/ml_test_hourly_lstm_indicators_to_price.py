@@ -51,24 +51,35 @@ from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
-def create_features(df, indicators=None):
-    df_result = pd.DataFrame()
+
+def process_raw_klines(df, indicators=None):
     # process EMA close values
     indicator_close = Indicator(EMA, 12) #McGinleyDynamic, 14, k=1.0)
     if indicators:
         indicator_close_indicator = indicators['CLOSE']
         indicator_close.set_indicator(indicator_close_indicator)
     indicator_close.load_dataframe(df)
-    df_result['CLOSE'] = np.array(indicator_close.results())
-    df['CLOSE'] = df_result['CLOSE']
+    df['CLOSE'] = np.array(indicator_close.results())
     indicator_close_indicator = indicator_close.indicator
+
+    if not indicators:
+        indicators = {}
+    indicators['CLOSE'] = indicator_close_indicator
+
+    return df, indicators
+
+
+def create_features(df, indicators=None):
+    df_result = pd.DataFrame()
 
     # process MACD values
     macd = Indicator(MACD) #, scale=12)
     macd.close_key = "close"
-    if indicators:
+    try:
         macd_indicator = indicators['MACD']
         macd.set_indicator(macd_indicator)
+    except KeyError:
+        pass
     macd.load_dataframe(df)
     df_result['MACD'] = np.array(macd.results())
     df_result['MACDHIST'] = np.array(macd.results()) - np.array(macd.results(1))
@@ -78,9 +89,11 @@ def create_features(df, indicators=None):
     obv = Indicator(OBV)
     obv.close_key = 'close'
     obv.volume_key = 'quote_volume'
-    if indicators:
+    try:
         obv_indicator = indicators['OBV']
         obv.set_indicator(obv_indicator)
+    except KeyError:
+        pass
     obv.load_dataframe(df)
     df_result['OBV'] = np.array(obv.results())
     indicator_obv = obv.indicator
@@ -89,9 +102,11 @@ def create_features(df, indicators=None):
     # process RSI values
     rsi = Indicator(RSI, 14) #, smoother=EMA(1, scale=24))
     rsi.close_key = 'close'
-    if indicators:
+    try:
         rsi_indicator = indicators['RSI']
         rsi.set_indicator(rsi_indicator)
+    except KeyError:
+        pass
     rsi.load_dataframe(df)
     rsi_result = np.array(rsi.results())
     rsi_result[rsi_result == 0] = np.nan
@@ -102,9 +117,11 @@ def create_features(df, indicators=None):
     adl = Indicator(ADL)
     adl.close_key = 'close'
     adl.volume_key = 'quote_volume'
-    if indicators:
+    try:
         adl_indicator = indicators['ADL']
         adl.set_indicator(adl_indicator)
+    except KeyError:
+        pass
     adl.load_dataframe(df)
     adl_result = np.array(adl.results())
     #df_result['ADL'] = adl_result
@@ -112,9 +129,11 @@ def create_features(df, indicators=None):
 
     # process ATR values
     # atr = Indicator(ATR, 14)
-    # if indicators:
+    # try:
     #     atr_indicator = indicators['ATR']
     #     atr.set_indicator(atr_indicator)
+    # except KeyError:
+    #     pass
     # atr.load_dataframe(df)
     # atr_result = np.array(atr.results())
     # #rsi_result[rsi_result == 0] = np.nan
@@ -123,9 +142,11 @@ def create_features(df, indicators=None):
 
     # process PPO values
     # ppo = Indicator(PPO)
-    # if indicators:
+    # try:
     #     ppo_indicator = indicators['PPO']
     #     ppo.set_indicator(ppo_indicator)
+    # except KeyError:
+    #     pass
     # ppo.load_dataframe(df)
     # ppo_result = np.array(ppo.results())
     # df_result['PPO'] = ppo_result
@@ -135,9 +156,11 @@ def create_features(df, indicators=None):
     # efi = Indicator(EFI, 13, scale=24)
     # efi.close_key = 'CLOSE'
     # efi.volume_key = 'quote_volume'
-    # if indicators:
+    # try:
     #     efi_indicator = indicators['EFI']
     #     efi.set_indicator(efi_indicator)
+    #     except KeyError:
+    #         pass
     # efi.load_dataframe(df)
     # efi_result = np.array(efi.results())
     # df_result['EFI'] = efi_result
@@ -146,9 +169,11 @@ def create_features(df, indicators=None):
     # process KST values
     kst = Indicator(KST)
     kst.close_key = 'close'
-    if indicators:
+    try:
         kst_indicator = indicators['KST']
         kst.set_indicator(kst_indicator)
+    except KeyError:
+        pass
     kst.load_dataframe(df)
     kst_result = np.array(kst.results())
     df_result['KST'] = kst_result
@@ -157,9 +182,11 @@ def create_features(df, indicators=None):
     # process TSI values
     tsi = Indicator(TSI)
     tsi.close_key = 'close'
-    if indicators:
+    try:
         tsi_indicator = indicators['TSI']
         tsi.set_indicator(tsi_indicator)
+    except KeyError:
+        pass
     tsi.load_dataframe(df)
     tsi_result = np.array(tsi.results())
     df_result['TSI'] = tsi_result
@@ -167,7 +194,6 @@ def create_features(df, indicators=None):
 
     if not indicators:
         indicators = {}
-    indicators['CLOSE'] = indicator_close_indicator
     indicators['MACD'] = indicator_macd
     indicators['OBV'] = indicator_obv
     indicators['RSI'] = indicator_rsi
@@ -194,8 +220,9 @@ def convert_features_to_dataset(df):
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
-    df_train, indicators = create_features(df)
-    df_train = df_train.drop(columns="CLOSE")
+    df, indicators = process_raw_klines(df)
+    df_train, indicators = create_features(df, indicators)
+    #df_train = df_train.drop(columns="CLOSE")
     train_close_values = df['close'].values[:df_train.count().iloc[0]]
     dataset = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
@@ -226,10 +253,11 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         start_ts = ts
         end_ts = ts + 1000 * 3600 * (n_input - 1)
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
+        df2, indicators = process_raw_klines(df2, indicators)
         test_df, indicators = create_features(df2, indicators)
-        if test_df['CLOSE'].size:
-            y_act.append(test_df['CLOSE'].values[-1])
-        test_df = test_df.drop(columns="CLOSE")
+        if df2['CLOSE'].size:
+            y_act.append(df2['CLOSE'].values[-1])
+        #test_df = test_df.drop(columns="CLOSE")
         try:
             test_dataset = np.array([xscaler.transform(test_df.values)])
             prediction = yscaler.inverse_transform(model.predict(test_dataset))
