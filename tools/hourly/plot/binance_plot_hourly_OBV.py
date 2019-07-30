@@ -12,6 +12,7 @@ import sys
 import os
 from datetime import datetime
 import time
+import numpy as np
 from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ from trader.indicator.EMA import EMA
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    obv = OBV()
+    obv = OBV(scale=1000.0)
     obv_values = []
     ema = EMA(12, scale=24)
     ema_values = []

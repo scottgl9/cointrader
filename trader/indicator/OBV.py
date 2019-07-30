@@ -3,12 +3,13 @@ from math import log10
 
 
 class OBV(IndicatorBase):
-    def __init__(self, use_log10=False):
+    def __init__(self, use_log10=False, scale=0):
         IndicatorBase.__init__(self, use_close=True, use_volume=True)
         self.use_log10 = use_log10
         self.result = 0.0
         self.last_result = 0.0
         self.last_close = 0.0
+        self.scale = scale
 
     def update(self, close, volume):
         if self.use_log10:
@@ -19,6 +20,9 @@ class OBV(IndicatorBase):
             self.result = float(volume)
             self.last_close = close
             return self.result
+
+        if self.scale:
+            volume /= self.scale
 
         if close > self.last_close:
             self.result += float(volume)

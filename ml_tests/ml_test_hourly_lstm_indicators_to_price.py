@@ -86,7 +86,7 @@ def create_features(df, indicators=None):
     indicator_macd = macd.indicator
 
     # process OBV values
-    obv = Indicator(OBV, use_log10=False)
+    obv = Indicator(OBV, use_log10=False, scale=1000.0)
     obv.close_key = 'close'
     obv.volume_key = 'quote_volume'
     try:

@@ -10,7 +10,7 @@ class Hourly_ROC_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
         super(Hourly_ROC_Signal, self).__init__(accnt, symbol, asset_info, hkdb, uses_models=False)
         self.name = "Hourly_ROC_Signal"
-        self.roc = ROC(window=2,  smoother=EMA(1, scale=24))
+        self.roc = ROC(window=1,  smoother=EMA(12))
         self.roc_cross = Crossover2(window=10)
         self.cross_down = False
         self.cross_up = False
