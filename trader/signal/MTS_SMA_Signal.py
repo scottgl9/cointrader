@@ -82,16 +82,15 @@ class MTS_SMA_Signal(SignalBase):
             return False
         if self.mts1.diff() >= 0 or self.mts2.diff() >= 0 or self.mts3.diff() >= 0:
             return False
-        if self.mts2.max() >= self.mts3.min():
-            return False
-        if self.mts1.max() >= self.mts2.min():
-            return False
-        if self.mts1.max() >= self.mts3.min():
-            return False
-        #if self.mts1.min() >= self.mts2.min() or self.mts1.min() >= self.mts3.min():
+        #if self.mts2.max() >= self.mts3.min():
         #    return False
-        #if self.mts1.max() < self.mts3.min() and self.cross_long.crossdown_detected():
-        if self.mts1.max() < self.mts3.min() and self.mts1.max() < self.mts2.min() and self.cross_long.crossdown_detected():
+        #if self.mts1.max() >= self.mts2.min():
+        #    return False
+        #if self.mts1.max() >= self.mts3.min():
+        #    return False
+        if self.mts1.min() >= self.mts2.min() or self.mts1.min() >= self.mts3.min():
+            return False
+        if self.mts1.max() < self.mts3.min() and self.cross_long.crossdown_detected():
             self.disabled = True
             self.disabled_end_ts = self.timestamp + 8000 * 3600
             return True
