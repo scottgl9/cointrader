@@ -11,6 +11,7 @@ class MovingTimeSegment(object):
         self.seconds_ts = 1000 * self.seconds
         self.values = []
         self.volumes = None
+        self._volume_sum = 0
         self.timestamps = []
         self.track_ts = track_ts
         self.fmm = FastMinMax(track_ts=self.track_ts)
@@ -40,6 +41,26 @@ class MovingTimeSegment(object):
     def ready(self):
         return self.full
 
+    def reset(self):
+        if not self.disable_fmm:
+            self.fmm.reset()
+        self.full = False
+        self.min_value = 0
+        self.min_value_index = -1
+        self.min_value_ts = 0
+        self.max_value = 0
+        self.max_value_index = -1
+        self.max_value_ts = 0
+        self.prev_value = 0
+        self._sum = 0
+        self._sum_count = 0
+        self.values = []
+        if self.enable_volume:
+            self.volumes = []
+            self._volume_sum = 0
+        if self.track_ts:
+            self.timestamps = []
+
     def update(self, value, ts, volume=0):
         if self.value_smoother:
             svalue = self.value_smoother.update(value)
@@ -50,6 +71,7 @@ class MovingTimeSegment(object):
 
         if self.enable_volume:
             self.volumes.append(volume)
+            self._volume_sum += volume
         self.values.append(svalue)
         self.timestamps.append(ts)
 
@@ -74,6 +96,8 @@ class MovingTimeSegment(object):
             self.timestamps = self.timestamps[cnt:]
             self.values = self.values[cnt:]
             if self.enable_volume:
+                for volume in self.volumes[:cnt]:
+                    self._volume_sum -= volume
                 self.volumes = self.volumes[cnt:]
             if not self.full:
                 self.full = True
@@ -99,6 +123,8 @@ class MovingTimeSegment(object):
         self.timestamps = self.timestamps[cnt:]
         self.values = self.values[cnt:]
         if self.enable_volume:
+            for volume in self.volumes[:cnt]:
+                self._volume_sum -= volume
             self.volumes = self.volumes[cnt:]
 
         if not self.disable_fmm:
@@ -113,6 +139,9 @@ class MovingTimeSegment(object):
 
     def get_sum_count(self):
         return self._sum_count
+
+    def get_volume_sum(self):
+        return float(self._volume_sum)
 
     def min(self):
         if not self.ready():

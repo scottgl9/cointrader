@@ -16,6 +16,17 @@ class FastMinMax(object):
         self.max_value_ts = 0
         self.end_index = 0
 
+    def reset(self):
+        self.values = []
+        self.timestamps = []
+        self.min_value = 0
+        self.min_value_index = -1
+        self.min_value_ts = 0
+        self.max_value = 0
+        self.max_value_index = -1
+        self.max_value_ts = 0
+        self.end_index = 0
+
     def min(self):
         return self.min_value
 
