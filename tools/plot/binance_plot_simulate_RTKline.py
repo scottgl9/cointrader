@@ -64,6 +64,7 @@ def simulate(conn, client, base, currency):
     kline_close_prices = []
     kline_high_prices = []
     kline_low_prices = []
+    kline_volumes = []
     kline_close_x_values = []
 
     i=0
@@ -82,6 +83,7 @@ def simulate(conn, client, base, currency):
             kline_close_prices.append(kline.close)
             kline_low_prices.append(kline.low)
             kline_high_prices.append(kline.high)
+            kline_volumes.append(kline.volume)
             kline_close_x_values.append(i)
         close_prices.append(close)
         open_prices.append(open)
@@ -93,13 +95,14 @@ def simulate(conn, client, base, currency):
     symprice, = plt.plot(close_prices, label=ticker_id)
 
     fig1, = plt.plot(kline_close_x_values, kline_close_prices, label='kline_close')
-    #fig2, = plt.plot(kline_close_x_values, kline_low_prices, label='kline_low')
-    #fig3, = plt.plot(kline_close_x_values, kline_high_prices, label='kline_high')
+    fig2, = plt.plot(kline_close_x_values, kline_low_prices, label='kline_low')
+    fig3, = plt.plot(kline_close_x_values, kline_high_prices, label='kline_high')
 
-    plt.legend(handles=[symprice, fig1])
+    plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
     fig21, = plt.plot(volumes, label='volume')
-    plt.legend(handles=[fig21])
+    fig22, = plt.plot(kline_close_x_values, kline_volumes, label='volume_kline')
+    plt.legend(handles=[fig21, fig22])
     plt.show()
 
 if __name__ == '__main__':
