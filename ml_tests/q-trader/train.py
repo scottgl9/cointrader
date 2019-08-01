@@ -1,10 +1,17 @@
 from agent.agent import Agent
 from functions import *
 import sys
+import keras
+import tensorflow as tf
+
 
 if len(sys.argv) != 4:
 	print "Usage: python train.py [stock] [window] [episodes]"
 	exit()
+
+config = tf.ConfigProto( device_count = {'GPU': 1 , 'CPU': 8} ) 
+sess = tf.Session(config=config) 
+keras.backend.set_session(sess)
 
 stock_name, window_size, episode_count = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
 
