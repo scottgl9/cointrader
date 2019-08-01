@@ -18,7 +18,6 @@ from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.HMA import HMA
 from trader.indicator.PSAR import PSAR
-from trader.lib.struct.FakeKline import FakeKline
 
 
 def get_rows_as_msgs(c):
@@ -52,8 +51,6 @@ def simulate(conn, client, base, currency):
     psar = PSAR()
     psar_values = []
     obv = OBV()
-
-    kline = FakeKline()
 
     ema12_values = []
     ema26_values = []
@@ -93,11 +90,11 @@ def simulate(conn, client, base, currency):
         ema50_value = ema50.update(close)
         ema50_values.append(ema50_value)
 
-        kline.update(close, volume)
+        #kline.update(close, volume)
 
-        value = psar.update(close, kline.low, kline.high)
-        if value != 0:
-            psar_values.append(value)
+        #value = psar.update(close, kline.low, kline.high)
+        #if value != 0:
+        #    psar_values.append(value)
 
         close_prices.append(close)
         open_prices.append(open)

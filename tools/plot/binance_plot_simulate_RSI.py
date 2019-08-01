@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
-from trader.lib.struct.FakeKline import FakeKline
 
 
 def get_rows_as_msgs(c):
@@ -39,7 +38,6 @@ def simulate(conn, client, base, currency):
     obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
     obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
-    fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []

@@ -13,7 +13,6 @@ import os
 import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.STDDEV import STDDEV
-from trader.lib.struct.FakeKline import FakeKline
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.ZLEMA import *
 
@@ -40,7 +39,6 @@ def simulate(conn, client, base, currency):
     obv_ema12 = DZLEMA(12, scale=24) #EMA(12, scale=24)
     obv_ema26 = DZLEMA(26, scale=24) #EMA(26, scale=24)
     obv_ema50 = DZLEMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
-    fkline = FakeKline()
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []

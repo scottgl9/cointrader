@@ -1,6 +1,5 @@
 # TD Sequential Indicator / Signal
 from trader.lib.struct.CircularArray import CircularArray
-from trader.lib.struct.FakeKline import FakeKline
 from trader.lib.struct.SignalBase import SignalBase
 
 class TD_Sequential_Signal(SignalBase):
@@ -10,7 +9,7 @@ class TD_Sequential_Signal(SignalBase):
         self.close_prices = CircularArray(window=window)
         self.low_prices = CircularArray(window=window)
         self.high_prices = CircularArray(window=window)
-        self.fkline = FakeKline()
+        self.fkline = None #FakeKline()
         self.window = window
         self.close_count = close_count
         self.last_age = 0
