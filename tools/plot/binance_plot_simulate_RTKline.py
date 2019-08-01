@@ -30,30 +30,12 @@ def get_rows_as_msgs(c):
 def simulate(conn, client, base, currency):
     ticker_id = "{}{}".format(base, currency)
     c = conn.cursor()
-    #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    obv = OBV()
-    ema12 = EMA(12, scale=24)
-    ema26 = EMA(26, scale=24)
-    ema50 = EMA(50, scale=24)
-    ema100 = EMA(100, scale=24)
-    ema200 = EMA(200, scale=24)
-    ema300 = EMA(300, scale=24)
-    ema500 = EMA(500, scale=24)
-    obv_ema12 = EMA(12, scale=24) #EMA(12, scale=24)
-    obv_ema26 = EMA(26, scale=24) #EMA(26, scale=24)
-    obv_ema50 = EMA(50,scale=24) #EMA(50, scale=24, lag_window=5)
-    obv_ema12_values = []
-    obv_ema26_values = []
-    obv_ema50_values = []
+    ema12 = EMA(12)
+    ema50 = EMA(50)
     ema12_values = []
-    ema26_values = []
     ema50_values = []
-    ema100_values = []
-    ema200_values = []
-    ema300_values = []
-    ema500_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -80,6 +62,10 @@ def simulate(conn, client, base, currency):
         rtkline.update(close, ts, volume)
         if rtkline.ready():
             kline = rtkline.get_kline()
+            ema12.update(kline.close)
+            ema50.update(kline.close)
+            ema12_values.append(ema12.result)
+            ema50_values.append(ema50.result)
             kline_close_prices.append(kline.close)
             kline_low_prices.append(kline.low)
             kline_high_prices.append(kline.high)
@@ -95,14 +81,14 @@ def simulate(conn, client, base, currency):
     symprice, = plt.plot(close_prices, label=ticker_id)
 
     fig1, = plt.plot(kline_close_x_values, kline_close_prices, label='kline_close')
-    fig2, = plt.plot(kline_close_x_values, kline_low_prices, label='kline_low')
-    fig3, = plt.plot(kline_close_x_values, kline_high_prices, label='kline_high')
+    fig2, = plt.plot(kline_close_x_values, ema12_values, label='EMA12')
+    fig3, = plt.plot(kline_close_x_values, ema50_values, label='EMA50')
 
     plt.legend(handles=[symprice, fig1, fig2, fig3])
     plt.subplot(212)
     fig21, = plt.plot(volumes, label='volume')
-    fig22, = plt.plot(kline_close_x_values, kline_volumes, label='volume_kline')
-    plt.legend(handles=[fig21, fig22])
+    #fig22, = plt.plot(kline_close_x_values, kline_volumes, label='volume_kline')
+    plt.legend(handles=[fig21])
     plt.show()
 
 if __name__ == '__main__':
