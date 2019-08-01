@@ -58,8 +58,7 @@ class MovingTimeSegment(object):
         if self.enable_volume:
             self.volumes = []
             self._volume_sum = 0
-        if self.track_ts:
-            self.timestamps = []
+        self.timestamps = []
 
     def update(self, value, ts, volume=0):
         if self.value_smoother:
