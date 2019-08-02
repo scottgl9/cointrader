@@ -19,6 +19,7 @@ from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.account.AccountBinance import AccountBinance
 import keras
+import tensorflow as tf
 from keras.models import Sequential
 from keras.models import load_model
 from keras.layers import Dense
@@ -44,7 +45,7 @@ class Agent(object):
     def __init__(self, state_size, max_inventory=1, is_eval=False, model_name=""):
         self.state_size = state_size # normalized previous days
         self.action_size = 3 # sit, buy, sell
-        self.memory = deque(maxlen=1000)
+        self.memory = deque(maxlen=100000)
         self.inventory = []
         self.max_inventory = max_inventory
         self.model_name = model_name
@@ -80,7 +81,13 @@ class Agent(object):
         block = data[d:t + 1] if d >= 0 else -d * [data[0]] + data[0:t + 1]  # pad with t0
         res = []
         for i in xrange(n - 1):
-            res.append(sigmoid(block[i + 1] - block[i]))
+            delta = float(block[i + 1] - block[i])
+            try:
+                res.append(sigmoid(delta))
+            except OverflowError:
+                print("ERROR: sigmoid({})".format(delta))
+                res.append(float('inf'))
+                #sys.exit(-1)
 
         return np.array([res])
 
@@ -104,7 +111,7 @@ class Agent(object):
 
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train=True):
-    df_train = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
+    df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
     data = df_train['close'].values.tolist()
@@ -151,7 +158,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
                 agent.expReplay(batch_size)
 
         if e % 10 == 0:
-            agent.model.save("models/model_ep" + str(e))
+            model_path = "models/model_ep" + str(e)
+            print("Saving {}".format(model_path))
+            agent.model.save(model_path)
 
 
 if __name__ == '__main__':
@@ -198,6 +207,10 @@ if __name__ == '__main__':
     train_end_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index)
     test_start_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
     test_end_ts = hkdb.get_table_end_ts(results.symbol)
+
+    config = tf.ConfigProto(device_count={'GPU': 1, 'CPU': 8})
+    sess = tf.Session(config=config)
+    keras.backend.set_session(sess)
 
     train = True
     if results.verify:

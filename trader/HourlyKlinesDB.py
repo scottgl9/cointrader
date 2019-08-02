@@ -229,7 +229,7 @@ class HourlyKlinesDB(object):
         sql += "ORDER BY ts ASC"
         return sql
 
-    def build_sql_select_query(self, symbol, start_ts, end_ts):
+    def build_sql_select_query(self, symbol, start_ts, end_ts, daily=False):
         sql = "SELECT {} FROM {} ".format(self.scnames, symbol)
 
         if start_ts and end_ts:
@@ -238,6 +238,12 @@ class HourlyKlinesDB(object):
             sql += "WHERE ts <= {} ".format(end_ts)
         elif start_ts and not end_ts:
             sql += "WHERE {} <= ts ".format(start_ts)
+
+        if daily:
+            if 'WHERE' in sql:
+                sql += "AND (ROWID - 1) % 24 = 0 "
+            else:
+                sql += "WHERE (ROWID - 1) % 24 = 0 "
 
         sql += "ORDER BY ts ASC"
         return sql
@@ -320,6 +326,13 @@ class HourlyKlinesDB(object):
         result = {}
         for i in range(0, len(self.scname_list)):
             result[self.scname_list[i]] = k[i]
+        return result
+
+    # load daily klines in pandas dataframe
+    def get_pandas_daily_klines(self, symbol, start_ts=0, end_ts=0):
+        sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=True)
+
+        result = pd.read_sql_query(sql, self.conn)
         return result
 
     # load hourly klines in pandas dataframe
