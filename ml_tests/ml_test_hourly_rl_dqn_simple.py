@@ -35,28 +35,18 @@ def formatPrice(n):
     return ("-$" if n < 0 else "$") + "{0:.2f}".format(abs(n))
 
 
-# returns the vector containing stock data from a fixed file
-def getStockDataVec(key):
-    vec = []
-    lines = open("data/" + key + ".csv", "r").read().splitlines()
-
-    for line in lines[1:]:
-        vec.append(float(line.split(",")[4]))
-
-    return vec
-
-
 # returns the sigmoid
 def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
 
 class Agent(object):
-    def __init__(self, state_size, is_eval=False, model_name=""):
+    def __init__(self, state_size, max_inventory=1, is_eval=False, model_name=""):
         self.state_size = state_size # normalized previous days
         self.action_size = 3 # sit, buy, sell
         self.memory = deque(maxlen=1000)
         self.inventory = []
+        self.max_inventory = max_inventory
         self.model_name = model_name
         self.is_eval = is_eval
 
@@ -138,8 +128,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             reward = 0
 
             if action == 1: # buy
-                agent.inventory.append(data[t])
-                print "Buy: " + formatPrice(data[t])
+                if len(agent.inventory) < agent.max_inventory:
+                    agent.inventory.append(data[t])
+                    print "Buy: " + formatPrice(data[t])
 
             elif action == 2 and len(agent.inventory) > 0: # sell
                 bought_price = agent.inventory.pop(0)
