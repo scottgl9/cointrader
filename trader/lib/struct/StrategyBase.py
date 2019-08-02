@@ -207,6 +207,9 @@ class StrategyBase(object):
         elif name == "PMO_Crossover":
             from trader.signal.PMO_Crossover import PMO_Crossover
             signal = PMO_Crossover
+        elif name == "RTKline_MACD_Cross_Signal":
+            from trader.signal.RTKline_MACD_Cross_Signal import RTKline_MACD_Cross_Signal
+            signal = RTKline_MACD_Cross_Signal
         elif name == "TrendStateTrack_Signal":
             from trader.signal.TrendStateTrack_Signal import TrendStateTrack_Signal
             signal = TrendStateTrack_Signal
