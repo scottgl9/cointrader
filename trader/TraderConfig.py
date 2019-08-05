@@ -14,6 +14,8 @@ class TraderConfig(object):
         section = 'binance.live'
         self.config.add_section(section)
         self.config.set(section, 'path', os.path.abspath(path))
+        # enable/disable reverse_currency_trading
+        self.config.set(section, 'reverse_currency_trading', 'False')
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
         # available signal modes: hourly,realtime (comma separated)
         self.config.set(section, 'signal_modes', 'hourly,realtime')
@@ -54,6 +56,8 @@ class TraderConfig(object):
         section = 'binance.simulate'
         self.config.add_section(section)
         self.config.set(section, 'path', os.path.abspath(path))
+        # enable/disable reverse_currency_trading
+        self.config.set(section, 'reverse_currency_trading', 'True')
         self.config.set(section, 'strategy', 'basic_signal_market_strategy')
         # available signal modes: hourly,realtime (comma separated)
         self.config.set(section, 'signal_modes', 'hourly,realtime')
