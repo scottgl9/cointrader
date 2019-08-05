@@ -77,6 +77,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.accnt.trades_disabled():
             return False
 
+        if self.is_currency_pair():
+            return False
+
         if self.accnt.sell_only():
             return False
 
@@ -271,6 +274,9 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
 
 
     def run_update(self, kline, cache_db=None):
+        if self.is_currency_pair():
+            return False
+
         close = kline.close
         self.low = kline.low
         self.high = kline.high

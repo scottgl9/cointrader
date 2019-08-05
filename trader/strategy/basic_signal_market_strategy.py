@@ -101,6 +101,9 @@ class basic_signal_market_strategy(StrategyBase):
         if self.filter_buy_disabled:
             return False
 
+        if self.is_currency_pair():
+            return False
+
         if self.accnt.trades_disabled():
             return False
 
@@ -320,6 +323,9 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def run_update(self, kline, cache_db=None):
+        if self.is_currency_pair():
+            return False
+
         close = kline.close
         self.low = kline.low
         self.high = kline.high

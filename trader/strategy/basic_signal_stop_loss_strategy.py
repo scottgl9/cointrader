@@ -63,6 +63,9 @@ class basic_signal_stop_loss_strategy(StrategyBase):
 
 
     def buy_signal(self, signal, price):
+        if self.is_currency_pair():
+            return False
+
         if float(signal.buy_price) != 0.0: return False
 
         # if more than 500 seconds between price updates, ignore signal
@@ -139,6 +142,9 @@ class basic_signal_stop_loss_strategy(StrategyBase):
 
     # NOTE: low and high do not update for each kline with binance
     def run_update(self, kline, cache_db=None):
+        if self.is_currency_pair():
+            return False
+
         close = kline.close
         self.low = kline.low
         self.high = kline.high
