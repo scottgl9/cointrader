@@ -273,6 +273,17 @@ class MultiTrader(object):
             self.logger.info("No asset info for {}".format(symbol))
             return None
 
+        try:
+            currency_min_size = float(asset_info['tickSize'])
+        except (KeyError, TypeError):
+            if not self.simulate:
+                self.logger.info("symbol {} attributes not in asset info".format(symbol))
+            return None
+
+        balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base_name)['balance']))
+        if balance <= currency_min_size:
+            return None
+
         trade_pair = select_strategy(self.reverse_strategy,
                                      self.client,
                                      base_name,
@@ -380,9 +391,9 @@ class MultiTrader(object):
 
         # if reverse currency trading is enabled
         if self.reverse_currency_trading and self.accnt.is_currency_pair(symbol=kline.symbol):
-            pass
-            #reverse_symbol_trader = self.get_reverse_trader(kline.symbol, kline.close)
-            #reverse_symbol_trader.run_update(kline, cache_db=cache_db)
+            reverse_symbol_trader = self.get_reverse_trader(kline.symbol, kline.close)
+            if reverse_symbol_trader:
+                reverse_symbol_trader.run_update(kline, cache_db=cache_db)
 
         if self.global_strategy:
             self.global_strategy.run_update(kline)

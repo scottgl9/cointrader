@@ -17,6 +17,7 @@ class reverse_currency_market_strategy(StrategyBase):
                                                            logger)
         self.strategy_name = 'reverse_currency_market_strategy'
 
+        self.logger.info("{}: {}".format(self.strategy_name, self.ticker_id))
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
 
         # set signal modes from config
@@ -34,6 +35,8 @@ class reverse_currency_market_strategy(StrategyBase):
 
         signal_names = [self.config.get('reverse_signals')]
         hourly_signal_name = self.config.get('reverse_hourly_signal')
+        self.reverse_trade_percent_size = self.config.get('reverse_trade_percent_size')
+
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
         self.hourly_preload_hours = int(self.config.get('hourly_preload_hours'))

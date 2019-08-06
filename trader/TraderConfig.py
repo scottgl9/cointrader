@@ -16,6 +16,7 @@ class TraderConfig(object):
         self.config.set(section, 'path', os.path.abspath(path))
         # enable/disable reverse_currency_trading
         self.config.set(section, 'reverse_currency_trading', 'False')
+        self.config.set(section, 'reverse_trade_percent_size', '0')
         self.config.set(section, 'reverse_strategy', 'None')
         self.config.set(section, 'reverse_signals', 'None')
         self.config.set(section, 'reverse_hourly_signal', 'None')
@@ -61,6 +62,7 @@ class TraderConfig(object):
         self.config.set(section, 'path', os.path.abspath(path))
         # enable/disable reverse_currency_trading
         self.config.set(section, 'reverse_currency_trading', 'False')
+        self.config.set(section, 'reverse_trade_percent_size', '0')
         self.config.set(section, 'reverse_strategy', 'None')
         self.config.set(section, 'reverse_signals', 'None')
         self.config.set(section, 'reverse_hourly_signal', 'None')
