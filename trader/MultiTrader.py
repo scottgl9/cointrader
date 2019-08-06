@@ -9,21 +9,29 @@ from trader.symbol_filter.SymbolFilterHandler import SymbolFilterHandler
 from datetime import datetime
 import time
 
-from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
-from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
-from trader.strategy.basic_signal_stop_loss_strategy import basic_signal_stop_loss_strategy
-from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
-from trader.strategy.null_strategy import null_strategy
-
 
 def select_strategy(sname, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
                     asset_info=None, config=None, logger=None):
     strategy = None
-    if sname == 'basic_signal_market_strategy': strategy = basic_signal_market_strategy
-    elif sname == 'multi_market_order_strategy': strategy = multi_market_order_strategy
-    elif sname == 'basic_signal_stop_loss_strategy': strategy = basic_signal_stop_loss_strategy
-    elif sname == 'signal_market_trailing_stop_loss_strategy': strategy = signal_market_trailing_stop_loss_strategy
-    elif sname == 'null_strategy': strategy = null_strategy
+    if sname == 'basic_signal_market_strategy':
+        from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
+        strategy = basic_signal_market_strategy
+    elif sname == 'multi_market_order_strategy':
+        from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
+        strategy = multi_market_order_strategy
+    elif sname == 'basic_signal_stop_loss_strategy':
+        from trader.strategy.basic_signal_stop_loss_strategy import basic_signal_stop_loss_strategy
+        strategy = basic_signal_stop_loss_strategy
+    elif sname == 'signal_market_trailing_stop_loss_strategy':
+        from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
+        strategy = signal_market_trailing_stop_loss_strategy
+    elif sname == 'null_strategy':
+        from trader.strategy.null_strategy import null_strategy
+        strategy = null_strategy
+    # reverse currency strategies
+    elif sname == 'reverse_currency_market_strategy':
+        from trader.strategy.reverse_currency_strategy.reverse_currency_market_strategy import reverse_currency_market_strategy
+        strategy = reverse_currency_market_strategy
     if not strategy:
         return None
 
@@ -43,6 +51,7 @@ class MultiTrader(object):
     def __init__(self, client, assets_info=None, simulate=False, accnt=None, logger=None,
                  global_en=True, config=None):
         self.trade_pairs = {}
+        self.reverse_trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.config = config
@@ -58,6 +67,10 @@ class MultiTrader(object):
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.symbol_filter_names = self.config.get('symbol_filters').split(',')
         self.hourly_update_handler = None
+
+        # handle reverse currency trading config
+        self.reverse_currency_trading = self.config.get('reverse_currency_trading')
+        self.reverse_strategy = self.config.get('reverse_strategy')
 
         if accnt:
             self.accnt = accnt
@@ -232,6 +245,48 @@ class MultiTrader(object):
             #    self.order_handler.trade_db_load_symbol(symbol, trade_pair)
         return trade_pair
 
+    # create new trade pair reverse trade handler and select strategy
+    def add_reverse_trade_pair(self, symbol, price=0):
+        base_name, currency_name = self.accnt.split_symbol(symbol)
+
+        if not base_name or not currency_name: return None
+
+        if self.accnt.btc_only() and currency_name != 'BTC':
+            return None
+        elif self.accnt.eth_only() and currency_name != 'ETH':
+            return None
+        elif self.accnt.bnb_only() and currency_name != 'BNB':
+            return None
+        elif self.accnt.hourly_symbols_only() and symbol not in self.hkdb_table_symbols:
+            return None
+
+        # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
+        if not self.simulate and not self.use_hourly_klines:
+            if self.accnt.deposit_asset_disabled(base_name):
+                # if an asset has deposit disabled, means its probably suspended
+                # or de-listed so DO NOT trade this coin
+                self.logger.info("Asset {} disabled".format(base_name))
+                return None
+
+        asset_info = self.accnt.get_asset_info_dict(symbol)
+        if not self.simulate and not asset_info:
+            self.logger.info("No asset info for {}".format(symbol))
+            return None
+
+        trade_pair = select_strategy(self.reverse_strategy,
+                                     self.client,
+                                     base_name,
+                                     currency_name,
+                                     account_handler=self.accnt,
+                                     order_handler=self.order_handler,
+                                     asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
+                                     config=self.config,
+                                     logger=self.logger)
+
+        self.reverse_trade_pairs[symbol] = trade_pair
+
+        return trade_pair
+
     def update_initial_btc(self):
         self.order_handler.update_initial_btc()
 
@@ -252,6 +307,14 @@ class MultiTrader(object):
             result = self.trade_pairs[symbol]
         except KeyError:
             result = self.add_trade_pair(symbol, price)
+        return result
+
+    # get existing trader, or create new if it doesn't exist
+    def get_reverse_trader(self, symbol, price):
+        try:
+            result = self.reverse_trade_pairs[symbol]
+        except KeyError:
+            result = self.add_reverse_trade_pair(symbol, price)
         return result
 
     def process_message(self, kline, cache_db=None):
@@ -314,6 +377,12 @@ class MultiTrader(object):
             symbol_trader.filter_buy_disabled = False
 
         symbol_trader.run_update(kline, cache_db=cache_db)
+
+        # if reverse currency trading is enabled
+        if self.reverse_currency_trading and self.accnt.is_currency_pair(symbol=kline.symbol):
+            pass
+            #reverse_symbol_trader = self.get_reverse_trader(kline.symbol, kline.close)
+            #reverse_symbol_trader.run_update(kline, cache_db=cache_db)
 
         if self.global_strategy:
             self.global_strategy.run_update(kline)
