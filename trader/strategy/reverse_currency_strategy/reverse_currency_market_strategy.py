@@ -32,27 +32,11 @@ class reverse_currency_market_strategy(StrategyBase):
                 self.hourly_signals_enabled = True
                 self.signal_modes.append(StrategyBase.SIGNAL_MODE_HOURLY)
 
-        signal_names = [self.config.get('signals')]
-        hourly_signal_name = self.config.get('hourly_signal')
+        signal_names = [self.config.get('reverse_signals')]
+        hourly_signal_name = self.config.get('reverse_hourly_signal')
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
         self.hourly_preload_hours = int(self.config.get('hourly_preload_hours'))
-
-        btc_trade_size = float(self.config.get('btc_trade_size'))
-        eth_trade_size = float(self.config.get('eth_trade_size'))
-        bnb_trade_size = float(self.config.get('bnb_trade_size'))
-        pax_trade_size = float(self.config.get('pax_trade_size'))
-        usdt_trade_size = float(self.config.get('usdt_trade_size'))
-        trade_size_multiplier = float(self.config.get('trade_size_multiplier'))
-
-        self.trade_size_handler = fixed_trade_size(self.accnt,
-                                                   asset_info,
-                                                   btc=btc_trade_size,
-                                                   eth=eth_trade_size,
-                                                   bnb=bnb_trade_size,
-                                                   pax=pax_trade_size,
-                                                   usdt=usdt_trade_size,
-                                                   multiplier=trade_size_multiplier)
 
         if self.hourly_signals_enabled and self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
@@ -63,29 +47,14 @@ class reverse_currency_market_strategy(StrategyBase):
         else:
             self.hourly_klines_signal = None
 
+        for name in signal_names:
+            signal = StrategyBase.select_signal_name(name,
+                                                     self.accnt,
+                                                     self.ticker_id,
+                                                     asset_info,
+                                                     hkdb=self.hourly_klines_handler)
 
-        if signal_names:
-            for name in signal_names:
-                if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
-                    continue
-                signal = StrategyBase.select_signal_name(name,
-                                                         self.accnt,
-                                                         self.ticker_id,
-                                                         asset_info,
-                                                         hkdb=self.hourly_klines_handler)
-
-                # don't add global signal if global_filter doesn't match ticker_id
-                if signal.global_signal and signal.global_filter != self.ticker_id:
-                    continue
-                if not signal.global_signal and self.ticker_id.endswith('USDT'):
-                    continue
-                self.signal_handler.add(signal)
-        else:
-            self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover",
-                                                                    self.accnt,
-                                                                    self.ticker_id,
-                                                                    asset_info,
-                                                                    hkdb=self.hourly_klines_handler))
+            self.signal_handler.add(signal)
 
 
     # clear pending sell trades which have been bought
@@ -115,11 +84,6 @@ class reverse_currency_market_strategy(StrategyBase):
         if max_market_buy != 0 and self.order_handler.open_market_buy_count >= max_market_buy:
             return False
 
-        self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
-
-        if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):
-            return False
-
         if self.last_close == 0:
             return False
 
@@ -145,9 +109,6 @@ class reverse_currency_market_strategy(StrategyBase):
         if self.accnt.trades_disabled():
             return False
 
-        if float(signal.buy_price) == 0.0 or float(signal.buy_size) == 0.0:
-            return False
-
         # check balance to see if we have enough to sell
         balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
         if balance_available < float(self.min_trade_size) or balance_available == 0.0:
@@ -156,10 +117,10 @@ class reverse_currency_market_strategy(StrategyBase):
         if signal.sell_long_signal():
             return True
 
-        if price < float(signal.buy_price):
+        if signal.buy_price and price < float(signal.buy_price):
             return False
 
-        if not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
+        if signal.buy_price and not StrategyBase.percent_p2_gt_p1(signal.buy_price, price, self.min_percent_profit):
             return False
 
         # if buy signal disabled by filter, and price above profit cutoff, then sell
@@ -167,7 +128,7 @@ class reverse_currency_market_strategy(StrategyBase):
             return True
 
         # if it's been over 8 hours since buy executed for symbol, sell as soon as percent profit > 0
-        if (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
+        if signal.buy_price and (self.timestamp - signal.last_buy_ts) > self.accnt.hours_to_ts(8):
             return True
 
         # if buying is disabled and symbol is >= 1.0 percent profit, then sell
@@ -379,16 +340,7 @@ class reverse_currency_market_strategy(StrategyBase):
         completed = self.handle_incoming_messages()
 
         for signal in self.signal_handler.get_handlers():
-            if signal.is_global() and signal.global_filter == kline.symbol:
-                signal.pre_update(kline.close, kline.volume, kline.ts)
-                if signal.enable_buy and not self.enable_buy:
-                    self.msg_handler.buy_enable(self.ticker_id)
-                elif signal.disable_buy and not self.disable_buy:
-                    self.msg_handler.buy_disable(self.ticker_id)
-                self.disable_buy = signal.disable_buy
-                self.enable_buy = signal.enable_buy
-            else:
-                self.run_update_signal(signal, close, signal_completed=completed)
+            self.run_update_signal(signal, close, signal_completed=completed)
 
         self.last_timestamp = self.timestamp
         self.last_price = close
@@ -472,9 +424,6 @@ class reverse_currency_market_strategy(StrategyBase):
 
 
     def sell_market(self, signal, price):
-        if float(signal.buy_price) == 0:
-            return
-
         sell_price = price
 
         # track ts for start of sell order
@@ -495,4 +444,3 @@ class reverse_currency_market_strategy(StrategyBase):
         else:
             self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price,
                                          sig_id=signal.id, asset_info=self.asset_info, sell_type=signal.sell_type)
-
