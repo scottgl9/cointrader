@@ -35,7 +35,13 @@ class reverse_currency_market_strategy(StrategyBase):
 
         signal_names = [self.config.get('reverse_signals')]
         hourly_signal_name = self.config.get('reverse_hourly_signal')
-        self.reverse_trade_percent_size = self.config.get('reverse_trade_percent_size')
+        self.reverse_trade_fraction_size = float(self.config.get('reverse_trade_percent_size')) / 100.0
+
+        # compute trade size
+        balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base)['balance']))
+        self.min_trade_size = balance * self.reverse_trade_fraction_size
+        self.logger.info("{} trade size: {}".format(self.ticker_id, self.min_trade_size))
+        self.reset(buy_size=self.min_trade_size)
 
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
@@ -61,10 +67,10 @@ class reverse_currency_market_strategy(StrategyBase):
 
 
     # clear pending sell trades which have been bought
-    def reset(self):
+    def reset(self, buy_size=0):
         for signal in self.signal_handler.get_handlers():
             signal.buy_price = 0.0
-            signal.buy_size = 0.0
+            signal.buy_size = buy_size
             signal.buy_order_id = None
 
 
