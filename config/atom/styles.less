@@ -63,6 +63,10 @@ atom-text-editor {
           }
       }
 
+      .syntax--function {
+        color: @blue;
+      }
+
       .syntax--meta {
           .syntax--punctuation {
               &.syntax--inheritance, &.syntax--section {
@@ -87,5 +91,11 @@ atom-text-editor {
 
 // style UI elements inside atom-text-editor
 atom-text-editor .cursor {
-  // border-color: red;
+   //border-color: red;
 }
+
+atom-text-editor::shadow .selection .region {
+  background-color: @gray2;
+}
+
+atom-text-editor .syntax--comment { color: @gray2; }
