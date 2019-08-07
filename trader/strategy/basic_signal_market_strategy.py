@@ -16,7 +16,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                            config,
                                                            reverse_trade_mode,
                                                            logger)
-        self.strategy_name = 'hybrid_signal_market_strategy'
+        self.strategy_name = 'basic_signal_market_strategy'
 
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
 
@@ -33,27 +33,35 @@ class basic_signal_market_strategy(StrategyBase):
                 self.hourly_signals_enabled = True
                 self.signal_modes.append(StrategyBase.SIGNAL_MODE_HOURLY)
 
-        signal_names = [self.config.get('signals')]
-        hourly_signal_name = self.config.get('hourly_signal')
+        if self.reverse_trade_mode:
+            signal_names = [self.config.get('reverse_signals')]
+            hourly_signal_name = self.config.get('reverse_hourly_signal')
+            trade_fraction = float(self.config.get('reverse_trade_percent_size')) / 100.0
+            balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base)['balance']))
+            self.min_trade_size = balance * trade_fraction
+            self.logger.info("{} {} REVERSE_TRADE_MODE trade size={} {}".format(self.ticker_id, self.strategy_name, self.min_trade_size, base))
+        else:
+            signal_names = [self.config.get('signals')]
+            hourly_signal_name = self.config.get('hourly_signal')
+            btc_trade_size = float(self.config.get('btc_trade_size'))
+            eth_trade_size = float(self.config.get('eth_trade_size'))
+            bnb_trade_size = float(self.config.get('bnb_trade_size'))
+            pax_trade_size = float(self.config.get('pax_trade_size'))
+            usdt_trade_size = float(self.config.get('usdt_trade_size'))
+            trade_size_multiplier = float(self.config.get('trade_size_multiplier'))
+
+            self.trade_size_handler = fixed_trade_size(self.accnt,
+                                                       asset_info,
+                                                       btc=btc_trade_size,
+                                                       eth=eth_trade_size,
+                                                       bnb=bnb_trade_size,
+                                                       pax=pax_trade_size,
+                                                       usdt=usdt_trade_size,
+                                                       multiplier=trade_size_multiplier)
+
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
         self.hourly_preload_hours = int(self.config.get('hourly_preload_hours'))
-
-        btc_trade_size = float(self.config.get('btc_trade_size'))
-        eth_trade_size = float(self.config.get('eth_trade_size'))
-        bnb_trade_size = float(self.config.get('bnb_trade_size'))
-        pax_trade_size = float(self.config.get('pax_trade_size'))
-        usdt_trade_size = float(self.config.get('usdt_trade_size'))
-        trade_size_multiplier = float(self.config.get('trade_size_multiplier'))
-
-        self.trade_size_handler = fixed_trade_size(self.accnt,
-                                                   asset_info,
-                                                   btc=btc_trade_size,
-                                                   eth=eth_trade_size,
-                                                   bnb=bnb_trade_size,
-                                                   pax=pax_trade_size,
-                                                   usdt=usdt_trade_size,
-                                                   multiplier=trade_size_multiplier)
 
         if self.hourly_signals_enabled and self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
@@ -64,36 +72,19 @@ class basic_signal_market_strategy(StrategyBase):
         else:
             self.hourly_klines_signal = None
 
-
-        if signal_names:
-            for name in signal_names:
-                if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
-                    continue
-                signal = StrategyBase.select_signal_name(name,
-                                                         self.accnt,
-                                                         self.ticker_id,
-                                                         asset_info,
-                                                         hkdb=self.hourly_klines_handler)
-
-                # don't add global signal if global_filter doesn't match ticker_id
-                if signal.global_signal and signal.global_filter != self.ticker_id:
-                    continue
-                if not signal.global_signal and self.ticker_id.endswith('USDT'):
-                    continue
-                self.signal_handler.add(signal)
-        else:
-            self.signal_handler.add(StrategyBase.select_signal_name("Hybrid_Crossover",
-                                                                    self.accnt,
-                                                                    self.ticker_id,
-                                                                    asset_info,
-                                                                    hkdb=self.hourly_klines_handler))
-
+        for name in signal_names:
+            signal = StrategyBase.select_signal_name(name,
+                                                     self.accnt,
+                                                     self.ticker_id,
+                                                     asset_info,
+                                                     hkdb=self.hourly_klines_handler)
+            self.signal_handler.add(signal)
 
     # clear pending sell trades which have been bought
-    def reset(self):
+    def reset(self, buy_price=0, buy_size=0):
         for signal in self.signal_handler.get_handlers():
-            signal.buy_price = 0.0
-            signal.buy_size = 0.0
+            signal.buy_price = buy_price
+            signal.buy_size = buy_size
             signal.buy_order_id = None
 
 
@@ -102,7 +93,7 @@ class basic_signal_market_strategy(StrategyBase):
         if self.filter_buy_disabled:
             return False
 
-        if self.is_currency_pair():
+        if not self.reverse_trade_mode and self.is_currency_pair():
             return False
 
         if self.accnt.trades_disabled():
@@ -119,10 +110,10 @@ class basic_signal_market_strategy(StrategyBase):
         if max_market_buy != 0 and self.order_handler.open_market_buy_count >= max_market_buy:
             return False
 
-        self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
-
-        if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):
-            return False
+        if not self.reverse_trade_mode:
+            self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
+            if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):
+                return False
 
         if self.last_close == 0:
             return False
@@ -324,7 +315,7 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def run_update(self, kline, cache_db=None):
-        if self.is_currency_pair():
+        if not self.reverse_trade_mode and self.is_currency_pair():
             return False
 
         close = kline.close
@@ -333,6 +324,9 @@ class basic_signal_market_strategy(StrategyBase):
         volume = kline.volume_quote
 
         if not self.timestamp:
+            if self.reverse_trade_mode:
+                self.reset(buy_price=close, buy_size=self.min_trade_size)
+
             if self.hourly_signals_enabled and not self.hourly_klines_loaded:
                 # set initial hourly update ts
                 self.first_hourly_update_ts = self.accnt.get_hourly_ts(kline.ts)

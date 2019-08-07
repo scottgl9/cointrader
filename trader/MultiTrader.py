@@ -179,6 +179,22 @@ class MultiTrader(object):
             self.hourly_update_handler.stop()
             self.hourly_update_handler.join(timeout=5)
 
+    def use_reverse_trade_mode(self, symbol, base, currency, asset_info):
+        if not self.accnt.is_currency_pair(symbol, base, currency):
+            return False
+
+        try:
+            currency_min_size = float(asset_info['tickSize'])
+        except (KeyError, TypeError):
+            if not self.simulate:
+                self.logger.info("symbol {} attributes not in asset info".format(symbol))
+            return False
+
+        balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base)['balance']))
+        if balance > currency_min_size:
+            return True
+        return False
+
     # create new trade pair handler and select strategy
     def add_trade_pair(self, symbol, price=0):
         base_name, currency_name = self.accnt.split_symbol(symbol)
@@ -218,6 +234,8 @@ class MultiTrader(object):
         if min_notional > base_min_size:
             base_min_size = min_notional
 
+        reverse_trade_mode = self.use_reverse_trade_mode(symbol, base_name, currency_name, asset_info)
+
         trade_pair = select_strategy(self.strategy_name,
                                      self.client,
                                      base_name,
@@ -226,6 +244,7 @@ class MultiTrader(object):
                                      order_handler=self.order_handler,
                                      asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
                                      config=self.config,
+                                     reverse_trade_mode=reverse_trade_mode,
                                      logger=self.logger)
 
         self.trade_pairs[symbol] = trade_pair
