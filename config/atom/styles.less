@@ -12,6 +12,7 @@
  @very-light-gray:   #EEFFFF;
  @light-gray:        #B2CCD6;
  @gray:              #373b41;
+ @gray2:             #636f80;
  @dark-gray:         #282a2e;
  @very-dark-gray:    #263238;
 
@@ -22,6 +23,7 @@
  @blue:              #82AAFF;
  @indigo:            #7986CB;
  @purple:            #C792EA;
+ @dark-purple:       #763d7e;
  @pink:              #FF5370;
  @red:               #F07178;
  @strong-orange:     #F78C6A;
@@ -35,10 +37,11 @@
 
 // style the background and foreground colors on the atom-text-editor-element itself
 atom-text-editor {
+  background-color: @gray;
   .syntax--python {
       .syntax--meta {
           &.syntax--function-call {
-              color: @blue;
+              color: @indigo; //@blue;
 
               .syntax--punctuation {
                   color: @cyan;
@@ -56,7 +59,7 @@ atom-text-editor {
 
       .syntax--variable {
           &.syntax--self {
-              color: @light-orange;
+              color: @dark-purple; //@orange;
           }
       }
 
@@ -70,7 +73,7 @@ atom-text-editor {
 
       .syntax--variable {
           &.syntax--parameter {
-              color: @teal; //@cyan;
+              color: @orange; //@cyan;
           }
       }
 
