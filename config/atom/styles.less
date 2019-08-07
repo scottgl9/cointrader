@@ -1,0 +1,88 @@
+/*
+ * Your Stylesheet
+ *
+ * This stylesheet is loaded when Atom starts up and is reloaded automatically
+ * when it is changed and saved.
+ *
+ * Add your own CSS or Less to fully customize Atom.
+ * If you are unfamiliar with Less, you can read more about it here:
+ * http://lesscss.org
+ */
+
+ @very-light-gray:   #EEFFFF;
+ @light-gray:        #B2CCD6;
+ @gray:              #373b41;
+ @dark-gray:         #282a2e;
+ @very-dark-gray:    #263238;
+
+ @green:             #C3E88D;
+ @teal:              #009688;
+ @light-teal:        #73d1c8;
+ @cyan:              #89DDF3;
+ @blue:              #82AAFF;
+ @indigo:            #7986CB;
+ @purple:            #C792EA;
+ @pink:              #FF5370;
+ @red:               #F07178;
+ @strong-orange:     #F78C6A;
+ @orange:            #FFCB6B;
+ @light-orange:      #FFE082;
+
+// style the background color of the tree view
+.tree-view {
+  // background-color: whitesmoke;
+}
+
+// style the background and foreground colors on the atom-text-editor-element itself
+atom-text-editor {
+  .syntax--python {
+      .syntax--meta {
+          &.syntax--function-call {
+              color: @blue;
+
+              .syntax--punctuation {
+                  color: @cyan;
+              }
+
+              .syntax--arguments {
+                  color: @indigo;
+
+                  &.syntax--punctuation {
+                      color: @cyan;
+                  }
+              }
+          }
+      }
+
+      .syntax--variable {
+          &.syntax--self {
+              color: @light-orange;
+          }
+      }
+
+      .syntax--meta {
+          .syntax--punctuation {
+              &.syntax--inheritance, &.syntax--section {
+                  color: @cyan;
+              }
+          }
+      }
+
+      .syntax--variable {
+          &.syntax--parameter {
+              color: @teal; //@cyan;
+          }
+      }
+
+      .syntax--keyword {
+          &.syntax--operator {
+              color: @purple;
+          }
+      }
+  }
+}
+
+// style UI elements inside atom-text-editor
+atom-text-editor .cursor {
+  // border-color: red;
+}
