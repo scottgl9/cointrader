@@ -180,6 +180,9 @@ class MultiTrader(object):
             self.hourly_update_handler.join(timeout=5)
 
     def use_reverse_trade_mode(self, symbol, base, currency, asset_info):
+        if not self.reverse_currency_trading:
+            return False
+
         if not self.accnt.is_currency_pair(symbol, base, currency):
             return False
 
