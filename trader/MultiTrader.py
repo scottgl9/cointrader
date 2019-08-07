@@ -51,7 +51,6 @@ class MultiTrader(object):
     def __init__(self, client, assets_info=None, simulate=False, accnt=None, logger=None,
                  global_en=True, config=None):
         self.trade_pairs = {}
-        self.reverse_trade_pairs = {}
         self.accounts = {}
         self.client = client
         self.config = config
@@ -239,63 +238,6 @@ class MultiTrader(object):
             balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base_name)['balance']))
             if balance >= base_min_size:
                 self.order_handler.trade_db_load_symbol(symbol, trade_pair)
-                #self.order_handler.trader_db.remove_trade(symbol)
-                #self.logger.info("ALREADY_SOLD for {}, removed from trade db".format(symbol))
-            #else:
-            #    self.order_handler.trade_db_load_symbol(symbol, trade_pair)
-        return trade_pair
-
-    # create new trade pair reverse trade handler and select strategy
-    def add_reverse_trade_pair(self, symbol, price=0):
-        base_name, currency_name = self.accnt.split_symbol(symbol)
-
-        if not base_name or not currency_name: return None
-
-        if self.accnt.btc_only() and currency_name != 'BTC':
-            return None
-        elif self.accnt.eth_only() and currency_name != 'ETH':
-            return None
-        elif self.accnt.bnb_only() and currency_name != 'BNB':
-            return None
-        elif self.accnt.hourly_symbols_only() and symbol not in self.hkdb_table_symbols:
-            return None
-
-        # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
-        if not self.simulate and not self.use_hourly_klines:
-            if self.accnt.deposit_asset_disabled(base_name):
-                # if an asset has deposit disabled, means its probably suspended
-                # or de-listed so DO NOT trade this coin
-                self.logger.info("Asset {} disabled".format(base_name))
-                return None
-
-        asset_info = self.accnt.get_asset_info_dict(symbol)
-        if not self.simulate and not asset_info:
-            self.logger.info("No asset info for {}".format(symbol))
-            return None
-
-        try:
-            currency_min_size = float(asset_info['tickSize'])
-        except (KeyError, TypeError):
-            if not self.simulate:
-                self.logger.info("symbol {} attributes not in asset info".format(symbol))
-            return None
-
-        balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base_name)['balance']))
-        if balance <= currency_min_size:
-            return None
-
-        trade_pair = select_strategy(self.reverse_strategy,
-                                     self.client,
-                                     base_name,
-                                     currency_name,
-                                     account_handler=self.accnt,
-                                     order_handler=self.order_handler,
-                                     asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
-                                     config=self.config,
-                                     logger=self.logger)
-
-        self.reverse_trade_pairs[symbol] = trade_pair
-
         return trade_pair
 
     def update_initial_btc(self):
@@ -320,14 +262,6 @@ class MultiTrader(object):
             result = self.add_trade_pair(symbol, price)
         return result
 
-    # get existing trader, or create new if it doesn't exist
-    def get_reverse_trader(self, symbol, price):
-        try:
-            result = self.reverse_trade_pairs[symbol]
-        except KeyError:
-            result = self.add_reverse_trade_pair(symbol, price)
-        return result
-
     def process_message(self, kline, cache_db=None):
         self.current_ts = kline.ts
 
@@ -345,23 +279,6 @@ class MultiTrader(object):
 
         # print alive check message once every hour
         if not self.accnt.simulate:
-            #if self.hourly_update_handler and self.hourly_update_handler.ready():
-            #    last_hourly_ts = self.hourly_update_handler.last_hourly_update_ts()
-            #    if last_hourly_ts:
-            #        self.last_hourly_ts = last_hourly_ts
-            #        self.logger("Last hourly tables update completed {}".format(time.ctime(self.last_hourly_ts/1000)))
-            # hourly_klines_handler = symbol_trader.hourly_klines_handler
-            #
-            # if hourly_klines_handler:
-            #     last_hourly_ts = hourly_klines_handler.get_last_update_ts(kline.symbol)
-            #     if last_hourly_ts and (self.current_ts - last_hourly_ts) >= self.accnt.seconds_to_ts(3600):
-            #         hourly_ts = self.accnt.get_hourly_ts(self.current_ts)
-            #         if hourly_ts != last_hourly_ts:
-            #             hourly_klines_handler.update_table(kline.symbol, end_ts=hourly_ts)
-            #             if hourly_ts != self.last_hourly_ts:
-            #                 self.logger.info("Updating hourly klines hourly_ts={}".format(hourly_ts))
-            #                 self.last_hourly_ts = hourly_ts
-
             if self.last_ts == 0 and self.current_ts != 0:
                 self.last_ts = self.current_ts
             elif self.current_ts != 0:
@@ -390,10 +307,10 @@ class MultiTrader(object):
         symbol_trader.run_update(kline, cache_db=cache_db)
 
         # if reverse currency trading is enabled
-        if self.reverse_currency_trading and self.accnt.is_currency_pair(symbol=kline.symbol):
-            reverse_symbol_trader = self.get_reverse_trader(kline.symbol, kline.close)
-            if reverse_symbol_trader:
-                reverse_symbol_trader.run_update(kline, cache_db=cache_db)
+        #if self.reverse_currency_trading and self.accnt.is_currency_pair(symbol=kline.symbol):
+        #    reverse_symbol_trader = self.get_reverse_trader(kline.symbol, kline.close)
+        #    if reverse_symbol_trader:
+        #        reverse_symbol_trader.run_update(kline, cache_db=cache_db)
 
         if self.global_strategy:
             self.global_strategy.run_update(kline)
