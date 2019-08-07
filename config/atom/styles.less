@@ -15,7 +15,7 @@
  @gray2:             #636f80;
  @dark-gray:         #282a2e;
  @very-dark-gray:    #263238;
-
+ @background-color:  #2E3440;
  @green:             #C3E88D;
  @teal:              #009688;
  @light-teal:        #73d1c8;
@@ -32,16 +32,16 @@
 
 // style the background color of the tree view
 .tree-view {
-  // background-color: whitesmoke;
+  background-color: @background-color;
 }
 
 // style the background and foreground colors on the atom-text-editor-element itself
 atom-text-editor {
-  background-color: @gray;
+  background-color: @background-color;
   .syntax--python {
       .syntax--meta {
           &.syntax--function-call {
-              color: @indigo; //@blue;
+              color: @blue;
 
               .syntax--punctuation {
                   color: @cyan;
