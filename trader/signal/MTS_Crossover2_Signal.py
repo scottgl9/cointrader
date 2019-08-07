@@ -33,9 +33,6 @@ class MTS_Crossover2_Signal(SignalBase):
         return self.cache.get_cache_list()
 
     def pre_update(self, close, volume, ts, cache_db=None):
-        if self.is_currency_pair:
-            return False
-
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:
@@ -64,9 +61,6 @@ class MTS_Crossover2_Signal(SignalBase):
             return False
 
         if self.last_crossdown_ts > self.last_crossup_ts:
-            return False
-
-        if self.is_currency_pair:
             return False
 
         if self.disabled:

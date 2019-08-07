@@ -42,9 +42,6 @@ class MTS_Retracement_Signal(SignalBase):
         self.mts_retrace.hourly_update(hourly_ts)
 
     def pre_update(self, close, volume, ts, cache_db=None):
-        if self.is_currency_pair:
-            return False
-
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:
@@ -60,9 +57,6 @@ class MTS_Retracement_Signal(SignalBase):
         self.mts_retrace.update(close, ts)
 
     def buy_signal(self):
-        if self.is_currency_pair:
-            return False
-
         if self.disabled:
             if self.timestamp > self.disabled_end_ts:
                 self.disabled = False

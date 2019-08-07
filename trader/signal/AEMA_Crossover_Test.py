@@ -32,9 +32,6 @@ class AEMA_Crossover_Test(SignalBase):
         self.aema_cross_50_200 = MACross(cross_timeout=ctimeout)
 
     def pre_update(self, close, volume, ts, cache_db=None):
-        if self.is_currency_pair:
-            return False
-
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:
@@ -57,9 +54,6 @@ class AEMA_Crossover_Test(SignalBase):
         self.tst.update(self.aema12.result, ts=ts)
 
     def buy_signal(self):
-        if self.is_currency_pair:
-            return False
-
         if self.disabled:
             if self.timestamp > self.disabled_end_ts:
                 self.disabled = False

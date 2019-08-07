@@ -47,8 +47,6 @@ class TrendStateTrack_Signal(SignalBase):
         self.tst.update(close, ts=ts)
 
     def buy_signal(self):
-        if self.is_currency_pair:
-            return False
         if self.disabled:
             if self.timestamp > self.disabled_end_ts:
                 self.disabled = False

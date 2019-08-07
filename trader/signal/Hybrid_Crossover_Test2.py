@@ -58,9 +58,6 @@ class Hybrid_Crossover_Test2(SignalBase):
         return self.cache.get_cache_list()
 
     def pre_update(self, close, volume, ts, cache_db=None):
-        if self.is_currency_pair:
-            return False
-
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:
@@ -98,9 +95,6 @@ class Hybrid_Crossover_Test2(SignalBase):
         self.ema_cross_50_200.update(close, ts, ma1_result=ema50_result, ma2_result=ema200_result)
 
     def buy_signal(self):
-        if self.is_currency_pair:
-            return False
-
         if self.disabled:
             if self.timestamp > self.disabled_end_ts:
                 self.disabled = False

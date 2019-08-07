@@ -25,9 +25,6 @@ class MTS_CrossoverTracker_Signal(SignalBase):
         return self.cache.get_cache_list()
 
     def pre_update(self, close, volume, ts, cache_db=None):
-        if self.is_currency_pair:
-            return False
-
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:
@@ -45,9 +42,6 @@ class MTS_CrossoverTracker_Signal(SignalBase):
         self.cross_tracker.update(value1=self.aema1.result, value2=self.aema2.result, ts=ts)
 
     def buy_signal(self):
-        if self.is_currency_pair:
-            return False
-
         if self.disabled:
             if self.timestamp > self.disabled_end_ts:
                 self.disabled = False
