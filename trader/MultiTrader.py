@@ -11,7 +11,7 @@ import time
 
 
 def select_strategy(sname, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                    asset_info=None, config=None, logger=None):
+                    asset_info=None, config=None, reverse_trade_mode=False, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy':
         from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
@@ -28,10 +28,6 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
     elif sname == 'null_strategy':
         from trader.strategy.null_strategy import null_strategy
         strategy = null_strategy
-    # reverse currency strategies
-    elif sname == 'reverse_currency_market_strategy':
-        from trader.strategy.reverse_currency_strategy.reverse_currency_market_strategy import reverse_currency_market_strategy
-        strategy = reverse_currency_market_strategy
     if not strategy:
         return None
 
@@ -42,6 +38,7 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
                     order_handler=order_handler,
                     asset_info=asset_info,
                     config=config,
+                    reverse_trade_mode=reverse_trade_mode,
                     logger=logger)
 
 

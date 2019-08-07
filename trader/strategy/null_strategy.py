@@ -11,7 +11,7 @@ def datetime_to_float(d):
 
 class null_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 config=None, asset_info=None, logger=None):
+                 config=None, asset_info=None, reverse_trade_mode=False, logger=None):
         super(null_strategy, self).__init__(client,
                                             base,
                                             currency,
@@ -19,6 +19,7 @@ class null_strategy(StrategyBase):
                                             order_handler,
                                             asset_info,
                                             config,
+                                            reverse_trade_mode,
                                             logger)
         self.strategy_name = 'null_strategy'
         signal_names = [self.config.get('signals')]

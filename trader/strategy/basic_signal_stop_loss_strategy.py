@@ -6,7 +6,7 @@ from trader.indicator.OBV import OBV
 
 class basic_signal_stop_loss_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 config=None, asset_info=None, logger=None):
+                 config=None, asset_info=None, reverse_trade_mode=False, logger=None):
         super(basic_signal_stop_loss_strategy, self).__init__(client,
                                                               base,
                                                               currency,
@@ -14,6 +14,7 @@ class basic_signal_stop_loss_strategy(StrategyBase):
                                                               order_handler,
                                                               asset_info,
                                                               config,
+                                                              reverse_trade_mode,
                                                               logger)
         self.strategy_name = 'basic_signal_stop_loss_strategy'
         self.last_price = self.price = 0.0

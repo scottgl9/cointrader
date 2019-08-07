@@ -6,7 +6,7 @@ from trader.lib.struct.StrategyBase import StrategyBase, select_hourly_signal
 
 class multi_market_order_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 config=None, asset_info=None, logger=None):
+                 config=None, asset_info=None, reverse_trade_mode=False, logger=None):
         super(multi_market_order_strategy, self).__init__(client,
                                                            base,
                                                            currency,
@@ -14,6 +14,7 @@ class multi_market_order_strategy(StrategyBase):
                                                            order_handler,
                                                            asset_info,
                                                            config,
+                                                           reverse_trade_mode,
                                                            logger)
         self.strategy_name = 'multi_market_order_strategy'
         self.order_method = StrategyBase.SINGLE_SIGNAL_MULTI_ORDER

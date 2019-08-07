@@ -6,7 +6,7 @@ from trader.lib.struct.SignalBase import SignalBase
 
 class basic_signal_market_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 config=None, asset_info=None, logger=None):
+                 config=None, asset_info=None, reverse_trade_mode=False, logger=None):
         super(basic_signal_market_strategy, self).__init__(client,
                                                            base,
                                                            currency,
@@ -14,6 +14,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                            order_handler,
                                                            asset_info,
                                                            config,
+                                                           reverse_trade_mode,
                                                            logger)
         self.strategy_name = 'hybrid_signal_market_strategy'
 
@@ -501,4 +502,3 @@ class basic_signal_market_strategy(StrategyBase):
         else:
             self.msg_handler.sell_market(self.ticker_id, sell_price, signal.buy_size, signal.buy_price,
                                          sig_id=signal.id, asset_info=self.asset_info, sell_type=signal.sell_type)
-
