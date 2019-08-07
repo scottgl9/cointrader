@@ -41,7 +41,7 @@ atom-text-editor {
   .syntax--python {
       .syntax--meta {
           &.syntax--function-call {
-              color: @blue;
+              color: @cyan;
 
               .syntax--punctuation {
                   color: @cyan;
@@ -85,6 +85,9 @@ atom-text-editor {
           &.syntax--operator {
               color: @purple;
           }
+      }
+      .syntax--keyword.syntax--operator.syntax--logical.syntax--python {
+          color: @purple;
       }
   }
 }
