@@ -25,7 +25,7 @@ class TAStreamer(DataGenerator):
         _stock = _stock.dropna(how='any')
 
         min_max_scaler = preprocessing.MinMaxScaler((-1, 1))
-        np_scaled = min_max_scaler.fit_transform(_stock[['rsi_14', 'cci_14','dx_14','volume']])
+        np_scaled = min_max_scaler.fit_transform(_stock[['rsi_14', 'cci_14','dx_14','volume']].astype(float))
         df_normalized = pd.DataFrame(np_scaled)
         df_normalized.columns = ['rsi_14', 'cci_14','dx_14','volume']
         df_normalized['bid'] = _stock['close'].values
@@ -40,7 +40,7 @@ class TAStreamer(DataGenerator):
             raw_data = df_normalized[['ask', 'bid', 'mid', 'rsi_14', 'cci_14','dx_14','volume']].iloc[split_len:,:]
 
         for index, row in raw_data.iterrows():
-            yield row.as_matrix()
+            yield row.values #row.as_matrix()
 
 
     def _iterator_end(self):
