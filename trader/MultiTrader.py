@@ -325,12 +325,6 @@ class MultiTrader(object):
 
         symbol_trader.run_update(kline, cache_db=cache_db)
 
-        # if reverse currency trading is enabled
-        #if self.reverse_currency_trading and self.accnt.is_currency_pair(symbol=kline.symbol):
-        #    reverse_symbol_trader = self.get_reverse_trader(kline.symbol, kline.close)
-        #    if reverse_symbol_trader:
-        #        reverse_symbol_trader.run_update(kline, cache_db=cache_db)
-
         if self.global_strategy:
             self.global_strategy.run_update(kline)
 
@@ -416,7 +410,7 @@ class MultiTrader(object):
                 self.logger.info("process_user_message({}) SELL_FAILED".format(o.symbol))
                 self.accnt.get_account_balances()
                 self.order_handler.send_sell_failed(o.symbol, o.price, o.size, o.buy_price, o.sig_id,
-                                                      order_type=order_update.msg_type)
+                                                    order_type=order_update.msg_type)
                 self.order_handler.trader_db.remove_trade(o.symbol, o.sig_id)
                 self.order_handler.remove_open_order(o.symbol)
 
