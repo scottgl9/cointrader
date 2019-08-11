@@ -72,9 +72,9 @@ def process_raw_klines(df, indicators=None):
 
 def create_labels(df_train):
     df_result = pd.DataFrame()
-    df_result['MHIST'] = df_train['MACD'] - df_train['MSIG']
-    df_result['MHIST_DELTA'] = np.abs(df_result['MHIST'] - df_result['MHIST'].shift(1))
     df_result['MACD'] = df_train['MACD']
+    df_result['MHIST'] = df_train['MACD'] - df_train['MSIG']
+    #df_result['MHIST_DELTA'] = np.abs(df_result['MHIST'] - df_result['MHIST'].shift(1))
     return df_result
 
 
@@ -90,8 +90,12 @@ def create_features(df, indicators=None):
     except KeyError:
         pass
     macd.load_dataframe(df)
-    df_result['MACD'] = np.array(macd.results())
-    df_result['MSIG'] = np.array(macd.results(1))
+    macd_result = np.array(macd.results(0))
+    macd_result[macd_result == 0] = np.nan
+    macd_sig_result = np.array(macd.results(1))
+    macd_sig_result[macd_sig_result == 0] = np.nan
+    df_result['MACD'] = macd_result
+    df_result['MSIG'] = macd_sig_result
     indicator_macd = macd.indicator
 
     if not indicators:
@@ -102,14 +106,15 @@ def create_features(df, indicators=None):
 
     return df_result, indicators
 
-def convert_features_to_dataset(df):
-    train_sets = []
-    for column in df.columns:
-        in_seq = df[column].values
-        in_seq = in_seq.reshape((len(in_seq), 1))
-        train_sets.append(in_seq)
-    dataset = hstack(tuple(train_sets))
-    return dataset
+
+# for training forcasting df_labels[(i + shift)] for df_feats[i]:
+# shift df_feats +shift, and shift df_labels -shift
+def shift_features_and_labels(df_feats, df_labels, shift=1):
+    df_feats = df_feats.iloc[:-shift, :]
+    df_labels = df_labels.iloc[shift:, :]
+
+    return df_feats, df_labels
+
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
@@ -118,16 +123,18 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     df_train, indicators = create_features(df, indicators)
     #df_train = df_train.drop(columns="CLOSE")
     df_labels = create_labels(df_train)
+    df_train, df_labels = shift_features_and_labels(df_train, df_labels)
     train_label_values = df_labels.values #df_labels['ROC'].values[:df_train.count().iloc[0]]
     dataset = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
     yscaler = MinMaxScaler(feature_range=(0, 1))
     trainX = xscaler.fit_transform(dataset)
-    trainY = yscaler.fit_transform(train_label_values.reshape(-1, 1))
+    trainY = yscaler.fit_transform(train_label_values) #train_label_values.reshape(-1, 1))
 
     # define generator
     n_features = trainX.shape[1]
     n_input = 8
+    n_output = 2
     generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=n_input)
     #last_generated, _ = generator[len(generator) - 1]
     #print(last_generated[0][-1])
@@ -140,7 +147,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     model.add(Dropout(0.2))
     #model.add(LSTM(units=50, input_shape=(n_input, n_features))) #, return_sequences=True))
     #model.add(Dropout(0.2))
-    model.add(Dense(1))
+    model.add(Dense(n_output))
     model.compile(optimizer='adam', loss='mse')
     # fit model
     model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
@@ -156,14 +163,15 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         df2, indicators = process_raw_klines(df2, indicators)
         test_df, indicators = create_features(df2, indicators)
         test_labels_df = create_labels(test_df)
-        if test_labels_df['ROC'].size:
-            y_act.append(test_labels_df['ROC'].values[-1])
+        if test_labels_df['MACD'].size:
+            y_act.append(test_labels_df['MACD'].values[-1])
         if df2['CLOSE'].size:
             prices.append(df2['CLOSE'].values[-1])
        # test_df = test_df.drop(columns="CLOSE")
         try:
             test_dataset = np.array([xscaler.transform(test_df.values)])
             prediction = yscaler.inverse_transform(model.predict(test_dataset))
+            #print(prediction)
             y_pred.append(prediction[0][0])
         except ValueError:
             pass
