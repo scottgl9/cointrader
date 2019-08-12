@@ -83,7 +83,7 @@ def create_features(df, indicators=None):
 
     # process MACD values
     macd = Indicator(MACD) #, scale=12)
-    macd.close_key = "close"
+    macd.close_key = "CLOSE"
     try:
         macd_indicator = indicators['MACD']
         macd.set_indicator(macd_indicator)
@@ -143,9 +143,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #    print('{}'.format(x))
 
     model = Sequential()
-    model.add(LSTM(250, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
+    model.add(LSTM(100, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
     model.add(Dropout(0.2))
-    #model.add(LSTM(units=50, input_shape=(n_input, n_features))) #, return_sequences=True))
+    #model.add(LSTM(units=50, return_sequences=False, input_shape=(n_input, n_features)))
     #model.add(Dropout(0.2))
     model.add(Dense(n_output))
     model.compile(optimizer='adam', loss='mse')
@@ -153,7 +153,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
 
     y_act = []
+    y_act2 = []
     y_pred = []
+    y_pred2 = []
     prices = []
     ts = test_start_ts
     while ts <= test_end_ts:
@@ -165,6 +167,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         test_labels_df = create_labels(test_df)
         if test_labels_df['MACD'].size:
             y_act.append(test_labels_df['MACD'].values[-1])
+        if test_labels_df['MHIST'].size:
+            y_act2.append(test_labels_df['MHIST'].values[-1])
         if df2['CLOSE'].size:
             prices.append(df2['CLOSE'].values[-1])
        # test_df = test_df.drop(columns="CLOSE")
@@ -173,21 +177,26 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             prediction = yscaler.inverse_transform(model.predict(test_dataset))
             #print(prediction)
             y_pred.append(prediction[0][0])
+            y_pred2.append(prediction[0][1])
         except ValueError:
             pass
         ts += 1000 * 3600
 
-    plt.subplot(211)
+    plt.subplot(311)
     #for i in crossups:
     #    plt.axvline(x=i, color='green')
     #for i in crossdowns:
     #    plt.axvline(x=i, color='red')
     fig1, = plt.plot(prices, label=symbol)
     plt.legend(handles=[fig1])
-    plt.subplot(212)
+    plt.subplot(312)
     fig21, = plt.plot(y_act, label='act')
     fig22, = plt.plot(y_pred, label='pred')
     plt.legend(handles=[fig21, fig22])
+    plt.subplot(313)
+    fig31, = plt.plot(y_act2, label='act2')
+    fig32, = plt.plot(y_pred2, label='pred2')
+    plt.legend(handles=[fig31, fig32])
     plt.show()
 
 
