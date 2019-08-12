@@ -25,32 +25,16 @@ from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.account.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
-from trader.lib.Crossover2 import Crossover2
 from trader.lib.Indicator import Indicator
-from trader.indicator.LSMA import LSMA
-from trader.indicator.ADL import ADL
-from trader.indicator.ATR import ATR
-from trader.indicator.EFI import EFI
 from trader.indicator.EMA import EMA
-from trader.indicator.KST import KST
 from trader.indicator.MACD import MACD
-from trader.indicator.McGinleyDynamic import McGinleyDynamic
-from trader.indicator.OBV import OBV
-from trader.indicator.PPO import PPO
-from trader.indicator.ROC import ROC
-from trader.indicator.RSI import RSI
-from trader.indicator.TSI import TSI
 
-from numpy import hstack
-from numpy import insert
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
-from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import StandardScaler
 
 
 def process_raw_klines(df, indicators=None):
@@ -138,15 +122,6 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     n_output = trainY.shape[1]
 
     generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=1)
-    #print(trainX)
-    #print(mlhelper.convert_np_columns_to_df(trainX))
-    #print(trainY)
-    #print(mlhelper.convert_np_columns_to_df(trainY))
-    #last_generated, _ = generator[len(generator) - 1]
-    #print(last_generated[0][-1])
-    #for i in range(len(generator)):
-    #    x, y = generator[i]
-    #    print('{}, {}'.format(x, y))
 
     model = Sequential()
     model.add(LSTM(200, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))

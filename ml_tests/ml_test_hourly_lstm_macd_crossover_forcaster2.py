@@ -30,7 +30,6 @@ from trader.lib.Indicator import Indicator
 from trader.indicator.LSMA import LSMA
 from trader.indicator.ADL import ADL
 from trader.indicator.ATR import ATR
-from trader.indicator.DELTA import DELTA
 from trader.indicator.EFI import EFI
 from trader.indicator.EMA import EMA
 from trader.indicator.KST import KST
@@ -71,122 +70,139 @@ def process_raw_klines(df, indicators=None):
     return df, indicators
 
 
-def create_labels(df, indicators=None):
+def create_labels(df_train):
     df_result = pd.DataFrame()
-    # process ROC values
-    delta = Indicator(DELTA, window=2) #, scale=12)
-    delta.close_key = "CLOSE"
-    try:
-        delta_indicator = indicators['DELTA']
-        delta.set_indicator(delta_indicator)
-    except KeyError:
-        pass
-    delta.load_dataframe(df)
-    df_result['DELTA'] = np.array(delta.results())
-    indicator_delta = delta.indicator
-    indicators['DELTA'] = indicator_delta
-    return df_result, indicators
+    df_result['MACD'] = df_train['MACD']
+    df_result['MHIST'] = df_train['MACD'] - df_train['MSIG']
+    #df_result['MHIST_DELTA'] = np.abs(df_result['MHIST'] - df_result['MHIST'].shift(1))
+    return df_result
 
 
 def create_features(df, indicators=None):
     df_result = pd.DataFrame()
 
     # process MACD values
-    lsma = Indicator(LSMA, 12)
-    lsma.close_key = "close"
+    macd = Indicator(MACD) #, scale=12)
+    macd.close_key = "CLOSE"
     try:
-        lsma_indicator = indicators['LSMA']
-        lsma.set_indicator(lsma_indicator)
+        macd_indicator = indicators['MACD']
+        macd.set_indicator(macd_indicator)
     except KeyError:
         pass
-    lsma.load_dataframe(df)
-    df_result['LSMA'] = np.array(lsma.results())
-    indicator_lsma = lsma.indicator
+    macd.load_dataframe(df)
+    macd_result = np.array(macd.results(0))
+    macd_result[macd_result == 0] = np.nan
+    macd_sig_result = np.array(macd.results(1))
+    macd_sig_result[macd_sig_result == 0] = np.nan
+    df_result['MACD'] = macd_result
+    df_result['MSIG'] = macd_sig_result
+    indicator_macd = macd.indicator
 
     if not indicators:
         indicators = {}
-    indicators['LSMA'] = indicator_lsma
+    indicators['MACD'] = indicator_macd
 
     df_result = df_result.dropna()
 
     return df_result, indicators
 
-def convert_features_to_dataset(df):
-    train_sets = []
-    for column in df.columns:
-        in_seq = df[column].values
-        in_seq = in_seq.reshape((len(in_seq), 1))
-        train_sets.append(in_seq)
-    dataset = hstack(tuple(train_sets))
-    return dataset
+
+# for training forcasting df_labels[(i + shift)] for df_feats[i]:
+# shift df_feats +shift, and shift df_labels -shift
+def shift_features_and_labels(df_feats, df_labels, shift=1):
+    df_feats = df_feats.iloc[:-shift, :]
+    df_labels = df_labels.iloc[shift:, :]
+
+    return df_feats, df_labels
+
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
+    df, indicators = process_raw_klines(df)
     df_train, indicators = create_features(df, indicators)
     #df_train = df_train.drop(columns="CLOSE")
-    df_labels, indicators = create_labels(df, indicators)
-    train_label_values = df_labels['DELTA'].values[:df_train.count().iloc[0]]
-    dataset = df_train.values
+    df_labels = create_labels(df_train)
+    df_train, df_labels = shift_features_and_labels(df_train, df_labels)
+    train_label_values = df_labels.values
+    train_feature_values = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
     yscaler = MinMaxScaler(feature_range=(0, 1))
-    trainX = xscaler.fit_transform(dataset)
-    trainY = yscaler.fit_transform(train_label_values.reshape(-1, 1))
+    trainX = xscaler.fit_transform(train_feature_values)
+    trainY = yscaler.fit_transform(train_label_values)
+
 
     # define generator
     n_features = trainX.shape[1]
-    n_input = 8
-    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=n_input)
+    n_input = 4
+    n_output = trainY.shape[1]
+
+    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=1)
+    #print(trainX)
+    #print(mlhelper.convert_np_columns_to_df(trainX))
+    #print(trainY)
+    #print(mlhelper.convert_np_columns_to_df(trainY))
     #last_generated, _ = generator[len(generator) - 1]
     #print(last_generated[0][-1])
     #for i in range(len(generator)):
     #    x, y = generator[i]
-    #    print('{}'.format(x))
+    #    print('{}, {}'.format(x, y))
 
     model = Sequential()
-    model.add(LSTM(250, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
+    model.add(LSTM(200, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
     model.add(Dropout(0.2))
-    #model.add(LSTM(units=50, input_shape=(n_input, n_features))) #, return_sequences=True))
+    #model.add(LSTM(units=50, return_sequences=False, input_shape=(n_input, n_features)))
     #model.add(Dropout(0.2))
-    model.add(Dense(1))
+    model.add(Dense(n_output))
     model.compile(optimizer='adam', loss='mse')
     # fit model
     model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
 
     y_act = []
+    y_act2 = []
     y_pred = []
+    y_pred2 = []
     prices = []
     ts = test_start_ts
     while ts <= test_end_ts:
         start_ts = ts
         end_ts = ts + 1000 * 3600 * (n_input - 1)
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
+        df2, indicators = process_raw_klines(df2, indicators)
         test_df, indicators = create_features(df2, indicators)
-        test_labels_df, indicators = create_labels(df2, indicators)
-        if test_labels_df['DELTA'].size:
-            y_act.append(test_labels_df['DELTA'].values[-1])
-        if df2['close'].size:
-            prices.append(df2['close'].values[-1])
+        test_labels_df = create_labels(test_df)
+        if test_labels_df['MACD'].size:
+            y_act.append(test_labels_df['MACD'].values[-1])
+        if test_labels_df['MHIST'].size:
+            y_act2.append(test_labels_df['MHIST'].values[-1])
+        if df2['CLOSE'].size:
+            prices.append(df2['CLOSE'].values[-1])
        # test_df = test_df.drop(columns="CLOSE")
         try:
             test_dataset = np.array([xscaler.transform(test_df.values)])
             prediction = yscaler.inverse_transform(model.predict(test_dataset))
+            #print(prediction)
             y_pred.append(prediction[0][0])
+            y_pred2.append(prediction[0][1])
         except ValueError:
             pass
         ts += 1000 * 3600
 
-    plt.subplot(211)
+    plt.subplot(311)
     #for i in crossups:
     #    plt.axvline(x=i, color='green')
     #for i in crossdowns:
     #    plt.axvline(x=i, color='red')
     fig1, = plt.plot(prices, label=symbol)
     plt.legend(handles=[fig1])
-    plt.subplot(212)
+    plt.subplot(312)
     fig21, = plt.plot(y_act, label='act')
     fig22, = plt.plot(y_pred, label='pred')
     plt.legend(handles=[fig21, fig22])
+    plt.subplot(313)
+    fig31, = plt.plot(y_act2, label='act2')
+    fig32, = plt.plot(y_pred2, label='pred2')
+    plt.legend(handles=[fig31, fig32])
     plt.show()
 
 
