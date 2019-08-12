@@ -48,6 +48,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
+from keras.layers import TimeDistributed, RepeatVector
 from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
@@ -73,8 +74,6 @@ def process_raw_klines(df, indicators=None):
 def create_labels(df_train):
     df_result = pd.DataFrame()
     df_result['MACD'] = df_train['MACD']
-    df_result['MHIST'] = df_train['MACD'] - df_train['MSIG']
-    #df_result['MHIST_DELTA'] = np.abs(df_result['MHIST'] - df_result['MHIST'].shift(1))
     return df_result
 
 
@@ -95,7 +94,6 @@ def create_features(df, indicators=None):
     macd_sig_result = np.array(macd.results(1))
     macd_sig_result[macd_sig_result == 0] = np.nan
     df_result['MACD'] = macd_result
-    df_result['MSIG'] = macd_sig_result
     indicator_macd = macd.indicator
 
     if not indicators:
@@ -118,41 +116,45 @@ def shift_features_and_labels(df_feats, df_labels, shift=1):
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
+    xscaler = MinMaxScaler(feature_range=(0, 1))
+    yscaler = MinMaxScaler(feature_range=(0, 1))
+
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     df, indicators = process_raw_klines(df)
     df_train, indicators = create_features(df, indicators)
-    #df_train = df_train.drop(columns="CLOSE")
     df_labels = create_labels(df_train)
     df_train, df_labels = shift_features_and_labels(df_train, df_labels)
-    train_label_values = df_labels.values
-    train_feature_values = df_train.values
-    xscaler = MinMaxScaler(feature_range=(0, 1))
-    yscaler = MinMaxScaler(feature_range=(0, 1))
-    trainX = xscaler.fit_transform(train_feature_values)
-    trainY = yscaler.fit_transform(train_label_values)
 
+    scaleX = xscaler.fit_transform(df_train.values)
+    scaleY = yscaler.fit_transform(df_labels.values)
+
+    #df_train_scaled = mlhelper.convert_np_columns_to_df(scaleX, columns=df_train.columns)
+    #df_labels_scaled = mlhelper.convert_np_columns_to_df(scaleY, columns=df_labels.columns)
+    #print(df_train_scaled)
+    #print(df_labels_scaled)
 
     # define generator
-    n_features = trainX.shape[1]
+    n_features = scaleX.shape[1]
     n_input = 4
-    n_output = trainY.shape[1]
+    n_timesteps = 4
+    n_output = scaleY.shape[1]
 
-    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=1)
+    generator = TimeseriesGenerator(scaleX, scaleY, length=n_input, batch_size=n_input)
     #print(trainX)
     #print(mlhelper.convert_np_columns_to_df(trainX))
     #print(trainY)
     #print(mlhelper.convert_np_columns_to_df(trainY))
     #last_generated, _ = generator[len(generator) - 1]
-    #print(last_generated[0][-1])
     #for i in range(len(generator)):
     #    x, y = generator[i]
     #    print('{}, {}'.format(x, y))
 
     model = Sequential()
-    model.add(LSTM(200, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
+    model.add(LSTM(200, input_shape=(n_input, n_features)))
     model.add(Dropout(0.2))
     #model.add(LSTM(units=50, return_sequences=False, input_shape=(n_input, n_features)))
     #model.add(Dropout(0.2))
+    #model.add(TimeDistributed(Dense(100, activation='relu')))
     model.add(Dense(n_output))
     model.compile(optimizer='adam', loss='mse')
     # fit model
@@ -173,8 +175,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         test_labels_df = create_labels(test_df)
         if test_labels_df['MACD'].size:
             y_act.append(test_labels_df['MACD'].values[-1])
-        if test_labels_df['MHIST'].size:
-            y_act2.append(test_labels_df['MHIST'].values[-1])
+        #if test_labels_df['MHIST'].size:
+        #    y_act2.append(test_labels_df['MHIST'].values[-1])
         if df2['CLOSE'].size:
             prices.append(df2['CLOSE'].values[-1])
        # test_df = test_df.drop(columns="CLOSE")
@@ -183,26 +185,22 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             prediction = yscaler.inverse_transform(model.predict(test_dataset))
             #print(prediction)
             y_pred.append(prediction[0][0])
-            y_pred2.append(prediction[0][1])
+            #y_pred2.append(prediction[0][1])
         except ValueError:
             pass
         ts += 1000 * 3600
 
-    plt.subplot(311)
+    plt.subplot(211)
     #for i in crossups:
     #    plt.axvline(x=i, color='green')
     #for i in crossdowns:
     #    plt.axvline(x=i, color='red')
     fig1, = plt.plot(prices, label=symbol)
     plt.legend(handles=[fig1])
-    plt.subplot(312)
+    plt.subplot(212)
     fig21, = plt.plot(y_act, label='act')
     fig22, = plt.plot(y_pred, label='pred')
     plt.legend(handles=[fig21, fig22])
-    plt.subplot(313)
-    fig31, = plt.plot(y_act2, label='act2')
-    fig32, = plt.plot(y_pred2, label='pred2')
-    plt.legend(handles=[fig31, fig32])
     plt.show()
 
 
