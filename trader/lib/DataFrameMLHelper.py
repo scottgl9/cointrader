@@ -47,6 +47,21 @@ class DataFrameMLHelper(object):
         #df = df.drop(columns=column_name)
         return new_df
 
+    # convert format:
+    # data = [[0.39777934 0.        ]
+    #         [0.39751439 0.1981421 ]
+    #         [0.39841926 0.35665894]
+    #         ...
+    # output: col1       col2
+    #         0.39777934 0.0
+    #         0.39751439 0.1981421
+    #         0.39841926 0.35665894
+    #         ...
+    def convert_np_columns_to_df(self, data):
+        df = pd.DataFrame(data, index=range(data.shape[0]),
+                          columns=range(data.shape[1]))
+        return df
+
     def series_to_supervised(self, data, n_in=1, n_out=1, dropnan=True):
         """
         Frame a time series as a supervised learning dataset.

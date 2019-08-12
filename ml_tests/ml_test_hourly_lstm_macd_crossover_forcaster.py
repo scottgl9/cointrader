@@ -124,26 +124,32 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #df_train = df_train.drop(columns="CLOSE")
     df_labels = create_labels(df_train)
     df_train, df_labels = shift_features_and_labels(df_train, df_labels)
-    train_label_values = df_labels.values #df_labels['ROC'].values[:df_train.count().iloc[0]]
-    dataset = df_train.values
+    train_label_values = df_labels.values
+    train_feature_values = df_train.values
     xscaler = MinMaxScaler(feature_range=(0, 1))
     yscaler = MinMaxScaler(feature_range=(0, 1))
-    trainX = xscaler.fit_transform(dataset)
-    trainY = yscaler.fit_transform(train_label_values) #train_label_values.reshape(-1, 1))
+    trainX = xscaler.fit_transform(train_feature_values)
+    trainY = yscaler.fit_transform(train_label_values)
+
 
     # define generator
     n_features = trainX.shape[1]
-    n_input = 8
-    n_output = 2
-    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=n_input)
+    n_input = 4
+    n_output = trainY.shape[1]
+
+    generator = TimeseriesGenerator(trainX, trainY, length=n_input, batch_size=1)
+    #print(trainX)
+    #print(mlhelper.convert_np_columns_to_df(trainX))
+    #print(trainY)
+    #print(mlhelper.convert_np_columns_to_df(trainY))
     #last_generated, _ = generator[len(generator) - 1]
     #print(last_generated[0][-1])
     #for i in range(len(generator)):
     #    x, y = generator[i]
-    #    print('{}'.format(x))
+    #    print('{}, {}'.format(x, y))
 
     model = Sequential()
-    model.add(LSTM(100, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
+    model.add(LSTM(200, activation='relu', return_sequences=False, input_shape=(n_input, n_features)))
     model.add(Dropout(0.2))
     #model.add(LSTM(units=50, return_sequences=False, input_shape=(n_input, n_features)))
     #model.add(Dropout(0.2))
