@@ -154,7 +154,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         model.compile(optimizer='adam', loss='mse')
         # fit model
         #model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
-        model.fit(trainX, trainy, epochs=5, verbose=1, batch_size=1)
+        model.fit(trainX, trainy, epochs=5, verbose=1, batch_size=8, shuffle=True)
         model.save_weights(weights_file)
         with open(arch_file, 'w') as f:
             f.write(model.to_json())
@@ -182,6 +182,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             test_dataset = np.array([scaler.transform(test_df.values)])
             #print(test_dataset)
             prediction = model.predict(test_dataset)
+            #prediction2 = model.predict(prediction)
+            #print(prediction2)
             prediction = scaler.inverse_transform(prediction[0])
             y_pred.append(prediction[2][0])
             #y_pred2.append(prediction[1][0])
