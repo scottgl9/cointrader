@@ -73,12 +73,6 @@ def process_raw_klines(df, indicators=None):
     return df, indicators
 
 
-def create_labels(df_train):
-    df_result = pd.DataFrame()
-    df_result['MACD'] = df_train['MACD']
-    return df_result
-
-
 def create_features(df, indicators=None):
     df_result = pd.DataFrame()
 
@@ -177,7 +171,6 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
         df2, indicators = process_raw_klines(df2, indicators)
         test_df, indicators = create_features(df2, indicators)
-        # test_labels_df = create_labels(test_df)
         if test_df['MACD'].size:
             y_act.append(test_df['MACD'].values[-1])
         #if test_labels_df['MHIST'].size:
@@ -190,11 +183,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             #print(test_dataset)
             prediction = model.predict(test_dataset)
             prediction = scaler.inverse_transform(prediction[0])
-            #print(prediction)
-            #prediction = scaler.inverse_transform(model.predict(test_dataset))
-            #print(prediction)
-            y_pred.append(prediction[0][0])
-            y_pred2.append(prediction[1][0])
+            y_pred.append(prediction[2][0])
+            #y_pred2.append(prediction[1][0])
         except ValueError:
             pass
         ts += 1000 * 3600
@@ -209,8 +199,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     plt.subplot(212)
     fig21, = plt.plot(y_act, label='act')
     fig22, = plt.plot(y_pred, label='pred')
-    fig23, = plt.plot(y_pred2, label='pred2')
-    plt.legend(handles=[fig21, fig22, fig23])
+    #fig23, = plt.plot(y_pred2, label='pred2')
+    plt.legend(handles=[fig21, fig22])
     plt.show()
 
 
