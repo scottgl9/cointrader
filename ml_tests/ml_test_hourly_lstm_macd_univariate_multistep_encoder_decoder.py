@@ -43,6 +43,8 @@ from trader.indicator.TSI import TSI
 
 from numpy import hstack
 from numpy import insert
+import keras
+import tensorflow as tf
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras.layers import Dense
@@ -137,6 +139,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     scaled_macd_values = scaler.fit_transform(macd_values.reshape(-1, 1))
 
     X, Y = split_sequence(scaled_macd_values, n_steps_in, n_steps_out)
+    print(X)
+    print(Y)
 
     #scaleX = xscaler.fit_transform(X)
     #scaleY = yscaler.fit_transform(Y)
@@ -152,7 +156,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     model.compile(optimizer='adam', loss='mse')
     # fit model
     #model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
-    model.fit(trainX, trainy, epochs=10, verbose=1)
+    model.fit(trainX, trainy, epochs=5, verbose=1, batch_size=1)
 
     y_act = []
     y_act2 = []
@@ -176,6 +180,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
        # test_df = test_df.drop(columns="CLOSE")
         try:
             test_dataset = np.array([scaler.transform(test_df.values)])
+            print(test_dataset)
             prediction = scaler.inverse_transform(model.predict(test_dataset))
             print(prediction)
             y_pred.append(prediction[0][0])
@@ -224,6 +229,10 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
+
+    #config = tf.ConfigProto(device_count={'GPU': 1, 'CPU': 8})
+    #sess = tf.Session(config=config)
+    #keras.backend.set_session(sess)
 
     hkdb = HourlyKlinesDB(accnt, results.hourly_filename, None)
     print("Loading {}".format(results.hourly_filename))
