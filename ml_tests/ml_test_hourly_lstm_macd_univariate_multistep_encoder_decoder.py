@@ -124,8 +124,7 @@ def split_sequence(sequence, n_steps_in, n_steps_out):
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
-    xscaler = MinMaxScaler(feature_range=(0, 1))
-    yscaler = MinMaxScaler(feature_range=(0, 1))
+    scaler = MinMaxScaler(feature_range=(0, 1))
 
     df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     df, indicators = process_raw_klines(df)
@@ -134,13 +133,16 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     n_features = 1
     n_steps_in, n_steps_out = 3, 2
 
-    X, Y = split_sequence(df_train['MACD'], n_steps_in, n_steps_out)
+    macd_values = df_train['MACD'].values
+    scaled_macd_values = scaler.fit_transform(macd_values.reshape(-1, 1))
 
-    scaleX = xscaler.fit_transform(X)
-    scaleY = yscaler.fit_transform(Y)
+    X, Y = split_sequence(scaled_macd_values, n_steps_in, n_steps_out)
 
-    trainX = scaleX.reshape((scaleX.shape[0], scaleX.shape[1], n_features))
-    trainy = scaleY.reshape((scaleY.shape[0], scaleY.shape[1], n_features))
+    #scaleX = xscaler.fit_transform(X)
+    #scaleY = yscaler.fit_transform(Y)
+
+    trainX = X.reshape((X.shape[0], X.shape[1], n_features))
+    trainy = Y.reshape((Y.shape[0], Y.shape[1], n_features))
 
     model = Sequential()
     model.add(LSTM(100, activation='relu', input_shape=(n_steps_in, n_features)))
@@ -173,8 +175,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             prices.append(df2['CLOSE'].values[-1])
        # test_df = test_df.drop(columns="CLOSE")
         try:
-            test_dataset = np.array([xscaler.transform(test_df.values)])
-            prediction = yscaler.inverse_transform(model.predict(test_dataset))
+            test_dataset = np.array([scaler.transform(test_df.values)])
+            prediction = scaler.inverse_transform(model.predict(test_dataset))
             print(prediction)
             y_pred.append(prediction[0][0])
             #y_pred2.append(prediction[0][1])
