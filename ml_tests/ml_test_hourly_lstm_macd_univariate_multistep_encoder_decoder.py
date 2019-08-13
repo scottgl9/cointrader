@@ -46,7 +46,7 @@ from numpy import insert
 import keras
 import tensorflow as tf
 from keras.preprocessing.sequence import TimeseriesGenerator
-from keras.models import Sequential
+from keras.models import Sequential, model_from_json
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Dropout
@@ -125,6 +125,9 @@ def split_sequence(sequence, n_steps_in, n_steps_out):
 
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+    models_path = "models"
+    weights_file = os.path.join(models_path, "{}_weights.h5".format(symbol))
+    arch_file = os.path.join(models_path, "{}_arch.json".format(symbol))
     mlhelper = DataFrameMLHelper()
     scaler = MinMaxScaler(feature_range=(0, 1))
 
@@ -133,30 +136,34 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     df_train, indicators = create_features(df, indicators)
 
     n_features = 1
-    n_steps_in, n_steps_out = 3, 2
+    n_steps_in, n_steps_out = 3, 3
 
     macd_values = df_train['MACD'].values
     scaled_macd_values = scaler.fit_transform(macd_values.reshape(-1, 1))
 
     X, Y = split_sequence(scaled_macd_values, n_steps_in, n_steps_out)
-    print(X)
-    print(Y)
-
-    #scaleX = xscaler.fit_transform(X)
-    #scaleY = yscaler.fit_transform(Y)
 
     trainX = X.reshape((X.shape[0], X.shape[1], n_features))
     trainy = Y.reshape((Y.shape[0], Y.shape[1], n_features))
 
-    model = Sequential()
-    model.add(LSTM(100, activation='relu', input_shape=(n_steps_in, n_features)))
-    model.add(RepeatVector(n_steps_out))
-    model.add(LSTM(100, activation='relu', return_sequences=True))
-    model.add(TimeDistributed(Dense(1)))
-    model.compile(optimizer='adam', loss='mse')
-    # fit model
-    #model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
-    model.fit(trainX, trainy, epochs=5, verbose=1, batch_size=1)
+    if os.path.exists(weights_file) and os.path.exists(arch_file):
+        with open(arch_file, 'r') as f:
+            model = model_from_json(f.read())
+        model.load_weights(weights_file)
+        print("Loaded {} model".format(symbol))
+    else:
+        model = Sequential()
+        model.add(LSTM(100, activation='relu', input_shape=(n_steps_in, n_features)))
+        model.add(RepeatVector(n_steps_out))
+        model.add(LSTM(100, activation='relu', return_sequences=True))
+        model.add(TimeDistributed(Dense(1)))
+        model.compile(optimizer='adam', loss='mse')
+        # fit model
+        #model.fit_generator(generator, steps_per_epoch=1, epochs=500, verbose=1)
+        model.fit(trainX, trainy, epochs=5, verbose=1, batch_size=1)
+        model.save_weights(weights_file)
+        with open(arch_file, 'w') as f:
+            f.write(model.to_json())
 
     y_act = []
     y_act2 = []
@@ -170,9 +177,9 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
         df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
         df2, indicators = process_raw_klines(df2, indicators)
         test_df, indicators = create_features(df2, indicators)
-        test_labels_df = create_labels(test_df)
-        if test_labels_df['MACD'].size:
-            y_act.append(test_labels_df['MACD'].values[-1])
+        # test_labels_df = create_labels(test_df)
+        if test_df['MACD'].size:
+            y_act.append(test_df['MACD'].values[-1])
         #if test_labels_df['MHIST'].size:
         #    y_act2.append(test_labels_df['MHIST'].values[-1])
         if df2['CLOSE'].size:
@@ -180,11 +187,14 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
        # test_df = test_df.drop(columns="CLOSE")
         try:
             test_dataset = np.array([scaler.transform(test_df.values)])
-            print(test_dataset)
-            prediction = scaler.inverse_transform(model.predict(test_dataset))
-            print(prediction)
+            #print(test_dataset)
+            prediction = model.predict(test_dataset)
+            prediction = scaler.inverse_transform(prediction[0])
+            #print(prediction)
+            #prediction = scaler.inverse_transform(model.predict(test_dataset))
+            #print(prediction)
             y_pred.append(prediction[0][0])
-            #y_pred2.append(prediction[0][1])
+            y_pred2.append(prediction[1][0])
         except ValueError:
             pass
         ts += 1000 * 3600
@@ -199,7 +209,8 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     plt.subplot(212)
     fig21, = plt.plot(y_act, label='act')
     fig22, = plt.plot(y_pred, label='pred')
-    plt.legend(handles=[fig21, fig22])
+    fig23, = plt.plot(y_pred2, label='pred2')
+    plt.legend(handles=[fig21, fig22, fig23])
     plt.show()
 
 
