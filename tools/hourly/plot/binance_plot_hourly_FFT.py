@@ -17,15 +17,35 @@ from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
-from trader.indicator.OBV import OBV
-from trader.indicator.EFI import EFI
+import numpy as np
+import pylab as pl
+from numpy import fft
+import pandas as pd
+
+
+def fourierExtrapolation(x, n_predict, n_harm=10):
+    n = x.size
+    #n_harm = 10                     # number of harmonics in model
+    t = np.arange(0, n)
+    p = np.polyfit(t, x, 1)         # find linear trend in x
+    x_notrend = x - p[0] * t        # detrended x
+    x_freqdom = fft.fft(x_notrend)  # detrended x in frequency domain
+    f = fft.fftfreq(n)
+    indexes = list(range(n))             # frequencies
+    # sort indexes by frequency, lower -> higher
+    indexes.sort(key = lambda i: np.absolute(f[i]))
+
+    t = np.arange(0, n + n_predict)
+    restored_sig = np.zeros(t.size)
+    for i in indexes[:1 + n_harm * 2]:
+        ampli = np.absolute(x_freqdom[i]) / n   # amplitude
+        phase = np.angle(x_freqdom[i])          # phase
+        restored_sig += ampli * np.cos(2 * np.pi * f[i] * t + phase)
+    return restored_sig + p[0] * t
 
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
-
-    efi = EFI(13, scale=24)
-    efi_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -42,22 +62,20 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         volume = float(msg['quote_volume'])
         volumes.append(volume)
 
-        efi.update(close, volume)
-        efi_values.append(efi.result)
-
         close_prices.append(close)
         open_prices.append(open)
         low_prices.append(low)
         high_prices.append(high)
         i += 1
 
-    plt.subplot(211)
-    symprice, = plt.plot(close_prices, label=symbol)
-    plt.legend(handles=[symprice])
-    plt.subplot(212)
-    fig21, = plt.plot(efi_values, label='EFI')
-    plt.legend(handles=[fig21])
-    plt.show()
+    x = np.array(close_prices)
+    n_predict = 100
+    extrapolation = fourierExtrapolation(x, n_predict, n_harm=50)
+    pl.plot(np.arange(0, extrapolation.size), extrapolation, 'r')
+    pl.plot(np.arange(0, x.size), x, 'b', linewidth = 3)
+    pl.legend()
+    pl.show()
+
 
 # get first timestamp from kline sqlite db
 def get_first_timestamp(filename, symbol):
