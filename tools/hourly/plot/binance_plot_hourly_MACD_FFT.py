@@ -22,25 +22,20 @@ from trader.indicator.EMA import EMA
 from trader.indicator.MACD import MACD
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.Crossover import Crossover
+from trader.lib.FourierFilter import FourierFilter
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
     cross = Crossover2()
     obv = OBV()
-    scale = 1
+    scale = 12
     #scale = 24
     #if start_ts and end_ts:
     #    scale = 1
-    macd = MACD(short_weight=12, long_weight=26, scale=scale)
+    macd = MACD(short_weight=12, long_weight=26, signal_weight=9, scale=scale)
     macd_values = []
     macd_signal_values = []
-    obv_ema12 = EMA(12)
-    obv_ema26 = EMA(26)
-    obv_ema50 = EMA(50)
-    obv_ema12_values = []
-    obv_ema26_values = []
-    obv_ema50_values = []
     close_prices = []
     open_prices = []
     low_prices = []
@@ -49,44 +44,49 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     crossups = []
     crossdowns = []
 
+    ff = FourierFilter()
+
     i=0
     for msg in msgs: #get_rows_as_msgs(c):
         ts = int(msg['ts'])
         close = float(msg['close'])
-        low = float(msg['low'])
-        high = float(msg['high'])
-        open = float(msg['open'])
         volume = float(msg['quote_volume'])
         volumes.append(volume)
 
-        obv_value = obv.update(close=close, volume=volume)
-        obv_ema12_values.append(obv_ema12.update(obv_value))
-        obv_ema26_values.append(obv_ema26.update(obv_value))
-        obv_ema50_values.append(obv_ema50.update(obv_value))
+        #macd.update(close)
+        #macd_values.append(macd.result)
+        #macd_signal_values.append(macd.signal.result)
 
-        macd.update(close, ts)
-        macd_values.append(macd.result)
-        macd_signal_values.append(macd.signal.result)
-
-        cross.update(macd.result, macd.signal.result)
-
-        if cross.crossup_detected():
-            crossups.append(i)
-        if cross.crossdown_detected():
-            crossdowns.append(i)
         close_prices.append(close)
-        open_prices.append(open)
-        low_prices.append(low)
-        high_prices.append(high)
         i += 1
 
+    ff.load(close_prices)
+    ff.process()
+    ff_close_prices = ff.get_result()
+    i=0
+    last_cross = 0
+    for close in ff_close_prices:
+        macd.update(close)
+        macd_values.append(macd.result)
+        macd_signal_values.append(macd.signal.result)
+        cross.update(macd.result, macd.signal.result)
+
+        if cross.crossup_detected() and last_cross != 1:
+            crossups.append(i)
+            last_cross = 1
+        elif cross.crossdown_detected() and last_cross != -1:
+            crossdowns.append(i)
+            last_cross = -1
+        i+=1
+
     plt.subplot(211)
-    #for i in crossups:
-    #    plt.axvline(x=i, color='green')
-    #for i in crossdowns:
-    #    plt.axvline(x=i, color='red')
+    for i in crossups:
+        plt.axvline(x=i, color='green')
+    for i in crossdowns:
+        plt.axvline(x=i, color='red')
     symprice, = plt.plot(close_prices, label=symbol)
-    plt.legend(handles=[symprice])
+    fig1, = plt.plot(ff_close_prices, label="FF")
+    plt.legend(handles=[symprice, fig1])
     plt.subplot(212)
     fig21, = plt.plot(macd_values, label='MACD')
     fig22, = plt.plot(macd_signal_values, label='MACD_SIGNAL')

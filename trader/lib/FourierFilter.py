@@ -9,7 +9,7 @@ class FourierFilter(object):
         self.hf_filter = float(percent_hf_filter) / 100.0
 
     def load(self, values):
-        self.values = np.array(values)
+        self.values = values
 
     def process(self):
         if type(self.values) == list:
