@@ -21,9 +21,10 @@ import numpy as np
 import pylab as pl
 from numpy import fft
 import pandas as pd
+from trader.lib.Fourier import FourierFit
 
 
-def fourierExtrapolation(x, n_predict, n_harm=10):
+def fourierExtrapolation(x, n_predict=0, n_harm=10):
     n = x.size
     #n_harm = 10                     # number of harmonics in model
     t = np.arange(0, n)
@@ -69,8 +70,11 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         i += 1
 
     x = np.array(close_prices)
-    n_predict = 100
-    extrapolation = fourierExtrapolation(x, n_predict, n_harm=50)
+    ff = FourierFit()
+    ff.load(x)
+    extrapolation = ff.process()
+    #n_predict = 100
+    #extrapolation = fourierExtrapolation(x, n_harm=50)
     pl.plot(np.arange(0, extrapolation.size), extrapolation, 'r')
     pl.plot(np.arange(0, x.size), x, 'b', linewidth = 3)
     pl.legend()
