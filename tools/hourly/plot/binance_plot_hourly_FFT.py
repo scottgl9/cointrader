@@ -21,7 +21,8 @@ import numpy as np
 import pylab as plt
 from numpy import fft
 import pandas as pd
-from trader.lib.Fourier import FourierFit, FourierFilter
+from trader.lib.FourierFilter import FourierFilter
+from trader.lib.FourierFit import FourierFit
 
 
 # def fourierExtrapolation(x, n_predict=0, n_harm=10):
