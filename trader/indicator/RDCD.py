@@ -22,6 +22,17 @@ class RDCD(IndicatorBase):
         self.rs = 0
         self.result = 0
         self.smoother = smoother
+        self.rs1 = 0
+        self.rs2 = 0
+
+    def ready(self):
+        return self.result != 0
+
+    def get_rs1(self):
+        return self.rs1
+
+    def get_rs2(self):
+        return self.rs2
 
     def update(self, close):
         if self.last_close == 0:
@@ -65,12 +76,12 @@ class RDCD(IndicatorBase):
             self._avg_up = self._sum_up / self.window
             self._avg_down = self._sum_down / self.window
 
-            rs1 = ((self.window - 1) * self._prev_avg_up + u)
-            rs2 = ((self.window - 1) * self._prev_avg_down + d)
-            if not rs1 or not rs2:
+            self.rs1 = ((self.window - 1) * self._prev_avg_up + u)
+            self.rs2 = ((self.window - 1) * self._prev_avg_down + d)
+            if not self.rs1 or not self.rs2:
                 result = 0
             else:
-                result = rs1 - rs2
+                result = self.rs1 - self.rs2
             if self.smoother:
                 self.result = self.smoother.update(result)
             else:

@@ -44,6 +44,8 @@ def simulate(conn, client, base, currency):
 
     rdcd = RDCD(window=30, smoother=EMA(12, scale=24))
     rdcd_values = []
+    rs1_values = []
+    rs2_values = []
 
     obv = OBV()
     ema12_values = []
@@ -69,11 +71,6 @@ def simulate(conn, client, base, currency):
         volume = float(msg['v'])
         volumes.append(volume)
 
-        obv_value = obv.update(close=close, volume=volume)
-        obv_ema12_values.append(obv_ema12.update(obv_value))
-        obv_ema26_values.append(obv_ema26.update(obv_value))
-        obv_ema50_values.append(obv_ema50.update(obv_value))
-
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
         ema26_values.append(ema26.update(close))
@@ -82,6 +79,8 @@ def simulate(conn, client, base, currency):
 
         rdcd.update(close)
         rdcd_values.append(rdcd.result)
+        rs1_values.append(rdcd.get_rs1())
+        rs2_values.append(rdcd.get_rs2())
 
         close_prices.append(close)
         open_prices.append(open)
@@ -90,17 +89,18 @@ def simulate(conn, client, base, currency):
         #lstsqs_x_values.append(i)
         i += 1
 
-    #plt.subplot(211)
-    fig = plt.figure()
-    ax = fig.add_subplot(2,1,1)
-
+    plt.subplot(311)
     symprice, = plt.plot(close_prices, label=ticker_id)
     plt.legend(handles=[symprice])
-    plt.subplot(212)
+    plt.subplot(312)
     #plt.plot(rsi_values)
     fig11, = plt.plot(rdcd_values, label="RDCD")
     plt.legend(handles=[fig11])
+    plt.subplot(313)
+    plt.plot(rs1_values)
+    plt.plot(rs2_values)
     plt.show()
+
 
 if __name__ == '__main__':
     client = None
