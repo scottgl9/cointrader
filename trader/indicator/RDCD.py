@@ -1,8 +1,8 @@
-# Relative Strength Index (RSI)
+# My idea derived from the RSI indicator, and MACD indicator
 from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
-class RSI(IndicatorBase):
+class RDCD(IndicatorBase):
     def __init__(self, window=14, smoother=None):
         IndicatorBase.__init__(self, use_close=True)
         self.window = window
@@ -65,23 +65,16 @@ class RSI(IndicatorBase):
             self._avg_up = self._sum_up / self.window
             self._avg_down = self._sum_down / self.window
 
-            if not self.rs:
-                rs1 = self._avg_up
-                rs2 = self._avg_down
-                self.rs = rs1 / rs2
+            rs1 = ((self.window - 1) * self._prev_avg_up + u)
+            rs2 = ((self.window - 1) * self._prev_avg_down + d)
+            if not rs1 or not rs2:
+                result = 0
             else:
-                rs1 = ((self.window - 1) * self._prev_avg_up + u)
-                rs2 = ((self.window - 1) * self._prev_avg_down + d)
-                if rs2:
-                    self.rs = rs1 / rs2
-            if not rs2:
-                self.result = 100.0
+                result = rs1 - rs2
+            if self.smoother:
+                self.result = self.smoother.update(result)
             else:
-                result = 100.0 - (100.0 / (1.0 + self.rs))
-                if self.smoother:
-                    self.result = self.smoother.update(result)
-                else:
-                    self.result = result
+                self.result = result
 
         self.last_close = float(close)
 
