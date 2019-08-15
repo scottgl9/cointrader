@@ -24,25 +24,25 @@ import pandas as pd
 from trader.lib.Fourier import FourierFit
 
 
-def fourierExtrapolation(x, n_predict=0, n_harm=10):
-    n = x.size
-    #n_harm = 10                     # number of harmonics in model
-    t = np.arange(0, n)
-    p = np.polyfit(t, x, 1)         # find linear trend in x
-    x_notrend = x - p[0] * t        # detrended x
-    x_freqdom = fft.fft(x_notrend)  # detrended x in frequency domain
-    f = fft.fftfreq(n)
-    indexes = list(range(n))             # frequencies
-    # sort indexes by frequency, lower -> higher
-    indexes.sort(key = lambda i: np.absolute(f[i]))
-
-    t = np.arange(0, n + n_predict)
-    restored_sig = np.zeros(t.size)
-    for i in indexes[:1 + n_harm * 2]:
-        ampli = np.absolute(x_freqdom[i]) / n   # amplitude
-        phase = np.angle(x_freqdom[i])          # phase
-        restored_sig += ampli * np.cos(2 * np.pi * f[i] * t + phase)
-    return restored_sig + p[0] * t
+# def fourierExtrapolation(x, n_predict=0, n_harm=10):
+#     n = x.size
+#     #n_harm = 10                     # number of harmonics in model
+#     t = np.arange(0, n)
+#     p = np.polyfit(t, x, 1)         # find linear trend in x
+#     x_notrend = x - p[0] * t        # detrended x
+#     x_freqdom = fft.fft(x_notrend)  # detrended x in frequency domain
+#     f = fft.fftfreq(n)
+#     indexes = list(range(n))             # frequencies
+#     # sort indexes by frequency, lower -> higher
+#     indexes.sort(key = lambda i: np.absolute(f[i]))
+#
+#     t = np.arange(0, n + n_predict)
+#     restored_sig = np.zeros(t.size)
+#     for i in indexes[:1 + n_harm * 2]:
+#         ampli = np.absolute(x_freqdom[i]) / n   # amplitude
+#         phase = np.angle(x_freqdom[i])          # phase
+#         restored_sig += ampli * np.cos(2 * np.pi * f[i] * t + phase)
+#     return restored_sig + p[0] * t
 
 
 def simulate(hkdb, symbol, start_ts, end_ts):
@@ -54,7 +54,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     volumes = []
 
     i=0
-    for msg in msgs: #get_rows_as_msgs(c):
+    for msg in msgs:
         ts = int(msg['ts'])
         close = float(msg['close'])
         low = float(msg['low'])
@@ -70,13 +70,12 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         i += 1
 
     x = np.array(close_prices)
-    ff = FourierFit()
+    ff = FourierFit(n_harm=500)
     ff.load(x)
-    extrapolation = ff.process()
-    #n_predict = 100
-    #extrapolation = fourierExtrapolation(x, n_harm=50)
-    pl.plot(np.arange(0, extrapolation.size), extrapolation, 'r')
-    pl.plot(np.arange(0, x.size), x, 'b', linewidth = 3)
+    ff.process()
+    extrapolation = ff.get_result()
+    pl.plot(np.arange(0, extrapolation.size), extrapolation)
+    pl.plot(np.arange(0, x.size), x)
     pl.legend()
     pl.show()
 
