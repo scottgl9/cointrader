@@ -3,12 +3,9 @@ from numpy import fft
 
 
 class FourierFit(object):
-    def __init__(self, values=None, n_harm=10, cut_ends=True, cut_scalar=5.0):
+    def __init__(self, values=None, n_harm=10, cut_scalar=0):
         self.n_harm = n_harm        # number of harmonics in model
-        # the beginning and end of the signal line will be significantly deviated
-        # so if cut_ends is True, cut the deviated sections
-        self.cut_ends = cut_ends
-        self.cut_scalar = cut_scalar
+        self.cut_scalar = float(cut_scalar)
         self.values = values
         self.signal = None
 
@@ -36,7 +33,7 @@ class FourierFit(object):
             self.signal += ampli * np.cos(2 * np.pi * f[i] * t + phase)
         self.signal += p[0] * t
 
-        if self.cut_ends:
+        if self.cut_scalar:
             avg_delta = np.average(np.abs(self.values - self.signal))
             start_range = int(0.1 * len(self.signal))
             end_range = int((1.0 - 0.1) * len(self.signal))

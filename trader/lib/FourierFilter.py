@@ -2,9 +2,8 @@ import numpy as np
 from scipy.fftpack import rfft, irfft
 
 class FourierFilter(object):
-    def __init__(self, values=None, percent_hf_filter=99, cut_ends=True, cut_scalar=5.0):
-        self.cut_ends = cut_ends
-        self.cut_scalar = cut_scalar
+    def __init__(self, values=None, percent_hf_filter=80, cut_scalar=5):
+        self.cut_scalar = float(cut_scalar)
         self.values = values
         self.signal = None
         self.hf_filter = float(percent_hf_filter) / 100.0
@@ -17,14 +16,11 @@ class FourierFilter(object):
             x = np.array(self.values)
         else:
             x = self.values
-        n = x.size
+
         t = np.arange(0, x.size)
         p = np.polyfit(t, x, 1)   # find trend in x
         notrend = x - p[0] * t     # detrended x
         freqdom = rfft(notrend)
-        #f = rfftfreq(n)
-        #indices = list(range(n))
-        #indices.sort(key=lambda i: np.absolute(f[i]))
 
         hf_filter = int(len(freqdom) * (1.0 - self.hf_filter))
         for i in range(hf_filter, len(freqdom)):
@@ -32,7 +28,7 @@ class FourierFilter(object):
 
         self.signal = irfft(freqdom) + p[0] * t     # reverse transform and re-trend
 
-        if self.cut_ends:
+        if self.cut_scalar:
             avg_delta = np.average(np.abs(self.values - self.signal))
             start_range = int(0.1 * len(self.signal))
             end_range = int((1.0 - 0.1) * len(self.signal))

@@ -71,7 +71,7 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         i += 1
 
     x = np.array(close_prices)
-    print(x.size)
+
     ff10 = FourierFit(n_harm=10)
     ff10.load(x)
     ff10.process()
