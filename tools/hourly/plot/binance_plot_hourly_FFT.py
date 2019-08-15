@@ -18,10 +18,10 @@ import matplotlib.pyplot as plt
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 import numpy as np
-import pylab as pl
+import pylab as plt
 from numpy import fft
 import pandas as pd
-from trader.lib.Fourier import FourierFit
+from trader.lib.Fourier import FourierFit, FourierFilter
 
 
 # def fourierExtrapolation(x, n_predict=0, n_harm=10):
@@ -70,14 +70,41 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         i += 1
 
     x = np.array(close_prices)
-    ff = FourierFit(n_harm=500)
-    ff.load(x)
-    ff.process()
-    extrapolation = ff.get_result()
-    pl.plot(np.arange(0, extrapolation.size), extrapolation)
-    pl.plot(np.arange(0, x.size), x)
-    pl.legend()
-    pl.show()
+    print(x.size)
+    ff10 = FourierFit(n_harm=10)
+    ff10.load(x)
+    ff10.process()
+    signal10 = ff10.get_result()
+
+    ff100 = FourierFit(n_harm=100)
+    ff100.load(x)
+    ff100.process()
+    signal100 = ff100.get_result()
+
+    ff500 = FourierFit(n_harm=500)
+    ff500.load(x)
+    ff500.process()
+    signal500 = ff500.get_result()
+
+    fftest = FourierFilter()
+    fftest.load(x)
+    fftest.process()
+    fftest_signal = fftest.get_result()
+
+    plt.subplot(211)
+    fig1, = plt.plot(x, label=symbol)
+    fig2, = plt.plot(signal10, label='FFT10')
+    fig3, = plt.plot(signal100, label='FFT100')
+    fig4, = plt.plot(signal500, label='FFT500')
+    plt.legend(handles=[fig1, fig2, fig3, fig4])
+    plt.subplot(212)
+    #fig21, = plt.plot(signal10, label='FFT10')
+    #fig22, = plt.plot(signal100, label='FFT100')
+    #fig23, = plt.plot(signal500, label='FFT500')
+    #plt.legend(handles=[fig21, fig22, fig23])
+    plt.plot(x)
+    plt.plot(fftest_signal)
+    plt.show()
 
 
 # get first timestamp from kline sqlite db
