@@ -20,15 +20,9 @@ from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.account.AccountBinance import AccountBinance
 import keras
 import tensorflow as tf
-from keras.models import Sequential
-from keras.models import load_model
-from keras.layers import Dense
-from keras.optimizers import Adam
 import numpy as np
-import random
-from collections import deque
 from trader.lib.MachineLearning.DQNAgent import DQNAgent
-
+from sklearn.preprocessing import MinMaxScaler
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -42,28 +36,33 @@ def formatPrice(n):
 def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
+
 # returns an an n-day state representation ending at time t
 def getState(data, t, n):
-    d = t - n + 1
-    block = data[d:t + 1] if d >= 0 else -d * [data[0]] + data[0:t + 1]  # pad with t0
+    #d = t - n + 1
+    #block = data[d:t + 1] if d >= 0 else -d * [data[0]] + data[0:t + 1]  # pad with t0
+    block = data[t:t + n]
     res = []
     for i in xrange(n - 1):
         delta = float(block[i + 1] - block[i])
-        try:
-            res.append(sigmoid(delta))
-        except OverflowError:
-            print("ERROR: sigmoid({})".format(delta))
-            res.append(float('inf'))
-            #sys.exit(-1)
+        res.append(delta)
+        #try:
+        #    #print(sigmoid(delta))
+        #    res.append(sigmoid(delta))
+        #except OverflowError:
+        #    print("ERROR: sigmoid({})".format(delta))
+        #    res.append(float('inf'))
+        #    #sys.exit(-1)
 
     return np.array([res])
 
 
 def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train=True):
-    df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
+    df_train = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
-    data = df_train['close'].values.tolist()
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
     #df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     l = len(data) - 1
     batch_size = 32
@@ -86,13 +85,17 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             if action == 1: # buy
                 if len(agent.inventory) < agent.max_inventory:
                     agent.inventory.append(data[t])
-                    print "Buy: " + formatPrice(data[t])
+                    buy_price = scaler.inverse_transform([[data[t]]])[0][0]
+                    print("Buy: {}".format(buy_price))
 
             elif action == 2 and len(agent.inventory) > 0: # sell
                 bought_price = agent.inventory.pop(0)
                 reward = max(data[t] - bought_price, 0)
                 total_profit += data[t] - bought_price
-                print "Sell: " + formatPrice(data[t]) + " | Profit: " + formatPrice(data[t] - bought_price)
+                sell_price = scaler.inverse_transform([[data[t]]])[0][0]
+                buy_price = scaler.inverse_transform([[bought_price]])[0][0]
+                print("Sell: {} | Profit: {}".format(sell_price, sell_price - buy_price))
+                #print "Sell: {}" + formatPrice(data[t]) + " | Profit: " + formatPrice(data[t] - bought_price)
 
             done = True if t == l - 1 else False
             agent.memory.append((state, action, reward, next_state, done))
