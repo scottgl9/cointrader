@@ -175,6 +175,10 @@ if __name__ == '__main__':
                         default='USDT',
                         help='currency part of symbol')
 
+    parser.add_argument('-s', action='store', dest='symbol',
+                        default='BTCUSDT',
+                        help='trade symbol')
+
     results = parser.parse_args()
 
     if not os.path.exists(results.filename):

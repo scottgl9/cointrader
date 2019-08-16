@@ -42,7 +42,7 @@ def simulate(conn, client, base, currency):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    rdcd = RDCD(window=30, smoother=EMA(12, scale=24))
+    rdcd = RDCD(window=100, smoother=EMA(12, scale=24), rs1_smoother=EMA(12, scale=24), rs2_smoother=EMA(12, scale=24))
     rdcd_values = []
     rs1_values = []
     rs2_values = []
@@ -117,6 +117,10 @@ if __name__ == '__main__':
     parser.add_argument('-c', action='store', dest='currency',
                         default='USDT',
                         help='currency part of symbol')
+
+    parser.add_argument('-s', action='store', dest='symbol',
+                        default='BTCUSDT',
+                        help='trade symbol')
 
     results = parser.parse_args()
 

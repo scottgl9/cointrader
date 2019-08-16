@@ -3,7 +3,7 @@ from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class RDCD(IndicatorBase):
-    def __init__(self, window=14, smoother=None):
+    def __init__(self, window=14, smoother=None, rs1_smoother=None, rs2_smoother=None):
         IndicatorBase.__init__(self, use_close=True)
         self.window = window
 
@@ -22,6 +22,8 @@ class RDCD(IndicatorBase):
         self.rs = 0
         self.result = 0
         self.smoother = smoother
+        self.rs1_smoother = rs1_smoother
+        self.rs2_smoother = rs2_smoother
         self.rs1 = 0
         self.rs2 = 0
 
@@ -76,8 +78,16 @@ class RDCD(IndicatorBase):
             self._avg_up = self._sum_up / self.window
             self._avg_down = self._sum_down / self.window
 
-            self.rs1 = ((self.window - 1) * self._prev_avg_up + u)
-            self.rs2 = ((self.window - 1) * self._prev_avg_down + d)
+            rs1 = ((self.window - 1) * self._prev_avg_up + u)
+            rs2 = ((self.window - 1) * self._prev_avg_down + d)
+            if self.rs1_smoother:
+                self.rs1 = self.rs1_smoother.update(rs1)
+            else:
+                self.rs1 = rs1
+            if self.rs2_smoother:
+                self.rs2 = self.rs2_smoother.update(rs2)
+            else:
+                self.rs2 = rs2
             if not self.rs1 or not self.rs2:
                 result = 0
             else:
