@@ -7,10 +7,12 @@ from keras.optimizers import Adam
 
 # Deep Q-learning Agent
 class DQNAgent(object):
-    def __init__(self, state_size, action_size):
+    def __init__(self, state_size, action_size, max_inventory=1):
         self.state_size = state_size
         self.action_size = action_size
         self.memory = deque(maxlen=2000)
+        self.inventory = []
+        self.max_inventory = max_inventory
         self.gamma = 0.95    # discount rate
         self.epsilon = 1.0  # exploration rate
         self.epsilon_min = 0.01
