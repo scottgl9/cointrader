@@ -129,5 +129,7 @@ if __name__ == '__main__':
     conn = sqlite3.connect(filename)
 
     ticker_id = "{}{}".format(base, currency)
+    if results.symbol != symbol_default:
+        ticker_id = results.symbol
     simulate(conn, client, ticker_id=ticker_id)
     conn.close()
