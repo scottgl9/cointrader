@@ -139,8 +139,9 @@ if __name__ == '__main__':
                         default='USDT',
                         help='currency part of symbol')
 
+    symbol_default = 'BTCUSDT'
     parser.add_argument('-s', action='store', dest='symbol',
-                        default='BTCUSDT',
+                        default=symbol_default,
                         help='trade symbol')
 
     results = parser.parse_args()

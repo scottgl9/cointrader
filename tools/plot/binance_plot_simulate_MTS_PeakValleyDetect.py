@@ -28,8 +28,7 @@ def get_rows_as_msgs(c):
     return msgs
 
 
-def simulate(conn, client, base, currency):
-    ticker_id = "{}{}".format(base, currency)
+def simulate(conn, client, base=None, currency=None, ticker_id=None):
     c = conn.cursor()
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
@@ -107,8 +106,9 @@ if __name__ == '__main__':
                         default='USDT',
                         help='currency part of symbol')
 
+    symbol_default = 'BTCUSDT'
     parser.add_argument('-s', action='store', dest='symbol',
-                        default='BTCUSDT',
+                        default=symbol_default,
                         help='trade symbol')
 
     results = parser.parse_args()
@@ -124,5 +124,6 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    simulate(conn, client, base, currency)
+    ticker_id = "{}{}".format(base, currency)
+    simulate(conn, client, ticker_id=ticker_id)
     conn.close()
