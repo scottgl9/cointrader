@@ -67,13 +67,17 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     l = len(data) - 1
     batch_size = 32
-    agent = DQNAgent(state_size=window_size, action_size=3)
+    agent = DQNAgent(symbol, state_size=window_size, action_size=3)
+    agent.load()
 
-    for e in xrange(episode_count + 1):
+    episode_start = agent.episode
+
+    for e in xrange(episode_start, episode_count + 1):
         print "Episode " + str(e) + "/" + str(episode_count)
         state = getState(data, 0, window_size + 1)
 
         total_profit = 0
+        agent.episode = e
         agent.inventory = []
 
         for t in xrange(l - window_size):
@@ -111,6 +115,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
 
+        agent.save()
         if e % 10 == 0:
             model_path = "models/model_ep" + str(e)
             print("Saving {}".format(model_path))
