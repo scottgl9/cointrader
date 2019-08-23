@@ -67,6 +67,20 @@ class DQNAgent(object):
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
+
+        states = np.zeros((batch_size, self.state_size))
+        actions = np.zeros(batch_size)
+        rewards = np.zeros(batch_size)
+        next_states = np.zeros((batch_size, self.state_size))
+        dones = np.zeros(batch_size)
+
+        for i in range(0, len(minibatch)):
+            states[i] = minibatch[i][0]
+            actions[i] = minibatch[i][1]
+            rewards[i] = minibatch[i][2]
+            next_states[i] = minibatch[i][3]
+            dones[i] = minibatch[i][4]
+
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
@@ -75,5 +89,22 @@ class DQNAgent(object):
             target_f = self.model.predict(state)
             target_f[0][action] = target
             self.model.fit(state, target_f, epochs=1, verbose=0)
+        #self.model.train_on_batch(trainX, trainY)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+    # def replay(self, batch_size):
+    #     minibatch = random.sample(self.memory, batch_size)
+    #     inputs = np.zeros(batch_size, self.state_size)
+    #     targets = np.zeros(batch_size, self.action_size)
+    #     for state, action, reward, next_state, done in minibatch:
+    #         target = reward
+    #         if not done:
+    #           target = reward + self.gamma * \
+    #                    np.amax(self.model.predict(next_state)[0])
+    #         target_f = self.model.predict(state)
+    #         target_f[0][action] = target
+    #         self.model.fit(state, target_f, epochs=1, verbose=0)
+    #     #self.model.train_on_batch(trainX, trainY)
+    #     if self.epsilon > self.epsilon_min:
+    #         self.epsilon *= self.epsilon_decay
