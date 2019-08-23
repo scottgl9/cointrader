@@ -2,9 +2,11 @@ import os
 import numpy as np
 import random
 from collections import deque
-from keras.models import Sequential
-from keras.layers import Dense
+from keras.models import Sequential, Model
+from keras.layers import Dense, Input
 from keras.optimizers import Adam
+from keras.utils import to_categorical
+import keras
 
 
 # Deep Q-learning Agent
@@ -28,12 +30,21 @@ class DQNAgent(object):
 
     def _build_model(self):
         # Neural Net for Deep-Q learning Model
-        model = Sequential()
-        model.add(Dense(24, input_dim=self.state_size, activation='relu'))
-        model.add(Dense(24, activation='relu'))
-        model.add(Dense(self.action_size, activation='linear'))
-        model.compile(loss='mse',
-                      optimizer=Adam(lr=self.learning_rate))
+        # model = Sequential()
+        # model.add(Dense(24, input_shape=(self.state_size,), activation='relu'))
+        # model.add(Dense(24, activation='relu'))
+        # model.add(Dense(self.action_size, activation='linear'))
+        # model.compile(loss='mse',
+        #               optimizer=Adam(lr=self.learning_rate))
+        input_layer = Input(shape=(self.state_size,), batch_shape=(32, 1, 10))
+        actions_input = keras.layers.Input((self.action_size,), name='mask')
+        hl = Dense(24, activation="relu")(input_layer)
+        h2 = Dense(24, activation="relu")(hl)
+        h3 = Dense(24, activation="relu")(h2)
+        output_layer = Dense(self.action_size, activation="linear")(h3)
+        filtered_output = keras.layers.multiply([output_layer, actions_input])
+        model = keras.models.Model(input=[input_layer, actions_input], output=filtered_output) #Model(input_layer, output_layer)
+        model.compile(loss="mse", optimizer=Adam(lr=self.learning_rate))
         return model
 
     def load_weights(self):
@@ -66,37 +77,44 @@ class DQNAgent(object):
         return np.argmax(act_values[0])  # returns action
 
     def replay(self, batch_size):
-        minibatch = random.sample(self.memory, batch_size)
+        idx = np.random.choice(len(self.memory), size=batch_size, replace=False)
+        minibatch = np.array(self.memory)[idx]
 
-        states = np.zeros((batch_size, self.state_size))
-        actions = np.zeros(batch_size)
-        rewards = np.zeros(batch_size)
-        next_states = np.zeros((batch_size, self.state_size))
-        dones = np.zeros(batch_size)
+        # Extract the columns from our sample
+        states = np.array(list(minibatch[:, 0]))
+        actions = minibatch[:, 1]
+        rewards = np.array(minibatch[:, 2])
+        next_states = np.array(list(minibatch[:, 3]))
+        is_terminal = minibatch[:, 4].tolist()
 
-        for i in range(0, len(minibatch)):
-            states[i] = minibatch[i][0]
-            actions[i] = minibatch[i][1]
-            rewards[i] = minibatch[i][2]
-            next_states[i] = minibatch[i][3]
-            dones[i] = minibatch[i][4]
+        action_mask = np.ones((len(next_states), self.action_size))
+        # First, predict the Q values of the next states. Note how we are passing ones as the mask.
+        next_Q_values = self.model.predict([next_states, action_mask])
+        # The Q values of the terminal states is 0 by definition, so override them
+        next_Q_values[is_terminal] = 0
 
-        for state, action, reward, next_state, done in minibatch:
-            target = reward
-            if not done:
-              target = reward + self.gamma * \
-                       np.amax(self.model.predict(next_state)[0])
-            target_f = self.model.predict(state)
-            target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
-        #self.model.train_on_batch(trainX, trainY)
+        # actions one hot encoded
+        actions_encoded = to_categorical(actions, num_classes=3)
+
+        # fix the shape of next_Q_values
+        next_Q_values = next_Q_values.reshape(batch_size, self.action_size)
+        # The Q values of each start state is the reward + gamma * the max next state Q value
+        Q_values = rewards + self.gamma * np.amax(next_Q_values, axis=1)
+
+        targets = actions_encoded * Q_values[:, None]
+        targets = targets.reshape(batch_size, 1, self.action_size)
+
+        # Fit the keras model. Note how we are passing the actions as the mask and multiplying
+        # the targets by the actions.
+        self.model.fit(
+            [states, actions_encoded], targets,
+            nb_epoch=1, batch_size=len(states), verbose=0
+        )
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
     # def replay(self, batch_size):
     #     minibatch = random.sample(self.memory, batch_size)
-    #     inputs = np.zeros(batch_size, self.state_size)
-    #     targets = np.zeros(batch_size, self.action_size)
     #     for state, action, reward, next_state, done in minibatch:
     #         target = reward
     #         if not done:
