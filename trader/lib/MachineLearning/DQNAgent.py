@@ -36,7 +36,7 @@ class DQNAgent(object):
         # model.add(Dense(self.action_size, activation='linear'))
         # model.compile(loss='mse',
         #               optimizer=Adam(lr=self.learning_rate))
-        input_layer = Input(shape=(self.state_size,), batch_shape=(32, 1, 10))
+        input_layer = Input((self.state_size,), batch_shape=(None, 1, self.state_size))
         actions_input = keras.layers.Input((self.action_size,), name='mask')
         hl = Dense(24, activation="relu")(input_layer)
         h2 = Dense(24, activation="relu")(hl)
@@ -73,7 +73,8 @@ class DQNAgent(object):
     def act(self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
-        act_values = self.model.predict(state)
+        action_mask = np.ones((1, self.action_size))
+        act_values = self.model.predict([state[0].reshape(1, 1, self.state_size), action_mask], batch_size=1)
         return np.argmax(act_values[0])  # returns action
 
     def replay(self, batch_size):
