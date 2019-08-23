@@ -91,6 +91,7 @@ class DQNAgent(object):
         action_mask = np.ones((len(next_states), self.action_size))
         # First, predict the Q values of the next states. Note how we are passing ones as the mask.
         next_Q_values = self.model.predict([next_states, action_mask])
+
         # The Q values of the terminal states is 0 by definition, so override them
         next_Q_values[is_terminal] = 0
 
@@ -113,17 +114,3 @@ class DQNAgent(object):
         )
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-
-    # def replay(self, batch_size):
-    #     minibatch = random.sample(self.memory, batch_size)
-    #     for state, action, reward, next_state, done in minibatch:
-    #         target = reward
-    #         if not done:
-    #           target = reward + self.gamma * \
-    #                    np.amax(self.model.predict(next_state)[0])
-    #         target_f = self.model.predict(state)
-    #         target_f[0][action] = target
-    #         self.model.fit(state, target_f, epochs=1, verbose=0)
-    #     #self.model.train_on_batch(trainX, trainY)
-    #     if self.epsilon > self.epsilon_min:
-    #         self.epsilon *= self.epsilon_decay

@@ -40,9 +40,9 @@ def sigmoid(x):
 
 # returns an an n-day state representation ending at time t
 def getState(data, t, n):
-    #d = t - n + 1
-    #block = data[d:t + 1] if d >= 0 else -d * [data[0]] + data[0:t + 1]  # pad with t0
-    block = data[t:t + n]
+    d = t - n + 1
+    block = data[d:t + 1] if d >= 0 else -d * [data[0]] + data[0:t + 1]  # pad with t0
+    #block = data[t:t + n]
     res = []
     for i in xrange(n - 1):
         delta = float(block[i + 1] - block[i])
@@ -100,7 +100,6 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
                 #sell_price = scaler.inverse_transform([[data[t]]])[0][0]
                 #buy_price = scaler.inverse_transform([[bought_price]])[0][0]
                 #print("Sell: {} | Profit: {}".format(sell_price, sell_price - buy_price))
-                #print "Sell: {}" + formatPrice(data[t]) + " | Profit: " + formatPrice(data[t] - bought_price)
 
             done = True if t == l - window_size - 1 else False
             agent.memory.append((state, action, reward, next_state, done))
