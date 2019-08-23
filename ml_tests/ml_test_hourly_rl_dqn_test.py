@@ -125,6 +125,7 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
     df_train = hkdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
     window_size = 10
     scaler = MinMaxScaler(feature_range=(0, 1))
+    close_values = df_train['close'].values
     data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
     l = len(data) - 1
     agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=True)
@@ -133,6 +134,9 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
     total_profit = 0
     agent.inventory = []
     state = getState(data, 0, window_size + 1)
+
+    buy_indices = []
+    sell_indices = []
 
     for t in xrange(l - window_size):
         action = agent.act(state)
@@ -146,6 +150,7 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
                 agent.inventory.append(data[t])
                 buy_price = scaler.inverse_transform([[data[t]]])[0][0]
                 print("Buy: {}".format(buy_price))
+                buy_indices.append(t)
 
         elif action == 2 and len(agent.inventory) > 0: # sell
             bought_price = agent.inventory.pop(0)
@@ -154,6 +159,7 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
             sell_price = scaler.inverse_transform([[data[t]]])[0][0]
             buy_price = scaler.inverse_transform([[bought_price]])[0][0]
             print("Sell: {} | Profit: {}".format(sell_price, sell_price - buy_price))
+            sell_indices.append(t)
 
         done = True if t == l - window_size - 1 else False
         agent.memory.append((state, action, reward, next_state, done))
@@ -164,6 +170,15 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
             true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
             print "Total Profit: {}".format(true_total_profit)
             print "--------------------------------"
+
+    plt.subplot(211)
+    for i in buy_indices:
+        plt.axvline(x=i, color='green')
+    for i in sell_indices:
+        plt.axvline(x=i, color='red')
+    symprice, = plt.plot(close_values, label=symbol)
+    plt.legend(handles=[symprice])
+    plt.show()
 
 
 if __name__ == '__main__':
