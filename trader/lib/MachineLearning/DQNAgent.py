@@ -11,11 +11,12 @@ import keras
 
 # Deep Q-learning Agent
 class DQNAgent(object):
-    def __init__(self, symbol, state_size, action_size, max_inventory=1):
+    def __init__(self, symbol, state_size, action_size, is_eval=False, max_inventory=1):
         self.symbol = symbol
         self.episode = 0
         self.weights_path = "models/{}.h5".format(symbol)
         self.episode_path = "models/{}.txt".format(symbol)
+        self.is_eval = is_eval
         self.state_size = state_size
         self.action_size = action_size
         self.memory = deque(maxlen=2000)
@@ -71,7 +72,7 @@ class DQNAgent(object):
         self.memory.append((state, action, reward, next_state, done))
 
     def act(self, state):
-        if np.random.rand() <= self.epsilon:
+        if not self.is_eval and np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         action_mask = np.ones((1, self.action_size))
         act_values = self.model.predict([state[0].reshape(1, 1, self.state_size), action_mask], batch_size=1)

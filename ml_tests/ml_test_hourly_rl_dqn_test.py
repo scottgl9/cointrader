@@ -58,7 +58,7 @@ def getState(data, t, n):
     return np.array([res])
 
 
-def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train=True):
+def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
@@ -67,7 +67,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     #df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     l = len(data) - 1
     batch_size = 32
-    agent = DQNAgent(symbol, state_size=window_size, action_size=3)
+    agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=False)
     agent.load()
 
     episode_start = agent.episode
@@ -119,6 +119,51 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             model_path = "models/model_ep" + str(e)
             print("Saving {}".format(model_path))
             agent.model.save(model_path)
+
+
+def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+    df_train = hkdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
+    window_size = 10
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
+    l = len(data) - 1
+    agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=True)
+    agent.load()
+
+    total_profit = 0
+    agent.inventory = []
+    state = getState(data, 0, window_size + 1)
+
+    for t in xrange(l - window_size):
+        action = agent.act(state)
+
+        # sit
+        next_state = getState(data, t + 1, window_size + 1)
+        reward = 0
+
+        if action == 1: # buy
+            if len(agent.inventory) < agent.max_inventory:
+                agent.inventory.append(data[t])
+                buy_price = scaler.inverse_transform([[data[t]]])[0][0]
+                print("Buy: {}".format(buy_price))
+
+        elif action == 2 and len(agent.inventory) > 0: # sell
+            bought_price = agent.inventory.pop(0)
+            reward = max(data[t] - bought_price, 0)
+            total_profit += data[t] - bought_price
+            sell_price = scaler.inverse_transform([[data[t]]])[0][0]
+            buy_price = scaler.inverse_transform([[bought_price]])[0][0]
+            print("Sell: {} | Profit: {}".format(sell_price, sell_price - buy_price))
+
+        done = True if t == l - window_size - 1 else False
+        agent.memory.append((state, action, reward, next_state, done))
+        state = next_state
+
+        if done:
+            print "--------------------------------"
+            true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
+            print "Total Profit: {}".format(true_total_profit)
+            print "--------------------------------"
 
 
 if __name__ == '__main__':
@@ -182,7 +227,10 @@ if __name__ == '__main__':
     if results.verify:
         train = False
     if results.symbol:
-        simulate(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train)
+        if train:
+            train_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+        else:
+            eval_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
     else:
         parser.print_help()
     hkdb.close()
