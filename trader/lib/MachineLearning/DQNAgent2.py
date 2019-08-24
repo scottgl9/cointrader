@@ -25,17 +25,19 @@ def huber_loss(y_true, y_pred, clip_delta=1.0):
     return K.mean(tf.where(cond, squared_loss, quadratic_loss))
 
 
-class Agent:
+class DQNAgent2:
     """ Stock Trading Bot """
 
-    def __init__(self, state_size, pretrained=False, model_name=None):
+    def __init__(self, state_size, pretrained=False, model_name=None, max_inventory=1):
         '''agent config'''
         self.state_size = state_size    	# normalized previous days
         self.action_size = 3           		# [sit, buy, sell]
         self.model_name = model_name
+        self.max_inventory = max_inventory
         self.inventory = []
         self.memory = deque(maxlen=1000)
         self.first_iter = True
+        self.episode = 0
 
         '''model config'''
         self.model_name = model_name

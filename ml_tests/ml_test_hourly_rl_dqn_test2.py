@@ -23,6 +23,7 @@ import tensorflow as tf
 from tensorflow.python.client import device_lib
 import numpy as np
 from trader.lib.MachineLearning.DQNAgent import DQNAgent
+from trader.lib.MachineLearning.DQNAgent2 import DQNAgent2
 from sklearn.preprocessing import MinMaxScaler
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -67,12 +68,12 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
     window_size = 10
     episode_count = 1000
     scaler = MinMaxScaler(feature_range=(0, 1))
-    data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
-    #df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
+    #data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
+    data = df_train['close'].values.tolist()
     l = len(data) - 1
     batch_size = 32
-    agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=False)
-    agent.load()
+    agent = DQNAgent2(state_size=window_size, pretrained=False, model_name=symbol)
+    #agent.load()
 
     episode_start = agent.episode
 
@@ -111,14 +112,14 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
 
             if done:
                 print "--------------------------------"
-                true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
-                print "Total Profit: {}".format(true_total_profit)
+                #true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
+                print "Total Profit: {}".format(total_profit)
                 print "--------------------------------"
 
             if len(agent.memory) > batch_size:
-                agent.replay(batch_size)
+                agent.train_experience_replay(batch_size)
 
-        agent.save()
+        #agent.save()
         if e % 10 == 0:
             model_path = "models/model_ep" + str(e)
             print("Saving {}".format(model_path))
@@ -130,9 +131,9 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
     window_size = 10
     scaler = MinMaxScaler(feature_range=(0, 1))
     close_values = df_train['close'].values
-    data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
+    data = close_values.tolist() #scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
     l = len(data) - 1
-    agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=True)
+    agent = DQNAgent2(state_size=window_size, pretrained=True, model_name=symbol)
     agent.load()
 
     total_profit = 0
