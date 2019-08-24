@@ -67,7 +67,7 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
     df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
-    scaler = MinMaxScaler(feature_range=(0, 1))
+    #scaler = MinMaxScaler(feature_range=(0, 1))
     #data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
     data = df_train['close'].values.tolist()
     l = len(data) - 1
@@ -119,22 +119,19 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
             if len(agent.memory) > batch_size:
                 agent.train_experience_replay(batch_size)
 
-        #agent.save()
         if e % 10 == 0:
-            model_path = "models/model_ep" + str(e)
-            print("Saving {}".format(model_path))
-            agent.model.save(model_path)
+            agent.save(e)
 
 
 def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     df_train = hkdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
     window_size = 10
-    scaler = MinMaxScaler(feature_range=(0, 1))
+    #scaler = MinMaxScaler(feature_range=(0, 1))
     close_values = df_train['close'].values
     data = close_values.tolist() #scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
     l = len(data) - 1
     agent = DQNAgent2(state_size=window_size, pretrained=True, model_name=symbol)
-    agent.load()
+    #agent.load()
 
     total_profit = 0
     agent.inventory = []
@@ -153,7 +150,7 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
         if action == 1: # buy
             if len(agent.inventory) < agent.max_inventory:
                 agent.inventory.append(data[t])
-                buy_price = scaler.inverse_transform([[data[t]]])[0][0]
+                buy_price = data[t] #scaler.inverse_transform([[data[t]]])[0][0]
                 print("Buy: {}".format(buy_price))
                 buy_indices.append(t)
 
@@ -161,8 +158,8 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
             bought_price = agent.inventory.pop(0)
             reward = max(data[t] - bought_price, 0)
             total_profit += data[t] - bought_price
-            sell_price = scaler.inverse_transform([[data[t]]])[0][0]
-            buy_price = scaler.inverse_transform([[bought_price]])[0][0]
+            sell_price = data[t] #scaler.inverse_transform([[data[t]]])[0][0]
+            buy_price = bought_price #scaler.inverse_transform([[bought_price]])[0][0]
             print("Sell: {} | Profit: {}".format(sell_price, sell_price - buy_price))
             sell_indices.append(t)
 
@@ -172,8 +169,8 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
 
         if done:
             print "--------------------------------"
-            true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
-            print "Total Profit: {}".format(true_total_profit)
+            #true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
+            print "Total Profit: {}".format(total_profit)
             print "--------------------------------"
 
     plt.subplot(211)
