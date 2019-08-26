@@ -17,10 +17,18 @@ from trader.config import *
 import io
 from PIL import Image
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import argparse
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
+
+
+def plot_candlestick(o, h, l, c, index, count, x_total_size, y_total_size):
+    cs_size = int(x_total_size / count)
+    plt.gca().add_patch(Rectangle((index*cs_size, 0), cs_size/2, y_total_size, linewidth=1, edgecolor='black', facecolor='none'))
+    #plt.axvline(x=[index*cs_size + int(cs_size/4)], ymin=0, ymax=y_total_size)
+    #plt.axvspan(xmin=index*cs_size, xmax=(index+1)*cs_size, ymin=20, ymax=y_total_size)
 
 
 def simulate(hkdb, symbol, start_ts, end_ts):
@@ -32,22 +40,19 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     high_prices = []
     volumes = []
 
-    i=0
-    for msg in msgs: #get_rows_as_msgs(c):
-        ts = int(msg['ts'])
-        close = float(msg['close'])
-        low = float(msg['low'])
-        high = float(msg['high'])
-        open = float(msg['open'])
-        volume = float(msg['quote_volume'])
-        volumes.append(volume)
-
-        close_prices.append(close)
-        open_prices.append(open)
-        low_prices.append(low)
-        high_prices.append(high)
-        i += 1
-    plt.figure(figsize=(8, 1))
+    dpi = 80
+    x_fig_size = 8
+    y_fig_size = 1
+    x_total_size = x_fig_size * dpi
+    y_total_size = y_fig_size * dpi
+    plt.figure(figsize=(8, 1), dpi=80)
+    count = 8
+    for i in range(0, count):
+        close = float(msgs[i]['close'])
+        low = float(msgs[i]['low'])
+        high = float(msgs[i]['high'])
+        open = float(msgs[i]['open'])
+        plot_candlestick(open, high, low, close, i, count, x_total_size, y_total_size)
     plt.plot([1, 2])
     # plt.title("test")
     plt.axis('off')
