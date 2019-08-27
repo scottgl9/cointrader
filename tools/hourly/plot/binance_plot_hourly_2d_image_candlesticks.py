@@ -15,7 +15,7 @@ import time
 from trader.account.binance.client import Client
 from trader.config import *
 import io
-from PIL import Image
+from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import argparse
@@ -24,9 +24,11 @@ from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
 
 
-def plot_candlestick(o, h, l, c, index, count, x_total_size, y_total_size):
+def plot_candlestick(draw, im, o, h, l, c, index, count, x_total_size, y_total_size):
     cs_size = int(x_total_size / count)
-    plt.gca().add_patch(Rectangle((index*cs_size, 0), cs_size/2, y_total_size, linewidth=1, edgecolor='black', facecolor='none'))
+    draw.rectangle(xy=[index*cs_size, 1, (index+1)*cs_size, y_total_size-2], outline=0)
+    #draw.line((0, 0) + im.size, fill=128)
+    #plt.gca().add_patch(Rectangle((index*cs_size, 0), cs_size/2, y_total_size, linewidth=1, edgecolor='black', facecolor='none'))
     #plt.axvline(x=[index*cs_size + int(cs_size/4)], ymin=0, ymax=y_total_size)
     #plt.axvspan(xmin=index*cs_size, xmax=(index+1)*cs_size, ymin=20, ymax=y_total_size)
 
@@ -45,23 +47,24 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     y_fig_size = 1
     x_total_size = x_fig_size * dpi
     y_total_size = y_fig_size * dpi
-    plt.figure(figsize=(8, 1), dpi=80)
+    im = Image.new("RGB", (x_total_size, y_total_size), (255, 255, 255))
+    draw = ImageDraw.Draw(im)
     count = 8
     for i in range(0, count):
         close = float(msgs[i]['close'])
         low = float(msgs[i]['low'])
         high = float(msgs[i]['high'])
         open = float(msgs[i]['open'])
-        plot_candlestick(open, high, low, close, i, count, x_total_size, y_total_size)
-    plt.plot([1, 2])
+        plot_candlestick(draw, im, open, high, low, close, i, count, x_total_size, y_total_size)
+    #plt.plot([1, 2])
     # plt.title("test")
-    plt.axis('off')
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    im = Image.open(buf)
+    #plt.axis('off')
+    #buf = io.BytesIO()
+    #plt.savefig(buf, format='png')
+    #buf.seek(0)
+    #im = Image.open(buf)
     im.show()
-    buf.close()
+    #buf.close()
 
 
 # get first timestamp from kline sqlite db
