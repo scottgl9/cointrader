@@ -11,6 +11,7 @@ import sys
 import argparse
 import logging
 import json
+from trader.TraderConfig import TraderConfig
 
 
 def process_trade_cache(trade_cache, end_tickers_cache):
@@ -59,11 +60,11 @@ if __name__ == '__main__':
                         help='filename of kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='strategy',
-                        default='basic_signal_market_strategy',
+                        default='',
                         help='name of strategy to use')
 
     parser.add_argument('-g', action='store', dest='signal_name',
-                        default='Hybrid_Crossover_Test',
+                        default='',
                         help='name of signal to use')
 
     parser.add_argument('-c', action='store', dest='cache_dir',
@@ -83,10 +84,31 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(message)s")
     logger = logging.getLogger()
 
-    trade_cache = {}
-    end_tickers_cache = {}
+    config = TraderConfig("trader.ini")
+    config.select_section('binance.simulate')
 
-    trade_cache_name = "{}-{}".format(results.strategy, results.signal_name)
+    if results.strategy:
+        config.set('strategy', results.strategy)
+
+    if results.signal_name:
+        config.set('signals', results.signal_name)
+
+    #if results.hourly_signal_name:
+    #    config.set('hourly_signal', results.hourly_signal_name)
+
+    strategy = config.get('strategy')
+    signal_name = config.get('signals')
+
+    trade_cache_name = "{}-{}".format(strategy, signal_name)
+    cache_path = "{}/{}".format(results.cache_dir, results.filename.replace(".db", ""))
+    if not os.path.exists(cache_path):
+        logger.error("Cache directory {} doesn't exist, exiting...".format(cache_path))
+        sys.exit(-1)
+
+    trade_json_path = "{}/trades.json".format(cache_path)
+    if not os.path.exists(trade_json_path):
+        logger.error("{} doesn't exist, run tools/binance_simulate.py".format(trade_json_path))
+        sys.exit(-1)
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
@@ -94,16 +116,13 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
 
     # load simulation results
-    trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
-    if os.path.exists(trade_cache_filename):
-        logger.info("Loading {}".format(trade_cache_filename))
-        with open(trade_cache_filename, "r") as f:
-            trade_cache = json.loads(str(f.read()))
-        if trade_cache_name not in trade_cache.keys():
-            logger.error("{} not in {}, exiting...".format(trade_cache_name, trade_cache_filename))
-            sys.exit(-1)
-        end_tickers_cache = trade_cache['end_tickers']
-        trade_cache = trade_cache[trade_cache_name]['trades']
+    logger.info("Loading {}".format(trade_json_path))
+    with open(trade_json_path, "r") as f:
+        trade_cache = json.loads(str(f.read()))
+    if trade_cache_name not in trade_cache.keys():
+        logger.error("{} not in {}, exiting...".format(trade_cache_name, trade_json_path))
+        sys.exit(-1)
+    end_tickers_cache = trade_cache['end_tickers']
+    trade_cache = trade_cache[trade_cache_name]['trades']
 
     process_trade_cache(trade_cache, end_tickers_cache)
-
