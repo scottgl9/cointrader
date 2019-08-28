@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# test all signals against a sqlite db capture
 
 import sys
 try:

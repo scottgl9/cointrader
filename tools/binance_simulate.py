@@ -332,24 +332,23 @@ if __name__ == '__main__':
     strategy = config.get('strategy')
     signal_name = config.get('signals')
 
+    cache_path = "{}/{}".format(results.cache_dir, results.filename.replace(".db", ""))
+    if not os.path.exists(cache_path):
+        os.mkdir(cache_path)
+
     trade_cache = {}
 
     trade_cache_name = "{}-{}".format(strategy, signal_name)
 
-    trade_log_filename = os.path.basename(results.filename.replace(".db", "_{}.log".format(trade_cache_name)))
-    trade_log_filepath = "{}/{}".format(results.cache_dir, trade_log_filename)
-    print(results.cache_dir)
-    print(trade_log_filepath)
-
-    trade_result_filename = os.path.basename(results.filename.replace(".db", "_result_{}.txt".format(trade_cache_name)))
-    trade_result_filepath = "{}/{}".format(results.cache_dir, trade_result_filename)
-    print(trade_result_filepath)
+    trade_log_path = "{}/{}.log".format(cache_path, trade_cache_name)
+    trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
+    trade_json_path = "{}/trades.json".format(cache_path)
 
     # remove old trade log before re-running
-    if os.path.exists(trade_log_filepath):
-        os.remove(trade_log_filepath)
+    if os.path.exists(trade_log_path):
+        os.remove(trade_log_path)
 
-    fileHandler = logging.FileHandler(trade_log_filepath)
+    fileHandler = logging.FileHandler(trade_log_path)
     fileHandler.setFormatter(logFormatter)
     logger.addHandler(fileHandler)
 
@@ -360,17 +359,12 @@ if __name__ == '__main__':
 
     conn = sqlite3.connect(results.filename)
 
-    # start the Web API
-    #thread = threading.Thread(target=WebThread, args=(strategy,))
-    #thread.daemon = True
-    #thread.start()
-
     # if we already ran simulation, load the results
-    trade_json_filename = os.path.basename(results.filename.replace('.db', '.json'))
-    trade_cache_filename = "{}/{}".format(results.cache_dir, trade_json_filename)
-    if os.path.exists(trade_cache_filename):
-        logger.info("Loading {}".format(trade_cache_filename))
-        with open(trade_cache_filename, "r") as f:
+    #trade_json_filename = os.path.basename(results.filename.replace('.db', '.json'))
+    #trade_cache_filename = "{}/{}".format(results.cache_dir, trade_json_filename)
+    if os.path.exists(trade_json_path):
+        logger.info("Loading {}".format(trade_json_path))
+        with open(trade_json_path, "r") as f:
             trade_cache = json.loads(str(f.read()))
 
     logger.info("Running simulate with {} signal {}".format(results.filename, signal_name))
@@ -378,7 +372,7 @@ if __name__ == '__main__':
     hourly_kline_db_file = results.hourly_klines_db_file
 
     try:
-        simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
+        simulate_db_filename = os.path.basename(results.filename)
         print(simulate_db_filename)
         trades, end_tickers, min_tickers, max_tickers, total_pprofit, initial_btc_total = simulate(conn, config, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
@@ -386,7 +380,7 @@ if __name__ == '__main__':
         conn.close()
         sys.exit(0)
 
-    with open(trade_cache_filename, "w") as f:
+    with open(trade_json_path, "w") as f:
         if 'end_tickers' not in trade_cache.keys():
             trade_cache['end_tickers'] = end_tickers
         if 'max_tickers' not in trade_cache.keys():
@@ -398,11 +392,6 @@ if __name__ == '__main__':
         trade_cache[trade_cache_name]['trades'] = trades
         f.write(json.dumps(trade_cache, f, indent=4, sort_keys=True))
 
-    with open(trade_result_filepath, "w") as f:
-        #trade_result = process_trade_cache(trades, end_tickers)
-        #for symbol in sorted(trade_result):
-        #    results = sorted(trade_result[symbol])
-        #    f.write("{}: {}\n".format(symbol, results))
+    with open(trade_result_path, "w") as f:
         f.write("Initial BTC Total: {}\n".format(initial_btc_total))
         f.write("Total Profit: {}%\n".format(total_pprofit))
-

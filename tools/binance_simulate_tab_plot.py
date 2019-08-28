@@ -214,24 +214,31 @@ if __name__ == '__main__':
     signal_name = config.get('signals')
 
     if not os.path.exists(results.cache_dir):
-        logger.warning("cache directory {} doesn't exist, exiting...".format(results.cache_dir))
+        logger.warning("cache root directory {} doesn't exist, exiting...".format(results.cache_dir))
         sys.exit(0)
 
     conn = sqlite3.connect(results.filename)
-    trade_cache = {}
 
     trade_cache_name = "{}-{}".format(strategy, signal_name)
 
-    # if we already ran simulation, load the results
-    trade_cache_filename = os.path.join(results.cache_dir, results.filename.replace('.db', '.json'))
-    if os.path.exists(trade_cache_filename):
-        logger.info("Loading {} from {}".format(trade_cache_name, trade_cache_filename))
-        with open(trade_cache_filename, "r") as f:
-            trade_cache = json.loads(str(f.read()))
+    cache_path = "{}/{}".format(results.cache_dir, results.filename.replace(".db", ""))
+    if not os.path.exists(cache_path):
+        logger.error("Cache directory {} doesn't exist, exiting...".format(cache_path))
+        sys.exit(-1)
 
-        if trade_cache_name not in trade_cache.keys():
-            logger.error("Failed to load {}, exiting...".format(trade_cache_name))
-            sys.exit(-1)
+    trade_json_path = "{}/trades.json".format(cache_path)
+    if not os.path.exists(trade_json_path):
+        logger.error("{} doesn't exist, run tools/binance_simulate.py".format(trade_json_path))
+        sys.exit(-1)
+
+    # if we already ran simulation, load the results
+    logger.info("Loading {} from {}".format(trade_cache_name, trade_json_path))
+    with open(trade_json_path, "r") as f:
+        trade_cache = json.loads(str(f.read()))
+
+    if trade_cache_name not in trade_cache.keys():
+        logger.error("Failed to load {}, exiting...".format(trade_cache_name))
+        sys.exit(-1)
 
     plt.rcParams.update({'figure.max_open_warning': 0})
 
