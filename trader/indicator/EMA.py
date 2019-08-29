@@ -1,4 +1,6 @@
 # Exponential Moving Average (EMA)
+# NOTE: The Exponentially weighted Moving Average (EWMA) is the same as the EMA
+
 from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.SLOPE import SLOPE
 from trader.indicator.SMA import SMA

@@ -7,6 +7,7 @@ class TIB(object):
         self.b = 0
         self.b_values = []
         self.b_sum = 0
+        self.b_ewma = 0
         self.b_up = 0
         self.b_down = 0
         self.age = 0
@@ -47,6 +48,7 @@ class TIB(object):
             self.b_sum -= prev_b
             self.b_sum += self.b
             self.b_values[int(self.age)] = self.b
+            self.result = self.b_sum
             self.age = (self.age + 1) % self.window
         self.prev_close = close
         return self.result
