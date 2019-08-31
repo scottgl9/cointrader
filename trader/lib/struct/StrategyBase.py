@@ -189,39 +189,15 @@ class StrategyBase(object):
         elif name == "MTS_Crossover2_Signal":
             from trader.signal.MTS_Crossover2_Signal import MTS_Crossover2_Signal
             signal = MTS_Crossover2_Signal
-        elif name == "MTS_Crossover3_Signal":
-            from trader.signal.MTS_Crossover3_Signal import MTS_Crossover3_Signal
-            signal = MTS_Crossover3_Signal
-        elif name == "MTS_CrossoverTracker_Signal":
-            from trader.signal.MTS_CrossoverTracker_Signal import MTS_CrossoverTracker_Signal
-            signal = MTS_CrossoverTracker_Signal
-        elif name == "MTS_Retracement_Signal":
-            from trader.signal.MTS_Retracement_Signal import MTS_Retracement_Signal
-            signal = MTS_Retracement_Signal
         elif name == "MTS_SMA_Signal":
             from trader.signal.MTS_SMA_Signal import MTS_SMA_Signal
             signal = MTS_SMA_Signal
         elif name == "NULL_Signal":
             from trader.signal.NULL_Signal import NULL_Signal
             signal = NULL_Signal
-        elif name == "PPO_OBV":
-            from trader.signal.PPO_OBV import PPO_OBV
-            signal = PPO_OBV
-        elif name == "PMO_Crossover":
-            from trader.signal.PMO_Crossover import PMO_Crossover
-            signal = PMO_Crossover
         elif name == "RTKline_MACD_Cross_Signal":
             from trader.signal.RTKline_MACD_Cross_Signal import RTKline_MACD_Cross_Signal
             signal = RTKline_MACD_Cross_Signal
-        elif name == "TrendStateTrack_Signal":
-            from trader.signal.TrendStateTrack_Signal import TrendStateTrack_Signal
-            signal = TrendStateTrack_Signal
-        elif name == "TSI_Signal":
-            from trader.signal.TSI_Signal import TSI_Signal
-            signal = TSI_Signal
-        elif name == "TSV_Signal":
-            from trader.signal.TSV_Signal import TSV_Signal
-            signal = TSV_Signal
 
         if signal:
             return signal(accnt, symbol, asset_info, hkdb=hkdb)
