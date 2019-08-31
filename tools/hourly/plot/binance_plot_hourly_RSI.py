@@ -24,8 +24,12 @@ from trader.indicator.EMA import EMA
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    rsi = RSI(14) #, smoother=EMA(1, scale=24))
-    rsi_values = []
+    rsi_daily = RSI(24)
+    rsi_weekly = RSI(24 * 7)
+    rsi_monthly = RSI(24 * 30)
+    rsi_daily_values = []
+    rsi_weekly_values = []
+    rsi_monthly_values = []
     ema = EMA(12, scale=24)
     ema_values = []
     close_prices = []
@@ -45,8 +49,12 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         volumes.append(volume)
 
         ema.update(close)
-        rsi.update(ema.result)
-        rsi_values.append(rsi.result)
+        rsi_daily.update(close)
+        rsi_daily_values.append(rsi_daily.result)
+        rsi_weekly.update(close)
+        rsi_weekly_values.append(rsi_weekly.result)
+        rsi_monthly.update(close)
+        rsi_monthly_values.append(rsi_monthly.result)
 
         close_prices.append(close)
         open_prices.append(open)
@@ -58,8 +66,10 @@ def simulate(hkdb, symbol, start_ts, end_ts):
     symprice, = plt.plot(close_prices, label=symbol)
     plt.legend(handles=[symprice])
     plt.subplot(212)
-    fig21, = plt.plot(rsi_values, label='RSI')
-    plt.legend(handles=[fig21])
+    fig21, = plt.plot(rsi_daily_values, label='RSI_DAILY')
+    fig22, = plt.plot(rsi_weekly_values, label='RSI_WEEKLY')
+    fig23, = plt.plot(rsi_monthly_values, label='RSI_MONTHLY')
+    plt.legend(handles=[fig21, fig22, fig23])
     plt.show()
 
 # get first timestamp from kline sqlite db
