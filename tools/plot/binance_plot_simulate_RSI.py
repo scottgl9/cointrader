@@ -41,9 +41,9 @@ def simulate(conn, client, base=None, currency=None, ticker_id=None):
     obv_ema26_values = []
     obv_ema50_values = []
 
-    rsi = RSI(window=30, smoother=EMA(12, scale=24))
+    rsi = RSI(window=30) #, smoother=EMA(12, scale=24), unit_scale=True)
     rsi_values = []
-    rsi2 = RSI(window=30, smoother=EMA(50, scale=24))
+    rsi2 = RSI(window=30, smoother=EMA(24, scale=24))
     rsi2_values = []
 
     obv = OBV()
@@ -96,14 +96,10 @@ def simulate(conn, client, base=None, currency=None, ticker_id=None):
         #lstsqs_x_values.append(i)
         i += 1
 
-    #plt.subplot(211)
-    fig = plt.figure()
-    ax = fig.add_subplot(2,1,1)
-
+    plt.subplot(211)
     symprice, = plt.plot(close_prices, label=ticker_id)
-    plt.legend(handles=[symprice])
+    #plt.legend(handles=[symprice])
     plt.subplot(212)
-    #plt.plot(rsi_values)
     fig11, = plt.plot(rsi_values, label="RSI")
     fig12, = plt.plot(rsi2_values, label="RSI2")
     plt.legend(handles=[fig11, fig12])
@@ -142,5 +138,8 @@ if __name__ == '__main__':
     print("Loading {}".format(filename))
     conn = sqlite3.connect(filename)
 
-    simulate(conn, client, base, currency, type="RSI")
+    ticker_id = "{}{}".format(base, currency)
+    if results.symbol != symbol_default:
+        ticker_id = results.symbol
+    simulate(conn, client, ticker_id=ticker_id)
     conn.close()
