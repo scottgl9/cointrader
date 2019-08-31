@@ -181,7 +181,7 @@ class HourlyKlinesDB(object):
     # return list of specific kline column by specifying which column to select
     def get_kline_values_by_column(self, symbol, column='close', start_ts=0, end_ts=0):
         result = []
-        cindex = self.cnames.index(column)
+        #cindex = self.cnames.index(column)
         cur = self.conn.cursor()
         sql = self.build_sql_select_field_query(symbol, column, start_ts, end_ts)
         cur.execute(sql)
