@@ -1,6 +1,11 @@
 # more efficient way to calculate min(values) and max(values) by tracking the maximum and minimums, versus
 # just calling min(values) or max(values) for every change in values
-
+try:
+    # Python 2
+    xrange
+except NameError:
+    # Python 3, xrange is now named range
+    xrange = range
 
 # allows for a variable size of values, when values can be removed, but always keeps track of min and max values
 class FastMinMax(object):
