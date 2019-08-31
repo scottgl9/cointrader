@@ -3,10 +3,11 @@ from trader.lib.struct.IndicatorBase import IndicatorBase
 
 
 class RSI(IndicatorBase):
-    def __init__(self, window=14, smoother=None):
+    def __init__(self, window=14, smoother=None, unit_scale=False):
         IndicatorBase.__init__(self, use_close=True)
         self.window = window
-
+        # unit scale sets rsi values in range [0, 1] instead of [0, 100]
+        self.unit_scale = unit_scale
         self._sum_up = 0
         self._sum_down = 0
         self._prev_avg_up = 0
@@ -77,7 +78,10 @@ class RSI(IndicatorBase):
             if not rs2:
                 self.result = 100.0
             else:
-                result = 100.0 - (100.0 / (1.0 + self.rs))
+                if self.unit_scale:
+                    result = 1.0 - (1.0 / (1.0 + self.rs))
+                else:
+                    result = 100.0 - (100.0 / (1.0 + self.rs))
                 if self.smoother:
                     self.result = self.smoother.update(result)
                 else:
