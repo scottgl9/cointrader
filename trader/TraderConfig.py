@@ -35,6 +35,7 @@ class TraderConfig(object):
         self.config.set(section, 'balance_update', 'True')
         self.config.set(section, 'use_hourly_klines', 'True')
         self.config.set(section, 'usdt_value_cutoff', '0.02')
+        self.config.set(section, 'daily_volume_btc_cutoff', '1000.0')
         self.config.set(section, 'min_percent_profit', '1.0')
         # live trading specific options
         self.config.set(section, 'btc_only', 'False')
@@ -81,6 +82,7 @@ class TraderConfig(object):
         self.config.set(section, 'balance_update', 'False')
         self.config.set(section, 'use_hourly_klines', 'True')
         self.config.set(section, 'usdt_value_cutoff', '0.02')
+        self.config.set(section, 'daily_volume_btc_cutoff', '1000.0')
         self.config.set(section, 'min_percent_profit', '1.0')
         # simulate trading specific options
         self.config.set(section, 'BTC', '0.2')

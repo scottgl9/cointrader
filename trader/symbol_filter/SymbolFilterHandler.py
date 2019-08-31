@@ -12,6 +12,9 @@ class SymbolFilterHandler(object):
         if filter_name == 'filter_min_usdt_value':
             from .filter.filter_min_usdt_value import filter_min_usdt_value
             filter_type = filter_min_usdt_value
+        elif filter_name == 'filter_daily_volume':
+            from .filter.filter_daily_volume import filter_daily_volume
+            filter_type = filter_daily_volume
         elif filter_name == 'filter_delta_ts_rank':
             from .filter.filter_delta_ts_rank import filter_delta_ts_rank
             filter_type = filter_delta_ts_rank
