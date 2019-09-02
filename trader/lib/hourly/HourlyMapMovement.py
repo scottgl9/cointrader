@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -11,7 +12,8 @@ class HourlyMapMovement(object):
         self.last_hourly_ts = 0
         self.last_update_ts = 0
         self.klines = None
-        self.kline_deltas = None
+        self.deltas = None
+        self.unit_deltas = None
         self.klines_loaded = False
 
     def ready(self):
@@ -27,9 +29,12 @@ class HourlyMapMovement(object):
         self.klines = pd.DataFrame(klines, columns=['open', 'high', 'low', 'close'])
         print(self.klines)
 
-        self.kline_deltas = klines.iloc[1:, :].reset_index().iloc[:, 2:6] - klines.iloc[:-1, 1:5]
-        print(self.kline_deltas)
-        print(self.klines.shift(-1).dropna().values - self.klines.shift(1).dropna().values)
+        #self.kline_deltas = klines.iloc[1:, :].reset_index().iloc[:, 2:6] - klines.iloc[:-1, 1:5]
+        self.deltas = self.klines.shift(-1).dropna().values - self.klines.shift(1).dropna().values
+        print(self.deltas)
+        self.unit_deltas = np.where(self.deltas > 0, 1, self.deltas)
+        self.unit_deltas = np.where(self.unit_deltas < 0, -1, self.unit_deltas)
+        print(self.unit_deltas)
         #print(klines.iloc[1:, :].reset_index().iloc[:, 2:6])
         #print(klines.iloc[:-1, 1:5])
         self.klines_loaded = True
