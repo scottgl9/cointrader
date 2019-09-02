@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class HourlyMapMovement(object):
     def __init__(self, symbol=None, accnt=None, hkdb=None, win_hours=24):
         self.symbol = symbol
@@ -7,7 +10,8 @@ class HourlyMapMovement(object):
         self.first_hourly_ts = 0
         self.last_hourly_ts = 0
         self.last_update_ts = 0
-        self.klines = []
+        self.klines = None
+        self.kline_deltas = None
         self.klines_loaded = False
 
     def ready(self):
@@ -17,10 +21,17 @@ class HourlyMapMovement(object):
         end_ts = hourly_ts
         start_ts = end_ts - self.accnt.hours_to_ts(self.win_hours)
         klines = self.hkdb.get_pandas_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
-        print(klines)
-        if len(klines) < self.win_hours:
+        if len(klines) < self.win_hours + 1:
             return
-        self.klines = klines
+
+        self.klines = pd.DataFrame(klines, columns=['open', 'high', 'low', 'close'])
+        print(self.klines)
+
+        self.kline_deltas = klines.iloc[1:, :].reset_index().iloc[:, 2:6] - klines.iloc[:-1, 1:5]
+        print(self.kline_deltas)
+        print(self.klines.shift(-1).dropna().values - self.klines.shift(1).dropna().values)
+        #print(klines.iloc[1:, :].reset_index().iloc[:, 2:6])
+        #print(klines.iloc[:-1, 1:5])
         self.klines_loaded = True
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
