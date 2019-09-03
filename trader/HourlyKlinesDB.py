@@ -229,8 +229,12 @@ class HourlyKlinesDB(object):
         sql += "ORDER BY ts ASC"
         return sql
 
-    def build_sql_select_query(self, symbol, start_ts, end_ts, daily=False):
-        sql = "SELECT {} FROM {} ".format(self.scnames, symbol)
+    def build_sql_select_query(self, symbol, start_ts, end_ts, daily=False, columns=None):
+        if not columns:
+            columns = self.scnames
+        elif isinstance(columns, list):
+            columns = ','.join(columns)
+        sql = "SELECT {} FROM {} ".format(columns, symbol)
 
         if start_ts and end_ts:
             sql += "WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
@@ -329,22 +333,26 @@ class HourlyKlinesDB(object):
         return result
 
     # load daily klines in pandas dataframe
-    def get_pandas_daily_klines(self, symbol, start_ts=0, end_ts=0):
-        sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=True)
+    def get_pandas_daily_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
+        sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=True, columns=columns)
 
         result = pd.read_sql_query(sql, self.conn)
         return result
 
     # load hourly klines in pandas dataframe
-    def get_pandas_klines(self, symbol, start_ts=0, end_ts=0):
-        sql = self.build_sql_select_query(symbol, start_ts, end_ts)
+    def get_pandas_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
+        sql = self.build_sql_select_query(symbol, start_ts, end_ts, columns=columns)
 
         result = pd.read_sql_query(sql, self.conn)
         return result
 
     # load single hourly kline in pandas dataframe
-    def get_pandas_kline(self, symbol, hourly_ts=0):
-        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, hourly_ts)
+    def get_pandas_kline(self, symbol, hourly_ts=0, columns=None):
+        if not columns:
+            columns = self.scnames
+        elif isinstance(columns, list):
+            columns = ','.join(columns)
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(columns, symbol, hourly_ts)
         result = pd.read_sql_query(sql, self.conn)
         return result
 
