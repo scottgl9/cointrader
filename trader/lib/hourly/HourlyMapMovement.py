@@ -14,6 +14,8 @@ class HourlyMapMovement(object):
         self.klines = None
         self.deltas = None
         self.unit_deltas = None
+        self.sums = []
+        self.unit_sums = []
         self.klines_loaded = False
 
     def ready(self):
@@ -32,9 +34,15 @@ class HourlyMapMovement(object):
         #self.kline_deltas = klines.iloc[1:, :].reset_index().iloc[:, 2:6] - klines.iloc[:-1, 1:5]
         self.deltas = self.klines.shift(-1).dropna().values - self.klines.shift(1).dropna().values
         print(self.deltas)
+        for delta in self.deltas:
+            self.sums.append(np.sum(delta))
         self.unit_deltas = np.where(self.deltas > 0, 1, self.deltas)
         self.unit_deltas = np.where(self.unit_deltas < 0, -1, self.unit_deltas)
+        for delta in self.unit_deltas:
+            self.unit_sums.append(np.sum(delta))
         print(self.unit_deltas)
+        print(self.sums)
+        print(self.unit_sums)
         #print(klines.iloc[1:, :].reset_index().iloc[:, 2:6])
         #print(klines.iloc[:-1, 1:5])
         self.klines_loaded = True
