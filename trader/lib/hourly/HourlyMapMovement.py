@@ -1,6 +1,13 @@
 import numpy as np
 import pandas as pd
 
+# self.kline_deltas = klines.iloc[1:, :].reset_index().iloc[:, 2:6] - klines.iloc[:-1, 1:5]
+# print(self.unit_deltas)
+# print(self.sums)
+# print(self.unit_sums)
+# print(klines.iloc[1:, :].reset_index().iloc[:, 2:6])
+# print(klines.iloc[:-1, 1:5])
+
 
 class HourlyMapMovement(object):
     def __init__(self, symbol=None, accnt=None, hkdb=None, win_hours=24):
@@ -29,34 +36,32 @@ class HourlyMapMovement(object):
         if len(klines) < self.win_hours + 1:
             return
 
-        #self.kline_deltas = klines.iloc[1:, :].reset_index().iloc[:, 2:6] - klines.iloc[:-1, 1:5]
-        #print(self.unit_deltas)
-        #print(self.sums)
-        #print(self.unit_sums)
-        #print(klines.iloc[1:, :].reset_index().iloc[:, 2:6])
-        #print(klines.iloc[:-1, 1:5])
-        self.klines = klines #pd.DataFrame(klines, columns=['open', 'high', 'low', 'close'])
-        self.recompute()
+        self.klines = klines.values
+        self.compute()
         self.klines_loaded = True
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
         self.last_hourly_ts = self.first_hourly_ts
 
     def hourly_update(self, hourly_ts):
-        end_ts = hourly_ts
-        start_ts = end_ts - self.accnt.hours_to_ts(self.win_hours)
-        self.klines = self.hkdb.get_pandas_klines(self.symbol, start_ts=start_ts, end_ts=end_ts, columns=self.columns)
-        if len(self.klines) < self.win_hours + 1:
-            return
+        new_kline = self.hkdb.get_pandas_kline(self.symbol, hourly_ts, columns=self.columns).values
+        self.klines = np.concatenate((self.klines[1:], new_kline), axis=0)
         self.recompute()
 
-    def recompute(self):
+    def compute(self):
         self.sums = []
         self.unit_sums = []
-        self.deltas = self.klines.shift(-1).dropna().values - self.klines.shift(1).dropna().values
+        self.deltas = self.klines[1:] - self.klines[:-1]
         for delta in self.deltas:
             self.sums.append(np.sum(delta))
         self.unit_deltas = np.where(self.deltas > 0, 1, self.deltas)
         self.unit_deltas = np.where(self.unit_deltas < 0, -1, self.unit_deltas)
         for delta in self.unit_deltas:
             self.unit_sums.append(np.sum(delta))
+
+    def recompute(self):
+        new_delta = self.klines[-1] - self.klines[-2]
+        self.deltas = np.concatenate((self.deltas[1:], (new_delta,)), axis=0)
+        self.sums = self.sums[1:]
+        self.sums.append(np.sum(self.deltas[-1]))
+        print(self.sums)

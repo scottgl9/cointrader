@@ -335,16 +335,18 @@ class HourlyKlinesDB(object):
     # load daily klines in pandas dataframe
     def get_pandas_daily_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
         sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=True, columns=columns)
-
         result = pd.read_sql_query(sql, self.conn)
         return result
 
     # load hourly klines in pandas dataframe
     def get_pandas_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
         sql = self.build_sql_select_query(symbol, start_ts, end_ts, columns=columns)
-
         result = pd.read_sql_query(sql, self.conn)
         return result
+
+    # use pandas dataframe, then get numpy values from dataframe
+    def get_numpy_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
+        return self.get_pandas_klines(symbol, start_ts, end_ts, columns).values
 
     # load single hourly kline in pandas dataframe
     def get_pandas_kline(self, symbol, hourly_ts=0, columns=None):
@@ -355,6 +357,10 @@ class HourlyKlinesDB(object):
         sql = "SELECT {} FROM {} WHERE ts = {}".format(columns, symbol, hourly_ts)
         result = pd.read_sql_query(sql, self.conn)
         return result
+
+    # use pandas dataframe, then get numpy values from dataframe
+    def get_numpy_kline(self, symbol, hourly_ts=0, columns=None):
+        return self.get_pandas_kline(symbol, hourly_ts, columns).values
 
     # get klines as list of Kline class from db table
     def get_klines(self, symbol, start_ts=0, end_ts=0):

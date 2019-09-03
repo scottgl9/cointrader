@@ -31,10 +31,12 @@ def simulate(hkdb, symbol, start_ts, end_ts, test_hours=0):
     hourly_map.hourly_load(start_ts)
 
     count = 0
-    ts = start_ts + accnt.hours_to_ts(1)
+    ts = start_ts # + accnt.hours_to_ts(1)
     while ts <= end_ts:
+        if count > 2:
+            break
         ts += 3600 * 1000
-        #hourly_map.update(ts)
+        hourly_map.hourly_update(ts)
         #testy.append(hourly_lstm.actual_result)
         #predicty.append(hourly_lstm.predict_result)
         count += 1
