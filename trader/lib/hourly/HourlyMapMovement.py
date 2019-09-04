@@ -50,6 +50,18 @@ class HourlyMapMovement(object):
         self.klines = np.concatenate((self.klines[1:], new_kline), axis=0)
         self.recompute()
 
+    def get_sums(self):
+        return self.sums
+
+    def get_unit_sums(self):
+        return self.unit_sums
+
+    def get_last_sum(self):
+        return self.sums[-1]
+
+    def get_last_unit_sum(self):
+        return self.unit_sums[-1]
+
     def compute(self):
         self.sums = []
         self.unit_sums = []

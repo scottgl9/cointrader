@@ -30,19 +30,34 @@ def simulate(hkdb, symbol, start_ts, end_ts, test_hours=0):
 
     hourly_map.hourly_load(start_ts)
 
+    sums = []
+    unit_sums = []
+    close_prices = []
+
     count = 0
+    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+    for msg in msgs:
+        close_prices.append(float(msg['close']))
+
     ts = start_ts # + accnt.hours_to_ts(1)
     while ts <= end_ts:
         ts += 3600 * 1000
         hourly_map.hourly_update(ts)
+        sums.append(hourly_map.get_last_sum())
+        unit_sums.append(hourly_map.get_last_unit_sum())
         #testy.append(hourly_lstm.actual_result)
         #predicty.append(hourly_lstm.predict_result)
         count += 1
 
-    plt.subplot(211)
-    #fig1, = plt.plot(testy, label='TESTY')
-    #fig2, = plt.plot(predicty, label='PREDICTY')
-    #plt.legend(handles=[fig1, fig2])
+    plt.subplot(311)
+    symprice, = plt.plot(close_prices, label=symbol)
+    plt.legend(handles=[symprice])
+    plt.subplot(312)
+    fig21, = plt.plot(sums, label='SUMS')
+    plt.legend(handles=[fig21])
+    plt.subplot(313)
+    fig31, = plt.plot(unit_sums, label='UNIT_SUMS')
+    plt.legend(handles=[fig31])
     plt.show()
 
 # get first timestamp from kline sqlite db
