@@ -45,6 +45,8 @@ class HourlyMapMovement(object):
 
     def hourly_update(self, hourly_ts):
         new_kline = self.hkdb.get_pandas_kline(self.symbol, hourly_ts, columns=self.columns).values
+        if not len(new_kline):
+            return
         self.klines = np.concatenate((self.klines[1:], new_kline), axis=0)
         self.recompute()
 
@@ -64,4 +66,8 @@ class HourlyMapMovement(object):
         self.deltas = np.concatenate((self.deltas[1:], (new_delta,)), axis=0)
         self.sums = self.sums[1:]
         self.sums.append(np.sum(self.deltas[-1]))
-        print(self.sums)
+        new_unit_delta = np.where(new_delta > 0, 1, new_delta)
+        new_unit_delta = np.where(new_unit_delta < 0, -1, new_unit_delta)
+        self.unit_deltas = np.concatenate((self.unit_deltas[1:], (new_unit_delta,)), axis=0)
+        self.unit_sums = self.unit_sums[1:]
+        self.unit_sums.append(np.sum(self.unit_deltas[-1]))
