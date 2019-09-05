@@ -20,4 +20,4 @@
 #DB_LIST+=" cryptocurrency_database.miniticker_collection_03142019.db"
 #DB_LIST+=" cryptocurrency_database.miniticker_collection_06182019.db"
 DB_LIST="`find . -name \"cryptocurrency_*.db\" | tr '\n' ' '`"
-echo $DB_LIST | tr ' ' '\n' | parallel -j 3 python tools/binance_simulate.py -f {}
+echo $DB_LIST | tr ' ' '\n' | parallel -j 4 python tools/binance_simulate.py -f {}

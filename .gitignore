@@ -12,7 +12,7 @@ dist/
 *.tar.gz
 venv/
 *log.txt
-cache/*/*.log
-cache/*/*.json
+*.log
+trades.json
 __pycache__
 .vscode

@@ -109,7 +109,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         print("Section binance.simulate does not exist")
         sys.exit(-1)
 
-    config.select_section('binance.simulate')
+    #config.select_section('binance.simulate')
     btc_balance = config.get('BTC')
     eth_balance = config.get('ETH')
     bnb_balance = config.get('BNB')
@@ -331,14 +331,32 @@ if __name__ == '__main__':
 
     strategy = config.get('strategy')
     signal_name = config.get('signals')
+    hourly_name = config.get('hourly_signal')
 
-    cache_path = "{}/{}".format(results.cache_dir, results.filename.replace(".db", ""))
+    # create folder for strategy name in cache
+    cache_path = "{}/{}".format(results.cache_dir, strategy)
     if not os.path.exists(cache_path):
         os.mkdir(cache_path)
 
+    cache_path = "{}/{}".format(cache_path, results.filename.replace(".db", ""))
+    if not os.path.exists(cache_path):
+        os.mkdir(cache_path)
+
+    # get balances from trader.ini to be used in creating filename
+    btc_balance = float(config.get('BTC'))
+    eth_balance = float(config.get('ETH'))
+    bnb_balance = float(config.get('BNB'))
+    balance_txt = ""
+    if btc_balance:
+        balance_txt += "{}BTC".format(btc_balance)
+    if eth_balance:
+        balance_txt += "{}ETH".format(eth_balance)
+    if bnb_balance:
+        balance_txt += "{}BNB".format(eth_balance)
+
     trade_cache = {}
 
-    trade_cache_name = "{}-{}".format(strategy, signal_name)
+    trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
 
     trade_log_path = "{}/{}.log".format(cache_path, trade_cache_name)
     trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)

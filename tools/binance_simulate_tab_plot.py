@@ -212,6 +212,7 @@ if __name__ == '__main__':
     config.select_section('binance.simulate')
     strategy = config.get('strategy')
     signal_name = config.get('signals')
+    hourly_name = config.get('hourly_signal')
 
     if not os.path.exists(results.cache_dir):
         logger.warning("cache root directory {} doesn't exist, exiting...".format(results.cache_dir))
@@ -219,9 +220,22 @@ if __name__ == '__main__':
 
     conn = sqlite3.connect(results.filename)
 
-    trade_cache_name = "{}-{}".format(strategy, signal_name)
+    # get balances from trader.ini to be used in creating filename
+    btc_balance = float(config.get('BTC'))
+    eth_balance = float(config.get('ETH'))
+    bnb_balance = float(config.get('BNB'))
+    balance_txt = ""
+    if btc_balance:
+        balance_txt += "{}BTC".format(btc_balance)
+    if eth_balance:
+        balance_txt += "{}ETH".format(eth_balance)
+    if bnb_balance:
+        balance_txt += "{}BNB".format(eth_balance)
 
-    cache_path = "{}/{}".format(results.cache_dir, results.filename.replace(".db", ""))
+    trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
+
+    cache_path = "{}/{}".format(results.cache_dir, strategy)
+    cache_path = "{}/{}".format(cache_path, results.filename.replace(".db", ""))
     if not os.path.exists(cache_path):
         logger.error("Cache directory {} doesn't exist, exiting...".format(cache_path))
         sys.exit(-1)
