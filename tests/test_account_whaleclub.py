@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from trader.account.whaleclub import Client
 from trader.config import *

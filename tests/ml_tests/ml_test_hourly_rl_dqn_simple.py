@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# test HourlyLSTM class
+#!/usr/bin/env python3# test HourlyLSTM class
 import sys
 try:
     import trader

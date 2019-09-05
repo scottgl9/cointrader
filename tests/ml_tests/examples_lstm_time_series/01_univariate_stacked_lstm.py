@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# univariate stacked lstm example
+#!/usr/bin/env python3# univariate stacked lstm example
 from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM

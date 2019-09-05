@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/
+#!/usr/bin/env python3# https://www.analyticsvidhya.com/blog/2018/09/non-stationary-time-series-python/
 
 import sys
 try:

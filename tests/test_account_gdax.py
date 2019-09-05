@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 from trader.AccountGDAX import AccountGDAX
 from trader.account.gdax.authenticated_client import AuthenticatedClient
 from trader.config import *

@@ -1,5 +1,4 @@
-#!/usr/bin/python
-from btgym import BTgymEnv
+#!/usr/bin/env python3from btgym import BTgymEnv
 import IPython.display as Display
 import PIL.Image as Image
 from gym import spaces

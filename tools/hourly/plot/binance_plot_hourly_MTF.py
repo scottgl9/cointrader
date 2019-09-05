@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# Markov Transition Field (MTF) Image
+#!/usr/bin/env python3# Markov Transition Field (MTF) Image
 
 import sys
 try:

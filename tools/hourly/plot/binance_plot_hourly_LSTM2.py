@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# new version of HourlyLSTM
+#!/usr/bin/env python3# new version of HourlyLSTM
 
 import sys
 try:

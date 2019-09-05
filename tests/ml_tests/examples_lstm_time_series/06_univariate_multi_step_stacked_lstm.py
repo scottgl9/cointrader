@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# univariate multi-step vector-output stacked lstm example
+#!/usr/bin/env python3# univariate multi-step vector-output stacked lstm example
 from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM

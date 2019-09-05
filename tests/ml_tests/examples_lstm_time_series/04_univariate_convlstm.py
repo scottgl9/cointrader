@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# univariate convlstm example
+#!/usr/bin/env python3# univariate convlstm example
 from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM

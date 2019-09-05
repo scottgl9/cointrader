@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# multivariate multi-step encoder-decoder lstm example
+#!/usr/bin/env python3# multivariate multi-step encoder-decoder lstm example
 from numpy import array
 from numpy import hstack
 from keras.models import Sequential

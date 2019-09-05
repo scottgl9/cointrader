@@ -1,5 +1,4 @@
-#!/usr/bin/python
-from __future__ import division
+#!/usr/bin/env python3from __future__ import division
 import argparse
 
 from PIL import Image

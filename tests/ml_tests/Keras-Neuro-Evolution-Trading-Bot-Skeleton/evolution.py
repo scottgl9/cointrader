@@ -1,5 +1,4 @@
-#!/usr/bin/python
-from keras.models import Sequential
+#!/usr/bin/env python3from keras.models import Sequential
 from keras.layers.core import Dense
 from utils.Population import Population
 import numpy as np

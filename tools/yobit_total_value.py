@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from trader.account.yobit import YoBit
 from trader.config import *

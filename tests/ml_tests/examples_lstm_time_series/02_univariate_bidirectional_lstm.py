@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# univariate bidirectional lstm example
+#!/usr/bin/env python3# univariate bidirectional lstm example
 from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM

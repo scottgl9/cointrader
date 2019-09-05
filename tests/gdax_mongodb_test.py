@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from gdax.myhelpers import *
 from gdax.indicator.EMA import EMA

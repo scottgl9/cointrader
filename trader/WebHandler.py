@@ -1,4 +1,3 @@
-#!/usr/bin/python
 from flask import Flask, render_template, json, request,redirect,session,jsonify
 from flask.logging import *
 import threading

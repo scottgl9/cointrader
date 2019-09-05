@@ -1,5 +1,4 @@
-#!/usr/bin/python
-import numpy as np
+#!/usr/bin/env python3import numpy as np
 import gym
 
 from keras.models import Sequential

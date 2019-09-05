@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# univariate multi-step encoder-decoder lstm example
+#!/usr/bin/env python3# univariate multi-step encoder-decoder lstm example
 from numpy import array
 from keras.models import Sequential
 from keras.layers import LSTM

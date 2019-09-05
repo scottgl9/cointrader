@@ -1,5 +1,4 @@
-#!/usr/bin/python
-# plot the data used to train in ml_test_hourly_rl_dqn_test2.py
+#!/usr/bin/env python3# plot the data used to train in ml_test_hourly_rl_dqn_test2.py
 import sys
 try:
     import trader

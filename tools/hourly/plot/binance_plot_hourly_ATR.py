@@ -1,6 +1,6 @@
-#!/usr/bin/python
-
+#!/usr/bin/env python3
 import sys
+
 try:
     import trader
 except ImportError:
