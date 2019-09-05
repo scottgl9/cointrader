@@ -51,6 +51,9 @@ class AccountBinance(AccountBase):
         self._max_market_buy = 0
         self.loaded_model_count = 0
 
+    def format_ts(self, ts):
+        return int(ts)
+
     def ts_to_seconds(self, ts):
         return float(ts / 1000.0)
 
@@ -58,7 +61,7 @@ class AccountBinance(AccountBase):
     def get_hourly_ts(self, ts):
         #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
         #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
-        return (int(ts / 1000) / 3600) * 3600 * 1000
+        return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
 
     def seconds_to_ts(self, seconds):
         return float(seconds * 1000)

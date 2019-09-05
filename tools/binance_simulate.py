@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 try:
@@ -360,12 +360,13 @@ if __name__ == '__main__':
     conn = sqlite3.connect(results.filename)
 
     # if we already ran simulation, load the results
-    #trade_json_filename = os.path.basename(results.filename.replace('.db', '.json'))
-    #trade_cache_filename = "{}/{}".format(results.cache_dir, trade_json_filename)
     if os.path.exists(trade_json_path):
         logger.info("Loading {}".format(trade_json_path))
         with open(trade_json_path, "r") as f:
-            trade_cache = json.loads(str(f.read()))
+            try:
+                trade_cache = json.loads(f.read())
+            except json.decoder.JSONDecodeError:
+                logger.warn("Failed to load {}".format(trade_json_path))
 
     logger.info("Running simulate with {} signal {}".format(results.filename, signal_name))
 
@@ -390,7 +391,7 @@ if __name__ == '__main__':
 
         trade_cache[trade_cache_name] = {}
         trade_cache[trade_cache_name]['trades'] = trades
-        f.write(json.dumps(trade_cache, f, indent=4, sort_keys=True))
+        f.write(json.dumps(trade_cache, indent=4, sort_keys=True))
 
     with open(trade_result_path, "w") as f:
         f.write("Initial BTC Total: {}\n".format(initial_btc_total))

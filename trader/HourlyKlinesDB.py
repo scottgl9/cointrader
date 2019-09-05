@@ -318,13 +318,14 @@ class HourlyKlinesDB(object):
 
     # load single hourly kline in dict format
     def get_dict_kline(self, symbol, hourly_ts=0):
-        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, hourly_ts)
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, self.accnt.format_ts(hourly_ts))
         cur = self.conn.cursor()
         cur.execute(sql)
         k = cur.fetchone()
 
         #if kline is not in db yet
         if not k:
+            self.logger.warn("{}: '{}' FAILED".format(self.get_dict_kline.__name__, sql))
             return None
 
         result = {}
