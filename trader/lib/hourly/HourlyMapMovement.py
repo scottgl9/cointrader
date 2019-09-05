@@ -59,8 +59,20 @@ class HourlyMapMovement(object):
     def get_last_sum(self):
         return self.sums[-1]
 
+    def get_sum_mean(self):
+        return np.mean(self.sums)
+
+    def get_sum_total(self):
+        return np.sum(self.sums)
+
     def get_last_unit_sum(self):
         return self.unit_sums[-1]
+
+    def get_unit_sum_mean(self):
+        return np.mean(self.unit_sums)
+
+    def get_unit_sum_total(self):
+        return np.sum(self.unit_sums)
 
     def compute(self):
         self.sums = []

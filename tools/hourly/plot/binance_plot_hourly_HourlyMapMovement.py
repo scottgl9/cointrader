@@ -43,8 +43,12 @@ def simulate(hkdb, symbol, start_ts, end_ts, test_hours=0):
     while ts <= end_ts:
         ts += 3600 * 1000
         hourly_map.hourly_update(ts)
-        sums.append(hourly_map.get_last_sum())
-        unit_sums.append(hourly_map.get_last_unit_sum())
+        #sums.append(hourly_map.get_sum_total())
+        #unit_sums.append(hourly_map.get_unit_sum_total())
+        sums.append(hourly_map.get_sum_mean())
+        unit_sums.append(hourly_map.get_unit_sum_mean())
+        #sums.append(hourly_map.get_last_sum())
+        #unit_sums.append(hourly_map.get_last_unit_sum())
         #testy.append(hourly_lstm.actual_result)
         #predicty.append(hourly_lstm.predict_result)
         count += 1
