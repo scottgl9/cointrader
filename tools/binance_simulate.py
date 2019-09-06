@@ -304,6 +304,10 @@ if __name__ == '__main__':
                         default='binance_hourly_klines.db',
                         help='binance hourly klines DB file')
 
+    parser.add_argument('-d', action='store_true', dest='disable_caching',
+                        default=False,
+                        help='Disable caching results for this simulation run')
+
     results = parser.parse_args()
 
     if not os.path.exists(results.filename):
@@ -332,6 +336,10 @@ if __name__ == '__main__':
     strategy = config.get('strategy')
     signal_name = config.get('signals')
     hourly_name = config.get('hourly_signal')
+    disable_caching = results.disable_caching
+
+    if disable_caching:
+        logger.info("Caching of results DISABLED")
 
     # create folder for strategy name in cache
     cache_path = "{}/{}".format(results.cache_dir, strategy)
@@ -362,13 +370,15 @@ if __name__ == '__main__':
     trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
     trade_json_path = "{}/trades.json".format(cache_path)
 
-    # remove old trade log before re-running
-    if os.path.exists(trade_log_path):
-        os.remove(trade_log_path)
+    # if caching disabled, do not write to log file
+    if not disable_caching:
+        # remove old trade log before re-running
+        if os.path.exists(trade_log_path):
+            os.remove(trade_log_path)
 
-    fileHandler = logging.FileHandler(trade_log_path)
-    fileHandler.setFormatter(logFormatter)
-    logger.addHandler(fileHandler)
+        fileHandler = logging.FileHandler(trade_log_path)
+        fileHandler.setFormatter(logFormatter)
+        logger.addHandler(fileHandler)
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
@@ -377,8 +387,8 @@ if __name__ == '__main__':
 
     conn = sqlite3.connect(results.filename)
 
-    # if we already ran simulation, load the results
-    if os.path.exists(trade_json_path):
+    # if caching enabled and we already ran simulation, load the results
+    if not disable_caching and os.path.exists(trade_json_path):
         logger.info("Loading {}".format(trade_json_path))
         with open(trade_json_path, "r") as f:
             try:
@@ -399,18 +409,20 @@ if __name__ == '__main__':
         conn.close()
         sys.exit(0)
 
-    with open(trade_json_path, "w") as f:
-        if 'end_tickers' not in trade_cache.keys():
-            trade_cache['end_tickers'] = end_tickers
-        if 'max_tickers' not in trade_cache.keys():
-            trade_cache['max_tickers'] = max_tickers
-        if 'min_tickers' not in trade_cache.keys():
-            trade_cache['min_tickers'] = min_tickers
+    # caching results enabled, so save results in cache
+    if not disable_caching:
+        with open(trade_json_path, "w") as f:
+            if 'end_tickers' not in trade_cache.keys():
+                trade_cache['end_tickers'] = end_tickers
+            if 'max_tickers' not in trade_cache.keys():
+                trade_cache['max_tickers'] = max_tickers
+            if 'min_tickers' not in trade_cache.keys():
+                trade_cache['min_tickers'] = min_tickers
 
-        trade_cache[trade_cache_name] = {}
-        trade_cache[trade_cache_name]['trades'] = trades
-        f.write(json.dumps(trade_cache, indent=4, sort_keys=True))
+            trade_cache[trade_cache_name] = {}
+            trade_cache[trade_cache_name]['trades'] = trades
+            f.write(json.dumps(trade_cache, indent=4, sort_keys=True))
 
-    with open(trade_result_path, "w") as f:
-        f.write("Initial BTC Total: {}\n".format(initial_btc_total))
-        f.write("Total Profit: {}%\n".format(total_pprofit))
+        with open(trade_result_path, "w") as f:
+            f.write("Initial BTC Total: {}\n".format(initial_btc_total))
+            f.write("Total Profit: {}%\n".format(total_pprofit))
