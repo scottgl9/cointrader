@@ -38,6 +38,7 @@ class AccountBinance(AccountBase):
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
+        self._trader_profit_mode = 'BTC'
         self._tpprofit = 0
         self.initial_btc = 0
         self.actual_initial_btc = 0
@@ -112,6 +113,15 @@ class AccountBinance(AccountBase):
 
     def set_market_price(self, price):
         pass
+
+    def set_trader_profit_mode(self, mode):
+        if mode in self.currencies:
+            self._trader_profit_mode = mode
+        else:
+            self.logger.info("set_trader_profit_mode({}) FAILED".format(mode))
+
+    def get_trader_profit_mode(self):
+        return self._trader_profit_mode
 
     def set_total_percent_profit(self, tpprofit):
         self._tpprofit = tpprofit

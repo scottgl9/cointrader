@@ -68,12 +68,19 @@ class MultiTrader(object):
         self.reverse_currency_trading = self.config.get('reverse_currency_trading')
         self.reverse_strategy = self.config.get('reverse_strategy')
 
+        # sets what currency to use when calculating trade profits
+        self.trader_profit_mode = self.config.get('trader_profit_mode')
+
         if accnt:
             self.accnt = accnt
         else:
             self.accnt = AccountBinance(self.client,
                                         simulation=simulate,
                                         logger=logger)
+
+        self.logger.info("Setting trader profit mode to {}".format(self.trader_profit_mode))
+        self.accnt.set_trader_profit_mode(self.trader_profit_mode)
+
         self.assets_info = assets_info
 
         self.tickers = None
