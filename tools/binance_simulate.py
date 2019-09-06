@@ -339,7 +339,7 @@ if __name__ == '__main__':
     disable_caching = results.disable_caching
 
     if disable_caching:
-        logger.info("Caching of results DISABLED")
+        print("Caching of results to {} DISABLED".format(results.cache_dir))
 
     # create folder for strategy name in cache
     cache_path = "{}/{}".format(results.cache_dir, strategy)
