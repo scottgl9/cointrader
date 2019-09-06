@@ -775,6 +775,16 @@ class AccountBinance(AccountBase):
                     return False
         return True
 
+    def total_bnb_available(self, tickers=None):
+        if not tickers:
+            tickers = self._tickers
+        for symbol, price in self.balances.items():
+            if symbol != 'BNB':
+                ticker_id = "{}BNB".format(symbol)
+                if ticker_id not in tickers:
+                    return False
+        return True
+
     def get_total_btc_value(self, tickers=None):
         total_balance_btc = 0.0
 
