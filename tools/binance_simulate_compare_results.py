@@ -84,11 +84,15 @@ if __name__ == '__main__':
 
 
 
-    cache_path = "{}/{}".format(results.cache_dir, strategy)
-    for dbname in os.listdir(cache_path):
-        cache_path = "{}/{}".format(cache_path, dbname)
+    base_cache_path = "{}/{}".format(results.cache_dir, strategy)
+    for dbname in sorted(os.listdir(base_cache_path)):
+        cache_path = "{}/{}".format(base_cache_path, dbname)
+        print("{}:".format(dbname))
         for signal_name in signal_names.split(','):
             for hourly_name in hourly_names.split(','):
                 trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
                 trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
-                print(trade_result_path)
+                with open(trade_result_path, 'r') as f:
+                    result = f.read()
+                print("{} {}:".format(signal_name, hourly_name))
+                print(result)
