@@ -133,14 +133,15 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 
     found = False
 
-    initial_btc_total = 0.0
-    initial_bnb_total = 0.0
+    initial_total = 0.0
 
     first_ts = None
     last_ts = None
 
     kline = None
     cache_filename = simulate_db_filename
+
+    profit_mode = config.get('trader_profit_mode')
 
     #if os.path.exists(cache_filename):
     #    logger.info("Loading indicator cache {}".format(cache_filename))
@@ -162,11 +163,14 @@ def simulate(conn, config, logger, simulate_db_filename=None):
             last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
 
         if not found:
-            if multitrader.accnt.total_btc_available():
+            if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
                 found = True
-                total_btc = multitrader.accnt.get_total_btc_value()
-                initial_btc_total = total_btc
-                initial_bnb_total = multitrader.accnt.get_total_bnb_value()
+                initial_total = multitrader.accnt.get_total_btc_value()
+                multitrader.update_initial_btc()
+            elif profit_mode == 'BNB' and multitrader.accnt.total_bnb_available():
+                found = True
+                initial_total = multitrader.accnt.get_total_bnb_value()
+                print("initial_total: {}".format(initial_total))
                 multitrader.update_initial_btc()
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
@@ -203,15 +207,17 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         cache_db.close()
 
     logger.info("\nTrade Symbol Profits:")
-    final_btc_total = multitrader.accnt.get_total_btc_value()
-    final_bnb_total = multitrader.accnt.get_total_bnb_value()
-    total_pprofit = 0
-    total_bnb_pprofit = 0
-    if initial_btc_total:
-        total_pprofit = round(100.0 * (final_btc_total - initial_btc_total) / initial_btc_total, 2)
+    if profit_mode == 'BTC':
+        final_total = multitrader.accnt.get_total_btc_value()
+    elif profit_mode == 'BNB':
+        final_total = multitrader.accnt.get_total_bnb_value()
+    else:
+        final_total = 0
 
-    if initial_bnb_total and final_bnb_total:
-        total_bnb_pprofit = round(100.0 * (final_bnb_total - initial_bnb_total) / initial_bnb_total, 2)
+    total_pprofit = 0
+
+    if initial_total:
+        total_pprofit = round(100.0 * (final_total - initial_total) / initial_total, 2)
 
     for pair in multitrader.trade_pairs.values():
         for signal in pair.get_signals():
@@ -225,14 +231,9 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
     logger.info("\nResults:")
     logger.info("Total Capture Time:\t{} hours".format(round(total_time_hours, 2)))
-    logger.info("Initial BTC total:\t{}".format(initial_btc_total))
-    logger.info("Final BTC total:\t{}".format(final_btc_total))
-    if initial_bnb_total:
-        logger.info("Initial BNB total:\t{}".format(initial_bnb_total))
-    if final_bnb_total:
-        logger.info("Final BNB total:\t{}".format(final_bnb_total))
-    logger.info("Percent Profit (BTC): \t{}%".format(total_pprofit))
-    logger.info("Percent Profit (BNB): \t{}%".format(total_bnb_pprofit))
+    logger.info("Initial {} total:\t{}".format(profit_mode, initial_total))
+    logger.info("Final {} total:\t{}".format(profit_mode, final_total))
+    logger.info("Percent Profit ({}): \t{}%".format(profit_mode, total_pprofit))
 
     run_time = int(time.time() - start_time)
     print("Simulation Run Time:\t{} seconds".format(run_time))
@@ -242,7 +243,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     max_tickers = accnt.get_max_tickers()
     end_tickers = accnt.get_tickers()
 
-    return multitrader.get_stored_trades(), end_tickers, min_tickers, max_tickers, total_pprofit, initial_btc_total
+    return multitrader.get_stored_trades(), end_tickers, min_tickers, max_tickers, total_pprofit, initial_total
 
 
 def get_detail_all_assets(client):
