@@ -59,6 +59,8 @@ class TraderConfig(object):
         self.config.set(section, 'trades_disabled', 'False')
         self.config.set(section, 'max_market_buy', '0')
         self.config.set(section, 'init_max_buy_count', '0')
+        # sets what currency to use when calculating trade profits
+        self.config.set(section, 'trader_profit_mode', 'BTC')
 
         section = 'binance.simulate'
         self.config.add_section(section)
@@ -104,8 +106,9 @@ class TraderConfig(object):
         self.config.set(section, 'pax_trade_size', '20')
         self.config.set(section, 'usdt_trade_size', '20')
         self.config.set(section, 'trade_size_multiplier', '5.0')
-
         self.config.set(section, 'init_max_buy_count', '0')
+        # sets what currency to use when calculating trade profits
+        self.config.set(section, 'trader_profit_mode', 'BTC')
 
     def load(self):
         if os.path.exists(self.filename):
