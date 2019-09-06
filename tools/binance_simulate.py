@@ -246,39 +246,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     return multitrader.get_stored_trades(), end_tickers, min_tickers, max_tickers, total_pprofit, initial_total
 
 
-def get_detail_all_assets(client):
-    return client.get_asset_details()
-
-
-def get_info_all_assets(client):
-    assets = {}
-    for key, value in client.get_exchange_info().items():
-        if key != 'symbols':
-            continue
-        for asset in value:
-            minNotional = ''
-            minQty = ''
-            tickSize = ''
-            stepSize = ''
-            for filter in asset['filters']:
-                if 'minQty' in filter:
-                    minQty = filter['minQty']
-                if 'tickSize' in filter:
-                    tickSize = filter['tickSize']
-                if 'stepSize' in filter:
-                    stepSize = filter['stepSize']
-                if 'minNotional' in filter:
-                    minNotional = filter['minNotional']
-
-            assets[asset['symbol']] = {'minQty': minQty,
-                                       'tickSize': tickSize,
-                                       'stepSize': stepSize,
-                                       'minNotional': minNotional
-                                       }
-
-    return assets
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
@@ -404,7 +371,7 @@ if __name__ == '__main__':
     try:
         simulate_db_filename = os.path.basename(results.filename)
         print(simulate_db_filename)
-        trades, end_tickers, min_tickers, max_tickers, total_pprofit, initial_btc_total = simulate(conn, config, logger, simulate_db_filename)
+        trades, end_tickers, min_tickers, max_tickers, total_pprofit, initial_total = simulate(conn, config, logger, simulate_db_filename)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         conn.close()
@@ -424,6 +391,8 @@ if __name__ == '__main__':
             trade_cache[trade_cache_name]['trades'] = trades
             f.write(json.dumps(trade_cache, indent=4, sort_keys=True))
 
+        profit_mode = config.get('trader_profit_mode')
+
         with open(trade_result_path, "w") as f:
-            f.write("Initial BTC Total: {}\n".format(initial_btc_total))
+            f.write("Initial {} Total: {}\n".format(profit_mode, initial_total))
             f.write("Total Profit: {}%\n".format(total_pprofit))

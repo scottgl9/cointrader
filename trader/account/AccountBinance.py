@@ -768,8 +768,10 @@ class AccountBinance(AccountBase):
     def total_btc_available(self, tickers=None):
         if not tickers:
             tickers = self._tickers
-        for symbol, price in self.balances.items():
+        for symbol, info in self.balances.items():
             if symbol != 'BTC':
+                if not info or not info['balance']:
+                    continue
                 ticker_id = "{}BTC".format(symbol)
                 if ticker_id not in tickers:
                     return False
@@ -778,8 +780,13 @@ class AccountBinance(AccountBase):
     def total_bnb_available(self, tickers=None):
         if not tickers:
             tickers = self._tickers
-        for symbol, price in self.balances.items():
+
+        if 'BNBBTC' not in tickers:
+            return False
+        for symbol, info in self.balances.items():
             if symbol != 'BNB':
+                if not info or not info['balance']:
+                    continue
                 ticker_id = "{}BNB".format(symbol)
                 if ticker_id not in tickers:
                     return False
