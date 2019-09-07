@@ -41,13 +41,18 @@ class mainWindow(QtGui.QDialog):
         self.symbols = None
         self.conn = None
 
-    def process(self, conn, trades, end_tickers):
+    def process(self, conn, trades, end_tickers, profit_mode):
         self.conn = conn
         self.trades = trades
         self.end_tickers = end_tickers
         self.symbols=trades.keys()
         # percent change for each symbol
         self.symbols_percent = {}
+
+        if profit_mode and profit_mode != 'USDT':
+            symbol = '{}USDT'.format(profit_mode)
+            self.symbols_percent[symbol] = 0.0
+
         for symbol in self.symbols:
             # trades for a given symbol
             strades = self.trades[symbol]
@@ -92,7 +97,11 @@ class mainWindow(QtGui.QDialog):
             msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3], 'q': row[5], 'v': row[7]}
             data.append(msg)
         self.figure.clear()
-        self.plot(s, data, self.trades[s])
+        try:
+            strades = self.trades[s]
+        except KeyError:
+            strades = {}
+        self.plot(s, data, strades)
 
     def plot(self, name, data=None, trades=None):
         prices = []
@@ -213,6 +222,7 @@ if __name__ == '__main__':
     strategy = config.get('strategy')
     signal_name = config.get('signals')
     hourly_name = config.get('hourly_signal')
+    profit_mode = config.get('trader_profit_mode')
 
     if not os.path.exists(results.cache_dir):
         logger.warning("cache root directory {} doesn't exist, exiting...".format(results.cache_dir))
@@ -267,6 +277,6 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     main = mainWindow()
     main.showMaximized()
-    main.process(conn, trades, end_tickers)
+    main.process(conn, trades, end_tickers, profit_mode)
     main.show()
     sys.exit(app.exec_())
