@@ -1,18 +1,15 @@
 from trader.lib.struct.SignalBase import SignalBase
 from trader.lib.Crossover2 import Crossover2
-from trader.indicator.EMA import EMA
+from trader.indicator.MACD import MACD
 
 
-class Hourly_EMA_Crossover(SignalBase):
+class Hourly_MACD_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
-        super(Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, hkdb)
-        self.name = "Hourly_EMA_Crossover"
-        self.ema12 = EMA(12)
-        self.ema26 = EMA(26)
-        self.ema50 = EMA(50)
-        #self.ema200 = EMA(200)
+        super(Hourly_MACD_Signal, self).__init__(accnt, symbol, asset_info, hkdb)
+        self.name = "Hourly_MACD_Signal"
+        self.macd = MACD(short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0)
         self.cross = Crossover2(window=12)
-        self.cross2 = Crossover2(window=12)
+        self.cross_zero = Crossover2(window=12)
 
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
@@ -21,11 +18,9 @@ class Hourly_EMA_Crossover(SignalBase):
         for kline in self.klines:
             ts = int(kline['ts'])
             close = float(kline['close'])
-            self.ema12.update(close)
-            self.ema26.update(close)
-            self.ema50.update(close)
-            self.cross.update(self.ema12.result, self.ema26.result, ts)
-            self.cross2.update(self.ema12.result, self.ema50.result, ts)
+            self.macd.update(close)
+            self.cross.update(self.macd.result, self.macd.result2, ts)
+            self.cross_zero.update(self.macd.result, 0, ts)
         self.last_update_ts = ts
         self.first_hourly_ts = self.accnt.get_hourly_ts(ts)
         self.last_hourly_ts = self.first_hourly_ts
@@ -38,13 +33,12 @@ class Hourly_EMA_Crossover(SignalBase):
             return False
 
         close = float(kline['close'])
-        self.ema12.update(close)
-        self.ema50.update(close)
-        self.cross.update(self.ema12.result, self.ema26.result, hourly_ts)
-        self.cross2.update(self.ema12.result, self.ema50.result, hourly_ts)
+        self.macd.update(close)
+        self.cross.update(self.macd.result, self.macd.result2, hourly_ts)
+        self.cross_zero.update(self.macd.result, 0, hourly_ts)
 
     def hourly_buy_signal(self):
-        if self.cross2.crossup_detected():
+        if self.cross_zero.crossup_detected():
             return True
         if self.cross.crossup_detected():
             return True
@@ -54,7 +48,7 @@ class Hourly_EMA_Crossover(SignalBase):
         return False
 
     def hourly_sell_signal(self):
-        if self.cross2.crossdown_detected():
+        if self.cross_zero.crossdown_detected():
             return True
         if self.cross.crossdown_detected():
             return True
