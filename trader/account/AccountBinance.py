@@ -23,10 +23,11 @@ class AccountBinance(AccountBase):
         self.balances = {}
         if self.simulate:
             self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
+            self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
         else:
             self.currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
-        self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'BTCPAX', 'ETHPAX', 'BNBPAX',
-                                     'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
+            self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'BTCPAX', 'ETHPAX', 'BNBPAX',
+                                         'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
@@ -40,8 +41,7 @@ class AccountBinance(AccountBase):
         self._max_tickers = {}
         self._trader_profit_mode = 'BTC'
         self._tpprofit = 0
-        self.initial_btc = 0
-        self.actual_initial_btc = 0
+        self.initial_currency = 0
         self._sell_only = False
         self._btc_only = False
         self._eth_only = False

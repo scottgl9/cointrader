@@ -58,14 +58,23 @@ class OrderHandler(object):
                 trade_pair.set_buy_price_size(buy_price=trade['price'], buy_size=trade['qty'], sig_id=trade['sigid'])
 
 
-    def update_initial_btc(self):
-        self.logger.info("Resetting initial BTC...")
+    def update_initial_currency(self):
+        profit_mode = self.accnt.get_trader_profit_mode()
+        self.logger.info("Resetting initial {}...".format(profit_mode))
         if not self.accnt.simulate:
             self.accnt.get_account_balances()
-            self.accnt.initial_btc = self.accnt.get_account_total_btc_value()
+            self.accnt.initial_currency = self.accnt.get_account_total_btc_value()
         else:
-            self.accnt.initial_btc = self.accnt.get_total_btc_value()
-        self.logger.info("Initial BTC: {}".format(self.accnt.initial_btc))
+            if profit_mode == 'BTC':
+                total = self.accnt.get_total_btc_value()
+                self.accnt.initial_currency = total
+            elif profit_mode == 'BNB':
+                total = self.accnt.get_total_bnb_value()
+                self.accnt.initial_currency = total
+            else:
+                self.logger.error("Invalid profit mode {}".format(profit_mode))
+        self.logger.info("Initial {}: {}".format(profit_mode, self.accnt.initial_currency))
+
 
     def get_open_market_buy_count(self):
         return self.open_market_buy_count

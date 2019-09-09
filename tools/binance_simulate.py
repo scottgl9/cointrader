@@ -166,12 +166,12 @@ def simulate(conn, config, logger, simulate_db_filename=None):
             if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
                 found = True
                 initial_total = multitrader.accnt.get_total_btc_value()
-                multitrader.update_initial_btc()
+                multitrader.update_initial_currency()
             elif profit_mode == 'BNB' and multitrader.accnt.total_bnb_available():
                 found = True
                 initial_total = multitrader.accnt.get_total_bnb_value()
                 print("initial_total: {}".format(initial_total))
-                multitrader.update_initial_btc()
+                multitrader.update_initial_currency()
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
         #if msg['s'].endswith("USDT"):

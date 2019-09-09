@@ -169,7 +169,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                 total_btc = multitrader.accnt.get_total_btc_value()
                 initial_btc_total = total_btc
                 initial_bnb_total = multitrader.accnt.get_total_bnb_value()
-                multitrader.update_initial_btc()
+                multitrader.update_initial_currency()
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
         #if msg['s'].endswith("USDT"):

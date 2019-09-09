@@ -86,7 +86,7 @@ def simulate_trade_cache(conn, strategy, signal_name, trade_cache, logger):
                 found = True
                 total_btc = multitrader.accnt.get_total_btc_value(tickers)
                 initial_btc_total = total_btc
-                multitrader.update_initial_btc()
+                multitrader.update_initial_currency()
                 print("Initial BTC={}".format(total_btc))
 
         if msg['s'] not in trade_cache.keys():
