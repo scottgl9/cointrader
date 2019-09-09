@@ -80,9 +80,7 @@ if __name__ == '__main__':
     if eth_balance:
         balance_txt += "{}ETH".format(eth_balance)
     if bnb_balance:
-        balance_txt += "{}BNB".format(eth_balance)
-
-
+        balance_txt += "{}BNB".format(bnb_balance)
 
     base_cache_path = "{}/{}".format(results.cache_dir, strategy)
     for dbname in sorted(os.listdir(base_cache_path)):

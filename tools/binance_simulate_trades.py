@@ -110,7 +110,7 @@ if __name__ == '__main__':
     if eth_balance:
         balance_txt += "{}ETH".format(eth_balance)
     if bnb_balance:
-        balance_txt += "{}BNB".format(eth_balance)
+        balance_txt += "{}BNB".format(bnb_balance)
 
     trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
     cache_path = "{}/{}".format(results.cache_dir, strategy)

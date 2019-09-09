@@ -328,7 +328,7 @@ if __name__ == '__main__':
     if eth_balance:
         balance_txt += "{}ETH".format(eth_balance)
     if bnb_balance:
-        balance_txt += "{}BNB".format(eth_balance)
+        balance_txt += "{}BNB".format(bnb_balance)
 
     trade_cache = {}
 
