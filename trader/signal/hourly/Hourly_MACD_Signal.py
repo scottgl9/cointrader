@@ -38,8 +38,8 @@ class Hourly_MACD_Signal(SignalBase):
         self.cross_zero.update(self.macd.result, 0, hourly_ts)
 
     def hourly_buy_signal(self):
-        if self.cross_zero.crossup_detected():
-            return True
+        # if self.cross_zero.crossup_detected():
+        #     return True
         if self.cross.crossup_detected():
             return True
         return False
@@ -48,8 +48,8 @@ class Hourly_MACD_Signal(SignalBase):
         return False
 
     def hourly_sell_signal(self):
-        if self.cross_zero.crossdown_detected():
-            return True
+        #if self.cross_zero.crossdown_detected():
+        #    return True
         if self.cross.crossdown_detected():
             return True
         return False
