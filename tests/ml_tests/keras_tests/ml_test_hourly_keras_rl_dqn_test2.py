@@ -1,4 +1,5 @@
-#!/usr/bin/env python3# test HourlyLSTM class
+#!/usr/bin/env python3
+# test HourlyLSTM class
 import sys
 try:
     import trader
@@ -77,7 +78,7 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
     episode_start = agent.episode
 
     for e in xrange(episode_start, episode_count + 1):
-        print "Episode " + str(e) + "/" + str(episode_count)
+        print("Episode " + str(e) + "/" + str(episode_count))
         state = getState(data, 0, window_size + 1)
 
         total_profit = 0
@@ -110,10 +111,10 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
             state = next_state
 
             if done:
-                print "--------------------------------"
+                print("--------------------------------")
                 #true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
-                print "Total Profit: {}".format(total_profit)
-                print "--------------------------------"
+                print("Total Profit: {}".format(total_profit))
+                print("--------------------------------")
 
             if len(agent.memory) > batch_size:
                 agent.train_experience_replay(batch_size)
@@ -167,10 +168,10 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
         state = next_state
 
         if done:
-            print "--------------------------------"
+            print("--------------------------------")
             #true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
-            print "Total Profit: {}".format(total_profit)
-            print "--------------------------------"
+            print("Total Profit: {}".format(total_profit))
+            print("--------------------------------")
 
     plt.subplot(211)
     for i in buy_indices:
