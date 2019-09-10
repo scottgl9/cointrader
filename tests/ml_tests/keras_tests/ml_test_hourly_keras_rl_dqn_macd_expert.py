@@ -10,6 +10,7 @@ import sqlite3
 import sys
 import os
 import math
+import logging
 import time
 from trader.account.binance.client import Client
 from trader.config import *
@@ -179,6 +180,22 @@ def getState(data, t, n_days):
     return np.array([res])
 
 
+def run_expert_signal(hkdb, symbol, start_ts, end_ts):
+    signal = Hourly_MACD_Signal(accnt=hkdb.accnt, symbol=symbol, hkdb=hkdb)
+    hourly_ts = start_ts
+    buys = []
+    sells = []
+    while hourly_ts <= end_ts:
+        hourly_ts += hkdb.accnt.hours_to_ts(1)
+        signal.hourly_update(hourly_ts)
+        if signal.hourly_buy_signal():
+            buys.append(hourly_ts)
+        elif signal.hourly_sell_signal():
+            sells.append(hourly_ts)
+    print(buys)
+    print(sells)
+
+
 def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
@@ -332,14 +349,21 @@ if __name__ == '__main__':
     if not os.path.exists(results.hourly_filename):
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
+    logFormatter = logging.Formatter("%(message)s")
+    logger = logging.getLogger()
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    logger.addHandler(consoleHandler)
+    logger.setLevel(logging.DEBUG)
 
-    hkdb = HourlyKlinesDB(accnt, results.hourly_filename, None)
+    hkdb = HourlyKlinesDB(accnt, results.hourly_filename, logger=logger)
     print("Loading {}".format(results.hourly_filename))
 
     total_row_count = hkdb.get_table_row_count(results.symbol)
     train_end_index = int(total_row_count * float(results.split_percent) / 100.0)
 
     train_start_ts = hkdb.get_table_start_ts(results.symbol)
+    print(train_start_ts)
     train_end_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index)
     test_start_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
     test_end_ts = hkdb.get_table_end_ts(results.symbol)
@@ -360,10 +384,11 @@ if __name__ == '__main__':
     if results.verify:
         train = False
     if results.symbol:
-        if train:
-            train_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
-        else:
-            eval_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+        run_expert_signal(hkdb, results.symbol, train_start_ts, train_end_ts)
+        #if train:
+        #    train_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+        #else:
+        #    eval_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
     else:
         parser.print_help()
     hkdb.close()
