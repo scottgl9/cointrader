@@ -1,4 +1,5 @@
-#!/usr/bin/env python3# test HourlyLSTM class
+#!/usr/bin/env python3
+# test HourlyLSTM class
 import sys
 try:
     import trader
@@ -120,7 +121,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     agent = Agent(window_size)
 
     for e in xrange(episode_count + 1):
-        print "Episode " + str(e) + "/" + str(episode_count)
+        print("Episode " + str(e) + "/" + str(episode_count))
         state = agent.getState(data, 0, window_size + 1)
 
         total_profit = 0
@@ -136,22 +137,22 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
             if action == 1: # buy
                 if len(agent.inventory) < agent.max_inventory:
                     agent.inventory.append(data[t])
-                    print "Buy: " + formatPrice(data[t])
+                    print("Buy: " + formatPrice(data[t]))
 
             elif action == 2 and len(agent.inventory) > 0: # sell
                 bought_price = agent.inventory.pop(0)
                 reward = max(data[t] - bought_price, 0)
                 total_profit += data[t] - bought_price
-                print "Sell: " + formatPrice(data[t]) + " | Profit: " + formatPrice(data[t] - bought_price)
+                print("Sell: " + formatPrice(data[t]) + " | Profit: " + formatPrice(data[t] - bought_price))
 
             done = True if t == l - 1 else False
             agent.memory.append((state, action, reward, next_state, done))
             state = next_state
 
             if done:
-                print "--------------------------------"
-                print "Total Profit: " + formatPrice(total_profit)
-                print "--------------------------------"
+                print("--------------------------------")
+                print("Total Profit: " + formatPrice(total_profit))
+                print("--------------------------------")
 
             if len(agent.memory) > batch_size:
                 agent.expReplay(batch_size)

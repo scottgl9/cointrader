@@ -26,6 +26,10 @@ from trader.lib.MachineLearning.DQNAgent import DQNAgent
 from trader.lib.MachineLearning.DQNAgent2 import DQNAgent2
 from sklearn.preprocessing import MinMaxScaler
 
+if sys.version_info >= (3, 0):
+    def xrange(*args, **kwargs):
+        return iter(range(*args, **kwargs))
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
