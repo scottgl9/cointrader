@@ -14,6 +14,7 @@ import logging
 import sys
 import os
 import argparse
+from datetime import datetime
 
 
 def get_table_list(c):
@@ -85,5 +86,7 @@ if __name__ == '__main__':
             ts2 = int(timestamps[i])
             ts_delta = ts2 - ts1
             if ts_delta != 3600000:
-                print("Error in table {}: {} {} ({})".format(symbol, ts1, ts2, ts_delta / 1000))
+                dt_ts1 = datetime.fromtimestamp(int(ts1 / 1000))
+                dt_ts2 = datetime.fromtimestamp(int(ts2 / 1000))
+                print("Error in table {}:\t{}\t{}\t({})".format(symbol, dt_ts1, dt_ts2, ts_delta / 1000))
     conn.close()

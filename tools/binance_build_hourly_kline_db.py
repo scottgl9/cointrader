@@ -90,8 +90,8 @@ if __name__ == '__main__':
 
         symbol_table_list.append(symbol)
 
-    #for symbol in ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'PAXUSDT', 'XRPUSDT']: #sorted(accnt.get_all_ticker_symbols('USDT')):
-    #    symbol_table_list.append(symbol)
+    if currency != 'USDT':
+        symbol_table_list.append("{}USDT".format(currency))
 
     db_conn = create_db_connection(db_file)
 
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     current_ts = int(time.time()) * 1000
 
-    for symbol in symbol_table_list:
+    for symbol in sorted(symbol_table_list):
         cur = db_conn.cursor()
 
         print("Getting klines from {} to {} for {}".format(results.start_date, results.end_date, symbol))
@@ -126,7 +126,6 @@ if __name__ == '__main__':
             continue
 
         cur.execute("""CREATE TABLE {} ({})""".format(symbol, columns))
-        #db_conn.commit()
 
         sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
 
