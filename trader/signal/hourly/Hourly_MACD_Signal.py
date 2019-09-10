@@ -4,10 +4,15 @@ from trader.indicator.MACD import MACD
 
 
 class Hourly_MACD_Signal(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
+    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None, short_weight=12.0,
+                 long_weight=26.0, signal_weight=9.0, scale=1.0):
         super(Hourly_MACD_Signal, self).__init__(accnt, symbol, asset_info, hkdb)
         self.name = "Hourly_MACD_Signal"
-        self.macd = MACD(short_weight=12.0, long_weight=26.0, signal_weight=9.0, scale=1.0)
+        self.short_weight = short_weight
+        self.long_weight = long_weight
+        self.signal_weight = signal_weight
+        self.scale = scale
+        self.macd = MACD(self.short_weight, self.long_weight, self.signal_weight, scale=self.scale)
         self.cross = Crossover2(window=12)
         self.cross_zero = Crossover2(window=12)
 

@@ -21,17 +21,17 @@ from trader.account.AccountBinance import AccountBinance
 import keras
 import tensorflow as tf
 from tensorflow.python.client import device_lib
-from trader.lib.MachineLearning.DQNAgent import DQNAgent
 from sklearn.preprocessing import MinMaxScaler
-import os
-import numpy as np
 import random
 from collections import deque
-from keras.models import Sequential, Model
-from keras.layers import Dense, Input
-from keras.optimizers import Adam
-from keras.utils import to_categorical
-import keras
+import numpy as np
+import keras.backend as K
+from keras.models import Sequential
+from keras.models import load_model
+from keras.layers import Activation, Dense
+from keras.optimizers import RMSprop
+from keras.initializers import VarianceScaling
+from trader.signal.hourly.Hourly_MACD_Signal import Hourly_MACD_Signal
 
 if sys.version_info >= (3, 0):
     def xrange(*args, **kwargs):
@@ -40,140 +40,142 @@ if sys.version_info >= (3, 0):
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-# Deep Q-learning Agent
-class DQNAgent(object):
-    def __init__(self, symbol, state_size, action_size, is_eval=False, max_inventory=1):
-        self.symbol = symbol
-        self.episode = 0
-        self.weights_path = "models/{}.h5".format(symbol)
-        self.episode_path = "models/{}.txt".format(symbol)
-        self.is_eval = is_eval
-        self.state_size = state_size
-        self.action_size = action_size
-        self.memory = deque(maxlen=2000)
-        self.inventory = []
+def huber_loss(y_true, y_pred, clip_delta=1.0):
+    """ Huber loss - Custom Loss Function for Q Learning
+
+    Links: 	https://en.wikipedia.org/wiki/Huber_loss
+                    https://jaromiru.com/2017/05/27/on-using-huber-loss-in-deep-q-learning/
+    """
+    error = y_true - y_pred
+    cond = K.abs(error) <= clip_delta
+    squared_loss = 0.5 * K.square(error)
+    quadratic_loss = 0.5 * K.square(clip_delta) + clip_delta * (K.abs(error) - clip_delta)
+    return K.mean(tf.where(cond, squared_loss, quadratic_loss))
+
+
+class DQNAgent:
+    """ Stock Trading Bot """
+
+    def __init__(self, state_size, pretrained=False, model_name=None, max_inventory=1):
+        '''agent config'''
+        self.state_size = state_size    	# normalized previous days
+        self.action_size = 3           		# [sit, buy, sell]
+        self.model_name = model_name
         self.max_inventory = max_inventory
-        self.gamma = 0.95    # discount rate
-        self.epsilon = 1.0  # exploration rate
+        self.inventory = []
+        self.memory = deque(maxlen=1000)
+        self.first_iter = True
+        self.episode = 0
+
+        '''model config'''
+        self.model_name = model_name
+        self.gamma = 0.95
+        self.epsilon = 1.0
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
-        self.model = self._build_model()
+        self.loss = huber_loss
+        self.custom_objects = {'huber_loss': huber_loss}  # important for loading the model from memory
+        self.optimizer = RMSprop(lr=self.learning_rate)
+        self.initializer = VarianceScaling()
 
-    def _build_model(self):
-        # Neural Net for Deep-Q learning Model
-        # model = Sequential()
-        # model.add(Dense(24, input_shape=(self.state_size,), activation='relu'))
-        # model.add(Dense(24, activation='relu'))
-        # model.add(Dense(self.action_size, activation='linear'))
-        # model.compile(loss='mse',
-        #               optimizer=Adam(lr=self.learning_rate))
-        input_layer = Input((self.state_size,), batch_shape=(None, 1, self.state_size))
-        actions_input = keras.layers.Input((self.action_size,), name='mask')
-        hl = Dense(24, activation="relu")(input_layer)
-        h2 = Dense(24, activation="relu")(hl)
-        h3 = Dense(24, activation="relu")(h2)
-        output_layer = Dense(self.action_size, activation="linear")(h3)
-        filtered_output = keras.layers.multiply([output_layer, actions_input])
-        model = keras.models.Model(input=[input_layer, actions_input], output=filtered_output) #Model(input_layer, output_layer)
-        model.compile(loss="mse", optimizer=Adam(lr=self.learning_rate))
+        '''load pretrained model'''
+        if pretrained and self.model_name is not None:
+            self.model = self.load()
+        else:
+            self.model = self._model()
+
+    def _model(self):
+        """	Creates the model. """
+        model = Sequential()
+        model.add(Dense(units=24, input_dim=self.state_size, kernel_initializer=self.initializer))
+        model.add(Activation('relu'))
+        model.add(Dense(units=64, kernel_initializer=self.initializer))
+        model.add(Activation('relu'))
+        model.add(Dense(units=64, kernel_initializer=self.initializer))
+        model.add(Activation('relu'))
+        model.add(Dense(units=24, kernel_initializer=self.initializer))
+        model.add(Activation('relu'))
+        model.add(Dense(units=self.action_size, kernel_initializer=self.initializer))
+
+        model.compile(loss=self.loss, optimizer=self.optimizer)
         return model
 
-    def load_weights(self):
-        self.model.load_weights(self.weights_path)
-
-    def save_weights(self):
-        self.model.save_weights(self.weights_path, overwrite=True)
-
-    def load(self):
-        if not os.path.exists(self.episode_path):
-            return 0
-        with open(self.episode_path, 'r') as f:
-            self.episode = int(f.readline().strip()) + 1
-        self.load_weights()
-        print("Loaded episode {}".format(self.episode))
-        return self.episode
-
-    def save(self):
-        with open(self.episode_path, 'w') as f:
-            f.write(str(self.episode))
-        self.save_weights()
-
     def remember(self, state, action, reward, next_state, done):
+        """ Adds relevant data to memory. """
         self.memory.append((state, action, reward, next_state, done))
 
-    def act(self, state):
-        if not self.is_eval and np.random.rand() <= self.epsilon:
+    def act(self, state, is_eval=False):
+        """ Take action from given possible set of actions. """
+        if not is_eval and random.random() <= self.epsilon:
             return random.randrange(self.action_size)
-        action_mask = np.ones((1, self.action_size))
-        act_values = self.model.predict([state[0].reshape(1, 1, self.state_size), action_mask], batch_size=1)
-        return np.argmax(act_values[0])  # returns action
+        if self.first_iter:
+            self.first_iter = False
+            return 1
+        options = self.model.predict(state)
+        return np.argmax(options[0])
 
-    def replay(self, batch_size):
-        idx = np.random.choice(len(self.memory), size=batch_size, replace=False)
-        minibatch = np.array(self.memory)[idx]
+    def train_experience_replay(self, batch_size):
+        """ Train on previous experiences in memory. """
+        mini_batch = random.sample(self.memory, batch_size)
 
-        # Extract the columns from our sample
-        states = np.array(list(minibatch[:, 0]))
-        actions = minibatch[:, 1]
-        rewards = np.array(minibatch[:, 2])
-        next_states = np.array(list(minibatch[:, 3]))
-        is_terminal = minibatch[:, 4].tolist()
+        X_train, y_train = [], []
 
-        action_mask = np.ones((len(next_states), self.action_size))
-        # First, predict the Q values of the next states. Note how we are passing ones as the mask.
-        next_Q_values = self.model.predict([next_states, action_mask])
+        for state, action, reward, next_state, done in mini_batch:
+            target = reward
+            if not done:
+                target = reward + self.gamma * np.amax(self.model.predict(next_state)[0])
 
-        # The Q values of the terminal states is 0 by definition, so override them
-        next_Q_values[is_terminal] = 0
+            target_f = self.model.predict(state)
+            target_f[0][action] = target
+            X_train.append(state[0])
+            y_train.append(target_f[0])
 
-        # actions one hot encoded
-        actions_encoded = to_categorical(actions, num_classes=3)
+        history = self.model.fit(np.array(X_train), np.array(y_train), epochs=1, verbose=0)
+        loss = history.history['loss'][0]
 
-        # fix the shape of next_Q_values
-        next_Q_values = next_Q_values.reshape(batch_size, self.action_size)
-        # The Q values of each start state is the reward + gamma * the max next state Q value
-        Q_values = rewards + self.gamma * np.amax(next_Q_values, axis=1)
-
-        targets = actions_encoded * Q_values[:, None]
-        targets = targets.reshape(batch_size, 1, self.action_size)
-
-        # Fit the keras model. Note how we are passing the actions as the mask and multiplying
-        # the targets by the actions.
-        self.model.fit(
-            [states, actions_encoded], targets,
-            nb_epoch=1, batch_size=len(states), verbose=0
-        )
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+        return loss
+
+    def save(self, episode):
+        self.model.save('models/{}_{}'.format(self.model_name, episode))
+
+    def load(self):
+        return load_model('models/' + self.model_name, custom_objects=self.custom_objects)
 
 # prints formatted price
 def formatPrice(n):
     return ("-$" if n < 0 else "$") + "{0:.2f}".format(abs(n))
 
 
-# returns the sigmoid
 def sigmoid(x):
-    return 1 / (1 + math.exp(-x))
+    """ Computes sigmoid activation.
 
+    Args:
+            x (float): input value to sigmoid function.
+    Returns:
+            float: sigmoid function output.
+    """
+    try:
+        if x < 0:
+            return 1 - 1 / (1 + math.exp(x))
+        return 1 / (1 + math.exp(-x))
+    except OverflowError as err:
+        print("Overflow err: {0} - Val of x: {1}".format(err, x))
+    except ZeroDivisionError:
+        print("division by zero!")
+    except Exception as err:
+        print("Error in sigmoid: " + err)
 
-# returns an an n-day state representation ending at time t
-def getState(data, t, n):
-    d = t - n + 1
-    block = data[d:t + 1] if d >= 0 else -d * [data[0]] + data[0:t + 1]  # pad with t0
-    #block = data[t:t + n]
+def getState(data, t, n_days):
+    """ Returns an n-day state representation ending at time t. """
+    d = t - n_days + 1
+    block = data[d: t + 1] if d >= 0 else -d * [data[0]] + data[0: t + 1]  # pad with t0
     res = []
-    for i in xrange(n - 1):
-        delta = float(block[i + 1] - block[i])
-        res.append(delta)
-        #try:
-        #    #print(sigmoid(delta))
-        #    res.append(sigmoid(delta))
-        #except OverflowError:
-        #    print("ERROR: sigmoid({})".format(delta))
-        #    res.append(float('inf'))
-        #    #sys.exit(-1)
-
+    for i in range(n_days - 1):
+        res.append(sigmoid(block[i + 1] - block[i]))
     return np.array([res])
 
 
@@ -181,13 +183,13 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
     df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
-    scaler = MinMaxScaler(feature_range=(0, 1))
-    data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
-    #df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
+    #scaler = MinMaxScaler(feature_range=(0, 1))
+    #data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
+    data = df_train['close'].values.tolist()
     l = len(data) - 1
     batch_size = 32
-    agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=False)
-    agent.load()
+    agent = DQNAgent(state_size=window_size, pretrained=False, model_name=symbol)
+    #agent.load()
 
     episode_start = agent.episode
 
@@ -226,29 +228,26 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
 
             if done:
                 print("--------------------------------")
-                true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
-                print("Total Profit: {}".format(true_total_profit))
+                #true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
+                print("Total Profit: {}".format(total_profit))
                 print("--------------------------------")
 
             if len(agent.memory) > batch_size:
-                agent.replay(batch_size)
+                agent.train_experience_replay(batch_size)
 
-        agent.save()
         if e % 10 == 0:
-            model_path = "models/model_ep" + str(e)
-            print("Saving {}".format(model_path))
-            agent.model.save(model_path)
+            agent.save(e)
 
 
 def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     df_train = hkdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
     window_size = 10
-    scaler = MinMaxScaler(feature_range=(0, 1))
+    #scaler = MinMaxScaler(feature_range=(0, 1))
     close_values = df_train['close'].values
-    data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
+    data = close_values.tolist() #scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
     l = len(data) - 1
-    agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=True)
-    agent.load()
+    agent = DQNAgent(state_size=window_size, pretrained=True, model_name=symbol)
+    #agent.load()
 
     total_profit = 0
     agent.inventory = []
@@ -267,7 +266,7 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
         if action == 1: # buy
             if len(agent.inventory) < agent.max_inventory:
                 agent.inventory.append(data[t])
-                buy_price = scaler.inverse_transform([[data[t]]])[0][0]
+                buy_price = data[t] #scaler.inverse_transform([[data[t]]])[0][0]
                 print("Buy: {}".format(buy_price))
                 buy_indices.append(t)
 
@@ -275,8 +274,8 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
             bought_price = agent.inventory.pop(0)
             reward = max(data[t] - bought_price, 0)
             total_profit += data[t] - bought_price
-            sell_price = scaler.inverse_transform([[data[t]]])[0][0]
-            buy_price = scaler.inverse_transform([[bought_price]])[0][0]
+            sell_price = data[t] #scaler.inverse_transform([[data[t]]])[0][0]
+            buy_price = bought_price #scaler.inverse_transform([[bought_price]])[0][0]
             print("Sell: {} | Profit: {}".format(sell_price, sell_price - buy_price))
             sell_indices.append(t)
 
@@ -286,8 +285,8 @@ def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_e
 
         if done:
             print("--------------------------------")
-            true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
-            print("Total Profit: {}".format(true_total_profit))
+            #true_total_profit = scaler.inverse_transform([[total_profit]])[0][0]
+            print("Total Profit: {}".format(total_profit))
             print("--------------------------------")
 
     plt.subplot(211)
