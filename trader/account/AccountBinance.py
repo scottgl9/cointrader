@@ -58,6 +58,11 @@ class AccountBinance(AccountBase):
     def ts_to_seconds(self, ts):
         return float(ts / 1000.0)
 
+    # returns true if this ts is an hourly ts
+    def is_hourly_ts(self, ts):
+        hourly_ts = self.get_hourly_ts(ts)
+        return int(ts) == hourly_ts
+
     # set minutes and seconds components of timestamp to zero
     def get_hourly_ts(self, ts):
         #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)

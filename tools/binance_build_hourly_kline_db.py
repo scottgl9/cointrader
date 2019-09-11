@@ -129,7 +129,24 @@ if __name__ == '__main__':
 
         sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
 
+        last_ts = 0
+        last_kline = None
+
         for k in kline_list:
+            cur_ts = int(k[0])
+            # skip if is not an hourly ts
+            if not accnt.is_hourly_ts(cur_ts):
+                print("{}: skipping {}".format(symbol, cur_ts))
+                continue
             cur = db_conn.cursor()
+            # check for gaps in hourly klines, for gaps fill with previous kline
+            if last_kline and int(cur_ts - last_ts) != 3600000:
+                print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
+                ts = last_ts
+                while ts < cur_ts:
+                    cur.execute(sql, last_kline)
+                    ts += 3600000
             cur.execute(sql, k)
+            last_ts = cur_ts
+            last_kline = k
         db_conn.commit()
