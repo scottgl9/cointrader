@@ -95,7 +95,7 @@ def update_table(conn, client, symbol, end_ts):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='binance_hourly_klines.db',
+                        default='binance_hourly_klines_BTC.db',
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('--update', action='store_true', dest='update',

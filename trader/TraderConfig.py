@@ -28,7 +28,7 @@ class TraderConfig(object):
         self.config.set(section, 'symbol_filters', 'filter_min_usdt_value,filter_delta_ts_rank')
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_signal', 'Hourly_ROC_Signal')
-        self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
+        self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines_BTC.db')
         self.config.set(section, 'hourly_preload_hours', '48')
         self.config.set(section, 'max_hourly_model_count', '5')
 
@@ -77,7 +77,7 @@ class TraderConfig(object):
         self.config.set(section, 'symbol_filters', 'filter_min_usdt_value,filter_delta_ts_rank')
         self.config.set(section, 'signals', 'Hybrid_Crossover_Test2')
         self.config.set(section, 'hourly_signal', 'Hourly_ROC_Signal')
-        self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines.db')
+        self.config.set(section, 'hourly_kline_db_file', 'binance_hourly_klines_BTC.db')
         self.config.set(section, 'hourly_preload_hours', '48')
         self.config.set(section, 'max_hourly_model_count', '5')
 

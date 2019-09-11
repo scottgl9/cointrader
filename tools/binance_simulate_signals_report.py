@@ -318,7 +318,7 @@ if __name__ == '__main__':
                         help='simulation cache directory')
 
     parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
-                        default='binance_hourly_klines.db',
+                        default='binance_hourly_klines_BTC.db',
                         help='binance hourly klines DB file')
 
     parser.add_argument('--csv', action='store', dest='csv_file',

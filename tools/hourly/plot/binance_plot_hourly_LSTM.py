@@ -193,7 +193,7 @@ if __name__ == '__main__':
                         help='Hours before first ts in db specified by -f')
 
     parser.add_argument('-k', action='store', dest='hourly_filename',
-                        default='binance_hourly_klines.db',
+                        default='binance_hourly_klines_BTC.db',
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='symbol',
