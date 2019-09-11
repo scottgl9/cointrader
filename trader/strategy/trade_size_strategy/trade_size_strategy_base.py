@@ -2,6 +2,8 @@ class trade_size_strategy_base(object):
     def __init__(self, accnt, asset_info):
         self.accnt = accnt
         self.asset_info = asset_info
+        if not self.asset_info:
+            return
         self.base = asset_info.base
         self.currency = asset_info.currency
         self.symbol = self.accnt.make_ticker_id(self.base, self.currency)
