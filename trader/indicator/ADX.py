@@ -2,6 +2,16 @@
 from trader.lib.struct.IndicatorBase import IndicatorBase
 from trader.indicator.ATR import ATR
 
+# Formula:
+# - upmove = high - high(-1)
+# - downmove = low(-1) - low
+# - +dm = upmove if upmove > downmove and upmove > 0 else 0
+# - -dm = downmove if downmove > upmove and downmove > 0 else 0
+# - +di = 100 * MovingAverage(+dm, period) / atr(period)
+# - -di = 100 * MovingAverage(-dm, period) / atr(period)
+# - dx = 100 * abs(+di - -di) / (+di + -di)
+# - adx = MovingAverage(dx, period)
+
 
 class ADX(IndicatorBase):
     def __init__(self, win=14.0):
@@ -13,17 +23,17 @@ class ADX(IndicatorBase):
         self.dx_age = 0
         self._dx_sum = 0
         # +DM values
-        self.pdm_values = []
-        self._pdm_sum = 0
-        self.pdm = 0
+        self.pDM_values = []
+        self._pDM_sum = 0
+        self.pDM = 0
         # -DM values
-        self.ndm_values = []
-        self._ndm_sum = 0
-        self.ndm = 0
+        self.nDM_values = []
+        self._nDM_sum = 0
+        self.nDM = 0
         # +DI
-        self.pdi = 0
+        self.pDI = 0
         # -DI
-        self.ndi = 0
+        self.nDI = 0
         self.dm_age = 0
         self.prev_low = 0
         self.prev_high = 0
@@ -37,34 +47,45 @@ class ADX(IndicatorBase):
             self.prev_high = high
             return self.result
 
-        self.pdm = high - self.prev_high
-        self.ndm = self.prev_low - low
+        pDM = high - self.prev_high
+        nDM = self.prev_low - low
+
+        # - +dm = upmove if upmove > downmove and upmove > 0 else 0
+        # - -dm = downmove if downmove > upmove and downmove > 0 else 0
+        if pDM > nDM and pDM > 0:
+            self.pDM = pDM
+        else:
+            self.pDM = 0.0
+        if nDM > pDM and nDM > 0:
+            self.nDM = nDM
+        else:
+            self.nDM = 0
 
         self.prev_low = low
         self.prev_high = high
 
-        if len(self.pdm_values) < self.win or len(self.ndm_values) < self.win:
-            self.pdm_values.append(self.pdm)
-            self.ndm_values.append(self.ndm)
-            self._pdm_sum += self.pdm
-            self._ndm_sum += self.ndm
+        if len(self.pDM_values) < self.win or len(self.nDM_values) < self.win:
+            self.pDM_values.append(self.pDM)
+            self.nDM_values.append(self.nDM)
+            self._pDM_sum += self.pDM
+            self._nDM_sum += self.nDM
             return self.result
         else:
-            self._pdm_sum -= self.pdm_values[int(self.dm_age)]
-            self._pdm_sum += self.pdm
-            self._ndm_sum -= self.ndm_values[int(self.dm_age)]
-            self._ndm_sum += self.ndm
-            self.pdm_values[int(self.dm_age)] = self.pdm
-            self.ndm_values[int(self.dm_age)] = self.ndm
+            self._pDM_sum -= self.pDM_values[int(self.dm_age)]
+            self._pDM_sum += self.pDM
+            self._nDM_sum -= self.nDM_values[int(self.dm_age)]
+            self._nDM_sum += self.nDM
+            self.pDM_values[int(self.dm_age)] = self.pDM
+            self.nDM_values[int(self.dm_age)] = self.nDM
             self.dm_age = (self.dm_age + 1) % self.win
 
-        smooth_pdm = self._pdm_sum - self._pdm_sum / 14.0 + self.pdm
-        smooth_ndm = self._ndm_sum - self._ndm_sum / 14.0 + self.ndm
+        smooth_pdm = self._pDM_sum / self.win + self.pDM
+        smooth_ndm = self._nDM_sum / self.win + self.nDM
 
-        self.pdi = (smooth_pdm / self.atr.result) * 100.0
-        self.ndi = (smooth_ndm / self.atr.result) * 100.0
+        self.pDI = 100.0 * (smooth_pdm / self.atr.result)
+        self.nDI = 100.0 * (smooth_ndm / self.atr.result)
 
-        dx = 100.0 * abs(self.pdi - self.ndi) / abs(self.pdi + self.ndi)
+        dx = 100.0 * abs(self.pDI - self.nDI) / abs(self.pDI + self.nDI)
         if len(self.dx_values) < self.win:
             self.dx_values.append(dx)
             self._dx_sum += dx
