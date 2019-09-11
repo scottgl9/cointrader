@@ -25,6 +25,8 @@ from trader.config import *
 import argparse
 import logging
 import json
+import re
+import csv
 
 
 if __name__ == '__main__':
@@ -33,17 +35,17 @@ if __name__ == '__main__':
                         default='basic_signal_market_strategy',
                         help='name of strategy to use')
 
-    parser.add_argument('-g', action='store', dest='signal_names',
-                        default='',
-                        help='name of signal(s) to use (comma separated)')
-
-    parser.add_argument('-r', action='store', dest='hourly_signal_names',
-                        default='',
-                        help='name of hourly signal(s) to use (comma separated)')
-
     parser.add_argument('-c', action='store', dest='cache_dir',
                         default='cache',
                         help='simulation cache directory')
+
+    parser.add_argument('-o', action='store', dest='out_csv_file',
+                        default='results.csv',
+                        help='Simulation results CSV file')
+
+    parser.add_argument('--currency', action='store', dest='currency',
+                        default='',
+                        help='currency to report on (default: all)')
 
     results = parser.parse_args()
 
@@ -60,37 +62,33 @@ if __name__ == '__main__':
     if results.strategy:
         config.set('strategy', results.strategy)
 
-    if results.signal_names:
-        config.set('signals', results.signal_names)
-
-    if results.hourly_signal_names:
-        config.set('hourly_signal', results.hourly_signal_names)
-
     strategy = config.get('strategy')
-    signal_names = config.get('signals')
-    hourly_names = config.get('hourly_signal')
 
-    # get balances from trader.ini to be used in creating filename
-    btc_balance = float(config.get('BTC'))
-    eth_balance = float(config.get('ETH'))
-    bnb_balance = float(config.get('BNB'))
-    balance_txt = ""
-    if btc_balance:
-        balance_txt += "{}BTC".format(btc_balance)
-    if eth_balance:
-        balance_txt += "{}ETH".format(eth_balance)
-    if bnb_balance:
-        balance_txt += "{}BNB".format(bnb_balance)
+
+    fnames = ['strategy', 'dbname', 'signal', 'hourly_signal', 'init_balance', 'profit']
+    csvfile = open(results.out_csv_file, 'w', newline='')
+    writer = csv.DictWriter(csvfile, fieldnames=fnames)
+    writer.writeheader()
 
     base_cache_path = "{}/{}".format(results.cache_dir, strategy)
     for dbname in sorted(os.listdir(base_cache_path)):
         cache_path = "{}/{}".format(base_cache_path, dbname)
-        print("{}:".format(dbname))
-        for signal_name in signal_names.split(','):
-            for hourly_name in hourly_names.split(','):
-                trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
-                trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
-                with open(trade_result_path, 'r') as f:
-                    result = f.read()
-                print("{} {}:".format(signal_name, hourly_name))
-                print(result)
+        for result_file in sorted(os.listdir(cache_path)):
+            if not result_file.endswith('.txt'):
+                continue
+            result_file_path = "{}/{}".format(cache_path, result_file)
+            with open(result_file_path, 'r') as f:
+                m = re.search(r"(\d+).(\d+)%", f.read())
+                if not m:
+                    continue
+                percent = m.group(0)
+                parts = result_file.replace('.txt','').split('-')
+                entry = {'strategy': strategy,
+                         'dbname': dbname,
+                         'signal': parts[0],
+                         'hourly_signal': parts[1],
+                         'init_balance': parts[2],
+                         'profit': percent
+                         }
+                writer.writerow(entry)
+    csvfile.close()
