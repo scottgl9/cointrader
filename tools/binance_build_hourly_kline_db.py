@@ -148,9 +148,9 @@ if __name__ == '__main__':
             # check for gaps in hourly klines, for gaps fill with previous kline
             if last_kline and int(cur_ts - last_ts) != 3600000:
                 print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
-                ts = last_ts
+                ts = last_ts + 3600000
                 while ts < cur_ts:
-                    k[0] = int(ts)
+                    last_kline[0] = int(ts)
                     cur.execute(sql, last_kline)
                     ts += 3600000
             cur.execute(sql, k)
