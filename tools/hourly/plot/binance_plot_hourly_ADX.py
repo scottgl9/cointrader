@@ -20,6 +20,8 @@ from trader.indicator.EMA import EMA
 from trader.indicator.LSMA import LSMA
 from trader.indicator.ATR import ATR
 from trader.indicator.ADX import ADX
+import numpy as np
+import talib
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts, daily=True)
@@ -59,12 +61,17 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         high_prices.append(high)
         i += 1
 
-    plt.subplot(211)
+    talib_adx_values = talib.ADX(np.array(high_prices), np.array(low_prices), np.array(close_prices), 14.0)
+
+    plt.subplot(311)
     symprice, = plt.plot(close_prices, label=symbol)
     plt.legend(handles=[symprice])
-    plt.subplot(212)
+    plt.subplot(312)
     fig21, = plt.plot(adx_x_values, adx_values, label='ADX')
     plt.legend(handles=[fig21])
+    plt.subplot(313)
+    fig31, = plt.plot(talib_adx_values, label='TALIB_ADX')
+    plt.legend(handles=[fig31])
     plt.show()
 
 # get first timestamp from kline sqlite db
