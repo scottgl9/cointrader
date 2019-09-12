@@ -296,16 +296,17 @@ class AccountCoinbasePro(AccountBase):
             return "{:.8f}".format(float(value))
 
     def make_ticker_id(self, base, currency):
-        return '%s%s' % (base, currency)
+        return '%s-%s' % (base, currency)
 
     def split_ticker_id(self, symbol):
         base_name = None
         currency_name = None
 
-        for currency in self.currencies:
-            if symbol.endswith(currency):
-                currency_name = currency
-                base_name = symbol.replace(currency, '')
+        parts = symbol.split('-')
+        if len(parts) == 2:
+            base_name = parts[0]
+            currency_name = parts[1]
+
         return base_name, currency_name
 
     def split_symbol(self, symbol):
@@ -868,16 +869,17 @@ class AccountCoinbasePro(AccountBase):
             self.balances[name]['balance'] = balance
             self.balances[name]['available'] = available
 
+    # implemented for CoinBase Pro
     def get_account_balances(self):
         self.balances = {}
         result = {}
-        for funds in self.client.get_account()['balances']:
-            funds_free = float(funds['free'])
-            funds_locked = float(funds['locked'])
-            if funds_free == 0.0 and funds_locked == 0.0: continue
-            asset_name = funds['asset']
-            self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
-            result[asset_name] = funds_free + funds_locked
+        for account in self.client.get_accounts():
+            asset_name = account['currency']
+            balance = account['balance']
+            available = account['available']
+            hold = account['hold']
+            self.balances[asset_name] = {'balance': balance, 'available': available, 'hold': hold}
+            result[asset_name] = balance
         return result
 
     def get_asset_balance(self, asset):
@@ -1078,10 +1080,10 @@ class AccountCoinbasePro(AccountBase):
         pass
 
     def order_market_buy(self, symbol, quantity):
-        return self.client.order_market_buy(symbol=symbol, quantity=quantity)
+        return self.client.place_market_order(product_id=symbol, side='buy', funds=quantity)
 
     def order_market_sell(self, symbol, quantity):
-        return self.client.order_market_sell(symbol=symbol, quantity=quantity)
+        return self.client.place_market_order(product_id=symbol, side='sell', funds=quantity)
 
     def buy_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
@@ -1218,13 +1220,14 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("buy_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
+            # return self.client.create_order(symbol=ticker_id,
+            #                          timeInForce=Client.TIME_IN_FORCE_GTC,
+            #                          side=Client.SIDE_BUY,
+            #                          type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
+            #                          quantity=size,
+            #                          price=price,
+            #                          stopPrice=stop_price)
+            return None
 
 
     def sell_limit_profit(self, price, size, stop_price, ticker_id=None):
@@ -1240,13 +1243,14 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("sell_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
+            # return self.client.create_order(symbol=ticker_id,
+            #                          timeInForce=Client.TIME_IN_FORCE_GTC,
+            #                          side=Client.SIDE_SELL,
+            #                          type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
+            #                          quantity=size,
+            #                          price=price,
+            #                          stopPrice=stop_price)
+            return None
 
 
     def buy_market_profit(self, price, size, stop_price, ticker_id=None):
@@ -1261,11 +1265,12 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("buy_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT,
-                                     quantity=size,
-                                     stopPrice=stop_price)
+            #return self.client.create_order(symbol=ticker_id,
+            #                         side=Client.SIDE_BUY,
+            #                         type=Client.ORDER_TYPE_TAKE_PROFIT,
+            #                         quantity=size,
+            #                         stopPrice=stop_price)
+            return None
 
 
     def sell_market_profit(self, price, size, stop_price, ticker_id=None):
@@ -1281,11 +1286,12 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("sell_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT,
-                                     quantity=size,
-                                     stopPrice=stop_price)
+            #return self.client.create_order(symbol=ticker_id,
+            #                         side=Client.SIDE_SELL,
+            #                         type=Client.ORDER_TYPE_TAKE_PROFIT,
+            #                         quantity=size,
+            #                         stopPrice=stop_price)
+            return None
 
 
     def buy_market_stop(self, price, size, stop_price, ticker_id=None):
@@ -1300,12 +1306,7 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("buy_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_STOP_LOSS,
-                                     quantity=size,
-                                     stopPrice=stop_price)
-
+            return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
 
     def sell_market_stop(self, price, size, stop_price, ticker_id=None):
 
@@ -1320,11 +1321,7 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("sell_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_STOP_LOSS,
-                                     quantity=size,
-                                     stopPrice=stop_price)
+            return self.client.place_stop_order(product_id=ticker_id, side='sell', price=price, size=size)
 
 
     def buy_limit(self, price, size, post_only=True, ticker_id=None):
@@ -1337,8 +1334,7 @@ class AccountCoinbasePro(AccountBase):
 
             self.update_asset_balance(currency, cbalance, cavailable - usd_value)
         else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_buy(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+            return self.client.place_limit_order(product_id=ticker_id, side='buy', price=price, size=size)
 
 
     def sell_limit(self, price, size, post_only=True, ticker_id=None):
@@ -1350,8 +1346,8 @@ class AccountCoinbasePro(AccountBase):
 
             self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
         else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+            return self.client.place_limit_order(product_id=ticker_id, side='sell', price=price, size=size)
+
 
     # for handling a canceled sell order during simulation
     def cancel_sell_limit_complete(self, size, ticker_id=None):
@@ -1363,17 +1359,12 @@ class AccountCoinbasePro(AccountBase):
         self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
 
     def cancel_order(self, orderid, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
         return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
 
-    def cancel_all(self):
-        pass
+    def cancel_all(self, ticker_id=None):
+        return self.client.cancel_all(product_id=ticker_id)
 
     def get_klines(self, days=0, hours=1, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
-
         timestr = ''
         if days == 1:
             timestr = "1 day ago"

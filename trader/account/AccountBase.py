@@ -21,6 +21,10 @@ class AccountBase(object):
         pass
 
     @abstractmethod
+    def get_account_balances(self):
+        pass
+
+    @abstractmethod
     def get_deposit_address(self):
         pass
 
