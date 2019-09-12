@@ -71,17 +71,16 @@ class ADX(IndicatorBase):
             self._nDM_sum += self.nDM
             return self.result
         else:
-            smooth_pdm = self._pDM_sum / (self.win - 1.0) + self.pDM
-            smooth_ndm = self._nDM_sum / (self.win - 1.0) + self.nDM
-            self.pDI = 100.0 * (smooth_pdm / self.atr.result)
-            self.nDI = 100.0 * (smooth_ndm / self.atr.result)
-            self._pDM_sum -= self.pDM_values[int(self.dm_age)]
-            self._pDM_sum += self.pDM
-            self._nDM_sum -= self.nDM_values[int(self.dm_age)]
-            self._nDM_sum += self.nDM
-            self.pDM_values[int(self.dm_age)] = self.pDM
-            self.nDM_values[int(self.dm_age)] = self.nDM
-            self.dm_age = (self.dm_age + 1) % self.win
+            if self.pDI and self.nDI:
+                prev_pdm_sum = self._pDM_sum
+                prev_ndm_sum = self._nDM_sum
+                self._pDM_sum -= prev_pdm_sum / self.win
+                self._pDM_sum += self.pDM
+                self._nDM_sum -= prev_ndm_sum / self.win
+                self._nDM_sum += self.nDM
+
+            self.pDI = 100.0 * (self._pDM_sum / self.atr.result)
+            self.nDI = 100.0 * (self._nDM_sum / self.atr.result)
 
         if not self.pDI and not self.nDI:
             return self.result
@@ -97,11 +96,6 @@ class ADX(IndicatorBase):
             else:
                 prev_adx = self.adx
                 self.adx = ((prev_adx * (self.win - 1.0)) + dx) / self.win
-
-            self._dx_sum -= self.dx_values[int(self.dx_age)]
-            self._dx_sum += dx
-            self.dx_values[int(self.dx_age)] = dx
-            self.dx_age = (self.dx_age + 1) % self.win
 
         self.result = self.adx
         return self.result
