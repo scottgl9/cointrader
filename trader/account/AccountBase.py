@@ -13,6 +13,14 @@ class AccountBase(object):
     #    pass
 
     @abstractmethod
+    def make_ticker_id(self, base, currency):
+        pass
+
+    @abstractmethod
+    def split_ticker_id(self, symbol):
+        pass
+
+    @abstractmethod
     def get_deposit_address(self):
         pass
 
@@ -32,28 +40,8 @@ class AccountBase(object):
     def get_account_history(self):
         pass
 
-    #@abstractmethod
-    #def set_market_price(self, price):
-    #    pass
-
-    #@abstractmethod
-    #def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
-    #    pass
-
-    #@abstractmethod
-    #def check_order_error(self, result, side):
-    #    pass
-
-    #@abstractmethod
-    #def get_order(self, order_id):
-    #    pass
-
     @abstractmethod
     def get_orders(self):
-        pass
-
-    @abstractmethod
-    def buy_limit(self, price, size, post_only=True):
         pass
 
     @abstractmethod
@@ -61,11 +49,23 @@ class AccountBase(object):
         pass
 
     @abstractmethod
+    def sell_market(self, size, ticker_id=None):
+        pass
+
+    @abstractmethod
+    def buy_limit(self, price, size, post_only=True):
+        pass
+
+    @abstractmethod
     def sell_limit(self, price, size, post_only=True):
         pass
 
     @abstractmethod
-    def sell_market(self, size, ticker_id=None):
+    def buy_limit_complete(self, price, size, ticker_id=None):
+        pass
+
+    @abstractmethod
+    def sell_limit_complete(self, price, size, ticker_id=None):
         pass
 
     @abstractmethod
@@ -74,4 +74,8 @@ class AccountBase(object):
 
     @abstractmethod
     def cancel_all(self):
+        pass
+
+    @abstractmethod
+    def get_hourly_klines(self, symbol, start_ts, end_ts):
         pass
