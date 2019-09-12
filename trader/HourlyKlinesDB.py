@@ -298,11 +298,11 @@ class HourlyKlinesDB(object):
         return result
 
     # get klines as list of dicts from db table
-    def get_dict_klines(self, symbol, start_ts=0, end_ts=0):
+    def get_dict_klines(self, symbol, start_ts=0, end_ts=0, daily=False):
         result = []
         cur = self.conn.cursor()
 
-        sql = self.build_sql_select_query(symbol, start_ts, end_ts)
+        sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=daily)
 
         cur.execute(sql)
         for row in cur:

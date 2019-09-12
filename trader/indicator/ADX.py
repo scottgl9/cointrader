@@ -79,11 +79,14 @@ class ADX(IndicatorBase):
             self.nDM_values[int(self.dm_age)] = self.nDM
             self.dm_age = (self.dm_age + 1) % self.win
 
-        smooth_pdm = self._pDM_sum / self.win + self.pDM
-        smooth_ndm = self._nDM_sum / self.win + self.nDM
+            smooth_pdm = self._pDM_sum / self.win + self.pDM
+            smooth_ndm = self._nDM_sum / self.win + self.nDM
 
-        self.pDI = 100.0 * (smooth_pdm / self.atr.result)
-        self.nDI = 100.0 * (smooth_ndm / self.atr.result)
+            self.pDI = 100.0 * (smooth_pdm / self.atr.result)
+            self.nDI = 100.0 * (smooth_ndm / self.atr.result)
+
+        if not self.pDI and not self.nDI:
+            return self.result
 
         dx = 100.0 * abs(self.pDI - self.nDI) / abs(self.pDI + self.nDI)
         if len(self.dx_values) < self.win:
