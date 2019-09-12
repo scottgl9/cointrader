@@ -19,13 +19,16 @@ from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
 from trader.indicator.LSMA import LSMA
 from trader.indicator.ATR import ATR
+import numpy as np
+import talib
+
 
 def simulate(hkdb, symbol, start_ts, end_ts):
-    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts, daily=True)
 
     obv = OBV()
     obv_values = []
-    atr = ATR()
+    atr = ATR(window=14)
     atr_values = []
     close_prices = []
     open_prices = []
@@ -55,12 +58,17 @@ def simulate(hkdb, symbol, start_ts, end_ts):
         high_prices.append(high)
         i += 1
 
-    plt.subplot(211)
+    talib_atr_values = talib.ATR(np.array(high_prices), np.array(low_prices), np.array(close_prices), 14.0)
+
+    plt.subplot(311)
     symprice, = plt.plot(close_prices, label=symbol)
     plt.legend(handles=[symprice])
-    plt.subplot(212)
+    plt.subplot(312)
     fig21, = plt.plot(atr_values, label='ATR')
     plt.legend(handles=[fig21])
+    plt.subplot(313)
+    fig31, = plt.plot(talib_atr_values, label='TALIB_ATR')
+    plt.legend(handles=[fig31])
     plt.show()
 
 # get first timestamp from kline sqlite db
