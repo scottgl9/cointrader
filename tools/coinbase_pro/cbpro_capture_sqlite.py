@@ -205,9 +205,9 @@ if __name__ == '__main__':
         try:
             ws.create_db_connection(db_file)
             ws.start()
-            print("Server started")
+            print("started capturing {}...".format(db_file))
             while 1:
-                time.sleep(5)
+                time.sleep(30)
                 ws.db.commit()
         except (KeyboardInterrupt, SystemExit):
             ws.close()

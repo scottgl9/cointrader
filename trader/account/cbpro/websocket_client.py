@@ -75,15 +75,23 @@ class WebsocketClient(object):
         self.ws.send(json.dumps(sub_params))
 
     def _keepalive(self, interval=30):
-        while self.ws.connected:
+        while not self.stop and self.ws and self.ws.connected:
             self.ws.ping("keepalive")
             time.sleep(interval)
 
     def _listen(self):
+        data = None
         self.keepalive.start()
-        while not self.stop:
+        while not self.stop and self.ws and self.ws.connected:
             try:
                 data = self.ws.recv()
+            except (KeyboardInterrupt, SystemExit):
+                self.stop = True
+                break
+            if not data:
+                self.stop = True
+                break
+            try:
                 msg = json.loads(data)
             except ValueError as e:
                 self.on_error(e)
@@ -91,11 +99,14 @@ class WebsocketClient(object):
                 self.on_error(e)
             else:
                 self.on_message(msg)
+        print("Shutting down...")
+        self.close()
 
     def _disconnect(self):
         try:
             if self.ws:
                 self.ws.close()
+                self.ws = None
         except WebSocketConnectionClosedException as e:
             pass
         finally:
@@ -104,6 +115,10 @@ class WebsocketClient(object):
         self.on_close()
 
     def close(self):
+        if self.db:
+            self.db.commit()
+            self.db.close()
+            self.db = None
         self.stop = True   # will only disconnect after next msg recv
         self._disconnect() # force disconnect so threads can join
         self.thread.join()
@@ -119,47 +134,8 @@ class WebsocketClient(object):
     def on_message(self, msg):
         if self.should_print:
             print(msg)
-        if self.mongo_collection:  # dump JSON to given mongo collection
-            self.mongo_collection.insert_one(msg)
 
     def on_error(self, e, data=None):
         self.error = e
         self.stop = True
         print('{} - data: {}'.format(e, data))
-
-
-if __name__ == "__main__":
-    import sys
-    import cbpro
-    import time
-
-
-    class MyWebsocketClient(cbpro.WebsocketClient):
-        def on_open(self):
-            self.url = "wss://ws-feed.pro.coinbase.com/"
-            self.products = ["BTC-USD", "ETH-USD"]
-            self.message_count = 0
-            print("Let's count the messages!")
-
-        def on_message(self, msg):
-            print(json.dumps(msg, indent=4, sort_keys=True))
-            self.message_count += 1
-
-        def on_close(self):
-            print("-- Goodbye! --")
-
-
-    wsClient = MyWebsocketClient()
-    wsClient.start()
-    print(wsClient.url, wsClient.products)
-    try:
-        while True:
-            print("\nMessageCount =", "%i \n" % wsClient.message_count)
-            time.sleep(1)
-    except KeyboardInterrupt:
-        wsClient.close()
-
-    if wsClient.error:
-        sys.exit(1)
-    else:
-        sys.exit(0)
