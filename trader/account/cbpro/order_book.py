@@ -8,8 +8,8 @@ from sortedcontainers import SortedDict
 from decimal import Decimal
 import pickle
 
-from cbpro.public_client import PublicClient
-from cbpro.websocket_client import WebsocketClient
+from .public_client import PublicClient
+from .websocket_client import WebsocketClient
 
 
 class OrderBook(WebsocketClient):
