@@ -37,10 +37,6 @@ class AccountBase(object):
         pass
 
     @abstractmethod
-    def get_account_balance(self):
-        pass
-
-    @abstractmethod
     def get_account_history(self):
         pass
 

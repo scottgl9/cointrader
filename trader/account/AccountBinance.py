@@ -389,12 +389,12 @@ class AccountBinance(AccountBase):
             self.info_all_assets = self.get_info_all_assets()
             return
 
-        if not os.path.exists("asset_info.json"):
+        if not os.path.exists("binance_asset_info.json"):
             assets_info = self.client.get_exchange_info()
-            with open('asset_info.json', 'w') as f:
+            with open('binance_asset_info.json', 'w') as f:
                 json.dump(assets_info, f, indent=4)
         else:
-            assets_info = json.loads(open('asset_info.json').read())
+            assets_info = json.loads(open('binance_asset_info.json').read())
         self.info_all_assets = self.get_info_all_assets(assets_info)
 
 
@@ -404,12 +404,12 @@ class AccountBinance(AccountBase):
             self.details_all_assets = self.get_detail_all_assets()
             return
 
-        if not os.path.exists("asset_detail.json"):
+        if not os.path.exists("binance_asset_detail.json"):
             self.details_all_assets = self.get_detail_all_assets()
-            with open('asset_detail.json', 'w') as f:
+            with open('binance_asset_detail.json', 'w') as f:
                 json.dump(self.details_all_assets, f, indent=4)
         else:
-            self.details_all_assets = json.loads(open('asset_detail.json').read())
+            self.details_all_assets = json.loads(open('binance_asset_detail.json').read())
 
 
     def get_asset_status(self, name=None):
@@ -1069,9 +1069,6 @@ class AccountBinance(AccountBase):
         pass
 
     def handle_sell_completed(self, price, size):
-        pass
-
-    def get_account_balance(self):
         pass
 
     def order_market_buy(self, symbol, quantity):

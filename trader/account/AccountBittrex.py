@@ -1071,14 +1071,11 @@ class AccountBittrex(AccountBase):
     def handle_sell_completed(self, price, size):
         pass
 
-    def get_account_balance(self):
-        pass
-
     def order_market_buy(self, symbol, quantity):
-        return self.client.order_market_buy(symbol=symbol, quantity=quantity)
+        return self.client.trade_buy(market=symbol, order_type='MARKET', quantity=quantity)
 
     def order_market_sell(self, symbol, quantity):
-        return self.client.order_market_sell(symbol=symbol, quantity=quantity)
+        return self.client.trade_sell(market=symbol, order_type='MARKET', quantity=quantity)
 
     def buy_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
@@ -1095,11 +1092,7 @@ class AccountBittrex(AccountBase):
             return True
         else:
             self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
-            try:
-                result = self.order_market_buy(symbol=ticker_id, quantity=size)
-            except BinanceAPIException as e:
-                self.logger.info(e)
-                result = None
+            result = self.order_market_buy(symbol=ticker_id, quantity=size)
             return result
 
 
@@ -1119,11 +1112,7 @@ class AccountBittrex(AccountBase):
             return True
         else:
             self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
-            try:
-                result = self.order_market_sell(symbol=ticker_id, quantity=size)
-            except BinanceAPIException as e:
-                self.logger.info(e)
-                result = None
+            result = self.order_market_sell(symbol=ticker_id, quantity=size)
             return result
 
 
@@ -1172,13 +1161,7 @@ class AccountBittrex(AccountBase):
             return True
         else:
             self.logger.info("buy_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
+            #result = self.client.trade_buy(market=ticker_id)
 
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
@@ -1334,8 +1317,13 @@ class AccountBittrex(AccountBase):
 
             self.update_asset_balance(currency, cbalance, cavailable - usd_value)
         else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_buy(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+            result = self.client.trade_buy(market=ticker_id,
+                                           order_type='LIMIT',
+                                           quantity=size,
+                                           time_in_effect='GOOD_TIL_CANCELLED',
+                                           condition_type='LESS_THAN',
+                                           target=price)
+            return result
 
 
     def sell_limit(self, price, size, post_only=True, ticker_id=None):
@@ -1347,8 +1335,13 @@ class AccountBittrex(AccountBase):
 
             self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
         else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+            result = self.client.trade_sell(market=ticker_id,
+                                           order_type='LIMIT',
+                                           quantity=size,
+                                           time_in_effect='GOOD_TIL_CANCELLED',
+                                           condition_type='GREATER_THAN',
+                                           target=price)
+            return result
 
     # for handling a canceled sell order during simulation
     def cancel_sell_limit_complete(self, size, ticker_id=None):
@@ -1360,17 +1353,12 @@ class AccountBittrex(AccountBase):
         self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
 
     def cancel_order(self, orderid, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
-        return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
+        return self.client.cancel(uuid=orderid)
 
     def cancel_all(self):
         pass
 
     def get_klines(self, days=0, hours=1, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
-
         timestr = ''
         if days == 1:
             timestr = "1 day ago"
