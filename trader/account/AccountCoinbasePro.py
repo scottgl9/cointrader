@@ -331,74 +331,41 @@ class AccountCoinbasePro(AccountBase):
         assets = {}
 
         if not info_all_assets:
-            info_all_assets = self.client.get_exchange_info()
+            info_all_assets = self.pc.get_products()
 
-        for key, value in info_all_assets.items():
-            if key != 'symbols':
-                continue
-            for asset in value:
-                minNotional = ''
-                minQty = ''
-                minPrice = ''
-                tickSize = ''
-                stepSize = ''
-                commissionAsset = ''
-                baseAssetPrecision = 8
-                quotePrecision = 8
-                orderTypes = ''
-
-                if 'baseAssetPrecision' in asset:
-                    baseAssetPrecision = asset['baseAssetPrecision']
-                if 'quotePrecision' in asset:
-                    quotePrecision = asset['quotePrecision']
-
-                for filter in asset['filters']:
-                    # skip MARKET_LOT_SIZE
-                    if filter['filterType'] == 'MARKET_LOT_SIZE':
-                        continue
-
-                    if 'minQty' in filter:
-                        minQty = filter['minQty']
-                    if 'minPrice' in filter:
-                        minPrice = filter['minPrice']
-                    if 'tickSize' in filter:
-                        tickSize = filter['tickSize']
-                    if 'stepSize' in filter:
-                        stepSize = filter['stepSize']
-                    if 'minNotional' in filter:
-                        minNotional = filter['minNotional']
-                    if 'commissionAsset' in filter:
-                        commissionAsset = filter['commissionAsset']
-
-                if 'orderTypes' in asset:
-                    orderTypes = ','.join(asset['orderTypes'])
-
-                assets[asset['symbol']] = {'minQty': minQty,
-                                           'minPrice': minPrice,
-                                           'tickSize': tickSize,
-                                           'stepSize': stepSize,
-                                           'minNotional': minNotional,
-                                           'commissionAsset': commissionAsset,
-                                           'baseAssetPrecision': baseAssetPrecision,
-                                           'quotePrecision': quotePrecision,
-                                           'orderTypes': orderTypes
-                                           }
+        for info in info_all_assets:
+            symbol = info['id']
+            minQty = info['base_min_size']
+            minPrice = info['min_market_funds']
+            stepSize = info['base_increment']
+            tickSize = info['quote_increment']
+            assets[symbol] = {'minQty': minQty,
+                              'minPrice': minPrice,
+                              'tickSize': tickSize,
+                              'stepSize': stepSize,
+                              #'minNotional': minNotional,
+                              #'commissionAsset': commissionAsset,
+                              #'baseAssetPrecision': baseAssetPrecision,
+                              #'quotePrecision': quotePrecision,
+                              #'orderTypes': orderTypes
+                              }
 
         return assets
 
 
     # use get_info_all_assets to load asset info into self.info_all_assets
     def load_info_all_assets(self):
+        filename = "cbpro_asset_info.json"
         if not self.simulate:
             self.info_all_assets = self.get_info_all_assets()
             return
 
-        if not os.path.exists("asset_info.json"):
-            assets_info = self.client.get_exchange_info()
-            with open('asset_info.json', 'w') as f:
+        if not os.path.exists(filename):
+            assets_info = self.pc.get_products()
+            with open(filename, 'w') as f:
                 json.dump(assets_info, f, indent=4)
         else:
-            assets_info = json.loads(open('asset_info.json').read())
+            assets_info = json.loads(open(filename).read())
         self.info_all_assets = self.get_info_all_assets(assets_info)
 
 
@@ -786,20 +753,6 @@ class AccountCoinbasePro(AccountBase):
                     return False
         return True
 
-    def total_bnb_available(self, tickers=None):
-        if not tickers:
-            tickers = self._tickers
-
-        if 'BNBBTC' not in tickers:
-            return False
-        for symbol, info in self.balances.items():
-            if symbol != 'BNB':
-                if not info or not info['balance']:
-                    continue
-                ticker_id = "{}BNB".format(symbol)
-                if ticker_id not in tickers:
-                    return False
-        return True
 
     def get_total_btc_value(self, tickers=None):
         total_balance_btc = 0.0
@@ -826,15 +779,6 @@ class AccountCoinbasePro(AccountBase):
 
         return total_balance_btc
 
-    def get_total_bnb_value(self, tickers=None):
-        if not tickers:
-            tickers = self._tickers
-        try:
-            bnb_btc_value = tickers['BNBBTC']
-        except KeyError:
-            return 0
-        total_balance_btc = self.get_total_btc_value(tickers)
-        return total_balance_btc / bnb_btc_value
 
     def get_account_status(self):
         return self.client.get_account_status()
@@ -906,14 +850,12 @@ class AccountCoinbasePro(AccountBase):
 
     def get_all_ticker_symbols(self, currency=None):
         result = []
-        if not self.simulate:
-            for ticker in self.client.get_all_tickers():
-                if currency and ticker['symbol'].endswith(currency):
-                    result.append(ticker['symbol'])
-                elif not currency:
-                    result.append(ticker['symbol'])
-        else:
-            result = self.info_all_assets.keys()
+        products = self.pc.get_products()
+        for product in products:
+            if currency and product['id'].endswith(currency):
+                result.append(product['id'])
+            else:
+                result.append(product['id'])
         return result
 
     def get_all_tickers(self):
