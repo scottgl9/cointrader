@@ -1177,13 +1177,7 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("buy_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
+            return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
 
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
@@ -1199,13 +1193,7 @@ class AccountCoinbasePro(AccountBase):
             return True
         else:
             self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
+            return self.client.place_stop_order(product_id=ticker_id, side='sell', price=price, size=size)
 
 
     def buy_limit_profit(self, price, size, stop_price, ticker_id=None):
@@ -1382,26 +1370,15 @@ class AccountCoinbasePro(AccountBase):
                 timestr = "and {} hours ago".format(hours)
         timestr += " UTC"
 
-        klines_data = self.client.get_historical_klines(ticker_id, Client.KLINE_INTERVAL_1MINUTE, timestr)
-
-        # reorganize kline format to same as GDAX for consistency:
-        # GDAX kline format: [ timestamp, low, high, open, close, volume ]
-        # binance format: [opentime, open, high, low, close, volume, closetime quotevolume, tradecount,
-        # taker_buy_base_volume, taker_buy_currency_volume, ignore]
-        klines = []
-        for k in klines_data:
-            ts = k[0] / 1000
-            klines.append([ts, k[3], k[2], k[1], k[4], k[5]])
+        klines = None #self.client.get_historical_klines(ticker_id, Client.KLINE_INTERVAL_1MINUTE, timestr)
 
         return klines
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
-        klines = self.client.get_historical_klines_generator(
-            symbol=symbol,
-            interval=Client.KLINE_INTERVAL_1HOUR,
-            start_str=start_ts,
-            end_str=end_ts,
-        )
+        klines = self.pc.get_product_historic_rates(product_id=symbol,
+                                                    start=start_ts,
+                                                    end=end_ts,
+                                                    granularity=3600)
 
         return klines
 
