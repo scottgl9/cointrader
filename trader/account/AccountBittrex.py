@@ -1,9 +1,10 @@
-from trader.account.binance.client import Client, BinanceAPIException
+from trader.account.bittrex.bittrex import Bittrex, API_V2_0
 from trader.account.AccountBase import AccountBase
 from trader.lib.struct.Message import Message
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
+from trader.config import *
 
 import json
 import os
@@ -12,15 +13,19 @@ import os
 #logger = logging.getLogger(__name__)
 
 class AccountBittrex(AccountBase):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
+    def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
         self.account_type = 'Bittrex'
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
-        self.client = client
+        if client:
+            self.client = client
+        else:
+            self.client = Bittrex(api_key=BITTREX_API_KEY, api_secret=BITTREX_API_SECRET, api_version=API_V2_0)
         self.simulate = simulation
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
+
         if self.simulate:
             self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
             self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
@@ -293,16 +298,17 @@ class AccountBittrex(AccountBase):
             return "{:.8f}".format(float(value))
 
     def make_ticker_id(self, base, currency):
-        return '%s%s' % (base, currency)
+        return '%s-%s' % (currency, base)
 
     def split_ticker_id(self, symbol):
         base_name = None
         currency_name = None
 
-        for currency in self.currencies:
-            if symbol.endswith(currency):
-                currency_name = currency
-                base_name = symbol.replace(currency, '')
+        parts = symbol.split('-')
+        if len(parts) == 2:
+            currency_name = parts[0]
+            base_name = parts[1]
+
         return base_name, currency_name
 
     def split_symbol(self, symbol):
@@ -782,21 +788,6 @@ class AccountBittrex(AccountBase):
                     return False
         return True
 
-    def total_bnb_available(self, tickers=None):
-        if not tickers:
-            tickers = self._tickers
-
-        if 'BNBBTC' not in tickers:
-            return False
-        for symbol, info in self.balances.items():
-            if symbol != 'BNB':
-                if not info or not info['balance']:
-                    continue
-                ticker_id = "{}BNB".format(symbol)
-                if ticker_id not in tickers:
-                    return False
-        return True
-
     def get_total_btc_value(self, tickers=None):
         total_balance_btc = 0.0
 
@@ -821,16 +812,6 @@ class AccountBittrex(AccountBase):
             total_balance_btc += size_btc
 
         return total_balance_btc
-
-    def get_total_bnb_value(self, tickers=None):
-        if not tickers:
-            tickers = self._tickers
-        try:
-            bnb_btc_value = tickers['BNBBTC']
-        except KeyError:
-            return 0
-        total_balance_btc = self.get_total_btc_value(tickers)
-        return total_balance_btc / bnb_btc_value
 
     def get_account_status(self):
         return self.client.get_account_status()
@@ -868,13 +849,25 @@ class AccountBittrex(AccountBase):
     def get_account_balances(self):
         self.balances = {}
         result = {}
-        for funds in self.client.get_account()['balances']:
-            funds_free = float(funds['free'])
-            funds_locked = float(funds['locked'])
-            if funds_free == 0.0 and funds_locked == 0.0: continue
-            asset_name = funds['asset']
-            self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
-            result[asset_name] = funds_free + funds_locked
+
+        info_balances = self.client.get_balances()
+        if not info_balances['success']:
+            return self.balances
+        for info in info_balances['result']:
+            cinfo = info['Currency']
+            if not cinfo['IsActive'] or cinfo['IsDeleted'] or cinfo['IsRestricted']:
+                continue
+            if 'Balance' not in info:
+                continue
+            binfo = info['Balance']
+            print(binfo)
+            asset_name = binfo['Currency']
+            balance = binfo['Balance']
+            available = binfo['Available']
+            pending = binfo['Pending']
+            self.balances[asset_name] = {'balance': balance,
+                                         'available': available }
+            result[asset_name] = balance
         return result
 
     def get_asset_balance(self, asset):
@@ -914,8 +907,15 @@ class AccountBittrex(AccountBase):
     def get_all_tickers(self):
         result = {}
         if not self.simulate:
-            for ticker in self.client.get_all_tickers():
-                result[ticker['symbol']] = ticker['price']
+            info_tickers = self.client.get_market_summaries()
+            if not info_tickers['success']:
+                return result
+            for info in info_tickers['result']:
+                #market_info = info['Market']
+                market_summary = info['Summary']
+                ticker_id = market_summary['MarketName']
+                price = market_summary['Last']
+                result[ticker_id] = price
         else:
             result = self._tickers
         return result
