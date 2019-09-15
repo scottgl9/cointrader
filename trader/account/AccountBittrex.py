@@ -1025,12 +1025,6 @@ class AccountBittrex(AccountBase):
     def get_account_history(self):
         pass
 
-    def load_buy_price_list(self, base, currency):
-        buy_price_list = []
-        for trade in self.get_my_trades(base, currency):
-            buy_price_list.append(float(trade['price']))
-        return sorted(buy_price_list)
-
     def get_my_trades(self, base, currency, limit=500):
         balances = self.get_account_balances()
         result = []

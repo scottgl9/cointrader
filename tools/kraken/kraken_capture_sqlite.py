@@ -6,7 +6,7 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.kraken import WebsocketClient, AuthenticatedClient, PublicClient
+from trader.account.kraken import WebsocketClient
 from trader.account.AccountCoinbasePro import AccountCoinbasePro
 from datetime import datetime
 import sqlite3

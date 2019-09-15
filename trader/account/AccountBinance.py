@@ -920,102 +920,6 @@ class AccountBinance(AccountBase):
             result = self._tickers
         return result
 
-    def get_all_my_trades(self, limit=100):
-        tickers = self.get_all_ticker_symbols()
-        balances = self.get_account_balances()
-        result = {}
-
-        for name, amount in balances.items():
-            actual_fills = {}
-            current_amount = 0.0
-            for currency in self.currencies:
-                if name == currency or name == 'BTC':
-                    continue
-                ticker_id = "{}{}".format(name, currency)
-                if ticker_id not in tickers: continue
-                orders = self.client.get_my_trades(symbol=ticker_id, limit=limit)
-                if not orders or len(orders) == 0: continue
-
-                for order in orders:
-                    actual_fills[order['time']] = order
-
-            skip_size = 0.0
-            for (k, v) in sorted(actual_fills.items(), reverse=True):
-                if v['isBuyer'] == False:
-                    skip_size += float(v['qty'])
-                    continue
-
-                if float(v['qty']) <= skip_size:
-                    skip_size -= float(v['qty'])
-                    continue
-
-                if name not in result.keys():
-                    result[name] = []
-
-                result[name].append(v)
-                current_amount += float(v['qty'])
-                if current_amount >= float(amount):
-                    break
-        return result
-
-    # get all fills by using account balances to backtrack
-    def get_all_fills(self, limit=100):
-        tickers = self.get_all_ticker_symbols()
-        balances = self.get_account_balances()
-        result = {}
-
-        for name, amount in balances.items():
-            actual_fills = {}
-            current_amount = 0.0
-            for currency in self.currencies:
-                if name == currency or name == 'BTC':
-                    continue
-                ticker_id = "{}{}".format(name, currency)
-                if ticker_id not in tickers: continue
-                fills = self.client.get_all_orders(symbol=ticker_id, limit=limit)
-                if not fills or len(fills) == 0: continue
-
-                for fill in fills:
-                    if 'status' not in fill or fill['status'] != 'FILLED': continue
-                    actual_fills[fill['time']] = fill
-
-            skip_size = 0.0
-            for (k, v) in sorted(actual_fills.items(), reverse=True):
-                if v['side'] == 'SELL':
-                    skip_size += float(v['executedQty'])
-                    continue
-
-                if float(v['executedQty']) <= skip_size:
-                    skip_size -= float(v['executedQty'])
-                    continue
-
-                if name not in result.keys():
-                    result[name] = []
-
-                del v['stopPrice']
-                del v['isWorking']
-                del v['status']
-                del v['timeInForce']
-                del v['icebergQty']
-                result[name].append(v)
-                current_amount += float(v['executedQty'])
-                if current_amount >= float(amount):
-                    break
-
-        return result
-
-    def get_fills(self, ticker_id=None, limit=100):
-        result = []
-
-        if ticker_id is None:
-            return self.get_all_fills(limit=limit)
-
-        fills = self.client.get_all_orders(symbol=ticker_id, limit=limit)
-        for fill in fills:
-            if 'status' not in fill or fill['status'] != 'FILLED': continue
-            result.append(fill)
-        return result
-
     def get_order(self, order_id, ticker_id):
         return self.client.get_order(orderId=order_id, symbol=ticker_id)
 
@@ -1024,12 +928,6 @@ class AccountBinance(AccountBase):
 
     def get_account_history(self):
         pass
-
-    def load_buy_price_list(self, base, currency):
-        buy_price_list = []
-        for trade in self.get_my_trades(base, currency):
-            buy_price_list.append(float(trade['price']))
-        return sorted(buy_price_list)
 
     def get_my_trades(self, base, currency, limit=500):
         balances = self.get_account_balances()
