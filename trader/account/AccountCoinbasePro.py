@@ -5,9 +5,9 @@ from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
 from trader.account.cbpro import AuthenticatedClient, PublicClient
 from trader.config import *
-
 import json
 import os
+from datetime import datetime, timedelta
 
 
 class AccountCoinbasePro(AccountBase):
@@ -1278,12 +1278,10 @@ class AccountCoinbasePro(AccountBase):
         else:
             return self.client.place_limit_order(product_id=ticker_id, side='sell', price=price, size=size)
 
-
     # for handling a canceled sell order during simulation
     def cancel_sell_limit_complete(self, size, ticker_id=None):
         if not self.simulate:
             return
-
         base, currency = self.split_ticker_id(ticker_id)
         bbalance, bavailable = self.get_asset_balance_tuple(base)
         self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
@@ -1294,27 +1292,24 @@ class AccountCoinbasePro(AccountBase):
     def cancel_all(self, ticker_id=None):
         return self.client.cancel_all(product_id=ticker_id)
 
+    # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
+    # The maximum amount of data returned is 300 candles
+    # kline format: [ timestamp, low, high, open, close, volume ]
     def get_klines(self, days=0, hours=1, ticker_id=None):
-        timestr = ''
-        if days == 1:
-            timestr = "1 day ago"
-        elif days > 1:
-            timestr = "{} days ago".format(days)
-        if days == 0:
-            if hours == 1:
-                timestr = "1 hour ago"
-            elif hours > 1:
-                timestr = "{} hours ago".format(hours)
-        else:
-            if hours == 1:
-                timestr = "and 1 hour ago"
-            elif hours > 1:
-                timestr = "and {} hours ago".format(hours)
-        timestr += " UTC"
+        end = datetime.utcnow()
+        start = (end - timedelta(days=days, hours=hours))
+        granularity = 900
+        if days == 0 and hours < 6:
+            granularity = 60
+        elif (days== 0 and hours <= 24) or (days == 1 and hours == 0):
+            granularity = 300
 
-        klines = None #self.client.get_historical_klines(ticker_id, Client.KLINE_INTERVAL_1MINUTE, timestr)
+        rates = self.pc.get_product_historic_rates(ticker_id,
+                                                   start.isoformat(),
+                                                   end.isoformat(),
+                                                   granularity=granularity)
+        return rates[::-1]
 
-        return klines
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
         klines = self.pc.get_product_historic_rates(product_id=symbol,
@@ -1323,4 +1318,3 @@ class AccountCoinbasePro(AccountBase):
                                                     granularity=3600)
 
         return klines
-
