@@ -34,20 +34,19 @@ Documentation
 
 See the docstrings of the methods in the KrakenAPI class.
 
->>> from pykrakenapi import KrakenAPI
->>> help(KrakenAPI)
+# >>> from pykrakenapi import KrakenAPI
+# >>> help(KrakenAPI)
 
 
 Example
 -------
 
->>> import krakenex
->>> from pykrakenapi import KrakenAPI
->>> api = krakenex.API()
->>> k = KrakenAPI(api)
->>> ohlc, last = k.get_ohlc_data("BCHUSD")
-
->>> print(ohlc)
+# >>> import krakenex
+# >>> from pykrakenapi import KrakenAPI
+# >>> api = krakenex.API()
+# >>> k = KrakenAPI(api)
+# >>> ohlc, last = k.get_ohlc_data("BCHUSD")
+# >>> print(ohlc)
 
                            time    open    high     low   close    vwap     volume  count
 dtime
@@ -69,7 +68,7 @@ dtime
 
 from __future__ import absolute_import
 
-from pykrakenapi.pykrakenapi import KrakenAPI
+from .pykrakenapi import KrakenAPI
 
 __all__ = ['KrakenAPI']
 __version__ = '0.1.5'
@@ -77,4 +76,3 @@ __author__ = "Dominik Traxl <dominik.traxl@posteo.org>"
 __copyright__ = "Copyright 2017 Dominik Traxl"
 __license__ = "GNU GPL"
 __URL__ = "https://github.com/dominiktraxl/pykrakenapi/"
-
