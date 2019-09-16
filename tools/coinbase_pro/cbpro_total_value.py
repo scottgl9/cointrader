@@ -12,7 +12,7 @@ from trader.account.binance import client
 from trader.config import *
 
 if __name__ == '__main__':
-    client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
+    client = AuthenticatedClient(GDAX_KEY, GDAX_SECRET, GDAX_PASS) #(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
     accnt = AccountCoinbasePro(client=client)
     balances = accnt.get_account_balances()
     print(balances)
