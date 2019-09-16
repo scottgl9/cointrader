@@ -84,6 +84,89 @@ def my_handler(message):
     # Here you can do stuff with the messages
     print(message)
 
+
+class KrakenTrader:
+    def __init__(self, client=None, pairs=None, subscription='ticker', commit_count=1000, logger=None):
+        #self.client = client
+        self.logger = logger
+        self.pairs = pairs
+        self.subscription = subscription
+        #self.commit_count = commit_count
+        self.km = None
+        #self.counter = 0
+        #self.tickers = {}
+        #db_file = "cryptocurrency_database.miniticker_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
+        #if os.path.exists(db_file):
+        #    self.logger.info("{} already exists, exiting....".format(db_file))
+        #    sys.exit(0)
+        #self.db_conn = self.create_db_connection(db_file)
+        #self.logger.info("Started capturing to {}".format(db_file))
+        #cur = self.db_conn.cursor()
+        #cur.execute("""CREATE TABLE miniticker (E integer, c real, h real, l real, o real, q real, s text, v real)""")
+        #self.db_conn.commit()
+        #self.accnt = AccountKraken(self.client)
+
+    def create_db_connection(self, db_file):
+        """ create a database connection to the SQLite database
+            specified by db_file
+        :param db_file: database file
+        :return: Connection object or None
+        """
+        try:
+            conn = sqlite3.connect(db_file, check_same_thread=False)
+            return conn
+        except sqlite3.Error as e:
+            print(e)
+
+        return None
+
+    def insert(self, conn, msg):
+        values = [msg['E'], msg['c'], msg['h'], msg['l'], msg['o'], msg['q'], msg['s'], msg['v']]
+        cur = conn.cursor()
+        sql = """INSERT INTO miniticker (E, c, h, l, o, q, s, v) values(?, ?, ?, ?, ?, ?, ?, ?)"""
+        cur.execute(sql, values)
+
+    def process_message(self, msg):
+        if not msg:
+            return
+
+        if ('event' in msg and (msg['event'] == 'heartbeat' or msg['event'] == 'systemStatus' or
+            msg['event'] == 'subscriptionStatus')):
+            return
+        print(msg)
+        # if len(msg) == 0: return
+        #
+        # if not isinstance(msg, list):
+        #     if 's' not in msg.keys(): return
+        #     self.insert(self.db_conn, msg)
+        #     return
+        #
+        # for part in msg:
+        #     if 's' not in part.keys(): continue
+        #     self.insert(self.db_conn, part)
+
+    def run(self):
+        self.km = wsclient.WssClient() #key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
+        self.km.daemon = True
+        self.km.subscribe_public(
+            subscription={
+                'name': self.subscription
+            },
+            pair=self.pairs,
+            callback=self.process_message
+        )
+        self.km.start()
+        while True:
+            try:
+                time.sleep(5)
+            except KeyboardInterrupt:
+                #self.db_conn.commit()
+                #self.logger.info("Shutting down...")
+                self.km.close()
+                #self.bm.join()
+                break
+
+
 if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
     logger = logging.getLogger()
@@ -93,14 +176,14 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    db_file = "cbpro_database.miniticker_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
+    db_file = "kraken_database.miniticker_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
     if os.path.exists(db_file):
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
 
-    #api = API(key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
-    #client = KrakenAPI(api=api)
-    #accnt = AccountKraken(client=client)
+    api = API(key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
+    client = KrakenAPI(api=api)
+    accnt = AccountKraken(client=client)
     #tickers = accnt.get_all_ticker_symbols()
     #products = []
     #for ticker in tickers:
@@ -108,19 +191,5 @@ if __name__ == '__main__':
     #        continue
     #    products.append(ticker)
 
-    # channel list: full, level2, ticker, user, matches, heartbeat
-    pairs = ["XBT/USD", "XRP/USD", "ETH/USD"]
-    subscriptions = {"name": "ticker"}
-
-    my_client = wsclient.WssClient(key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
-    my_client.subscribe_public(
-        subscription={
-            'name': 'trade'
-        },
-        pair=pairs,
-        callback=my_handler
-    )
-
-    #my_client.start()
-    my_client.run()
-
+    kt = KrakenTrader(pairs=["XBT/USD", "XRP/USD", "ETH/USD"], logger=logger)
+    kt.run()

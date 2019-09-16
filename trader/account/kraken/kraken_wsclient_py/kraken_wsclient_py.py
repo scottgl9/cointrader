@@ -76,12 +76,10 @@ class KrakenClientFactory(WebSocketClientFactory, KrakenReconnectingClientFactor
 
 
 class KrakenSocketManager(threading.Thread):
-
-    STREAM_URL = 'wss://ws.kraken.com'
-
-    def __init__(self):  # client
+    def __init__(self, url='wss://ws.kraken.com'):  # client
         """Initialise the KrakenSocketManager"""
         threading.Thread.__init__(self)
+        self.url = url
         self.factories = {}
         self._connected_event = threading.Event()
         self._conns = {}
@@ -93,7 +91,7 @@ class KrakenSocketManager(threading.Thread):
         if id_ in self._conns:
             return False
 
-        factory_url = self.STREAM_URL
+        factory_url = self.url
         factory = KrakenClientFactory(factory_url, payload=payload)
         factory.base_client = self
         factory.protocol = KrakenClientProtocol
@@ -128,7 +126,7 @@ class KrakenSocketManager(threading.Thread):
             return
 
         # disable reconnecting if we are closing
-        self._conns[conn_key].factory = WebSocketClientFactory(self.STREAM_URL)
+        self._conns[conn_key].factory = WebSocketClientFactory(self.url)
         self._conns[conn_key].disconnect()
         del self._conns[conn_key]
 
