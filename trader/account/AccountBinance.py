@@ -385,31 +385,33 @@ class AccountBinance(AccountBase):
 
     # use get_info_all_assets to load asset info into self.info_all_assets
     def load_info_all_assets(self):
+        filename = "asset_info.json"
         if not self.simulate:
             self.info_all_assets = self.get_info_all_assets()
             return
 
-        if not os.path.exists("binance_asset_info.json"):
+        if not os.path.exists(filename):
             assets_info = self.client.get_exchange_info()
-            with open('binance_asset_info.json', 'w') as f:
+            with open(filename, 'w') as f:
                 json.dump(assets_info, f, indent=4)
         else:
-            assets_info = json.loads(open('binance_asset_info.json').read())
+            assets_info = json.loads(open(filename).read())
         self.info_all_assets = self.get_info_all_assets(assets_info)
 
 
     # use get_info_all_assets to load asset info into self.info_all_assets
     def load_detail_all_assets(self):
+        filename = "asset_detail.json"
         if not self.simulate:
             self.details_all_assets = self.get_detail_all_assets()
             return
 
-        if not os.path.exists("binance_asset_detail.json"):
+        if not os.path.exists(filename):
             self.details_all_assets = self.get_detail_all_assets()
-            with open('binance_asset_detail.json', 'w') as f:
+            with open(filename, 'w') as f:
                 json.dump(self.details_all_assets, f, indent=4)
         else:
-            self.details_all_assets = json.loads(open('binance_asset_detail.json').read())
+            self.details_all_assets = json.loads(open(filename).read())
 
 
     def get_asset_status(self, name=None):
@@ -1255,17 +1257,12 @@ class AccountBinance(AccountBase):
         self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
 
     def cancel_order(self, orderid, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
         return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
 
     def cancel_all(self):
         pass
 
     def get_klines(self, days=0, hours=1, ticker_id=None):
-        if not ticker_id:
-            ticker_id = self.ticker_id
-
         timestr = ''
         if days == 1:
             timestr = "1 day ago"
