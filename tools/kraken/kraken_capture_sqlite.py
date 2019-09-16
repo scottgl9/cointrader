@@ -6,8 +6,9 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.kraken import WebsocketClient
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.kraken import API, KrakenAPI
+from trader.account.kraken import kraken_wsclient_py as wsclient
+from trader.account.AccountKraken import AccountKraken
 from datetime import datetime
 import sqlite3
 import time
@@ -40,45 +41,48 @@ from trader.config import *
 #    u'side':u'buy',
 #    u'low_24h':u'177.57000000'
 # }
-class MyWSClient(WebsocketClient):
-    def create_db_connection(self, filename):
-        """ create a database connection to the SQLite database
-            specified by db_file
-        :param db_file: database file
-        :return: Connection object or None
-        """
-        try:
-            self.db = sqlite3.connect(filename, check_same_thread=False)
-            cur = self.db.cursor()
-            cur.execute(
-                """CREATE TABLE miniticker (ts integer, p real, ask real, bid real, q real, s text, buy boolean)""")
-            self.db.commit()
-            return self.db
-        except sqlite3.Error as e:
-            print(e)
-        return None
-
-    def on_message(self, msg):
-        if msg['type'] != 'ticker':
-            return
-        symbol = msg['product_id']
-        ts = int(time.mktime(aniso8601.parse_datetime(msg['time']).timetuple()))
-        p = float(msg['price'])
-        ask = float(msg['best_ask'])
-        bid = float(msg['best_bid'])
-        q = float(msg['last_size'])
-        # buy or sell
-        buy = False
-        if msg['side'] == 'buy':
-            buy = True
-        values = [ts, p, ask, bid, q, symbol, buy]
-        cur = self.db.cursor()
-        sql = """INSERT INTO miniticker (ts, p, ask, bid, q, s, buy) values(?, ?, ?, ?, ?, ?, ?)"""
-        cur.execute(sql, values)
-
-    def on_close(self):
-        sys.exit(0)
-
+# class MyWSClient(WebsocketClient):
+#     def create_db_connection(self, filename):
+#         """ create a database connection to the SQLite database
+#             specified by db_file
+#         :param db_file: database file
+#         :return: Connection object or None
+#         """
+#         try:
+#             self.db = sqlite3.connect(filename, check_same_thread=False)
+#             cur = self.db.cursor()
+#             cur.execute(
+#                 """CREATE TABLE miniticker (ts integer, p real, ask real, bid real, q real, s text, buy boolean)""")
+#             self.db.commit()
+#             return self.db
+#         except sqlite3.Error as e:
+#             print(e)
+#         return None
+#
+#     def on_message(self, msg):
+#         print(msg)
+#         # if msg['type'] != 'ticker':
+#         #     return
+#         # symbol = msg['product_id']
+#         # ts = int(time.mktime(aniso8601.parse_datetime(msg['time']).timetuple()))
+#         # p = float(msg['price'])
+#         # ask = float(msg['best_ask'])
+#         # bid = float(msg['best_bid'])
+#         # q = float(msg['last_size'])
+#         # # buy or sell
+#         # buy = False
+#         # if msg['side'] == 'buy':
+#         #     buy = True
+#         # values = [ts, p, ask, bid, q, symbol, buy]
+#         # cur = self.db.cursor()
+#         # sql = """INSERT INTO miniticker (ts, p, ask, bid, q, s, buy) values(?, ?, ?, ?, ?, ?, ?)"""
+#         # cur.execute(sql, values)
+#
+#     def on_close(self):
+#         sys.exit(0)
+def my_handler(message):
+    # Here you can do stuff with the messages
+    print(message)
 
 if __name__ == '__main__':
     logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
@@ -94,39 +98,29 @@ if __name__ == '__main__':
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
 
-    client = AuthenticatedClient(key=CBPRO_KEY, b64secret=CBPRO_SECRET, passphrase=CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client)
-    tickers = accnt.get_all_ticker_symbols()
-    products = []
-    for ticker in tickers:
-        if ticker.endswith('GBP') or ticker.endswith('EUR'):
-            continue
-        products.append(ticker)
+    #api = API(key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
+    #client = KrakenAPI(api=api)
+    #accnt = AccountKraken(client=client)
+    #tickers = accnt.get_all_ticker_symbols()
+    #products = []
+    #for ticker in tickers:
+    #    if ticker.endswith('GBP') or ticker.endswith('EUR'):
+    #        continue
+    #    products.append(ticker)
 
     # channel list: full, level2, ticker, user, matches, heartbeat
-    channels = ["ticker"]
+    pairs = ["XBT/USD", "XRP/USD", "ETH/USD"]
+    subscriptions = {"name": "ticker"}
 
-    while 1:
-        ws = MyWSClient(should_print=False,
-                        products=products,
-                        channels=channels,
-                        api_key=CBPRO_KEY,
-                        api_secret=CBPRO_SECRET,
-                        api_passphrase=CBPRO_PASS
-                        )
-        try:
-            ws.create_db_connection(db_file)
-            ws.start()
-            print("started capturing {}...".format(db_file))
-            while 1:
-                time.sleep(30)
-                ws.db.commit()
-        except (KeyboardInterrupt, SystemExit):
-            ws.close()
-            sys.exit(0)
-        except Exception as e:
-            print('Error occurred: {}'.format(e))
-            ws.close()
-            print("Connection closed, restarting...")
-            time.sleep(2)
-            sys.exit(-1)
+    my_client = wsclient.WssClient(key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
+    my_client.subscribe_public(
+        subscription={
+            'name': 'trade'
+        },
+        pair=pairs,
+        callback=my_handler
+    )
+
+    #my_client.start()
+    my_client.run()
+

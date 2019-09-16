@@ -6,19 +6,21 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.cbpro import AuthenticatedClient, PublicClient
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
-from trader.account.binance import client
+from trader.account.kraken.krakenex.api import API
+from trader.account.kraken.pykrakenapi.pykrakenapi import KrakenAPI, KrakenAPIError
 from trader.config import *
 
 if __name__ == '__main__':
-    client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client)
-    balances = accnt.get_account_balances()
-    print(balances)
+    api = API(key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
+    client = KrakenAPI(api=api)
+    print(api.query_private('Balance'))
+    #print(client.get_account_balance())
+    #accnt = AccountCoinbasePro(client=client)
+    #balances = accnt.get_account_balances()
+    #print(balances)
     #symbols = accnt.get_all_ticker_symbols()
     #print(symbols)
-    accnt.get_info_all_assets()
+    #accnt.get_info_all_assets()
     #accnt_assets = accnt_info['assets']
     #assets = sorted(accnt_assets, key=lambda x: (accnt_assets[x]['usd']), reverse=True)
     #for asset in assets:

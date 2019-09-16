@@ -816,6 +816,7 @@ class KrakenAPI(object):
 
         # query
         res = self.api.query_private('Balance', data=data)
+        print(res)
 
         # check for error
         if len(res['error']) > 0:
