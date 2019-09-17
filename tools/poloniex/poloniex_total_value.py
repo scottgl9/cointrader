@@ -14,6 +14,8 @@ if __name__ == '__main__':
     client = Poloniex(key=POLONIEX_API_KEY, secret=POLONIEX_SECRET_KEY, coach=False)
     print(client.returnBalances())
     print(client.returnCompleteBalances())
+    print(client.returnCurrencies())
+    print(client.returnTicker())
     #accnt = AccountPoloniex(client=client)
     #balances = accnt.get_account_balances()
     #print(balances)

@@ -110,9 +110,6 @@ class AccountPoloniex(AccountBase):
     def get_max_tickers(self):
         return self._max_tickers
 
-    def set_market_price(self, price):
-        pass
-
     def set_trader_profit_mode(self, mode):
         if mode in self.currencies:
             self._trader_profit_mode = mode
