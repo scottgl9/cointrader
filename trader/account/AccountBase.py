@@ -21,23 +21,23 @@ class AccountBase(object):
         pass
 
     @abstractmethod
+    def split_symbol(self, symbol):
+        pass
+
+    @abstractmethod
+    def get_symbol_base(self, symbol):
+        pass
+
+    @abstractmethod
+    def get_symbol_currency(self, symbol):
+        pass
+
+    @abstractmethod
     def get_account_balances(self):
         pass
 
     @abstractmethod
     def get_deposit_address(self):
-        pass
-
-    @abstractmethod
-    def handle_buy_completed(self, price, size):
-        pass
-
-    @abstractmethod
-    def handle_sell_completed(self, price, size):
-        pass
-
-    @abstractmethod
-    def get_account_history(self):
         pass
 
     @abstractmethod

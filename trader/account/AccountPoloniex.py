@@ -44,14 +44,6 @@ class AccountPoloniex(AccountBase):
         self._trader_profit_mode = 'BTC'
         self._tpprofit = 0
         self.initial_currency = 0
-        self._sell_only = False
-        self._btc_only = False
-        self._eth_only = False
-        self._bnb_only = False
-        self._hourly_symbols_only = False
-        self._trades_disabled = False
-        self._test_stop_loss = False
-        self._max_market_buy = 0
         self.loaded_model_count = 0
 
     def format_ts(self, ts):
@@ -135,62 +127,6 @@ class AccountPoloniex(AccountBase):
 
     def get_total_percent_profit(self):
         return self._tpprofit
-
-    def set_sell_only(self, sell_only):
-        self.logger.info("set_sell_only({})".format(sell_only))
-        self._sell_only = sell_only
-
-    def sell_only(self):
-        return self._sell_only
-
-    def set_btc_only(self, btc_only):
-        self.logger.info("set_btc_only({})".format(btc_only))
-        self._btc_only = btc_only
-
-    def btc_only(self):
-        return self._btc_only
-
-    def set_eth_only(self, eth_only):
-        self.logger.info("set_eth_only({})".format(eth_only))
-        self._eth_only = eth_only
-
-    def eth_only(self):
-        return self._eth_only
-
-    def set_bnb_only(self, bnb_only):
-        self.logger.info("set_bnb_only({})".format(bnb_only))
-        self._bnb_only = bnb_only
-
-    def bnb_only(self):
-        return self._bnb_only
-
-    def set_hourly_symbols_only(self, hourly_symbols_only):
-        self.logger.info("set_hourly_symbols_only({})".format(hourly_symbols_only))
-        self._hourly_symbols_only = hourly_symbols_only
-
-    def hourly_symbols_only(self):
-        return self._hourly_symbols_only
-
-    def set_trades_disabled(self, trades_disabled):
-        self.logger.info("set_trades_disabled({})".format(trades_disabled))
-        self._trades_disabled = trades_disabled
-
-    def trades_disabled(self):
-        return self._trades_disabled
-
-    def set_max_market_buy(self, max_market_buy):
-        self.logger.info("set_max_market_buy({})".format(max_market_buy))
-        self._max_market_buy = max_market_buy
-
-    def max_market_buy(self):
-        return self._max_market_buy
-
-    def set_test_stop_loss(self, test_stop_loss):
-        self.logger.info("set_test_stop_loss({})".format(test_stop_loss))
-        self._test_stop_loss = test_stop_loss
-
-    def test_stop_loss(self):
-        return self._test_stop_loss
 
     def get_currencies(self):
         return self.currencies
@@ -659,15 +595,6 @@ class AccountPoloniex(AccountBase):
             return result['address']
         return ''
 
-    def get_open_buy_orders(self):
-        return []
-
-    def get_open_sell_orders(self):
-        return []
-
-    def preload_buy_price_list(self):
-        return [], []
-
     def get_24hr_stats(self, ticker_id):
         stats = self.client.get_ticker(symbol=ticker_id)
 
@@ -872,15 +799,6 @@ class AccountPoloniex(AccountBase):
     def get_orders(self, ticker_id=None):
         return self.client.get_open_orders(symbol=ticker_id)
 
-    def get_account_history(self):
-        pass
-
-    def handle_buy_completed(self, price, size):
-        pass
-
-    def handle_sell_completed(self, price, size):
-        pass
-
     def order_market_buy(self, symbol, quantity):
         return self.client.place_market_order(product_id=symbol, side='buy', funds=quantity)
 
@@ -965,153 +883,6 @@ class AccountPoloniex(AccountBase):
             return True
         else:
             self.get_account_balances()
-
-
-    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            base, currency = self.split_ticker_id(ticker_id)
-            cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size)  # self.round_quote(price * size)
-
-            if usd_value > cavailable: return False
-
-            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
-            return True
-        else:
-            self.logger.info("buy_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
-
-
-    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
-
-        if self.simulate:
-            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            base, currency = self.split_ticker_id(ticker_id)
-            bbalance, bavailable = self.get_asset_balance_tuple(base)
-
-            if float(size) > bavailable: return False
-
-            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
-            return True
-        else:
-            self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='sell', price=price, size=size)
-
-
-    def buy_limit_profit(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            base, currency = self.split_ticker_id(ticker_id)
-            cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size)  # self.round_quote(price * size)
-
-            if usd_value > cavailable: return False
-
-            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
-            return True
-        else:
-            self.logger.info("buy_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            # return self.client.create_order(symbol=ticker_id,
-            #                          timeInForce=Client.TIME_IN_FORCE_GTC,
-            #                          side=Client.SIDE_BUY,
-            #                          type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
-            #                          quantity=size,
-            #                          price=price,
-            #                          stopPrice=stop_price)
-            return None
-
-
-    def sell_limit_profit(self, price, size, stop_price, ticker_id=None):
-
-        if self.simulate:
-            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            base, currency = self.split_ticker_id(ticker_id)
-            bbalance, bavailable = self.get_asset_balance_tuple(base)
-
-            if float(size) > bavailable: return False
-
-            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
-            return True
-        else:
-            self.logger.info("sell_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            # return self.client.create_order(symbol=ticker_id,
-            #                          timeInForce=Client.TIME_IN_FORCE_GTC,
-            #                          side=Client.SIDE_SELL,
-            #                          type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
-            #                          quantity=size,
-            #                          price=price,
-            #                          stopPrice=stop_price)
-            return None
-
-
-    def buy_market_profit(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            base, currency = self.split_ticker_id(ticker_id)
-            cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size)  # self.round_quote(price * size)
-
-            if usd_value > cavailable: return False
-
-            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
-            return True
-        else:
-            self.logger.info("buy_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            #return self.client.create_order(symbol=ticker_id,
-            #                         side=Client.SIDE_BUY,
-            #                         type=Client.ORDER_TYPE_TAKE_PROFIT,
-            #                         quantity=size,
-            #                         stopPrice=stop_price)
-            return None
-
-
-    def sell_market_profit(self, price, size, stop_price, ticker_id=None):
-
-        if self.simulate:
-            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            base, currency = self.split_ticker_id(ticker_id)
-            bbalance, bavailable = self.get_asset_balance_tuple(base)
-
-            if float(size) > bavailable: return False
-
-            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
-            return True
-        else:
-            self.logger.info("sell_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            #return self.client.create_order(symbol=ticker_id,
-            #                         side=Client.SIDE_SELL,
-            #                         type=Client.ORDER_TYPE_TAKE_PROFIT,
-            #                         quantity=size,
-            #                         stopPrice=stop_price)
-            return None
-
-
-    def buy_market_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            base, currency = self.split_ticker_id(ticker_id)
-            cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size)  # self.round_quote(price * size)
-
-            if usd_value > cavailable: return False
-
-            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
-            return True
-        else:
-            self.logger.info("buy_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
-
-    def sell_market_stop(self, price, size, stop_price, ticker_id=None):
-
-        if self.simulate:
-            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            base, currency = self.split_ticker_id(ticker_id)
-            bbalance, bavailable = self.get_asset_balance_tuple(base)
-
-            if float(size) > bavailable: return False
-
-            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
-            return True
-        else:
-            self.logger.info("sell_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='sell', price=price, size=size)
 
 
     def buy_limit(self, price, size, post_only=True, ticker_id=None):

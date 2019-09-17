@@ -965,12 +965,6 @@ class AccountBinance(AccountBase):
                 break
         return result
 
-    def handle_buy_completed(self, price, size):
-        pass
-
-    def handle_sell_completed(self, price, size):
-        pass
-
     def order_market_buy(self, symbol, quantity):
         return self.client.order_market_buy(symbol=symbol, quantity=quantity)
 
