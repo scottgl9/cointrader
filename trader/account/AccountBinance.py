@@ -318,68 +318,6 @@ class AccountBinance(AccountBase):
             return result[1]
         return None
 
-    def get_detail_all_assets(self):
-        return self.client.get_asset_details()
-
-    def get_info_all_assets(self, info_all_assets=None):
-        assets = {}
-
-        if not info_all_assets:
-            info_all_assets = self.client.get_exchange_info()
-
-        for key, value in info_all_assets.items():
-            if key != 'symbols':
-                continue
-            for asset in value:
-                minNotional = ''
-                min_qty = ''
-                min_price = ''
-                currency_step_size = ''
-                base_step_size = ''
-                commissionAsset = ''
-                baseAssetPrecision = 8
-                quotePrecision = 8
-                orderTypes = ''
-
-                if 'baseAssetPrecision' in asset:
-                    baseAssetPrecision = asset['baseAssetPrecision']
-                if 'quotePrecision' in asset:
-                    quotePrecision = asset['quotePrecision']
-
-                for filter in asset['filters']:
-                    # skip MARKET_LOT_SIZE
-                    if filter['filterType'] == 'MARKET_LOT_SIZE':
-                        continue
-
-                    if 'minQty' in filter:
-                        min_qty = filter['minQty']
-                    if 'minPrice' in filter:
-                        min_price = filter['minPrice']
-                    if 'tickSize' in filter:
-                        currency_step_size = filter['tickSize']
-                    if 'stepSize' in filter:
-                        base_step_size = filter['stepSize']
-                    if 'minNotional' in filter:
-                        minNotional = filter['minNotional']
-                    if 'commissionAsset' in filter:
-                        commissionAsset = filter['commissionAsset']
-
-                if 'orderTypes' in asset:
-                    orderTypes = ','.join(asset['orderTypes'])
-
-                assets[asset['symbol']] = {'min_qty': min_qty,
-                                           'min_price': min_price,
-                                           'currency_step_size': currency_step_size,
-                                           'base_step_size': base_step_size,
-                                           'minNotional': minNotional,
-                                           'commissionAsset': commissionAsset,
-                                           'baseAssetPrecision': baseAssetPrecision,
-                                           'quotePrecision': quotePrecision,
-                                           'orderTypes': orderTypes
-                                           }
-
-        return assets
-
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
@@ -389,26 +327,29 @@ class AccountBinance(AccountBase):
 
         if not os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
-            with open(filename, 'w') as f:
+            with open(self.exchange_info_file, 'w') as f:
                 json.dump(info, f, indent=4)
         else:
             info = json.loads(open(self.exchange_info_file).read())
-        self.info_all_assets = info
+        self.info_all_assets = info['pairs']
+        self.details_all_assets = info['assets']
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
-        info = self.client.get_exchange_info()
-        return self.parse_exchange_info(info)
+        pair_info = self.client.get_exchange_info()
+        asset_info = self.client.get_asset_details()
+        return self.parse_exchange_info(pair_info, asset_info)
 
-    def parse_exchange_info(self, info):
-        assets = {}
+    def parse_exchange_info(self, pair_info, asset_info):
+        exchange_info = {}
+        pairs = {}
         #if not info:
         #    info = self.client.get_exchange_info()
 
-        for key, value in info.items():
+        for key, value in pair_info.items():
             if key != 'symbols':
                 continue
-            for asset in value:
+            for pair in value:
                 minNotional = ''
                 min_qty = ''
                 min_price = ''
@@ -419,12 +360,12 @@ class AccountBinance(AccountBase):
                 quotePrecision = 8
                 orderTypes = ''
 
-                if 'baseAssetPrecision' in asset:
-                    baseAssetPrecision = asset['baseAssetPrecision']
-                if 'quotePrecision' in asset:
-                    quotePrecision = asset['quotePrecision']
+                if 'baseAssetPrecision' in pair:
+                    baseAssetPrecision = pair['baseAssetPrecision']
+                if 'quotePrecision' in pair:
+                    quotePrecision = pair['quotePrecision']
 
-                for filter in asset['filters']:
+                for filter in pair['filters']:
                     # skip MARKET_LOT_SIZE
                     if filter['filterType'] == 'MARKET_LOT_SIZE':
                         continue
@@ -442,10 +383,10 @@ class AccountBinance(AccountBase):
                     if 'commissionAsset' in filter:
                         commissionAsset = filter['commissionAsset']
 
-                if 'orderTypes' in asset:
-                    orderTypes = ','.join(asset['orderTypes'])
+                if 'orderTypes' in pair:
+                    orderTypes = ','.join(pair['orderTypes'])
 
-                assets[asset['symbol']] = {'min_qty': min_qty,
+                pairs[pair['symbol']] = {'min_qty': min_qty,
                                            'min_price': min_price,
                                            'currency_step_size': currency_step_size,
                                            'base_step_size': base_step_size,
@@ -455,43 +396,15 @@ class AccountBinance(AccountBase):
                                            'quotePrecision': quotePrecision,
                                            'orderTypes': orderTypes
                                            }
+        exchange_info['pairs'] = pairs
+        exchange_info['assets'] = asset_info
 
-        return assets
-
-    # use get_info_all_assets to load asset info into self.info_all_assets
-    def load_info_all_assets(self):
-        filename = "asset_info.json"
-        if not self.simulate:
-            self.info_all_assets = self.get_info_all_assets()
-            return
-
-        if not os.path.exists(filename):
-            assets_info = self.client.get_exchange_info()
-            with open(filename, 'w') as f:
-                json.dump(assets_info, f, indent=4)
-        else:
-            assets_info = json.loads(open(filename).read())
-        self.info_all_assets = self.get_info_all_assets(assets_info)
-
-
-    # use get_info_all_assets to load asset info into self.info_all_assets
-    def load_detail_all_assets(self):
-        filename = "asset_detail.json"
-        if not self.simulate:
-            self.details_all_assets = self.get_detail_all_assets()
-            return
-
-        if not os.path.exists(filename):
-            self.details_all_assets = self.get_detail_all_assets()
-            with open(filename, 'w') as f:
-                json.dump(self.details_all_assets, f, indent=4)
-        else:
-            self.details_all_assets = json.loads(open(filename).read())
+        return exchange_info
 
 
     def get_asset_status(self, name=None):
         if not self.details_all_assets:
-            self.load_detail_all_assets()
+            self.load_exchange_info()
 
         result = self.details_all_assets
         if 'assetDetail' in result.keys():
@@ -505,7 +418,7 @@ class AccountBinance(AccountBase):
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:
-            self.load_info_all_assets()
+            self.load_exchange_info()
 
         if not symbol:
             symbol = self.make_ticker_id(base, currency)
