@@ -13,7 +13,8 @@ from datetime import datetime, timedelta
 
 class AccountKraken(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
-        self.account_type = 'kraken'
+        self.exchange_name = 'kraken'
+        self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate = simulation
         self.simulate_db_filename = simulate_db_filename
@@ -25,13 +26,6 @@ class AccountKraken(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
-        if self.simulate:
-            self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
-            self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
-        else:
-            self.currencies = ['BTC', 'ETH', 'BNB', 'PAX', 'USDT']
-            self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'BTCPAX', 'ETHPAX', 'BNBPAX',
-                                         'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}

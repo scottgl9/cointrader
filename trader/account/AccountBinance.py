@@ -13,7 +13,8 @@ import os
 
 class AccountBinance(AccountBase):
     def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        self.account_type = 'binance'
+        self.exchange_name = 'binance'
+        self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
         self.client = client

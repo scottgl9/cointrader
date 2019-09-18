@@ -234,7 +234,7 @@ class MultiTrader(object):
             return None
 
         try:
-            base_min_size = float(asset_info['stepSize'])
+            base_min_size = float(asset_info['base_step_size'])
             min_notional = float(asset_info['minNotional'])
         except (KeyError, TypeError):
             if not self.simulate:
@@ -360,7 +360,7 @@ class MultiTrader(object):
             if not asset_info:
                 continue
             try:
-                base_min_size = float(asset_info['stepSize'])
+                base_min_size = float(asset_info['base_step_size'])
                 min_notional = float(asset_info['minNotional'])
             except (KeyError, TypeError):
                 continue
