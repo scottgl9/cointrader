@@ -383,11 +383,80 @@ class AccountBinance(AccountBase):
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
-        pass
+        if not self.simulate:
+            self.info_all_assets = self.get_exchange_info()
+            return
+
+        if not os.path.exists(self.exchange_info_file):
+            info = self.get_exchange_info()
+            with open(filename, 'w') as f:
+                json.dump(info, f, indent=4)
+        else:
+            info = json.loads(open(self.exchange_info_file).read())
+        self.info_all_assets = info
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
-        pass
+        info = self.client.get_exchange_info()
+        return self.parse_exchange_info(info)
+
+    def parse_exchange_info(self, info):
+        assets = {}
+        #if not info:
+        #    info = self.client.get_exchange_info()
+
+        for key, value in info.items():
+            if key != 'symbols':
+                continue
+            for asset in value:
+                minNotional = ''
+                min_qty = ''
+                min_price = ''
+                currency_step_size = ''
+                base_step_size = ''
+                commissionAsset = ''
+                baseAssetPrecision = 8
+                quotePrecision = 8
+                orderTypes = ''
+
+                if 'baseAssetPrecision' in asset:
+                    baseAssetPrecision = asset['baseAssetPrecision']
+                if 'quotePrecision' in asset:
+                    quotePrecision = asset['quotePrecision']
+
+                for filter in asset['filters']:
+                    # skip MARKET_LOT_SIZE
+                    if filter['filterType'] == 'MARKET_LOT_SIZE':
+                        continue
+
+                    if 'minQty' in filter:
+                        min_qty = filter['minQty']
+                    if 'minPrice' in filter:
+                        min_price = filter['minPrice']
+                    if 'tickSize' in filter:
+                        currency_step_size = filter['tickSize']
+                    if 'stepSize' in filter:
+                        base_step_size = filter['stepSize']
+                    if 'minNotional' in filter:
+                        minNotional = filter['minNotional']
+                    if 'commissionAsset' in filter:
+                        commissionAsset = filter['commissionAsset']
+
+                if 'orderTypes' in asset:
+                    orderTypes = ','.join(asset['orderTypes'])
+
+                assets[asset['symbol']] = {'min_qty': min_qty,
+                                           'min_price': min_price,
+                                           'currency_step_size': currency_step_size,
+                                           'base_step_size': base_step_size,
+                                           'minNotional': minNotional,
+                                           'commissionAsset': commissionAsset,
+                                           'baseAssetPrecision': baseAssetPrecision,
+                                           'quotePrecision': quotePrecision,
+                                           'orderTypes': orderTypes
+                                           }
+
+        return assets
 
     # use get_info_all_assets to load asset info into self.info_all_assets
     def load_info_all_assets(self):
