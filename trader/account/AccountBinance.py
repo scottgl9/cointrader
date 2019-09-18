@@ -13,7 +13,7 @@ import os
 
 class AccountBinance(AccountBase):
     def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        self.account_type = 'Binance'
+        self.account_type = 'binance'
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
         self.client = client
@@ -268,19 +268,19 @@ class AccountBinance(AccountBase):
         return size
 
     def round_base_symbol(self, symbol, price):
-        base_increment = self.get_asset_info_dict(symbol=symbol, field='stepSize')
+        base_increment = self.get_asset_info_dict(symbol=symbol, field='base_step_size')
         return self.round_base(price, base_increment)
 
     def round_quantity_symbol(self, symbol, size):
-        min_qty = self.get_asset_info_dict(symbol=symbol, field='minQty')
+        min_qty = self.get_asset_info_dict(symbol=symbol, field='min_qty')
         return self.round_quantity(size, min_qty)
 
     def round_quote_symbol(self, symbol, price):
-        quote_increment = self.get_asset_info_dict(symbol=symbol, field='tickSize')
+        quote_increment = self.get_asset_info_dict(symbol=symbol, field='currency_step_size')
         return self.round_quote(price, quote_increment)
 
     def round_quote_pair(self, base, currency, price):
-        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='tickSize')
+        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='currency_step_size')
         return self.round_quote(price, quote_increment)
 
     def my_float(self, value):
@@ -331,10 +331,10 @@ class AccountBinance(AccountBase):
                 continue
             for asset in value:
                 minNotional = ''
-                minQty = ''
-                minPrice = ''
-                tickSize = ''
-                stepSize = ''
+                min_qty = ''
+                min_price = ''
+                currency_step_size = ''
+                base_step_size = ''
                 commissionAsset = ''
                 baseAssetPrecision = 8
                 quotePrecision = 8
@@ -351,13 +351,13 @@ class AccountBinance(AccountBase):
                         continue
 
                     if 'minQty' in filter:
-                        minQty = filter['minQty']
+                        min_qty = filter['minQty']
                     if 'minPrice' in filter:
-                        minPrice = filter['minPrice']
+                        min_price = filter['minPrice']
                     if 'tickSize' in filter:
-                        tickSize = filter['tickSize']
+                        currency_step_size = filter['tickSize']
                     if 'stepSize' in filter:
-                        stepSize = filter['stepSize']
+                        base_step_size = filter['stepSize']
                     if 'minNotional' in filter:
                         minNotional = filter['minNotional']
                     if 'commissionAsset' in filter:
@@ -366,10 +366,10 @@ class AccountBinance(AccountBase):
                 if 'orderTypes' in asset:
                     orderTypes = ','.join(asset['orderTypes'])
 
-                assets[asset['symbol']] = {'minQty': minQty,
-                                           'minPrice': minPrice,
-                                           'tickSize': tickSize,
-                                           'stepSize': stepSize,
+                assets[asset['symbol']] = {'min_qty': min_qty,
+                                           'min_price': min_price,
+                                           'currency_step_size': currency_step_size,
+                                           'base_step_size': base_step_size,
                                            'minNotional': minNotional,
                                            'commissionAsset': commissionAsset,
                                            'baseAssetPrecision': baseAssetPrecision,
@@ -379,6 +379,14 @@ class AccountBinance(AccountBase):
 
         return assets
 
+
+    # For simulation: load exchange info from file, or call get_exchange_info() and save to file
+    def load_exchange_info(self):
+        pass
+
+    # get exchange info from exchange via API
+    def get_exchange_info(self):
+        pass
 
     # use get_info_all_assets to load asset info into self.info_all_assets
     def load_info_all_assets(self):
@@ -446,13 +454,13 @@ class AccountBinance(AccountBase):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
             return 0
-        return info['stepSize']
+        return info['base_step_size']
 
     def get_currency_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
             return 0
-        return info['tickSize']
+        return info['currency_step_size']
 
     # return asset info in AssetInfo class object
     def get_asset_info(self, symbol=None, base=None, currency=None):
@@ -460,13 +468,13 @@ class AccountBinance(AccountBase):
         if not info:
             return None
 
-        min_qty=info['minQty']
+        min_qty=info['min_qty']
         min_notional=info['minNotional']
         if float(min_qty) < float(min_notional):
             min_qty = min_notional
-        min_price=info['minPrice']
-        base_step_size=info['stepSize']
-        currency_step_size=info['tickSize']
+        min_price=info['min_price']
+        base_step_size=info['base_step_size']
+        currency_step_size=info['currency_step_size']
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
         baseAssetPrecision = info['baseAssetPrecision']
         quotePrecision = info['quotePrecision']

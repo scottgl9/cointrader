@@ -14,7 +14,7 @@ import os
 
 class AccountBittrex(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
-        self.account_type = 'Bittrex'
+        self.account_type = 'bittrex'
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
         if client:

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 class AccountKraken(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
-        self.account_type = 'Kraken'
+        self.account_type = 'kraken'
         self.logger = logger
         self.simulate = simulation
         self.simulate_db_filename = simulate_db_filename
