@@ -201,19 +201,19 @@ class AccountCoinbasePro(AccountBase):
         return size
 
     def round_base_symbol(self, symbol, price):
-        base_increment = self.get_asset_info_dict(symbol=symbol, field='stepSize')
+        base_increment = self.get_asset_info_dict(symbol=symbol, field='base_step_size')
         return self.round_base(price, base_increment)
 
     def round_quantity_symbol(self, symbol, size):
-        min_qty = self.get_asset_info_dict(symbol=symbol, field='minQty')
+        min_qty = self.get_asset_info_dict(symbol=symbol, field='min_qty')
         return self.round_quantity(size, min_qty)
 
     def round_quote_symbol(self, symbol, price):
-        quote_increment = self.get_asset_info_dict(symbol=symbol, field='tickSize')
+        quote_increment = self.get_asset_info_dict(symbol=symbol, field='currency_step_size')
         return self.round_quote(price, quote_increment)
 
     def round_quote_pair(self, base, currency, price):
-        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='tickSize')
+        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='currency_step_size')
         return self.round_quote(price, quote_increment)
 
     def my_float(self, value):
@@ -336,13 +336,13 @@ class AccountCoinbasePro(AccountBase):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
             return 0
-        return info['stepSize']
+        return info['base_step_size']
 
     def get_currency_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
             return 0
-        return info['tickSize']
+        return info['currency_step_size']
 
     # return asset info in AssetInfo class object
     def get_asset_info(self, symbol=None, base=None, currency=None):
@@ -350,13 +350,13 @@ class AccountCoinbasePro(AccountBase):
         if not info:
             return None
 
-        min_qty=info['minQty']
+        min_qty=info['min_qty']
         min_notional=info['minNotional']
         if float(min_qty) < float(min_notional):
             min_qty = min_notional
-        min_price=info['minPrice']
-        base_step_size=info['stepSize']
-        currency_step_size=info['tickSize']
+        min_price=info['min_price']
+        base_step_size=info['base_step_size']
+        currency_step_size=info['currency_step_size']
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
         baseAssetPrecision = info['baseAssetPrecision']
         quotePrecision = info['quotePrecision']
