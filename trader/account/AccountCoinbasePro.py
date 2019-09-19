@@ -251,68 +251,57 @@ class AccountCoinbasePro(AccountBase):
             return result[1]
         return None
 
-    def get_detail_all_assets(self):
-        return self.client.get_asset_details()
+    # For simulation: load exchange info from file, or call get_exchange_info() and save to file
+    def load_exchange_info(self):
+        if not self.simulate:
+            self.info_all_assets = self.get_exchange_info()
+            return
 
-    def get_info_all_assets(self, info_all_assets=None):
-        assets = {}
+        if not os.path.exists(self.exchange_info_file):
+            info = self.get_exchange_info()
+            with open(self.exchange_info_file, 'w') as f:
+                json.dump(info, f, indent=4)
+        else:
+            info = json.loads(open(self.exchange_info_file).read())
+        self.info_all_assets = info['pairs']
+        self.details_all_assets = info['assets']
 
-        if not info_all_assets:
-            info_all_assets = self.pc.get_products()
+    # get exchange info from exchange via API
+    def get_exchange_info(self):
+        pair_info = self.pc.get_products()
+        asset_info = {} #self.client.get_asset_details()
+        return self.parse_exchange_info(pair_info, asset_info)
 
-        for info in info_all_assets:
+    def parse_exchange_info(self, pair_info, asset_info):
+        exchange_info = {}
+        pairs = {}
+
+        for info in pair_info:
             symbol = info['id']
-            minQty = info['base_min_size']
-            minPrice = info['min_market_funds']
-            stepSize = info['base_increment']
-            tickSize = info['quote_increment']
-            assets[symbol] = {'minQty': minQty,
-                              'minPrice': minPrice,
-                              'tickSize': tickSize,
-                              'stepSize': stepSize,
-                              #'minNotional': minNotional,
-                              #'commissionAsset': commissionAsset,
-                              #'baseAssetPrecision': baseAssetPrecision,
-                              #'quotePrecision': quotePrecision,
-                              #'orderTypes': orderTypes
-                              }
+            min_qty = info['base_min_size']
+            min_price = info['min_market_funds']
+            base_step_size = info['base_increment']
+            currency_step_size = info['quote_increment']
+            pairs[symbol] = {'min_qty': min_qty,
+                             'min_price': min_price,
+                             'base_step_size': base_step_size,
+                             'currency_step_size': currency_step_size,
+                             #'minNotional': minNotional,
+                             #'commissionAsset': commissionAsset,
+                             #'baseAssetPrecision': baseAssetPrecision,
+                             #'quotePrecision': quotePrecision,
+                             #'orderTypes': orderTypes
+                            }
 
-        return assets
+        exchange_info['pairs'] = pairs
+        exchange_info['assets'] = asset_info
 
-
-    # use get_info_all_assets to load asset info into self.info_all_assets
-    def load_info_all_assets(self):
-        filename = "cbpro_asset_info.json"
-        if not self.simulate:
-            self.info_all_assets = self.get_info_all_assets()
-            return
-
-        if not os.path.exists(filename):
-            assets_info = self.pc.get_products()
-            with open(filename, 'w') as f:
-                json.dump(assets_info, f, indent=4)
-        else:
-            assets_info = json.loads(open(filename).read())
-        self.info_all_assets = self.get_info_all_assets(assets_info)
-
-
-    # use get_info_all_assets to load asset info into self.info_all_assets
-    def load_detail_all_assets(self):
-        if not self.simulate:
-            self.details_all_assets = self.get_detail_all_assets()
-            return
-
-        if not os.path.exists("asset_detail.json"):
-            self.details_all_assets = self.get_detail_all_assets()
-            with open('asset_detail.json', 'w') as f:
-                json.dump(self.details_all_assets, f, indent=4)
-        else:
-            self.details_all_assets = json.loads(open('asset_detail.json').read())
+        return exchange_info
 
 
     def get_asset_status(self, name=None):
         if not self.details_all_assets:
-            self.load_detail_all_assets()
+            self.load_exchange_info()
 
         result = self.details_all_assets
         if 'assetDetail' in result.keys():
@@ -326,7 +315,7 @@ class AccountCoinbasePro(AccountBase):
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:
-            self.load_info_all_assets()
+            self.load_exchange_info()
 
         if not symbol:
             symbol = self.make_ticker_id(base, currency)
