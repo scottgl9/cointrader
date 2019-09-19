@@ -909,7 +909,7 @@ class AccountCoinbasePro(AccountBase):
         self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
 
     def cancel_order(self, orderid, ticker_id=None):
-        return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
+        return self.client.cancel_order(order_id=orderid)
 
     def cancel_all(self, ticker_id=None):
         return self.client.cancel_all(product_id=ticker_id)
