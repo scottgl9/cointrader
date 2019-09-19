@@ -31,6 +31,7 @@ class AccountCoinbasePro(AccountBase):
         #for currency in self.currencies:
         #    self._currency_buy_size[currency] = 0
 
+        self._exchange_pairs = None
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
@@ -286,6 +287,10 @@ class AccountCoinbasePro(AccountBase):
     def parse_exchange_info(self, pair_info, asset_info):
         exchange_info = {}
         pairs = {}
+        update_exchange_pairs = False
+        if not self._exchange_pairs:
+            self._exchange_pairs = []
+            update_exchange_pairs = True
 
         for info in pair_info:
             symbol = info['id']
@@ -293,6 +298,8 @@ class AccountCoinbasePro(AccountBase):
             min_price = info['min_market_funds']
             base_step_size = info['base_increment']
             currency_step_size = info['quote_increment']
+            if update_exchange_pairs:
+                self._exchange_pairs.append(symbol)
             pairs[symbol] = {'min_qty': min_qty,
                              'min_price': min_price,
                              'base_step_size': base_step_size,
@@ -309,6 +316,19 @@ class AccountCoinbasePro(AccountBase):
 
         return exchange_info
 
+    # get list of exchange pairs (trade symbols)
+    def get_exchange_pairs(self):
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        return self._exchange_pairs
+
+    # is a valid exchange pair
+    def is_exchange_pair(self, symbol):
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        if symbol in self._exchange_pairs:
+            return True
+        return False
 
     def get_asset_status(self, name=None):
         if not self.details_all_assets:
@@ -602,19 +622,21 @@ class AccountCoinbasePro(AccountBase):
         for asset, value in self.get_account_balances(detailed=False).items():
             if float(value) == 0:
                 continue
-            if 1: #not self.simulate:
-                if asset == 'USD':
-                    if currency == 'USD':
+            if not self.simulate:
+                if asset == 'USD' or asset == 'USDC':
+                    if currency == 'USD' or currency == 'USDC':
                         total_balance += value
                         continue
                 else:
                     symbol = self.make_ticker_id(asset, currency)
+                    if not self.is_exchange_pair(symbol) and currency == 'USD':
+                        symbol = self.make_ticker_id(asset, 'USDC')
                     print(symbol)
                     price = float(self.get_ticker(symbol))
                     print(asset, value, price)
                     if not price:
                         continue
-                    #total_balance += price / value
+                    total_balance += value * price
 
         #     if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
         #         if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':

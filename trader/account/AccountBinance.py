@@ -37,6 +37,7 @@ class AccountBinance(AccountBase):
 
         self.client = client
 
+        self._exchange_pairs = None
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
@@ -403,6 +404,19 @@ class AccountBinance(AccountBase):
 
         return exchange_info
 
+    # get list of exchange pairs (trade symbols)
+    def get_exchange_pairs(self):
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        return self._exchange_pairs
+
+    # is a valid exchange pair
+    def is_exchange_pair(self, symbol):
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        if symbol in self._exchange_pairs:
+            return True
+        return False
 
     def get_asset_status(self, name=None):
         if not self.details_all_assets:
