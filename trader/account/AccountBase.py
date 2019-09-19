@@ -33,7 +33,7 @@ class AccountBase(object):
         pass
 
     @abstractmethod
-    def get_account_balances(self):
+    def get_account_balances(self, detailed=False):
         pass
 
     @abstractmethod

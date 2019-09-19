@@ -857,7 +857,7 @@ class AccountBinance(AccountBase):
             self.balances[name]['balance'] = balance
             self.balances[name]['available'] = available
 
-    def get_account_balances(self):
+    def get_account_balances(self, detailed=False):
         self.balances = {}
         result = {}
         for funds in self.client.get_account()['balances']:
@@ -867,6 +867,8 @@ class AccountBinance(AccountBase):
             asset_name = funds['asset']
             self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
             result[asset_name] = funds_free + funds_locked
+        if detailed:
+            return self.balances
         return result
 
     def get_asset_balance(self, asset):
