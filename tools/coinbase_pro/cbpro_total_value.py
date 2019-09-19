@@ -13,12 +13,12 @@ from trader.config import *
 
 if __name__ == '__main__':
     client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client)
+    accnt = AccountCoinbasePro(client=client, simulation=True)
     balances = accnt.get_account_balances()
     print(balances)
     #symbols = accnt.get_all_ticker_symbols()
     #print(symbols)
-    print(accnt.get_info_all_assets())
+    accnt.load_exchange_info()
     #accnt_assets = accnt_info['assets']
     #assets = sorted(accnt_assets, key=lambda x: (accnt_assets[x]['usd']), reverse=True)
     #for asset in assets:

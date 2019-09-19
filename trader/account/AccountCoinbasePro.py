@@ -27,11 +27,9 @@ class AccountCoinbasePro(AccountBase):
         self.balances = {}
 
         # keep track of initial currency buy size, and subsequent trades against currency
-        self._currency_buy_size = {}
-        for currency in self.currencies:
-            self._currency_buy_size[currency] = 0
-
-        self.client = client
+        #self._currency_buy_size = {}
+        #for currency in self.currencies:
+        #    self._currency_buy_size[currency] = 0
 
         self._tickers = {}
         self._min_tickers = {}
@@ -259,8 +257,10 @@ class AccountCoinbasePro(AccountBase):
             self.details_all_assets = info['assets']
             return
 
+        print(self.exchange_info_file)
         if not os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
+            print(info)
             with open(self.exchange_info_file, 'w') as f:
                 json.dump(info, f, indent=4)
         else:
