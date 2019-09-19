@@ -754,16 +754,16 @@ class AccountCoinbasePro(AccountBase):
         return result
 
     def get_order(self, order_id, ticker_id):
-        return self.client.get_order(orderId=order_id, symbol=ticker_id)
+        return self.client.get_order(order_id=order_id)
 
     def get_orders(self, ticker_id=None):
         return self.client.get_open_orders(symbol=ticker_id)
 
     def order_market_buy(self, symbol, quantity):
-        return self.client.place_market_order(product_id=symbol, side='buy', funds=quantity)
+        return self.client.place_market_order(product_id=symbol, side='buy', size=quantity)
 
     def order_market_sell(self, symbol, quantity):
-        return self.client.place_market_order(product_id=symbol, side='sell', funds=quantity)
+        return self.client.place_market_order(product_id=symbol, side='sell', size=quantity)
 
     def buy_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:
