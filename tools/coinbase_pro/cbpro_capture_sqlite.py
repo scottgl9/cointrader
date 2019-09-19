@@ -22,94 +22,6 @@ from trader.config import *
 # GDAX kline format: [ timestamp, low, high, open, close, volume ]
 
 
-class BinanceTrader:
-    def __init__(self, client, commit_count=1000, logger=None):
-        self.client = client
-        self.logger = logger
-        self.commit_count = commit_count
-        self.bm = None
-        self.counter = 0
-        self.tickers = {}
-        db_file = "cryptocurrency_database.miniticker_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
-        if os.path.exists(db_file):
-            self.logger.info("{} already exists, exiting....".format(db_file))
-            sys.exit(0)
-        self.db_conn = self.create_db_connection(db_file)
-        self.logger.info("Started capturing to {}".format(db_file))
-        cur = self.db_conn.cursor()
-        cur.execute("""CREATE TABLE miniticker (E integer, c real, h real, l real, o real, q real, s text, v real)""")
-        self.db_conn.commit()
-        self.accnt = AccountBinance(self.client)
-
-    def create_db_connection(self, db_file):
-        """ create a database connection to the SQLite database
-            specified by db_file
-        :param db_file: database file
-        :return: Connection object or None
-        """
-        try:
-            conn = sqlite3.connect(db_file, check_same_thread=False)
-            return conn
-        except sqlite3.Error as e:
-            print(e)
-
-        return None
-
-    def insert(self, conn, msg):
-        values = [msg['E'], msg['c'], msg['h'], msg['l'], msg['o'], msg['q'], msg['s'], msg['v']]
-        cur = conn.cursor()
-        sql = """INSERT INTO miniticker (E, c, h, l, o, q, s, v) values(?, ?, ?, ?, ?, ?, ?, ?)"""
-        cur.execute(sql, values)
-
-        self.counter += 1
-        if self.counter >= self.commit_count:
-            conn.commit()
-            self.counter = 0
-
-    def get_websocket_kline(self, msg):
-        kline = list()
-        kline.append(int(msg['E']))
-        kline.append(float(msg['l']))
-        kline.append(float(msg['h']))
-        kline.append(float(msg['o']))
-        kline.append(float(msg['c']))
-        kline.append(float(msg['v']))
-        return kline
-
-    # update tickers dict to contain kline ticker values for all traded symbols
-    def process_websocket_message(self, msg):
-        for ticker in msg:
-            if 's' not in ticker or 'E' not in ticker: continue
-            self.tickers[ticker['s']] = self.get_websocket_kline(ticker)
-            return self.tickers[ticker['s']]
-
-    def process_message(self, msg):
-        if len(msg) == 0: return
-
-        if not isinstance(msg, list):
-            if 's' not in msg.keys(): return
-            self.insert(self.db_conn, msg)
-            return
-
-        for part in msg:
-            if 's' not in part.keys(): continue
-            self.insert(self.db_conn, part)
-
-    def run(self):
-        self.bm = BinanceSocketManager(self.client)
-        self.bm.daemon = True
-        self.bm.start_miniticker_socket(self.process_message)
-        self.bm.start()
-        while True:
-            try:
-                time.sleep(5)
-            except KeyboardInterrupt:
-                self.db_conn.commit()
-                self.logger.info("Shutting down...")
-                self.bm.close()
-                #self.bm.join()
-                break
-
 # ticker channel example:
 # {
 #    u'open_24h':u'181.93000000',
@@ -128,6 +40,18 @@ class BinanceTrader:
 #    u'side':u'buy',
 #    u'low_24h':u'177.57000000'
 # }
+# {
+#     "type": "match",
+#     "side": "buy",
+#     "product_id": "LINK-USD",
+#     "time": "2019-09-19T17:39:10.382000Z",
+#     "sequence": 291246433,
+#     "trade_id": 1099829,
+#     "maker_order_id": "f321783f-ce5a-40ca-95ad-695b112fc8e2",
+#     "taker_order_id": "6a0cf3c5-2225-4c60-9e96-86ab548e3614",
+#     "size": "141.63000000",
+#     "price": "1.8488"
+# }
 class MyWSClient(WebsocketClient):
     def create_db_connection(self, filename):
         """ create a database connection to the SQLite database
@@ -138,8 +62,9 @@ class MyWSClient(WebsocketClient):
         try:
             self.db = sqlite3.connect(filename, check_same_thread=False)
             cur = self.db.cursor()
+            # """CREATE TABLE miniticker (ts integer, p real, ask real, bid real, q real, s text, buy boolean)"""
             cur.execute(
-                """CREATE TABLE miniticker (ts integer, p real, ask real, bid real, q real, s text, buy boolean)""")
+                """CREATE TABLE matches (ts integer, seq integer, p real, q real, s text, buy boolean)""")
             self.db.commit()
             return self.db
         except sqlite3.Error as e:
@@ -147,22 +72,38 @@ class MyWSClient(WebsocketClient):
         return None
 
     def on_message(self, msg):
-        if msg['type'] != 'ticker':
+        if msg['type'] == 'subscriptions':
             return
-        symbol = msg['product_id']
-        ts = int(time.mktime(aniso8601.parse_datetime(msg['time']).timetuple()))
-        p = float(msg['price'])
-        ask = float(msg['best_ask'])
-        bid = float(msg['best_bid'])
-        q = float(msg['last_size'])
-        # buy or sell
-        buy = False
-        if msg['side'] == 'buy':
-            buy = True
-        values = [ts, p, ask, bid, q, symbol, buy]
-        cur = self.db.cursor()
-        sql = """INSERT INTO miniticker (ts, p, ask, bid, q, s, buy) values(?, ?, ?, ?, ?, ?, ?)"""
-        cur.execute(sql, values)
+        if msg['type'] == 'match':
+            symbol = msg['product_id']
+            ts = int(time.mktime(aniso8601.parse_datetime(msg['time']).timetuple()))
+            # # buy or sell
+            buy = False
+            if msg['side'] == 'buy':
+                buy = True
+            p = float(msg['price'])
+            q = float(msg['size'])
+            seq = int(msg['sequence'])
+            values = [ts, seq, p, q, symbol, buy]
+            cur = self.db.cursor()
+            sql = """INSERT INTO matches (ts, seq, p, q, s, buy) values(?, ?, ?, ?, ?, ?)"""
+            cur.execute(sql, values)
+        # if msg['type'] != 'ticker':
+        #     return
+        # symbol = msg['product_id']
+        # ts = int(time.mktime(aniso8601.parse_datetime(msg['time']).timetuple()))
+        # p = float(msg['price'])
+        # ask = float(msg['best_ask'])
+        # bid = float(msg['best_bid'])
+        # q = float(msg['last_size'])
+        # # buy or sell
+        # buy = False
+        # if msg['side'] == 'buy':
+        #     buy = True
+        # values = [ts, p, ask, bid, q, symbol, buy]
+        # cur = self.db.cursor()
+        # sql = """INSERT INTO miniticker (ts, p, ask, bid, q, s, buy) values(?, ?, ?, ?, ?, ?, ?)"""
+        # cur.execute(sql, values)
 
     def on_close(self):
         sys.exit(0)
@@ -177,7 +118,7 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    db_file = "cbpro_database.miniticker_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
+    db_file = "cbpro_database_matches_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
     if os.path.exists(db_file):
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
@@ -192,7 +133,7 @@ if __name__ == '__main__':
         products.append(ticker)
 
     # channel list: full, level2, ticker, user, matches, heartbeat
-    channels = ["ticker"]
+    channels = ["matches"]
 
     while 1:
         ws = MyWSClient(should_print=False,
@@ -208,7 +149,8 @@ if __name__ == '__main__':
             print("started capturing {}...".format(db_file))
             while 1:
                 time.sleep(30)
-                ws.db.commit()
+                if ws.db:
+                    ws.db.commit()
         except (KeyboardInterrupt, SystemExit):
             ws.close()
             sys.exit(0)

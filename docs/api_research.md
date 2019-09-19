@@ -1,5 +1,106 @@
 ## Coinbase Pro API
 
+## CBPRO full websocket results:
+{
+    "type": "match",
+    "side": "buy",
+    "product_id": "LINK-USD",
+    "time": "2019-09-19T17:39:10.382000Z",
+    "sequence": 291246433,
+    "trade_id": 1099829,
+    "maker_order_id": "f321783f-ce5a-40ca-95ad-695b112fc8e2",
+    "taker_order_id": "6a0cf3c5-2225-4c60-9e96-86ab548e3614",
+    "size": "141.63000000",
+    "price": "1.8488"
+}
+
+{
+    "type": "done",
+    "side": "sell",
+    "product_id": "LINK-USD",
+    "time": "2019-09-19T17:39:10.382000Z",
+    "sequence": 291246434,
+    "order_id": "6a0cf3c5-2225-4c60-9e96-86ab548e3614",
+    "reason": "filled",
+    "price": "1.81259000",
+    "remaining_size": "0.00000000"
+}
+
+{
+    "type": "received",
+    "side": "sell",
+    "product_id": "LINK-USD",
+    "time": "2019-09-19T17:39:10.382000Z",
+    "sequence": 291246428,
+    "order_id": "6a0cf3c5-2225-4c60-9e96-86ab548e3614",
+    "order_type": "limit",
+    "size": "541.63000000",
+    "price": "1.81259000",
+    "client_oid": "d3fc530d-2be6-4510-a293-3734d32082cb"
+}
+
+{
+    "type": "open",
+    "side": "buy",
+    "product_id": "LINK-USD",
+    "time": "2019-09-19T17:39:10.374000Z",
+    "sequence": 291246426,
+    "price": "1.83056",
+    "order_id": "592ed2d5-7e3a-40dd-96b5-611d5f1aa06a",
+    "remaining_size": "1500.00000000"
+}
+
+{
+    "type": "subscriptions",
+    "channels": [
+        {
+            "name": "full",
+            "product_ids": [
+                "LTC-USD",
+                "BCH-USD",
+                "ZEC-BTC",
+                "XTZ-BTC",
+                "BCH-BTC",
+                "REP-BTC",
+                "MANA-USDC",
+                "ETH-USDC",
+                "GNT-USDC",
+                "ETC-USD",
+                "EOS-BTC",
+                "CVC-USDC",
+                "BTC-USDC",
+                "ETH-USD",
+                "ZEC-USDC",
+                "LOOM-USDC",
+                "EOS-USD",
+                "XRP-BTC",
+                "DAI-USDC",
+                "DNT-USDC",
+                "BAT-ETH",
+                "BTC-USD",
+                "XTZ-USD",
+                "LINK-ETH",
+                "BAT-USDC",
+                "LINK-USD",
+                "ETH-DAI",
+                "XLM-BTC",
+                "DASH-BTC",
+                "ALGO-USD",
+                "LTC-BTC",
+                "ETC-BTC",
+                "ZRX-BTC",
+                "ZRX-USD",
+                "DASH-USD",
+                "REP-USD",
+                "XRP-USD",
+                "XLM-USD",
+                "ETH-BTC"
+            ]
+        }
+    ]
+}
+
+
 # CBPRO: response funds to small with market_buy:
 {'message': 'funds is too small. Minimum size is 10.00000000'}
 
