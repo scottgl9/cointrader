@@ -20,12 +20,11 @@ class HourlyKlinesDB(object):
             raise IOError
         self.conn = sqlite3.connect(filename)
         # column names
-        self.cnames_list = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
-                            'trade_count', 'taker_buy_base_volume', 'taker_buy_quote_volume']
+        self.cnames_list = self.accnt.get_hourly_column_names()
         self.cnames = ','.join(self.cnames_list)
 
         # short list column names
-        self.scname_list = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
+        self.scname_list = self.accnt.get_hourly_short_column_names()
         self.scnames = ','.join(self.scname_list)
         self.table_symbols = self.get_table_list()
         self.table_last_update_ts = None

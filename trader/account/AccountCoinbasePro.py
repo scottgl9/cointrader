@@ -27,6 +27,10 @@ class AccountCoinbasePro(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
+        # hourly db column names
+        self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
+        # hourly db column names short list
+        self.hourly_scnames = self.hourly_cnames
 
         # keep track of initial currency buy size, and subsequent trades against currency
         #self._currency_buy_size = {}
@@ -68,6 +72,14 @@ class AccountCoinbasePro(AccountBase):
 
     def hours_to_ts(self, hours):
         return float(hours * 3600 * 1000)
+
+    # get hourly db column names
+    def get_hourly_column_names(self):
+        return self.hourly_cnames
+
+    # get hourly db column names (short list)
+    def get_hourly_short_column_names(self):
+        return self.hourly_scnames
 
     def get_ticker(self, symbol=None):
         if not self.simulate:

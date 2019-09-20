@@ -22,6 +22,12 @@ class AccountBinance(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
+        # hourly db column names
+        self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
+                              'trade_count', 'taker_buy_base_volume', 'taker_buy_quote_volume']
+        # hourly db column names short list
+        self.hourly_scnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
+
         if self.simulate:
             self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
             self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
@@ -76,6 +82,14 @@ class AccountBinance(AccountBase):
 
     def hours_to_ts(self, hours):
         return float(hours * 3600 * 1000)
+
+    # get hourly db column names
+    def get_hourly_column_names(self):
+        return self.hourly_cnames
+
+    # get hourly db column names (short list)
+    def get_hourly_short_column_names(self):
+        return self.hourly_scnames
 
     def get_ticker(self, symbol):
         if not self.simulate and len(self._tickers) == 0:
