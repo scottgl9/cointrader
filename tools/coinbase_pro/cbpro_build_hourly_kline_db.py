@@ -89,34 +89,30 @@ if __name__ == '__main__':
 
     for symbol in symbol_table_list:
         print("Processing {} klines...".format(symbol))
-        symbol = symbol.replace('-', '_')
+        table_symbol = symbol.replace('-', '_')
         # kline format:  [ ts, low, high, open, close, volume ]
         cur = db_conn.cursor()
-        cur.execute("""CREATE TABLE {} ({})""".format(symbol, columns))
-        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
+        cur.execute("""CREATE TABLE {} ({})""".format(table_symbol, columns))
+        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?)""".format(table_symbol, cnames)
         ts = start_ts
         count = 0
         while ts <= end_ts:
-            ts2 = ts + 3600 * 300
+            ts2 = ts + 3600 * 250
+            print(ts, ts2)
             klines = accnt.get_hourly_klines(symbol, ts, ts2)
             ts = ts2 + 3600
-            if len(klines) != 6:
+            if not isinstance(klines, list):
                 if klines['message'] == 'NotFound':
                     time.sleep(1)
                     continue
                 print(klines['message'])
                 sys.exit(-1)
-            if not count:
-                print(ts)
             for kline in klines:
                 try:
                     cur.execute(sql, kline)
                 except sqlite3.ProgrammingError:
                     print("SQLITE ERROR")
                     sys.exit(-1)
-            count += 1
-            if count % 30 == 0:
-                print(ts)
-                time.sleep(1)
+            time.sleep(1)
         db_conn.commit()
     db_conn.close()
