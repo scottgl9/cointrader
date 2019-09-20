@@ -10,6 +10,7 @@ from trader.account.cbpro import AuthenticatedClient, PublicClient
 from trader.account.AccountCoinbasePro import AccountCoinbasePro
 from trader.account.binance import client
 from trader.config import *
+from datetime import datetime
 
 if __name__ == '__main__':
     client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
@@ -17,6 +18,9 @@ if __name__ == '__main__':
     #balances = accnt.get_account_balances()
     #print(balances)
     print("Total: {}".format(accnt.get_account_total_value()))
+    #ts = int(datetime.timestamp(datetime.now()))
+    #print(ts)
+    #print(accnt.ts_to_iso8601(ts))
     #symbols = accnt.get_all_ticker_symbols()
     #print(symbols)
     #accnt.load_exchange_info()

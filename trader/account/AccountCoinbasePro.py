@@ -8,6 +8,8 @@ from trader.config import *
 import json
 import os
 from datetime import datetime, timedelta
+import aniso8601
+import stix.utils.dates
 
 
 class AccountCoinbasePro(AccountBase):
@@ -39,6 +41,10 @@ class AccountCoinbasePro(AccountBase):
         self._tpprofit = 0
         self.initial_currency = 0
         self.loaded_model_count = 0
+
+    def ts_to_iso8601(self, ts):
+        dt = datetime.fromtimestamp(ts)
+        return stix.utils.dates.serialize_value(dt)
 
     def format_ts(self, ts):
         return int(ts)
@@ -986,9 +992,11 @@ class AccountCoinbasePro(AccountBase):
 
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
+        start = self.ts_to_iso8601(start_ts)
+        end = self.ts_to_iso8601(end_ts)
         klines = self.pc.get_product_historic_rates(product_id=symbol,
-                                                    start=start_ts,
-                                                    end=end_ts,
+                                                    start=start,
+                                                    end=end,
                                                     granularity=3600)
 
         return klines
