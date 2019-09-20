@@ -8,7 +8,6 @@ except ImportError:
 
 from trader.account.cbpro import AuthenticatedClient, PublicClient
 from trader.account.AccountCoinbasePro import AccountCoinbasePro
-from trader.account.binance import client
 from trader.config import *
 from datetime import datetime
 

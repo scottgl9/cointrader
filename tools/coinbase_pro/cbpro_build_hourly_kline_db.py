@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import sys
 try:
@@ -11,11 +11,12 @@ import sqlite3
 import time
 import logging
 import os
+import sys
 import threading
 import argparse
 from trader.config import *
-from trader.account.binance.client import Client
-from trader.account.AccountBinance import AccountBinance
+from trader.account.cbpro import AuthenticatedClient, PublicClient
+from trader.account.AccountCoinbasePro import AccountCoinbasePro
 
 
 def create_db_connection(db_file):
@@ -39,12 +40,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-f', action='store', dest='base_filename',
-                        default='binance_hourly_klines',
+                        default='cbpro_hourly_klines',
                         help='base filename of hourly kline sqlite db')
-
-    parser.add_argument('--currency', action='store', dest='currency',
-                        default='BTC',
-                        help='currency of trade symbols')
 
     parser.add_argument('--start-date', action='store', dest='start_date',
                         default=date_two_years_ago,
@@ -63,97 +60,63 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    currency = results.currency
-
-    if not currency:
-        currency = 'BTC'
-        db_file = "{}.db".format(results.base_filename)
-    else:
-        db_file = "{}_{}.db".format(results.base_filename, currency)
+    db_file = "{}.db".format(results.base_filename)
     if os.path.exists(db_file):
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
 
-    client = Client(MY_API_KEY, MY_API_SECRET)
-    accnt = AccountBinance(client, logger=logger, simulation=False)
-    accnt.load_info_all_assets()
-    accnt.load_detail_all_assets()
+    client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
+    accnt = AccountCoinbasePro(client=client, logger=logger, simulation=False)
+    accnt.load_exchange_info()
 
     symbol_table_list = []
-    for symbol in sorted(accnt.get_all_ticker_symbols(currency)):
-        if accnt.get_usdt_value_symbol(symbol) <= 0.02:
+    symbols = accnt.get_exchange_pairs()
+    for symbol in symbols:
+        if symbol.endswith('GBP') or symbol.endswith('EUR'):
             continue
-        base_name, currency_name = accnt.split_symbol(symbol)
-        if not base_name or not currency_name: continue
-        if accnt.deposit_asset_disabled(base_name):
-            continue
-
         symbol_table_list.append(symbol)
-
-    if currency != 'USDT':
-        symbol_table_list.append("{}USDT".format(currency))
+    print(symbol_table_list)
 
     db_conn = create_db_connection(db_file)
+    columns = "ts integer,low real,high real,open real,close real,volume real"
+    cnames = "ts, low, high, open, close, volume"
 
     start_ts = int(time.mktime(time.strptime(results.start_date, "%m/%d/%Y")))
     end_ts = int(time.mktime(time.strptime(results.end_date, "%m/%d/%Y")))
 
-    columns = "ts integer,open real,high real,low real,close real,base_volume real,quote_volume real,trade_count integer,taker_buy_base_volume real,taker_buy_quote_volume real"
-    cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"
+    print(accnt.ts_to_iso8601(start_ts))
+    print(accnt.ts_to_iso8601(end_ts))
 
-    current_ts = int(time.time()) * 1000
-
-    for symbol in sorted(symbol_table_list):
+    for symbol in symbol_table_list:
+        print("Processing {} klines...".format(symbol))
+        symbol = symbol.replace('-', '_')
+        # kline format:  [ ts, low, high, open, close, volume ]
         cur = db_conn.cursor()
-
-        print("Getting klines from {} to {} for {}".format(results.start_date, results.end_date, symbol))
-
-        klines = client.get_historical_klines_generator(
-                 symbol=symbol,
-                 interval=Client.KLINE_INTERVAL_1HOUR,
-                 start_str=start_ts * 1000,
-                 end_str=end_ts * 1000,
-        )
-
-        kline_list = []
-        for k in klines:
-            del k[6]
-            k = k[:-1]
-            kline_list.append(k)
-
-        if (current_ts - kline_list[-1][0]) > 3600*24*1000:
-            print("Skipping {}".format(symbol))
-            continue
-
         cur.execute("""CREATE TABLE {} ({})""".format(symbol, columns))
-
-        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
-
-        last_ts = 0
-        last_kline = None
-
-        for k in kline_list:
-            cur_ts = int(k[0])
-            # skip if is not an hourly ts
-            if not accnt.is_hourly_ts(cur_ts):
-                # check if the timestamp is less than 1 hr from last_ts or from cur_ts
-                #hourly_ts = accnt.get_hourly_ts(cur_ts)
-                #if int(hourly_ts - last_ts) < 3600000 or int(cur_ts - hourly_ts) < 3600000:
-                print("{}: skipping {}".format(symbol, cur_ts))
-                continue
-                # correct ts
-                #k[0] = int(hourly_ts)
-                #cur_ts = int(k[0])
-            cur = db_conn.cursor()
-            # check for gaps in hourly klines, for gaps fill with previous kline
-            if last_kline and int(cur_ts - last_ts) != 3600000:
-                print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
-                ts = last_ts + 3600000
-                while ts < cur_ts:
-                    last_kline[0] = int(ts)
-                    cur.execute(sql, last_kline)
-                    ts += 3600000
-            cur.execute(sql, k)
-            last_ts = cur_ts
-            last_kline = k
+        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
+        ts = start_ts
+        count = 0
+        while ts <= end_ts:
+            ts2 = ts + 3600 * 300
+            klines = accnt.get_hourly_klines(symbol, ts, ts2)
+            ts = ts2 + 3600
+            if len(klines) != 6:
+                if klines['message'] == 'NotFound':
+                    time.sleep(1)
+                    continue
+                print(klines['message'])
+                sys.exit(-1)
+            if not count:
+                print(ts)
+            for kline in klines:
+                try:
+                    cur.execute(sql, kline)
+                except sqlite3.ProgrammingError:
+                    print("SQLITE ERROR")
+                    sys.exit(-1)
+            count += 1
+            if count % 30 == 0:
+                print(ts)
+                time.sleep(1)
         db_conn.commit()
+    db_conn.close()
