@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import sys
 try:
@@ -16,8 +16,8 @@ import argparse
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from trader.config import *
-from trader.account.binance.client import Client
-from trader.account.AccountBinance import AccountBinance
+from trader.account.cbpro import AuthenticatedClient, PublicClient
+from trader.account.AccountCoinbasePro import AccountCoinbasePro
 
 def get_table_list(c):
     result = []
@@ -73,7 +73,7 @@ def update_table(conn, client, symbol, end_ts):
     result = cur.fetchone()
     start_ts = result[0]
     print("Getting {} through {} for {}".format(start_ts, end_ts, symbol))
-    cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"
+    cnames = "ts, low, high, open, close, volume"
     klines = client.get_historical_klines_generator(
         symbol=symbol,
         interval=Client.KLINE_INTERVAL_1HOUR,
@@ -95,7 +95,7 @@ def update_table(conn, client, symbol, end_ts):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='binance_hourly_klines_BTC.db',
+                        default='cbpro_hourly_klines.db',
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('--update', action='store_true', dest='update',
@@ -150,8 +150,8 @@ if __name__ == '__main__':
         conn.close()
         sys.exit(0)
 
-    client = Client(MY_API_KEY, MY_API_SECRET)
-    accnt = AccountBinance(client, logger=logger)
+    client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
+    accnt = AccountCoinbasePro(client=client, logger=logger, simulation=False)
     accnt.load_exchange_info()
 
     if results.update:
