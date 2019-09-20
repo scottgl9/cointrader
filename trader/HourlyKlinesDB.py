@@ -126,13 +126,15 @@ class HourlyKlinesDB(object):
         return result
 
     def get_table_row_count(self, symbol):
-        res = self.conn.execute("SELECT count(*) FROM {}".format(symbol))
+        table_name = self.get_table_from_symbol(symbol)
+        res = self.conn.execute("SELECT count(*) FROM {}".format(table_name))
         return res.fetchone()[0]
 
     # determine if timestamp already exists in table
     def ts_in_table(self, symbol, ts):
+        table_name = self.get_table_from_symbol(symbol)
         cur = self.conn.cursor()
-        cur.execute("SELECT ts FROM {} WHERE ts = {}".format(symbol, ts))
+        cur.execute("SELECT ts FROM {} WHERE ts = {}".format(table_name, ts))
         row = cur.fetchone()
         if row is None or not len(row):
             return False
@@ -140,11 +142,12 @@ class HourlyKlinesDB(object):
 
     # update hourly values missing in table through end_ts
     def update_table(self, symbol, end_ts=0):
+        table_name = self.get_table_from_symbol(symbol)
         last_ts = 0
         if not self.accnt:
             return 0
         cur = self.conn.cursor()
-        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(table_name))
         result = cur.fetchone()
         start_ts = int(result[0])
 
@@ -154,7 +157,7 @@ class HourlyKlinesDB(object):
         end_ts = self.accnt.get_hourly_ts(end_ts)
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
-        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, self.cnames)
+        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(table_name, self.cnames)
 
         count = 0
 
@@ -188,35 +191,48 @@ class HourlyKlinesDB(object):
             result.append(row[0])
         return result
 
+    # if table name differs from symbol, translate symbol to table name
+    def get_table_from_symbol(self, symbol):
+        if self.accnt:
+            table_name = self.accnt.get_hourly_table_name(symbol)
+        else:
+            table_name = symbol
+        return table_name
+
     def get_table_ts_by_offset(self, symbol, offset=0):
+        table_name = self.get_table_from_symbol(symbol)
         cur = self.conn.cursor()
-        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1 OFFSET {}".format(symbol, offset))
+        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1 OFFSET {}".format(table_name, offset))
         result = cur.fetchone()
         return int(result[0])
 
     # get first timestamp in symbol table
     def get_table_start_ts(self, symbol):
+        table_name = self.get_table_from_symbol(symbol)
         cur = self.conn.cursor()
-        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
+        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(table_name))
         result = cur.fetchone()
         return int(result[0])
 
     # get last timestamp in symbol table
     def get_table_end_ts(self, symbol):
+        table_name = self.get_table_from_symbol(symbol)
         cur = self.conn.cursor()
-        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(table_name))
         result = cur.fetchone()
         return int(result[0])
 
     # get range of timestamps for table with name symbol
     def get_table_ts_range(self, symbol):
-        start_ts = self.get_table_start_ts(symbol)
-        end_ts = self.get_table_end_ts(symbol)
+        table_name = self.get_table_from_symbol(symbol)
+        start_ts = self.get_table_start_ts(table_name)
+        end_ts = self.get_table_end_ts(table_name)
         return start_ts, end_ts
 
     # select individual field from symbol table with start_ts <= ts <= end_ts
     def build_sql_select_field_query(self, symbol, field, start_ts, end_ts):
-        sql = "SELECT {} FROM {} ".format(field, symbol)
+        table_name = self.get_table_from_symbol(symbol)
+        sql = "SELECT {} FROM {} ".format(field, table_name)
 
         if start_ts and end_ts:
             sql += "WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
@@ -229,11 +245,12 @@ class HourlyKlinesDB(object):
         return sql
 
     def build_sql_select_query(self, symbol, start_ts, end_ts, daily=False, columns=None):
+        table_name = self.get_table_from_symbol(symbol)
         if not columns:
             columns = self.scnames
         elif isinstance(columns, list):
             columns = ','.join(columns)
-        sql = "SELECT {} FROM {} ".format(columns, symbol)
+        sql = "SELECT {} FROM {} ".format(columns, table_name)
 
         if start_ts and end_ts:
             sql += "WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
@@ -253,7 +270,8 @@ class HourlyKlinesDB(object):
 
     # get minimum value of a table field from db table
     def get_min_field_value(self, symbol, field, start_ts=0, end_ts=0):
-        sql = "SELECT MIN({}) FROM {}".format(field, symbol)
+        table_name = self.get_table_from_symbol(symbol)
+        sql = "SELECT MIN({}) FROM {}".format(field, table_name)
         if start_ts and end_ts:
             sql += " WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
         elif not start_ts and end_ts:
@@ -269,7 +287,8 @@ class HourlyKlinesDB(object):
 
     # get maximum value of a table field from db table
     def get_max_field_value(self, symbol, field, start_ts=0, end_ts=0):
-        sql = "SELECT MAX({}) FROM {}".format(field, symbol)
+        table_name = self.get_table_from_symbol(symbol)
+        sql = "SELECT MAX({}) FROM {}".format(field, table_name)
         if start_ts and end_ts:
             sql += " WHERE ts >= {} AND ts <= {} ".format(start_ts, end_ts)
         elif not start_ts and end_ts:
@@ -285,9 +304,10 @@ class HourlyKlinesDB(object):
 
     # get klines as list of rows from db table
     def get_raw_klines(self, symbol, start_ts=0, end_ts=0):
+        table_name = self.get_table_from_symbol(symbol)
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol))
+        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, table_name))
         for row in cur:
             if start_ts and row[0] < start_ts:
                 continue
@@ -298,10 +318,11 @@ class HourlyKlinesDB(object):
 
     # get klines as list of dicts from db table
     def get_dict_klines(self, symbol, start_ts=0, end_ts=0, daily=False):
+        table_name = self.get_table_from_symbol(symbol)
         result = []
         cur = self.conn.cursor()
 
-        sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=daily)
+        sql = self.build_sql_select_query(table_name, start_ts, end_ts, daily=daily)
 
         cur.execute(sql)
         for row in cur:
@@ -317,7 +338,8 @@ class HourlyKlinesDB(object):
 
     # load single hourly kline in dict format
     def get_dict_kline(self, symbol, hourly_ts=0):
-        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, self.accnt.format_ts(hourly_ts))
+        table_name = self.get_table_from_symbol(symbol)
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, table_name, self.accnt.format_ts(hourly_ts))
         cur = self.conn.cursor()
         cur.execute(sql)
         k = cur.fetchone()
@@ -334,39 +356,45 @@ class HourlyKlinesDB(object):
 
     # load daily klines in pandas dataframe
     def get_pandas_daily_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
-        sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=True, columns=columns)
+        table_name = self.get_table_from_symbol(symbol)
+        sql = self.build_sql_select_query(table_name, start_ts, end_ts, daily=True, columns=columns)
         result = pd.read_sql_query(sql, self.conn)
         return result
 
     # load hourly klines in pandas dataframe
     def get_pandas_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
-        sql = self.build_sql_select_query(symbol, start_ts, end_ts, columns=columns)
+        table_name = self.get_table_from_symbol(symbol)
+        sql = self.build_sql_select_query(table_name, start_ts, end_ts, columns=columns)
         result = pd.read_sql_query(sql, self.conn)
         return result
 
     # use pandas dataframe, then get numpy values from dataframe
     def get_numpy_klines(self, symbol, start_ts=0, end_ts=0, columns=None):
-        return self.get_pandas_klines(symbol, start_ts, end_ts, columns).values
+        table_name = self.get_table_from_symbol(symbol)
+        return self.get_pandas_klines(table_name, start_ts, end_ts, columns).values
 
     # load single hourly kline in pandas dataframe
     def get_pandas_kline(self, symbol, hourly_ts=0, columns=None):
+        table_name = self.get_table_from_symbol(symbol)
         if not columns:
             columns = self.scnames
         elif isinstance(columns, list):
             columns = ','.join(columns)
-        sql = "SELECT {} FROM {} WHERE ts = {}".format(columns, symbol, hourly_ts)
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(columns, table_name, hourly_ts)
         result = pd.read_sql_query(sql, self.conn)
         return result
 
     # use pandas dataframe, then get numpy values from dataframe
     def get_numpy_kline(self, symbol, hourly_ts=0, columns=None):
-        return self.get_pandas_kline(symbol, hourly_ts, columns).values
+        table_name = self.get_table_from_symbol(symbol)
+        return self.get_pandas_kline(table_name, hourly_ts, columns).values
 
     # get klines as list of Kline class from db table
     def get_klines(self, symbol, start_ts=0, end_ts=0):
+        table_name = self.get_table_from_symbol(symbol)
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, symbol))
+        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, table_name))
         for row in cur:
             if start_ts and row[0] < start_ts:
                 continue
@@ -384,7 +412,8 @@ class HourlyKlinesDB(object):
         return result
 
     def get_kline(self, symbol, hourly_ts=0):
-        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, symbol, hourly_ts)
+        table_name = self.get_table_from_symbol(symbol)
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, table_name, hourly_ts)
         cur = self.conn.cursor()
         cur.execute(sql)
         k = cur.fetchone()

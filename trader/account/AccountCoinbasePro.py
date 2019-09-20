@@ -73,6 +73,11 @@ class AccountCoinbasePro(AccountBase):
     def hours_to_ts(self, hours):
         return float(hours * 3600 * 1000)
 
+    # if hourly table name doesn't match symbol name
+    # ex. symbol 'BTC-USD', db table name 'BTC_USD'
+    def get_hourly_table_name(self, symbol):
+        return symbol.replace('-', '_')
+
     # get hourly db column names
     def get_hourly_column_names(self):
         return self.hourly_cnames
