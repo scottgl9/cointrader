@@ -152,8 +152,7 @@ if __name__ == '__main__':
 
     client = Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client, logger=logger)
-    accnt.load_info_all_assets()
-    accnt.load_detail_all_assets()
+    accnt.load_exchange_info()
 
     if results.update:
         end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
