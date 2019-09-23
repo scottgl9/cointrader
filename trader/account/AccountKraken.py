@@ -878,7 +878,7 @@ class AccountKraken(AccountBase):
             self.get_account_balances()
 
 
-    def buy_limit(self, price, size, post_only=True, ticker_id=None):
+    def buy_limit(self, price, size, ticker_id=None):
         if self.simulate:
             base, currency = self.split_ticker_id(ticker_id)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
@@ -891,7 +891,7 @@ class AccountKraken(AccountBase):
             return self.client.place_limit_order(product_id=ticker_id, side='buy', price=price, size=size)
 
 
-    def sell_limit(self, price, size, post_only=True, ticker_id=None):
+    def sell_limit(self, price, size, ticker_id=None):
         if self.simulate:
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
