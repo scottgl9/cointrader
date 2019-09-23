@@ -51,6 +51,7 @@ class Order(object):
     TYPE_TAKE_PROFIT = 29
     TYPE_LIMIT_MAKER = 30
     TYPE_NONE = 31
+    SIDE_UNKNOWN = 0
     SIDE_BUY = 1
     SIDE_SELL = 2
     def __init__(self, symbol, price, size, sig_id=0, buy_price=0, type=TYPE_MARKET, side=SIDE_BUY, orderid=None,

@@ -685,6 +685,12 @@ class AccountBinance(AccountBase):
             elif side == 'SELL':
                 price = min(prices)
 
+        side_type = Order.SIDE_UNKNOWN
+        if side == 'BUY':
+            side_type = Order.SIDE_BUY
+        elif side == 'SELL':
+            side_type = Order.SIDE_SELL
+
         if status == 'FILLED':
             type = self.get_order_msg_cmd(order_type, side)
         elif status == 'CANCELED' and side == 'BUY':
@@ -700,6 +706,7 @@ class AccountBinance(AccountBase):
                       price=price,
                       size=origqty,
                       type=type,
+                      side=side_type,
                       orderid=orderid,
                       quote_size=quoteqty,
                       commission=commission,
