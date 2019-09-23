@@ -279,7 +279,7 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter("%(message)s")
     logger = logging.getLogger()
 
-    config = TraderConfig("trader.ini")
+    config = TraderConfig("trader.ini", exchange='cbpro')
     config.select_section('cbpro.simulate')
 
     if results.strategy:
