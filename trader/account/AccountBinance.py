@@ -730,38 +730,6 @@ class AccountBinance(AccountBase):
             return result['address']
         return ''
 
-    def get_open_buy_orders(self):
-        return []
-
-    def get_open_sell_orders(self):
-        return []
-
-    def preload_buy_price_list(self):
-        return [], []
-
-    def get_24hr_stats(self, ticker_id):
-        stats = self.client.get_ticker(symbol=ticker_id)
-
-        high_24hr = low_24hr = 0.0
-        open_24hr = last_24hr = 0.0
-        volume = 0.0
-        ts_24hr = 0
-
-        if 'highPrice' in stats:
-            high_24hr = float(stats['highPrice'])
-        if 'lowPrice' in stats:
-            low_24hr = float(stats['lowPrice'])
-        if 'openPrice' in stats:
-            open_24hr = float(stats['openPrice'])
-        if 'lastPrice' in stats:
-            last_24hr = float(stats['lastPrice'])
-        if 'volume' in stats:
-            volume = float(stats['volume'])
-        if 'openTime' in stats:
-            ts_24hr = int(stats['openTime'])
-
-        return {'l': low_24hr, 'h': high_24hr, 'o': open_24hr, 'c': last_24hr, 'v': volume, 't': ts_24hr}
-
     def get_account_total_value(self, total_btc_only=False):
         result = {}
         result['assets'] = {}
