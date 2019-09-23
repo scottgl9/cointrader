@@ -5,8 +5,10 @@ except ImportError:
     from configparser import SafeConfigParser
 
 class TraderConfig(object):
-    def __init__(self, filename):
+    def __init__(self, filename, exchange_name='binance', simulate=False):
         self.filename = filename
+        self.exchange_name = exchange_name
+        self.simulate = simulate
         self.config = SafeConfigParser()
         self.section = None
         self.load()
@@ -114,6 +116,13 @@ class TraderConfig(object):
         if os.path.exists(self.filename):
             self.config.read(self.filename)
             return
+
+        #if self.section_exists("{}.live".format(self.exchange_name)):
+        #    print("{}.live exists".format(self.exchange_name))
+
+
+        #if self.section_exists("cbpro.live"):
+        #    print("cbpro.live exists".format(self.exchange_name))
 
         self.set_defaults()
         self.save()

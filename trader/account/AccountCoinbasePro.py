@@ -764,26 +764,6 @@ class AccountCoinbasePro(AccountBase):
     def get_account_status(self):
         return self.client.get_account_status()
 
-    # get USDT value of base by calculating (base_currency) * (currency_usdt)
-    def get_usdt_value_symbol(self, symbol, price=0):
-        currency = self.split_ticker_id(symbol)[1]
-        if currency == 'USDT':
-            currency_price = 1.0
-        else:
-            usdt_symbol = self.make_ticker_id(currency, 'USDT')
-            currency_price = float(self.get_ticker(usdt_symbol))
-
-        if not currency_price:
-            return 0
-
-        if not price:
-            price = float(self.get_ticker(symbol))
-
-        if not price:
-            return 0
-
-        return currency_price * price
-
     def update_asset_balance(self, name, balance, available):
         if self.simulate:
             if name in self.balances.keys() and balance == 0.0 and available == 0.0:
