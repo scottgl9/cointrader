@@ -46,6 +46,14 @@ class AccountCoinbasePro(AccountBase):
         self.initial_currency = 0
         self.loaded_model_count = 0
 
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        if self.simulate:
+            name = "{}.simulate".format(self.exchange_name)
+        else:
+            name = "{}.live".format(self.exchange_name)
+        return name
+
     def ts_to_iso8601(self, ts):
         dt = datetime.fromtimestamp(ts)
         return stix.utils.dates.serialize_value(dt)
@@ -54,7 +62,7 @@ class AccountCoinbasePro(AccountBase):
         return int(ts)
 
     def ts_to_seconds(self, ts):
-        return float(ts / 1000.0)
+        return float(ts)
 
     # returns true if this ts is an hourly ts
     def is_hourly_ts(self, ts):
@@ -65,13 +73,13 @@ class AccountCoinbasePro(AccountBase):
     def get_hourly_ts(self, ts):
         #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
         #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
-        return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
+        return int(self.ts_to_seconds(ts) / 3600.0) * 3600
 
     def seconds_to_ts(self, seconds):
-        return float(seconds * 1000)
+        return float(seconds)
 
     def hours_to_ts(self, hours):
-        return float(hours * 3600 * 1000)
+        return float(hours * 3600)
 
     # if hourly table name doesn't match symbol name
     # ex. symbol 'BTC-USD', db table name 'BTC_USD'

@@ -60,6 +60,14 @@ class AccountBinance(AccountBase):
         self._max_market_buy = 0
         self.loaded_model_count = 0
 
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        if self.simulate:
+            name = "{}.simulate".format(self.exchange_name)
+        else:
+            name = "{}.live".format(self.exchange_name)
+        return name
+
     def format_ts(self, ts):
         return int(ts)
 
