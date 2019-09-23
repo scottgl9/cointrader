@@ -33,6 +33,9 @@ class AccountCoinbasePro(AccountBase):
         # hourly db column names short list
         self.hourly_scnames = self.hourly_cnames
 
+        self.currencies = ['BTC', 'ETH', 'USDC', 'USD']
+        self.currency_trade_pairs = ['ETH-BTC', 'BTC-USDC', 'ETH-USDC', 'BTC-USD', 'ETH-USD']
+
         # keep track of initial currency buy size, and subsequent trades against currency
         #self._currency_buy_size = {}
         #for currency in self.currencies:
