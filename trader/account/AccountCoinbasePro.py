@@ -649,16 +649,13 @@ class AccountCoinbasePro(AccountBase):
             return result['address']
         return ''
 
-    def get_account_total_value(self, currency='USD'):
+    def get_account_total_value(self, currency='USD', detailed=False):
         result = {}
         result['assets'] = {}
         if self.simulate:
             tickers = self.get_all_tickers()
 
-        #btc_usd_price = float(tickers['BTCUSDT'])
-        #bnb_btc_price = float(tickers['BNBBTC'])
-        total_balance_usd = 0.0
-        total_balance_btc = 0.0
+        result_balance = 0.0
         total_balance = 0.0
 
         for asset, value in self.get_account_balances(detailed=False).items():
@@ -666,19 +663,26 @@ class AccountCoinbasePro(AccountBase):
                 continue
             if not self.simulate:
                 if asset == 'USD' or asset == 'USDC':
-                    if currency == 'USD' or currency == 'USDC':
-                        total_balance += value
-                        continue
-                else:
-                    symbol = self.make_ticker_id(asset, currency)
-                    if not self.is_exchange_pair(symbol) and currency == 'USD':
-                        symbol = self.make_ticker_id(asset, 'USDC')
-                    print(symbol)
-                    price = float(self.get_ticker(symbol))
-                    print(asset, value, price)
-                    if not price:
-                        continue
-                    total_balance += value * price
+                    total_balance += value
+                    continue
+                symbol = self.make_ticker_id(asset, currency)
+                if not self.is_exchange_pair(symbol) and currency == 'USD':
+                    symbol = self.make_ticker_id(asset, 'USDC')
+                #print(symbol)
+                price = float(self.get_ticker(symbol))
+                #print(asset, value, price)
+                if not price:
+                    continue
+                total_balance += value * price
+
+        if currency != 'USD' and currency != 'USDC':
+            symbol = self.make_ticker_id(currency, 'USD')
+            if not self.is_exchange_pair(symbol):
+                symbol = self.make_ticker_id(currency, 'USDC')
+            price = float(self.get_ticker(symbol))
+            result_balance = total_balance / price
+        else:
+            result_balance = total_balance
 
         #     if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
         #         if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
@@ -713,7 +717,7 @@ class AccountCoinbasePro(AccountBase):
         #         result['total']['bnb'] = total_balance_btc / bnb_btc_price
         #     result['total']['usd'] = total_balance_usd
         #     return result
-        return total_balance
+        return result_balance
 
     def get_account_total_btc_value(self):
         return self.get_account_total_value(currency='BTC')
