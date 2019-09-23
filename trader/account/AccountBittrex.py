@@ -14,6 +14,7 @@ import os
 
 class AccountBittrex(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
+        self.exchange_type = AccountBase.EXCHANGE_BITTREX
         self.exchange_name = 'bittrex'
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger

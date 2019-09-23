@@ -3,15 +3,12 @@ from trader.lib.struct.Order import Order
 
 
 class AccountBase(object):
-    # __metaclass__ = ABCMeta
-
-    #@abstractmethod
-    #def __init__(self, auth_client, name, currency='USD'):
-    #    pass
-
-    #@abstractmethod
-    #def get_ticker_id(self):
-    #    pass
+    EXCHANGE_UNKNOWN = 0
+    EXCHANGE_BINANCE = 1
+    EXCHANGE_CBPRO = 2
+    EXCHANGE_BITTREX = 3
+    EXCHANGE_KRAKEN = 4
+    EXCHANGE_POLONIEX = 5
 
     def make_ticker_id(self, base, currency):
         pass

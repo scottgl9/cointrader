@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 
 class AccountKraken(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
+        self.exchange_type = AccountBase.EXCHANGE_KRAKEN
         self.exchange_name = 'kraken'
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger

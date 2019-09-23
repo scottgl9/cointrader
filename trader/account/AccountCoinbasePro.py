@@ -14,6 +14,7 @@ import stix.utils.dates
 
 class AccountCoinbasePro(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
+        self.exchange_type = AccountBase.EXCHANGE_CBPRO
         self.exchange_name = 'cbpro'
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
