@@ -1,6 +1,3 @@
-from trader.lib.struct.Message import Message
-
-
 class OrderList(object):
     def __init__(self):
         self.orders = []
@@ -46,8 +43,18 @@ class OrderList(object):
 
 
 class Order(object):
-    def __init__(self, symbol, price, size, sig_id=0, buy_price=0, type=Message.MSG_MARKET_BUY, orderid=None, state='open',
-                 quote_size=0, commission=0, time_in_force=None):
+    TYPE_MARKET = 24
+    TYPE_LIMIT = 25
+    TYPE_STOP_LOSS = 26
+    TYPE_STOP_LOSS_LIMIT = 27
+    TYPE_PROFIT_LIMIT = 28
+    TYPE_TAKE_PROFIT = 29
+    TYPE_LIMIT_MAKER = 30
+    TYPE_NONE = 31
+    SIDE_BUY = 1
+    SIDE_SELL = 2
+    def __init__(self, symbol, price, size, sig_id=0, buy_price=0, type=TYPE_MARKET, side=SIDE_BUY, orderid=None,
+                 state='open', quote_size=0, commission=0, time_in_force=None):
         #if not orderid:
         #    self.orderid = uuid.uuid4()
         #else:
@@ -59,6 +66,7 @@ class Order(object):
         self.quote_size = float(quote_size)
         self.sig_id = sig_id
         self.type = type
+        self.side = side
         self.state = state
         self.commission = commission
         self.time_in_force = time_in_force

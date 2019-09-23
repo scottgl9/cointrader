@@ -524,21 +524,21 @@ class AccountBinance(AccountBase):
 
     def get_order_msg_type(self, order_type):
         if order_type == 'MARKET':
-            msg_type = Message.TYPE_MARKET
+            msg_type = Order.TYPE_MARKET
         elif order_type == 'LIMIT':
-            msg_type = Message.TYPE_LIMIT
+            msg_type = Order.TYPE_LIMIT
         elif order_type == 'LIMIT_MAKER':
-            msg_type = Message.TYPE_LIMIT_MAKER
+            msg_type = Order.TYPE_LIMIT_MAKER
         elif order_type == "STOP_LOSS":
-            msg_type = Message.TYPE_STOP_LOSS
+            msg_type = Order.TYPE_STOP_LOSS
         elif order_type == "STOP_LOSS_LIMIT":
-            msg_type = Message.TYPE_STOP_LOSS_LIMIT
+            msg_type = Order.TYPE_STOP_LOSS_LIMIT
         elif order_type == "TAKE_PROFIT_LIMIT":
-            msg_type = Message.TYPE_PROFIT_LIMIT
+            msg_type = Order.TYPE_PROFIT_LIMIT
         elif order_type == "TAKE_PROFIT":
-            msg_type = Message.TYPE_TAKE_PROFIT
+            msg_type = Order.TYPE_TAKE_PROFIT
         else:
-            msg_type = Message.TYPE_NONE
+            msg_type = Order.TYPE_NONE
         return msg_type
 
 

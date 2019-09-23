@@ -1,4 +1,5 @@
 from trader.lib.struct.Message import Message
+from trader.lib.struct.Order import Order
 
 
 class OrderLimitHandler(object):
@@ -101,13 +102,13 @@ class OrderLimitHandler(object):
 
     def send_buy_complete(self, ticker_id, price, size, sig_id, order_type, sig_oid=0):
         buy_type="buy_unknown"
-        if order_type == Message.TYPE_MARKET:
+        if order_type == Order.TYPE_MARKET:
             buy_type = "buy_market"
-        elif order_type == Message.TYPE_STOP_LOSS:
+        elif order_type == Order.TYPE_STOP_LOSS:
             buy_type = "buy_stop_loss"
-        elif order_type == Message.TYPE_LIMIT:
+        elif order_type == Order.TYPE_LIMIT:
             buy_type = "buy_limit"
-        elif order_type == Message.MSG_STOP_LOSS_BUY:
+        elif order_type == Order.MSG_STOP_LOSS_BUY:
             buy_type = "buy_stop_loss"
         elif order_type == Message.MSG_MARKET_BUY:
             buy_type = "buy_market"
@@ -120,11 +121,11 @@ class OrderLimitHandler(object):
 
     def send_sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type, sig_oid=0):
         sell_type="sell_unknown"
-        if order_type == Message.TYPE_MARKET:
+        if order_type == Order.TYPE_MARKET:
             sell_type = "sell_market"
-        elif order_type == Message.TYPE_STOP_LOSS:
+        elif order_type == Order.TYPE_STOP_LOSS:
             sell_type = "sell_stop_loss"
-        elif order_type == Message.TYPE_LIMIT:
+        elif order_type == Order.TYPE_LIMIT:
             sell_type = "sell_limit"
         elif order_type == Message.MSG_STOP_LOSS_SELL:
             sell_type = "sell_stop_loss"

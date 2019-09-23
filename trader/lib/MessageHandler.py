@@ -1,5 +1,6 @@
 # global handling of messages to and from strategies to multitrader
 from trader.lib.struct.Message import Message
+from trader.lib.struct.Order import Order
 
 global_message_queue = []
 
@@ -28,7 +29,7 @@ class MessageHandler(object):
         global_message_queue.append(msg)
 
     def add_message(self, src_id, dst_id, cmd, sig_id, price=0.0, size=0.0, buy_price=0.0, ts=0,
-                    asset_info=None, order_type=Message.TYPE_MARKET, buy_type=0, sell_type=0, sig_oid=0):
+                    asset_info=None, order_type=Order.TYPE_MARKET, buy_type=0, sell_type=0, sig_oid=0):
         msg = Message(src_id, dst_id, cmd, sig_id, price, size, buy_price, ts,
                       asset_info, order_type, buy_type, sell_type, sig_oid)
         global_message_queue.append(msg)
@@ -149,7 +150,7 @@ class MessageHandler(object):
                          buy_price=buy_price,
                          sig_oid=sig_oid)
 
-    def buy_complete(self, ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET, sig_oid=0):
+    def buy_complete(self, ticker_id, price, size, sig_id, order_type=Order.TYPE_MARKET, sig_oid=0):
         self.add_message(src_id=Message.ID_MULTI,
                          dst_id=ticker_id,
                          cmd=Message.MSG_BUY_COMPLETE,
@@ -159,7 +160,7 @@ class MessageHandler(object):
                          order_type=order_type,
                          sig_oid=sig_oid)
 
-    def sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET, sig_oid=0):
+    def sell_complete(self, ticker_id, price, size, buy_price, sig_id, order_type=Order.TYPE_MARKET, sig_oid=0):
         self.add_message(src_id=Message.ID_MULTI,
                          dst_id=ticker_id,
                          cmd=Message.MSG_SELL_COMPLETE,
@@ -170,7 +171,7 @@ class MessageHandler(object):
                          order_type=order_type,
                          sig_oid=sig_oid)
 
-    def buy_cancel(self, ticker_id, sig_id, order_type=Message.TYPE_LIMIT, sig_oid=0):
+    def buy_cancel(self, ticker_id, sig_id, order_type=Order.TYPE_LIMIT, sig_oid=0):
         self.add_message(src_id=Message.ID_MULTI,
                          dst_id=ticker_id,
                          cmd=Message.MSG_BUY_CANCEL,
@@ -178,7 +179,7 @@ class MessageHandler(object):
                          order_type=order_type,
                          sig_oid=sig_oid)
 
-    def sell_cancel(self, ticker_id, sig_id, order_type=Message.TYPE_LIMIT, sig_oid=0):
+    def sell_cancel(self, ticker_id, sig_id, order_type=Order.TYPE_LIMIT, sig_oid=0):
         self.add_message(src_id=Message.ID_MULTI,
                          dst_id=ticker_id,
                          cmd=Message.MSG_SELL_CANCEL,
@@ -186,7 +187,7 @@ class MessageHandler(object):
                          order_type=order_type,
                          sig_oid=sig_oid)
 
-    def buy_failed(self, ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET, sig_oid=0):
+    def buy_failed(self, ticker_id, price, size, sig_id, order_type=Order.TYPE_MARKET, sig_oid=0):
         self.add_message(src_id=Message.ID_MULTI,
                          dst_id=ticker_id,
                          cmd=Message.MSG_BUY_FAILED,
@@ -196,7 +197,7 @@ class MessageHandler(object):
                          order_type=order_type,
                          sig_oid=sig_oid)
 
-    def sell_failed(self, ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_MARKET, sig_oid=0):
+    def sell_failed(self, ticker_id, price, size, buy_price, sig_id, order_type=Order.TYPE_MARKET, sig_oid=0):
         self.add_message(src_id=Message.ID_MULTI,
                          dst_id=ticker_id,
                          cmd=Message.MSG_SELL_FAILED,
