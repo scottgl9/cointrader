@@ -130,18 +130,19 @@ class MultiTrader(object):
                 self.logger.info("Failed to setup hourly updates for {}".format(self.hourly_klines_db_file))
 
         # config options for AccountBinance
-        btc_only = self.config.get('btc_only')
-        eth_only = self.config.get('eth_only')
-        bnb_only = self.config.get('bnb_only')
+        if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+            btc_only = self.config.get('btc_only')
+            eth_only = self.config.get('eth_only')
+            bnb_only = self.config.get('bnb_only')
 
-        if btc_only: self.accnt.set_btc_only(btc_only)
-        elif eth_only: self.accnt.set_eth_only(eth_only)
-        elif bnb_only: self.accnt.set_bnb_only(bnb_only)
-        elif self.use_hourly_klines and hourly_symbols_only: 
-            try:
+        try:
+            if btc_only: self.accnt.set_btc_only(btc_only)
+            elif eth_only: self.accnt.set_eth_only(eth_only)
+            elif bnb_only: self.accnt.set_bnb_only(bnb_only)
+            elif self.use_hourly_klines and hourly_symbols_only:
                 self.accnt.set_hourly_symbols_only(hourly_symbols_only)
-            except AttributeError:
-                pass
+        except AttributeError:
+            pass
 
         self.notify = None
         self.current_ts = 0
@@ -157,9 +158,10 @@ class MultiTrader(object):
         if self.global_en:
             self.global_strategy = global_obv_strategy()
 
-        self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb, logger=self.logger)
-        for filter_name in self.symbol_filter_names:
-            self.symbol_filter.add_filter(filter_name)
+        if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+            self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb, logger=self.logger)
+            for filter_name in self.symbol_filter_names:
+                self.symbol_filter.add_filter(filter_name)
 
         sigstr = None
 
@@ -331,10 +333,11 @@ class MultiTrader(object):
                     self.purge_trade_db()
 
         # if apply_filters() returns True, then disable buys for this trader
-        if self.symbol_filter.apply_filters(kline):
-            symbol_trader.filter_buy_disabled = True
-        elif symbol_trader.filter_buy_disabled:
-            symbol_trader.filter_buy_disabled = False
+        if self.symbol_filter:
+            if self.symbol_filter.apply_filters(kline):
+                symbol_trader.filter_buy_disabled = True
+            elif symbol_trader.filter_buy_disabled:
+                symbol_trader.filter_buy_disabled = False
 
         symbol_trader.run_update(kline, cache_db=cache_db)
 
