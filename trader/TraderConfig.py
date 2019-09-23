@@ -27,7 +27,6 @@ class TraderConfig(object):
             self.config.set(section, key, value)
 
     def load(self):
-        print("load()")
         config_updated = False
         if os.path.exists(self.filename):
             self.config.read(self.filename)

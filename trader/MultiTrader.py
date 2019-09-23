@@ -1,6 +1,6 @@
 # handle running strategy for each base / currency pair we want to trade
 import os
-from trader.account.AccountBinance import AccountBinance
+from trader.account.AccountBinance import AccountBinance, AccountBase
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.MessageHandler import Message, MessageHandler
@@ -95,7 +95,8 @@ class MultiTrader(object):
             try:
                 self.hkdb = HourlyKlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
-                hourly_symbols_only = self.config.get('hourly_symbols_only')
+                if self.config.option_exists('hourly_symbols_only'):
+                    hourly_symbols_only = self.config.get('hourly_symbols_only')
                 self.hkdb_table_symbols = self.hkdb.table_symbols
                 self.latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
                 #if self.simulate:
@@ -107,7 +108,7 @@ class MultiTrader(object):
         # update hourly kline tables on start if running in live mode
         if not self.simulate and self.hkdb:
             latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
-            hourly_ts = self.accnt.get_hourly_ts(int(time.time() * 1000))
+            hourly_ts = self.accnt.get_hourly_ts(self.accnt.seconds_to_ts(int(time.time() * 1000)))
             if hourly_ts == latest_hourly_ts:
                 self.logger.info("Hourly kline tables up to date in {}...".format(self.hourly_klines_db_file))
             else:
@@ -136,7 +137,11 @@ class MultiTrader(object):
         if btc_only: self.accnt.set_btc_only(btc_only)
         elif eth_only: self.accnt.set_eth_only(eth_only)
         elif bnb_only: self.accnt.set_bnb_only(bnb_only)
-        elif self.use_hourly_klines and hourly_symbols_only: self.accnt.set_hourly_symbols_only(hourly_symbols_only)
+        elif self.use_hourly_klines and hourly_symbols_only: 
+            try:
+                self.accnt.set_hourly_symbols_only(hourly_symbols_only)
+            except AttributeError:
+                pass
 
         self.notify = None
         self.current_ts = 0
@@ -211,14 +216,15 @@ class MultiTrader(object):
 
         if not base_name or not currency_name: return None
 
-        if self.accnt.btc_only() and currency_name != 'BTC':
-            return None
-        elif self.accnt.eth_only() and currency_name != 'ETH':
-            return None
-        elif self.accnt.bnb_only() and currency_name != 'BNB':
-            return None
-        elif self.accnt.hourly_symbols_only() and symbol not in self.hkdb_table_symbols:
-            return None
+        if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+            if self.accnt.btc_only() and currency_name != 'BTC':
+                return None
+            elif self.accnt.eth_only() and currency_name != 'ETH':
+                return None
+            elif self.accnt.bnb_only() and currency_name != 'BNB':
+                return None
+            elif self.accnt.hourly_symbols_only() and symbol not in self.hkdb_table_symbols:
+                return None
 
         # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
         if not self.simulate and not self.use_hourly_klines:
