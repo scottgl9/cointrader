@@ -99,15 +99,22 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         print("Section cbpro.simulate does not exist")
         sys.exit(-1)
 
-    #config.select_section('binance.simulate')
     btc_balance = config.get('BTC')
     eth_balance = config.get('ETH')
+    usd_balance = config.get('USD')
+    usdc_balance = config.get('USDC')
 
     if btc_balance:
         accnt.update_asset_balance('BTC', float(btc_balance), float(btc_balance))
 
     if eth_balance:
         accnt.update_asset_balance('ETH', float(eth_balance), float(eth_balance))
+
+    if usd_balance:
+        accnt.update_asset_balance('USD', float(usd_balance), float(usd_balance))
+
+    if usdc_balance:
+        accnt.update_asset_balance('USDC', float(usdc_balance), float(usdc_balance))
 
     multitrader = MultiTrader(client,
                               accnt=accnt,
