@@ -742,10 +742,13 @@ class AccountCoinbasePro(AccountBase):
             tickers = self._tickers
         for symbol, info in self.balances.items():
             if symbol != 'BTC':
+                if symbol == 'USD' or symbol == 'USDC':
+                    continue
                 if not info or not info['balance']:
                     continue
-                ticker_id = "{}BTC".format(symbol)
+                ticker_id = self.make_ticker_id(symbol, 'BTC')
                 if ticker_id not in tickers:
+                    print(ticker_id)
                     return False
         return True
 
@@ -760,8 +763,8 @@ class AccountCoinbasePro(AccountBase):
             size_btc = 0.0
             if symbol == 'BTC':
                 size_btc = float(self.balances['BTC']['balance'])
-            elif symbol != 'USDT':
-                ticker_id = "{}BTC".format(symbol)
+            elif symbol != 'USD' and symbol != 'USDC':
+                ticker_id = self.make_ticker_id(symbol, 'BTC')
                 if ticker_id not in tickers.keys():
                     continue
                 amount = float(self.balances[symbol]['balance'])

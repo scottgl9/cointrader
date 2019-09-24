@@ -146,6 +146,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     #    cache_db = create_db_connection(cache_filename)
     cache_db = None
 
+    last_close = 0
+
     for row in c:
         msg = {'ts': row[0], 'p': row[1], 'ask': row[2], 'bid': row[3],
                'q': row[4], 's': row[5], 'buy': row[6]}
@@ -160,11 +162,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                 found = True
                 initial_total = multitrader.accnt.get_total_btc_value()
                 multitrader.update_initial_currency()
-            elif profit_mode == 'BNB' and multitrader.accnt.total_bnb_available():
-                found = True
-                initial_total = multitrader.accnt.get_total_bnb_value()
-                print("initial_total: {}".format(initial_total))
-                multitrader.update_initial_currency()
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
         #if msg['s'].endswith("USDT"):
@@ -175,7 +172,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 
         if not kline:
             kline = Kline(symbol=msg['s'],
-                          open=0,
+                          open=last_close,
                           close=float(msg['p']),
                           low=float(msg['bid']),
                           high=float(msg['ask']),
@@ -184,7 +181,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                           ts=int(msg['ts']))
         else:
             kline.symbol = msg['s']
-            kline.open = 0
+            kline.open = last_close
             kline.close = float(msg['p'])
             kline.low = float(msg['bid'])
             kline.high= float(msg['ask'])
@@ -192,6 +189,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
             kline.volume_quote = float(msg['q'])
             kline.volume = kline.volume_quote
             kline.ts = int(msg['ts'])
+
+        last_close = kline.close
 
         multitrader.process_message(kline, cache_db=cache_db)
 
