@@ -165,7 +165,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         #    balance = accnt.get_asset_balance("USDT")["balance"]
         #    if balance < minqty:
         #        continue
-        print(msg)
 
         if not kline:
             kline = Kline(symbol=msg['s'],

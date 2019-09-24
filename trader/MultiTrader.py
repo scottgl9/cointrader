@@ -156,6 +156,7 @@ class MultiTrader(object):
         self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger, self.store_trades)
         self.global_strategy = None
         self.global_en = global_en
+        self.symbol_filter = None
         if self.global_en:
             self.global_strategy = global_obv_strategy()
 
@@ -242,16 +243,17 @@ class MultiTrader(object):
             self.logger.info("No asset info for {}".format(symbol))
             return None
 
-        try:
-            base_min_size = float(asset_info['base_step_size'])
-            min_notional = float(asset_info['minNotional'])
-        except (KeyError, TypeError):
-            if not self.simulate:
-                self.logger.info("symbol {} attributes not in asset info".format(symbol))
-            return None
+        if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+            try:
+                base_min_size = float(asset_info['base_step_size'])
+                min_notional = float(asset_info['minNotional'])
+            except (KeyError, TypeError):
+                if not self.simulate:
+                    self.logger.info("symbol {} attributes not in asset info".format(symbol))
+                return None
 
-        if min_notional > base_min_size:
-            base_min_size = min_notional
+            if min_notional > base_min_size:
+                base_min_size = min_notional
 
         reverse_trade_mode = self.use_reverse_trade_mode(symbol, base_name, currency_name, asset_info)
 

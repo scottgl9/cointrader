@@ -415,18 +415,33 @@ class AccountCoinbasePro(AccountBase):
             return None
 
         min_qty=info['min_qty']
-        min_notional=info['minNotional']
+
+        try:
+            min_notional=info['minNotional']
+        except KeyError:
+            min_notional = min_qty
+
         if float(min_qty) < float(min_notional):
             min_qty = min_notional
         min_price=info['min_price']
         base_step_size=info['base_step_size']
         currency_step_size=info['currency_step_size']
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
-        baseAssetPrecision = info['baseAssetPrecision']
-        quotePrecision = info['quotePrecision']
+
+        try:
+            baseAssetPrecision = info['baseAssetPrecision']
+            quotePrecision = info['quotePrecision']
+        except KeyError:
+            baseAssetPrecision = 8
+            quotePrecision = 8
+
         orderTypes = []
-        for order_type in info['orderTypes']:
-            orderTypes.append(self.get_order_msg_type(order_type))
+
+        try:
+            for order_type in info['orderTypes']:
+                orderTypes.append(self.get_order_msg_type(order_type))
+        except KeyError:
+            pass
 
         result = AssetInfo(base=base,
                            currency=currency,

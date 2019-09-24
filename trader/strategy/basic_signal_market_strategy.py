@@ -96,17 +96,24 @@ class basic_signal_market_strategy(StrategyBase):
         if not self.reverse_trade_mode and self.is_currency_pair():
             return False
 
-        if self.accnt.trades_disabled():
-            return False
+        try:
+            if self.accnt.trades_disabled():
+                return False
 
-        if self.accnt.sell_only():
-            return False
+            if self.accnt.sell_only():
+                return False
+        except AttributeError:
+            pass
 
         if float(signal.buy_price) != 0.0 or self.disable_buy:
             return False
 
         # limit number of market buy orders without corresponding market sell orders
-        max_market_buy = self.accnt.max_market_buy()
+        try:
+            max_market_buy = self.accnt.max_market_buy()
+        except AttributeError:
+            max_market_buy = 0
+
         if max_market_buy != 0 and self.order_handler.open_market_buy_count >= max_market_buy:
             return False
 
@@ -137,8 +144,11 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def sell_signal(self, signal, price):
-        if self.accnt.trades_disabled():
-            return False
+        try:
+            if self.accnt.trades_disabled():
+                return False
+        except AttributeError:
+            pass
 
         if float(signal.buy_price) == 0.0 or float(signal.buy_size) == 0.0:
             return False
