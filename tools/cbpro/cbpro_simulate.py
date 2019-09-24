@@ -163,13 +163,6 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                 initial_total = multitrader.accnt.get_total_btc_value()
                 multitrader.update_initial_currency()
 
-        # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
-        #if msg['s'].endswith("USDT"):
-        #    minqty = 20.0
-        #    balance = accnt.get_asset_balance("USDT")["balance"]
-        #    if balance < minqty:
-        #        continue
-
         if not kline:
             kline = Kline(symbol=msg['s'],
                           open=last_close,
