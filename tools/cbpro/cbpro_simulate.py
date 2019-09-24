@@ -86,7 +86,7 @@ def process_trade_cache(trades, end_tickers):
 def simulate(conn, config, logger, simulate_db_filename=None):
     start_time = time.time()
     c = conn.cursor()
-    c.execute("SELECT * FROM miniticker ORDER BY E ASC")
+    c.execute("SELECT * FROM miniticker ORDER BY ts ASC")
 
     client = None
     accnt = AccountCoinbasePro(client,
@@ -140,13 +140,13 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     cache_db = None
 
     for row in c:
-        msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
-               'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
+        msg = {'ts': row[0], 'p': row[1], 'ask': row[2], 'bid': row[3],
+               'q': row[4], 's': row[5], 'buy': row[6]}
 
         if not first_ts:
-            first_ts = datetime.utcfromtimestamp(int(msg['E']))
+            first_ts = datetime.utcfromtimestamp(int(msg['ts']))
         else:
-            last_ts = datetime.utcfromtimestamp(int(msg['E']))
+            last_ts = datetime.utcfromtimestamp(int(msg['ts']))
 
         if not found:
             if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
@@ -165,26 +165,27 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         #    balance = accnt.get_asset_balance("USDT")["balance"]
         #    if balance < minqty:
         #        continue
+        print(msg)
 
         if not kline:
             kline = Kline(symbol=msg['s'],
-                          open=float(msg['o']),
-                          close=float(msg['c']),
-                          low=float(msg['l']),
-                          high=float(msg['h']),
-                          volume_base=float(msg['v']),
+                          open=0,
+                          close=float(msg['p']),
+                          low=float(msg['bid']),
+                          high=float(msg['ask']),
+                          volume_base=float(msg['q']),
                           volume_quote=float(msg['q']),
-                          ts=int(msg['E']))
+                          ts=int(msg['ts']))
         else:
             kline.symbol = msg['s']
-            kline.open = float(msg['o'])
-            kline.close = float(msg['c'])
-            kline.low = float(msg['l'])
-            kline.high= float(msg['h'])
-            kline.volume_base = float(msg['v'])
+            kline.open = 0
+            kline.close = float(msg['p'])
+            kline.low = float(msg['bid'])
+            kline.high= float(msg['ask'])
+            kline.volume_base = float(msg['q'])
             kline.volume_quote = float(msg['q'])
             kline.volume = kline.volume_quote
-            kline.ts = int(msg['E'])
+            kline.ts = int(msg['ts'])
 
         multitrader.process_message(kline, cache_db=cache_db)
 
@@ -235,7 +236,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='',
+                        default='cbpro_database.miniticker_collection_09132019.db',
                         help='filename of kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='strategy',

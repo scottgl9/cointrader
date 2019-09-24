@@ -1,6 +1,7 @@
 # handle running strategy for each base / currency pair we want to trade
 import os
 from trader.account.AccountBinance import AccountBinance, AccountBase
+from trader.lib.struct.Order import Order
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.MessageHandler import Message, MessageHandler
@@ -135,14 +136,14 @@ class MultiTrader(object):
             eth_only = self.config.get('eth_only')
             bnb_only = self.config.get('bnb_only')
 
-        try:
-            if btc_only: self.accnt.set_btc_only(btc_only)
-            elif eth_only: self.accnt.set_eth_only(eth_only)
-            elif bnb_only: self.accnt.set_bnb_only(bnb_only)
-            elif self.use_hourly_klines and hourly_symbols_only:
-                self.accnt.set_hourly_symbols_only(hourly_symbols_only)
-        except AttributeError:
-            pass
+            try:
+                if btc_only: self.accnt.set_btc_only(btc_only)
+                elif eth_only: self.accnt.set_eth_only(eth_only)
+                elif bnb_only: self.accnt.set_bnb_only(bnb_only)
+                elif self.use_hourly_klines and hourly_symbols_only:
+                    self.accnt.set_hourly_symbols_only(hourly_symbols_only)
+            except AttributeError:
+                pass
 
         self.notify = None
         self.current_ts = 0
@@ -319,11 +320,7 @@ class MultiTrader(object):
                 if (self.current_ts - self.last_ts) > self.check_ts:
                     self.accnt.get_account_balances()
 
-                    # keep asset details up to date
-                    self.accnt.load_detail_all_assets()
-
-                    # keep asset info up to date
-                    self.accnt.load_info_all_assets()
+                    self.accnt.load_exchange_info()
 
                     self.last_ts = self.current_ts
                     timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
@@ -383,7 +380,7 @@ class MultiTrader(object):
                 self.logger.info("Removing {} from trade db".format(symbol))
                 self.order_handler.trader_db.remove_trade(symbol, sigid)
                 self.order_handler.remove_open_order(symbol)
-                self.order_handler.send_sell_complete(symbol, price, qty, price, sigid, order_type=Message.TYPE_MARKET)
+                self.order_handler.send_sell_complete(symbol, price, qty, price, sigid, order_type=Order.TYPE_MARKET)
 
 
     # process message from user event socket
@@ -407,7 +404,7 @@ class MultiTrader(object):
                                                       order_type=order_update.msg_type)
                 self.order_handler.trader_db.remove_trade(o.symbol, o.sig_id)
                 self.order_handler.remove_open_order(o.symbol)
-            elif order_update.msg_type != Message.TYPE_MARKET:
+            elif order_update.msg_type != Order.TYPE_MARKET:
                 # order placed by user
                 o = order_update
                 self.logger.info("process_user_message({}) MANUAL_SELL_COMPLETE".format(o.symbol))
