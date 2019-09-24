@@ -62,9 +62,12 @@ class MyWSClient(WebsocketClient):
         try:
             self.db = sqlite3.connect(filename, check_same_thread=False)
             cur = self.db.cursor()
-            # """CREATE TABLE miniticker (ts integer, p real, ask real, bid real, q real, s text, buy boolean)"""
+            # for 'ticker' messages
             cur.execute(
-                """CREATE TABLE matches (ts integer, seq integer, p real, q real, s text, buy boolean)""")
+                """CREATE TABLE miniticker (ts integer, p real, ask real, bid real, q real, s text, buy boolean)""")
+            # for 'matches' messages
+            #cur.execute(
+            #    """CREATE TABLE matches (ts integer, seq integer, p real, q real, s text, buy boolean)""")
             self.db.commit()
             return self.db
         except sqlite3.Error as e:
@@ -88,22 +91,21 @@ class MyWSClient(WebsocketClient):
             cur = self.db.cursor()
             sql = """INSERT INTO matches (ts, seq, p, q, s, buy) values(?, ?, ?, ?, ?, ?)"""
             cur.execute(sql, values)
-        # if msg['type'] != 'ticker':
-        #     return
-        # symbol = msg['product_id']
-        # ts = int(time.mktime(aniso8601.parse_datetime(msg['time']).timetuple()))
-        # p = float(msg['price'])
-        # ask = float(msg['best_ask'])
-        # bid = float(msg['best_bid'])
-        # q = float(msg['last_size'])
-        # # buy or sell
-        # buy = False
-        # if msg['side'] == 'buy':
-        #     buy = True
-        # values = [ts, p, ask, bid, q, symbol, buy]
-        # cur = self.db.cursor()
-        # sql = """INSERT INTO miniticker (ts, p, ask, bid, q, s, buy) values(?, ?, ?, ?, ?, ?, ?)"""
-        # cur.execute(sql, values)
+        elif msg['type'] == 'ticker':
+            symbol = msg['product_id']
+            ts = int(time.mktime(aniso8601.parse_datetime(msg['time']).timetuple()))
+            p = float(msg['price'])
+            ask = float(msg['best_ask'])
+            bid = float(msg['best_bid'])
+            q = float(msg['last_size'])
+            # buy or sell
+            buy = False
+            if msg['side'] == 'buy':
+                buy = True
+            values = [ts, p, ask, bid, q, symbol, buy]
+            cur = self.db.cursor()
+            sql = """INSERT INTO miniticker (ts, p, ask, bid, q, s, buy) values(?, ?, ?, ?, ?, ?, ?)"""
+            cur.execute(sql, values)
 
     def on_close(self):
         sys.exit(0)
@@ -118,7 +120,7 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    db_file = "cbpro_database_matches_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
+    db_file = "cbpro_database_miniticker_collection_{}.db".format(datetime.now().strftime("%m%d%Y"))
     if os.path.exists(db_file):
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
@@ -133,7 +135,7 @@ if __name__ == '__main__':
         products.append(ticker)
 
     # channel list: full, level2, ticker, user, matches, heartbeat
-    channels = ["matches"]
+    channels = ["ticker"] #["matches"]
 
     while 1:
         ws = MyWSClient(should_print=False,
