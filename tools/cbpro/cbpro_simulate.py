@@ -102,16 +102,12 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     #config.select_section('binance.simulate')
     btc_balance = config.get('BTC')
     eth_balance = config.get('ETH')
-    bnb_balance = config.get('BNB')
 
     if btc_balance:
         accnt.update_asset_balance('BTC', float(btc_balance), float(btc_balance))
 
     if eth_balance:
         accnt.update_asset_balance('ETH', float(eth_balance), float(eth_balance))
-
-    if bnb_balance:
-        accnt.update_asset_balance('BNB', float(bnb_balance), float(bnb_balance))
 
     multitrader = MultiTrader(client,
                               accnt=accnt,
@@ -148,9 +144,9 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                'o': row[4], 'q': row[5], 's': row[6], 'v': row[7]}
 
         if not first_ts:
-            first_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
+            first_ts = datetime.utcfromtimestamp(int(msg['E']))
         else:
-            last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
+            last_ts = datetime.utcfromtimestamp(int(msg['E']))
 
         if not found:
             if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
@@ -239,7 +235,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='',
                         help='filename of kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='strategy',
@@ -259,7 +255,7 @@ if __name__ == '__main__':
                         help='simulation cache directory')
 
     parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
-                        default='binance_hourly_klines_BTC.db',
+                        default='cbpro_hourly_klines.db',
                         help='binance hourly klines DB file')
 
     parser.add_argument('-d', action='store_true', dest='disable_caching',
@@ -275,7 +271,6 @@ if __name__ == '__main__':
     if not os.path.exists(results.cache_dir):
         os.mkdir(results.cache_dir)
 
-    #logFormatter = logging.Formatter("[%(levelname)-5.5s]  %(message)s")
     logFormatter = logging.Formatter("%(message)s")
     logger = logging.getLogger()
 
@@ -309,16 +304,16 @@ if __name__ == '__main__':
         os.mkdir(cache_path)
 
     # get balances from trader.ini to be used in creating filename
-    btc_balance = float(config.get('BTC'))
-    eth_balance = float(config.get('ETH'))
-    bnb_balance = float(config.get('BNB'))
+    #btc_balance = float(config.get('BTC'))
+    #eth_balance = float(config.get('ETH'))
+    #bnb_balance = float(config.get('BNB'))
     balance_txt = ""
-    if btc_balance:
-        balance_txt += "{}BTC".format(btc_balance)
-    if eth_balance:
-        balance_txt += "{}ETH".format(eth_balance)
-    if bnb_balance:
-        balance_txt += "{}BNB".format(bnb_balance)
+    #if btc_balance:
+    #    balance_txt += "{}BTC".format(btc_balance)
+    #if eth_balance:
+    #    balance_txt += "{}ETH".format(eth_balance)
+    #if bnb_balance:
+    #    balance_txt += "{}BNB".format(bnb_balance)
 
     trade_cache = {}
 
