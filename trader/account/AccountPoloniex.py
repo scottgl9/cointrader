@@ -26,6 +26,9 @@ class AccountPoloniex(AccountBase):
         self.details_all_assets = {}
         self.balances = {}
 
+        self.currencies = ['BTC', 'ETH', 'USDT', 'USDC']
+        self.currency_trade_pairs = ['ETH_BTC', 'ETH_USDT', 'BTC_USDT', 'BTC_USDC', 'ETH_USDC', 'USDT_USDC']
+
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
         for currency in self.currencies:
@@ -33,6 +36,7 @@ class AccountPoloniex(AccountBase):
 
         self.client = client
 
+        self._exchange_pairs = None
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
@@ -45,7 +49,7 @@ class AccountPoloniex(AccountBase):
         return int(ts)
 
     def ts_to_seconds(self, ts):
-        return float(ts / 1000.0)
+        return float(ts)
 
     # returns true if this ts is an hourly ts
     def is_hourly_ts(self, ts):
@@ -59,10 +63,10 @@ class AccountPoloniex(AccountBase):
         return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
 
     def seconds_to_ts(self, seconds):
-        return float(seconds * 1000)
+        return float(seconds)
 
     def hours_to_ts(self, hours):
-        return float(hours * 3600 * 1000)
+        return float(hours * 3600)
 
     def get_ticker(self, symbol):
         if not self.simulate and len(self._tickers) == 0:
@@ -223,13 +227,13 @@ class AccountPoloniex(AccountBase):
             return "{:.8f}".format(float(value))
 
     def make_ticker_id(self, base, currency):
-        return '%s-%s' % (base, currency)
+        return '%s_%s' % (base, currency)
 
     def split_ticker_id(self, symbol):
         base_name = None
         currency_name = None
 
-        parts = symbol.split('-')
+        parts = symbol.split('_')
         if len(parts) == 2:
             base_name = parts[0]
             currency_name = parts[1]
@@ -251,64 +255,76 @@ class AccountPoloniex(AccountBase):
             return result[1]
         return None
 
-    def get_detail_all_assets(self):
-        return self.client.get_asset_details()
+    # For simulation: load exchange info from file, or call get_exchange_info() and save to file
+    def load_exchange_info(self):
+        if not self.simulate:
+            info = self.get_exchange_info()
+            self.info_all_assets = info['pairs']
+            self.details_all_assets = info['assets']
+            return
 
-    def get_info_all_assets(self, info_all_assets=None):
-        assets = {}
+        print(self.exchange_info_file)
+        if not os.path.exists(self.exchange_info_file):
+            info = self.get_exchange_info()
+            print(info)
+            with open(self.exchange_info_file, 'w') as f:
+                json.dump(info, f, indent=4)
+        else:
+            info = json.loads(open(self.exchange_info_file).read())
+        self.info_all_assets = info['pairs']
+        self.details_all_assets = info['assets']
 
-        if not info_all_assets:
-            info_all_assets = self.pc.get_products()
+    # get exchange info from exchange via API
+    def get_exchange_info(self):
+        pair_info = self.pc.get_products()
+        asset_info = {} #self.client.get_asset_details()
+        return self.parse_exchange_info(pair_info, asset_info)
 
-        for info in info_all_assets:
+    def parse_exchange_info(self, pair_info, asset_info):
+        exchange_info = {}
+        pairs = {}
+        update_exchange_pairs = False
+        if not self._exchange_pairs:
+            self._exchange_pairs = []
+            update_exchange_pairs = True
+
+        for info in pair_info:
             symbol = info['id']
-            minQty = info['base_min_size']
-            minPrice = info['min_market_funds']
-            stepSize = info['base_increment']
-            tickSize = info['quote_increment']
-            assets[symbol] = {'minQty': minQty,
-                              'minPrice': minPrice,
-                              'tickSize': tickSize,
-                              'stepSize': stepSize,
-                              #'minNotional': minNotional,
-                              #'commissionAsset': commissionAsset,
-                              #'baseAssetPrecision': baseAssetPrecision,
-                              #'quotePrecision': quotePrecision,
-                              #'orderTypes': orderTypes
-                              }
+            min_qty = info['base_min_size']
+            min_price = info['min_market_funds']
+            base_step_size = info['base_increment']
+            currency_step_size = info['quote_increment']
+            if update_exchange_pairs:
+                self._exchange_pairs.append(symbol)
+            pairs[symbol] = {'min_qty': min_qty,
+                             'min_price': min_price,
+                             'base_step_size': base_step_size,
+                             'currency_step_size': currency_step_size,
+                             #'minNotional': minNotional,
+                             #'commissionAsset': commissionAsset,
+                             #'baseAssetPrecision': baseAssetPrecision,
+                             #'quotePrecision': quotePrecision,
+                             #'orderTypes': orderTypes
+                            }
 
-        return assets
+        exchange_info['pairs'] = pairs
+        exchange_info['assets'] = asset_info
 
+        return exchange_info
 
-    # use get_info_all_assets to load asset info into self.info_all_assets
-    def load_info_all_assets(self):
-        filename = "cbpro_asset_info.json"
-        if not self.simulate:
-            self.info_all_assets = self.get_info_all_assets()
-            return
+    # get list of exchange pairs (trade symbols)
+    def get_exchange_pairs(self):
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        return self._exchange_pairs
 
-        if not os.path.exists(filename):
-            assets_info = self.pc.get_products()
-            with open(filename, 'w') as f:
-                json.dump(assets_info, f, indent=4)
-        else:
-            assets_info = json.loads(open(filename).read())
-        self.info_all_assets = self.get_info_all_assets(assets_info)
-
-
-    # use get_info_all_assets to load asset info into self.info_all_assets
-    def load_detail_all_assets(self):
-        if not self.simulate:
-            self.details_all_assets = self.get_detail_all_assets()
-            return
-
-        if not os.path.exists("asset_detail.json"):
-            self.details_all_assets = self.get_detail_all_assets()
-            with open('asset_detail.json', 'w') as f:
-                json.dump(self.details_all_assets, f, indent=4)
-        else:
-            self.details_all_assets = json.loads(open('asset_detail.json').read())
-
+    # is a valid exchange pair
+    def is_exchange_pair(self, symbol):
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        if symbol in self._exchange_pairs:
+            return True
+        return False
 
     def get_asset_status(self, name=None):
         if not self.details_all_assets:
@@ -892,29 +908,7 @@ class AccountPoloniex(AccountBase):
     def cancel_all(self, ticker_id=None):
         return self.client.cancel_all(product_id=ticker_id)
 
-    # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
-    # The maximum amount of data returned is 300 candles
-    # kline format: [ timestamp, low, high, open, close, volume ]
-    def get_klines(self, days=0, hours=1, ticker_id=None):
-        end = datetime.utcnow()
-        start = (end - timedelta(days=days, hours=hours))
-        granularity = 900
-        if days == 0 and hours < 6:
-            granularity = 60
-        elif (days== 0 and hours <= 24) or (days == 1 and hours == 0):
-            granularity = 300
-
-        rates = self.pc.get_product_historic_rates(ticker_id,
-                                                   start.isoformat(),
-                                                   end.isoformat(),
-                                                   granularity=granularity)
-        return rates[::-1]
-
-
     def get_hourly_klines(self, symbol, start_ts, end_ts):
-        klines = self.pc.get_product_historic_rates(product_id=symbol,
-                                                    start=start_ts,
-                                                    end=end_ts,
-                                                    granularity=3600)
+        klines = self.client.returnChartData(currencyPair=symbol, period=1800, start=start_ts, end=end_ts)
 
         return klines

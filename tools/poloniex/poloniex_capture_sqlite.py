@@ -7,7 +7,7 @@ except ImportError:
     sys.path.append('.')
 
 from trader.account.cbpro import WebsocketClient, AuthenticatedClient, PublicClient
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.AccountPoloniex import AccountPoloniex
 from datetime import datetime
 import sqlite3
 import time
@@ -39,7 +39,7 @@ class BinanceTrader:
         cur = self.db_conn.cursor()
         cur.execute("""CREATE TABLE miniticker (E integer, c real, h real, l real, o real, q real, s text, v real)""")
         self.db_conn.commit()
-        self.accnt = AccountBinance(self.client)
+        self.accnt = AccountPoloniex(self.client)
 
     def create_db_connection(self, db_file):
         """ create a database connection to the SQLite database
@@ -182,8 +182,8 @@ if __name__ == '__main__':
         logger.info("{} already exists, exiting....".format(db_file))
         sys.exit(0)
 
-    client = AuthenticatedClient(key=CBPRO_KEY, b64secret=CBPRO_SECRET, passphrase=CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client)
+    client = Poloniex(key=POLONIEX_API_KEY, secret=POLONIEX_SECRET_KEY, coach=False)
+    accnt = AccountPoloniex(client=client)
     tickers = accnt.get_all_ticker_symbols()
     products = []
     for ticker in tickers:
