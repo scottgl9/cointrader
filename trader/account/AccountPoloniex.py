@@ -25,6 +25,10 @@ class AccountPoloniex(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
+        # hourly db column names
+        self.hourly_cnames = ['date', 'high', 'low', 'open', 'close', 'volume', 'quoteVolume', 'weightedAverage']
+        # hourly db column names short list
+        self.hourly_scnames = ['date', 'high', 'low', 'open', 'close', 'volume']
 
         self.currencies = ['BTC', 'ETH', 'USDT', 'USDC']
         self.currency_trade_pairs = ['ETH_BTC', 'ETH_USDT', 'BTC_USDT', 'BTC_USDC', 'ETH_USDC', 'USDT_USDC']
@@ -276,8 +280,8 @@ class AccountPoloniex(AccountBase):
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
-        pair_info = self.pc.get_products()
-        asset_info = {} #self.client.get_asset_details()
+        pair_info = {} #self.pc.get_products()
+        asset_info = self.client.returnCurrencies()
         return self.parse_exchange_info(pair_info, asset_info)
 
     def parse_exchange_info(self, pair_info, asset_info):
@@ -288,24 +292,26 @@ class AccountPoloniex(AccountBase):
             self._exchange_pairs = []
             update_exchange_pairs = True
 
-        for info in pair_info:
-            symbol = info['id']
-            min_qty = info['base_min_size']
-            min_price = info['min_market_funds']
-            base_step_size = info['base_increment']
-            currency_step_size = info['quote_increment']
-            if update_exchange_pairs:
-                self._exchange_pairs.append(symbol)
-            pairs[symbol] = {'min_qty': min_qty,
-                             'min_price': min_price,
-                             'base_step_size': base_step_size,
-                             'currency_step_size': currency_step_size,
-                             #'minNotional': minNotional,
-                             #'commissionAsset': commissionAsset,
-                             #'baseAssetPrecision': baseAssetPrecision,
-                             #'quotePrecision': quotePrecision,
-                             #'orderTypes': orderTypes
-                            }
+        # for info in pair_info:
+        #     symbol = info['id']
+        #     min_qty = info['base_min_size']
+        #     min_price = info['min_market_funds']
+        #     base_step_size = info['base_increment']
+        #     currency_step_size = info['quote_increment']
+        #     if update_exchange_pairs:
+        #         self._exchange_pairs.append(symbol)
+        #     pairs[symbol] = {'min_qty': min_qty,
+        #                      'min_price': min_price,
+        #                      'base_step_size': base_step_size,
+        #                      'currency_step_size': currency_step_size,
+        #                      #'minNotional': minNotional,
+        #                      #'commissionAsset': commissionAsset,
+        #                      #'baseAssetPrecision': baseAssetPrecision,
+        #                      #'quotePrecision': quotePrecision,
+        #                      #'orderTypes': orderTypes
+        #                     }
+        for info in asset_info:
+            print(info)
 
         exchange_info['pairs'] = pairs
         exchange_info['assets'] = asset_info
@@ -328,7 +334,7 @@ class AccountPoloniex(AccountBase):
 
     def get_asset_status(self, name=None):
         if not self.details_all_assets:
-            self.load_detail_all_assets()
+            self.load_exchange_info()
 
         result = self.details_all_assets
         if 'assetDetail' in result.keys():
@@ -342,7 +348,7 @@ class AccountPoloniex(AccountBase):
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:
-            self.load_info_all_assets()
+            self.load_exchange_info()
 
         if not symbol:
             symbol = self.make_ticker_id(base, currency)

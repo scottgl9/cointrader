@@ -72,20 +72,15 @@ if __name__ == '__main__':
     symbol_table_list = []
     symbols = accnt.get_exchange_pairs()
     for symbol in symbols:
-        if symbol.endswith('GBP') or symbol.endswith('EUR'):
-            continue
         symbol_table_list.append(symbol)
     print(symbol_table_list)
 
     db_conn = create_db_connection(db_file)
-    columns = "ts integer,low real,high real,open real,close real,volume real"
-    cnames = "ts, low, high, open, close, volume"
+    columns = "date integer,high real,low real,open real,close real,volume real, quoteVolume real, weightedAverage real"
+    cnames = "date, high, low, open, close, volume, quoteVolume, weightedAverage"
 
     start_ts = int(time.mktime(time.strptime(results.start_date, "%m/%d/%Y")))
     end_ts = int(time.mktime(time.strptime(results.end_date, "%m/%d/%Y")))
-
-    print(accnt.ts_to_iso8601(start_ts))
-    print(accnt.ts_to_iso8601(end_ts))
 
     for symbol in symbol_table_list:
         print("Processing {} klines...".format(symbol))
@@ -93,7 +88,7 @@ if __name__ == '__main__':
         # kline format:  [ ts, low, high, open, close, volume ]
         cur = db_conn.cursor()
         cur.execute("""CREATE TABLE {} ({})""".format(table_symbol, columns))
-        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?)""".format(table_symbol, cnames)
+        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?)""".format(table_symbol, cnames)
         ts = start_ts
         count = 0
         while ts <= end_ts:

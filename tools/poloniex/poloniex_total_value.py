@@ -12,6 +12,7 @@ from trader.config import *
 
 if __name__ == '__main__':
     client = Poloniex(key=POLONIEX_API_KEY, secret=POLONIEX_SECRET_KEY, coach=False)
+    accnt = AccountPoloniex(client=client, simulation=False)
     print(client.returnBalances())
     print(client.returnCompleteBalances())
     print(client.returnCurrencies())
