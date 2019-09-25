@@ -280,7 +280,7 @@ class AccountPoloniex(AccountBase):
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
-        pair_info = {} #self.pc.get_products()
+        pair_info = self.get_all_ticker_symbols()
         asset_info = self.client.returnCurrencies()
         return self.parse_exchange_info(pair_info, asset_info)
 
@@ -293,25 +293,20 @@ class AccountPoloniex(AccountBase):
             self._exchange_pairs = []
             update_exchange_pairs = True
 
-        # for info in pair_info:
-        #     symbol = info['id']
-        #     min_qty = info['base_min_size']
-        #     min_price = info['min_market_funds']
-        #     base_step_size = info['base_increment']
-        #     currency_step_size = info['quote_increment']
-        #     if update_exchange_pairs:
-        #         self._exchange_pairs.append(symbol)
-        #     pairs[symbol] = {'min_qty': min_qty,
-        #                      'min_price': min_price,
-        #                      'base_step_size': base_step_size,
-        #                      'currency_step_size': currency_step_size,
-        #                      #'minNotional': minNotional,
-        #                      #'commissionAsset': commissionAsset,
-        #                      #'baseAssetPrecision': baseAssetPrecision,
-        #                      #'quotePrecision': quotePrecision,
-        #                      #'orderTypes': orderTypes
-        #                     }
-        for asset, info in asset_info:
+        for pair in pair_info:
+            if update_exchange_pairs:
+                self._exchange_pairs.append(pair)
+            pairs[pair] = {'min_qty': 0,
+                           'min_price': 0,
+                           'base_step_size': 0,
+                           'currency_step_size': 0,
+                           #'minNotional': minNotional,
+                           #'commissionAsset': commissionAsset,
+                           #'baseAssetPrecision': baseAssetPrecision,
+                           #'quotePrecision': quotePrecision,
+                           #'orderTypes': orderTypes
+                          }
+        for asset, info in asset_info.items():
             assets[asset] = info
 
         exchange_info['pairs'] = pairs
@@ -732,7 +727,7 @@ class AccountPoloniex(AccountBase):
             self.balances[name]['available'] = available
 
     # *TODO* implement for Poloniex
-    def get_account_balances(self):
+    def get_account_balances(self, detailed=False):
         self.balances = {}
         result = {}
         for account in self.client.get_accounts():
@@ -810,11 +805,7 @@ class AccountPoloniex(AccountBase):
             return True
         else:
             self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
-            #try:
             result = self.order_market_buy(symbol=ticker_id, quantity=size)
-            #except BinanceAPIException as e:
-            #    self.logger.info(e)
-            #    result = None
             return result
 
 
@@ -834,11 +825,7 @@ class AccountPoloniex(AccountBase):
             return True
         else:
             self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
-            #try:
             result = self.order_market_sell(symbol=ticker_id, quantity=size)
-            #except BinanceAPIException as e:
-            #    self.logger.info(e)
-            #    result = None
             return result
 
 
