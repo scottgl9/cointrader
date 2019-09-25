@@ -31,7 +31,7 @@ class AccountPoloniex(AccountBase):
         self.hourly_scnames = ['date', 'high', 'low', 'open', 'close', 'volume']
 
         self.currencies = ['BTC', 'ETH', 'USDT', 'USDC']
-        self.currency_trade_pairs = ['ETH_BTC', 'ETH_USDT', 'BTC_USDT', 'BTC_USDC', 'ETH_USDC', 'USDT_USDC']
+        self.currency_trade_pairs = ['BTC_ETH', 'USDT_ETH', 'USDT_BTC', 'USDC_BTC', 'USDC_ETH', 'USDC_USDT']
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
@@ -231,7 +231,7 @@ class AccountPoloniex(AccountBase):
             return "{:.8f}".format(float(value))
 
     def make_ticker_id(self, base, currency):
-        return '%s_%s' % (base, currency)
+        return '%s_%s' % (currency, base)
 
     def split_ticker_id(self, symbol):
         base_name = None
@@ -239,8 +239,8 @@ class AccountPoloniex(AccountBase):
 
         parts = symbol.split('_')
         if len(parts) == 2:
-            base_name = parts[0]
-            currency_name = parts[1]
+            base_name = parts[1]
+            currency_name = parts[0]
 
         return base_name, currency_name
 
@@ -287,6 +287,7 @@ class AccountPoloniex(AccountBase):
     def parse_exchange_info(self, pair_info, asset_info):
         exchange_info = {}
         pairs = {}
+        assets = {}
         update_exchange_pairs = False
         if not self._exchange_pairs:
             self._exchange_pairs = []
@@ -310,11 +311,11 @@ class AccountPoloniex(AccountBase):
         #                      #'quotePrecision': quotePrecision,
         #                      #'orderTypes': orderTypes
         #                     }
-        for info in asset_info:
-            print(info)
+        for asset, info in asset_info:
+            assets[asset] = info
 
         exchange_info['pairs'] = pairs
-        exchange_info['assets'] = asset_info
+        exchange_info['assets'] = assets
 
         return exchange_info
 
@@ -730,7 +731,7 @@ class AccountPoloniex(AccountBase):
             self.balances[name]['balance'] = balance
             self.balances[name]['available'] = available
 
-    # implemented for CoinBase Pro
+    # *TODO* implement for Poloniex
     def get_account_balances(self):
         self.balances = {}
         result = {}
@@ -767,19 +768,17 @@ class AccountPoloniex(AccountBase):
 
     def get_all_ticker_symbols(self, currency=None):
         result = []
-        products = self.pc.get_products()
-        for product in products:
-            if currency and product['id'].endswith(currency):
-                result.append(product['id'])
-            else:
-                result.append(product['id'])
-        return result
+        tickers = self.client.returnTicker()
+        for symbol, info in tickers.items():
+            result.append(symbol)
+        return sorted(result)
 
     def get_all_tickers(self):
         result = {}
         if not self.simulate:
-            for ticker in self.client.get_all_tickers():
-                result[ticker['symbol']] = ticker['price']
+            tickers = self.client.returnTicker()
+            for symbol, info in tickers.items():
+                result[symbol] = float(info['last'])
         else:
             result = self._tickers
         return result
