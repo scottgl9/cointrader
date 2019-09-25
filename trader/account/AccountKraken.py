@@ -373,7 +373,7 @@ class AccountKraken(AccountBase):
         quotePrecision = info['quotePrecision']
         orderTypes = []
         for order_type in info['orderTypes']:
-            orderTypes.append(self.get_order_msg_type(order_type))
+            orderTypes.append(Order.get_order_msg_type(order_type))
 
         result = AssetInfo(base=base,
                            currency=currency,
@@ -388,55 +388,6 @@ class AccountKraken(AccountBase):
                            )
         return result
 
-
-    def get_order_msg_type(self, order_type):
-        if order_type == 'MARKET':
-            msg_type = Order.TYPE_MARKET
-        elif order_type == 'LIMIT':
-            msg_type = Order.TYPE_LIMIT
-        elif order_type == 'LIMIT_MAKER':
-            msg_type = Order.TYPE_LIMIT_MAKER
-        elif order_type == "STOP_LOSS":
-            msg_type = Order.TYPE_STOP_LOSS
-        elif order_type == "STOP_LOSS_LIMIT":
-            msg_type = Order.TYPE_STOP_LOSS_LIMIT
-        elif order_type == "TAKE_PROFIT_LIMIT":
-            msg_type = Order.TYPE_PROFIT_LIMIT
-        elif order_type == "TAKE_PROFIT":
-            msg_type = Order.TYPE_TAKE_PROFIT
-        else:
-            msg_type = Order.TYPE_NONE
-        return msg_type
-
-
-    def get_order_msg_cmd(self, order_type, side):
-        if order_type == 'MARKET' and side == 'BUY':
-            type = Message.MSG_MARKET_BUY
-        elif order_type == 'MARKET' and side == 'SELL':
-            type = Message.MSG_MARKET_SELL
-        elif order_type == 'LIMIT' and side == 'BUY':
-            type = Message.MSG_LIMIT_BUY
-        elif order_type == 'LIMIT' and side == 'SELL':
-            type = Message.MSG_LIMIT_SELL
-        elif order_type == "STOP_LOSS" and side == 'BUY':
-            type = Message.MSG_STOP_LOSS_BUY
-        elif order_type == "STOP_LOSS" and side == 'SELL':
-            type = Message.MSG_STOP_LOSS_SELL
-        elif order_type == "STOP_LOSS_LIMIT" and side == "BUY":
-            type = Message.MSG_STOP_LOSS_LIMIT_BUY
-        elif order_type == "STOP_LOSS_LIMIT" and side == "SELL":
-            type = Message.MSG_STOP_LOSS_LIMIT_SELL
-        elif order_type == "TAKE_PROFIT_LIMIT" and side == "BUY":
-            type = Message.MSG_PROFIT_LIMIT_BUY
-        elif order_type == "TAKE_PROFIT_LIMIT" and side == "SELL":
-            type = Message.MSG_PROFIT_LIMIT_SELL
-        elif order_type == "TAKE_PROFIT" and side == "BUY":
-            type = Message.MSG_TAKE_PROFIT_BUY
-        elif order_type == "TAKE_PROFIT" and side == "SELL":
-            type = Message.MSG_TAKE_PROFIT_SELL
-        else:
-            type = Message.MSG_NONE
-        return type
 
     def parse_order_update(self, result):
         # order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type, exec_type,

@@ -54,6 +54,7 @@ class Order(object):
     SIDE_UNKNOWN = 0
     SIDE_BUY = 1
     SIDE_SELL = 2
+
     def __init__(self, symbol, price, size, sig_id=0, buy_price=0, type=TYPE_MARKET, side=SIDE_BUY, orderid=None,
                  state='open', quote_size=0, commission=0, time_in_force=None):
         #if not orderid:
@@ -103,3 +104,23 @@ class Order(object):
                 'type': self.type,
                 'commission': self.commission
                 }
+
+    @staticmethod
+    def get_order_msg_type(order_type):
+        if order_type == 'MARKET':
+            msg_type = Order.TYPE_MARKET
+        elif order_type == 'LIMIT':
+            msg_type = Order.TYPE_LIMIT
+        elif order_type == 'LIMIT_MAKER':
+            msg_type = Order.TYPE_LIMIT_MAKER
+        elif order_type == "STOP_LOSS":
+            msg_type = Order.TYPE_STOP_LOSS
+        elif order_type == "STOP_LOSS_LIMIT":
+            msg_type = Order.TYPE_STOP_LOSS_LIMIT
+        elif order_type == "TAKE_PROFIT_LIMIT":
+            msg_type = Order.TYPE_PROFIT_LIMIT
+        elif order_type == "TAKE_PROFIT":
+            msg_type = Order.TYPE_TAKE_PROFIT
+        else:
+            msg_type = Order.TYPE_NONE
+        return msg_type

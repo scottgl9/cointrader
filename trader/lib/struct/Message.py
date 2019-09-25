@@ -142,3 +142,33 @@ class Message(object):
         elif msg_type == Order.TYPE_LIMIT_MAKER: return 'LIMIT_MAKER'
         elif msg_type == Order.TYPE_NONE: return 'NONE'
         return None
+
+    @staticmethod
+    def get_order_msg_cmd(order_type, side):
+        if order_type == 'MARKET' and side == 'BUY':
+            type = Message.MSG_MARKET_BUY
+        elif order_type == 'MARKET' and side == 'SELL':
+            type = Message.MSG_MARKET_SELL
+        elif order_type == 'LIMIT' and side == 'BUY':
+            type = Message.MSG_LIMIT_BUY
+        elif order_type == 'LIMIT' and side == 'SELL':
+            type = Message.MSG_LIMIT_SELL
+        elif order_type == "STOP_LOSS" and side == 'BUY':
+            type = Message.MSG_STOP_LOSS_BUY
+        elif order_type == "STOP_LOSS" and side == 'SELL':
+            type = Message.MSG_STOP_LOSS_SELL
+        elif order_type == "STOP_LOSS_LIMIT" and side == "BUY":
+            type = Message.MSG_STOP_LOSS_LIMIT_BUY
+        elif order_type == "STOP_LOSS_LIMIT" and side == "SELL":
+            type = Message.MSG_STOP_LOSS_LIMIT_SELL
+        elif order_type == "TAKE_PROFIT_LIMIT" and side == "BUY":
+            type = Message.MSG_PROFIT_LIMIT_BUY
+        elif order_type == "TAKE_PROFIT_LIMIT" and side == "SELL":
+            type = Message.MSG_PROFIT_LIMIT_SELL
+        elif order_type == "TAKE_PROFIT" and side == "BUY":
+            type = Message.MSG_TAKE_PROFIT_BUY
+        elif order_type == "TAKE_PROFIT" and side == "SELL":
+            type = Message.MSG_TAKE_PROFIT_SELL
+        else:
+            type = Message.MSG_NONE
+        return type
