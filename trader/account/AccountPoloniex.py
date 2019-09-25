@@ -64,7 +64,7 @@ class AccountPoloniex(AccountBase):
     def get_hourly_ts(self, ts):
         #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
         #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
-        return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
+        return int(self.ts_to_seconds(ts) / 3600.0) * 3600
 
     def seconds_to_ts(self, seconds):
         return float(seconds)

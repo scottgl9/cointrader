@@ -40,7 +40,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-f', action='store', dest='base_filename',
-                        default='cbpro_hourly_klines',
+                        default='poloniex_hourly_klines',
                         help='base filename of hourly kline sqlite db')
 
     parser.add_argument('--start-date', action='store', dest='start_date',
@@ -96,15 +96,21 @@ if __name__ == '__main__':
             print(ts, ts2)
             klines = accnt.get_hourly_klines(symbol, ts, ts2)
             ts = ts2 + 3600
-            if not isinstance(klines, list):
-                if klines['message'] == 'NotFound':
-                    time.sleep(1)
-                    continue
-                print(klines['message'])
-                sys.exit(-1)
+            # if not isinstance(klines, list):
+            #     if klines['message'] == 'NotFound':
+            #         time.sleep(1)
+            #         continue
+            #     print(klines['message'])
+            #     sys.exit(-1)
             for kline in klines:
+                # since we are grabbing klines at 30 minute intervals, only add hourly klines
+                if not accnt.is_hourly_ts(int(kline['date'])):
+                    continue
+                data = []
+                for name in accnt.hourly_cnames:
+                    data.append(kline[name])
                 try:
-                    cur.execute(sql, kline)
+                    cur.execute(sql, data)
                 except sqlite3.ProgrammingError:
                     print("SQLITE ERROR")
                     sys.exit(-1)
