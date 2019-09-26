@@ -76,8 +76,7 @@ if __name__ == '__main__':
 
     client = Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client, logger=logger, simulation=False)
-    accnt.load_info_all_assets()
-    accnt.load_detail_all_assets()
+    accnt.load_exchange_info()
 
     symbol_table_list = []
     for symbol in sorted(accnt.get_all_ticker_symbols(currency)):
@@ -85,7 +84,7 @@ if __name__ == '__main__':
             continue
         base_name, currency_name = accnt.split_symbol(symbol)
         if not base_name or not currency_name: continue
-        if accnt.deposit_asset_disabled(base_name):
+        if not accnt.is_asset_available(base_name):
             continue
 
         symbol_table_list.append(symbol)

@@ -40,6 +40,9 @@ class AccountBase(object):
     def is_exchange_pair(self, symbol):
         pass
 
+    def is_asset_available(self, name):
+        pass
+
     def get_account_total_value(self, currency, detailed=False):
         pass
 

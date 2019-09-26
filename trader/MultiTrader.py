@@ -232,7 +232,7 @@ class MultiTrader(object):
 
         # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
         if not self.simulate and not self.use_hourly_klines:
-            if self.accnt.deposit_asset_disabled(base_name):
+            if not self.accnt.is_asset_available(base_name):
                 # if an asset has deposit disabled, means its probably suspended
                 # or de-listed so DO NOT trade this coin
                 self.logger.info("Asset {} disabled".format(base_name))

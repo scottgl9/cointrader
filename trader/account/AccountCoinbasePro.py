@@ -373,18 +373,14 @@ class AccountCoinbasePro(AccountBase):
         return False
 
     def get_asset_status(self, name=None):
+        result = None
         if not self.details_all_assets:
             self.load_exchange_info()
-
-        result = self.details_all_assets
-        if 'assetDetail' in result.keys():
-            self.details_all_assets = result['assetDetail']
-
-        if name and name in self.details_all_assets.keys():
-            return self.details_all_assets[name]
-
-        return None
-
+        try:
+            result = self.details_all_assets[name]
+        except KeyError:
+            pass
+        return result
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:
@@ -486,18 +482,18 @@ class AccountCoinbasePro(AccountBase):
         # return order
         pass
 
-    # determine if asset has disabled deposits, if so don't trade
-    def deposit_asset_disabled(self, name):
+    # determine if asset is available (not disabled or delisted)
+    # if not, don't trade
+    def is_asset_available(self, name):
         status = self.get_asset_status(name)
-        if status and 'depositStatus' in status:
-            return not status['depositStatus']
-        return False
-
-    def get_deposit_address(self, name=None):
-        result = self.client.get_deposit_address(asset=name)
-        if 'success' in result and 'address' in result and result['success']:
-            return result['address']
-        return ''
+        try:
+            if status['disabled']:
+                return False
+            if status['delisted']:
+                return False
+        except KeyError:
+            return False
+        return True
 
     def get_account_total_value(self, currency='USD', detailed=False):
         result = {}
