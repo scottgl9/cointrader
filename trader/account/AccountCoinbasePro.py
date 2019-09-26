@@ -305,7 +305,6 @@ class AccountCoinbasePro(AccountBase):
         print(self.exchange_info_file)
         if not os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
-            print(info)
             with open(self.exchange_info_file, 'w') as f:
                 json.dump(info, f, indent=4)
         else:
@@ -316,12 +315,13 @@ class AccountCoinbasePro(AccountBase):
     # get exchange info from exchange via API
     def get_exchange_info(self):
         pair_info = self.pc.get_products()
-        asset_info = {} #self.client.get_asset_details()
+        asset_info = self.pc.get_currencies()
         return self.parse_exchange_info(pair_info, asset_info)
 
     def parse_exchange_info(self, pair_info, asset_info):
         exchange_info = {}
         pairs = {}
+        assets = {}
         update_exchange_pairs = False
         if not self._exchange_pairs:
             self._exchange_pairs = []
@@ -345,9 +345,16 @@ class AccountCoinbasePro(AccountBase):
                              #'quotePrecision': quotePrecision,
                              #'orderTypes': orderTypes
                             }
+        for info in asset_info:
+            name = info['id']
+            status = info['status']
+            if status == 'online':
+                assets[name] = {'disabled': False, 'delisted': False }
+            else:
+                assets[name] = {'disabled': True, 'delisted': False }
 
         exchange_info['pairs'] = pairs
-        exchange_info['assets'] = asset_info
+        exchange_info['assets'] = assets
 
         return exchange_info
 

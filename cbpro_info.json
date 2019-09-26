@@ -1,22 +1,106 @@
 {
     "pairs": {
+        "DAI-USDC": {
+            "min_qty": "1.00000000",
+            "min_price": "5",
+            "base_step_size": "0.00001000",
+            "currency_step_size": "0.00000100"
+        },
+        "DASH-BTC": {
+            "min_qty": "0.01000000",
+            "min_price": "0.0001",
+            "base_step_size": "0.00100000",
+            "currency_step_size": "0.00000001"
+        },
+        "ETC-EUR": {
+            "min_qty": "0.10000000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.00100000"
+        },
         "XLM-USD": {
             "min_qty": "1.00000000",
             "min_price": "0.1",
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00000100"
         },
-        "ZEC-BTC": {
+        "ETH-USDC": {
             "min_qty": "0.01000000",
-            "min_price": "0.001",
-            "base_step_size": "0.00010000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.01000000"
+        },
+        "BCH-GBP": {
+            "min_qty": "0.01000000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.01000000"
+        },
+        "REP-USD": {
+            "min_qty": "0.10000000",
+            "min_price": "10",
+            "base_step_size": "0.00000100",
+            "currency_step_size": "0.01000000"
+        },
+        "XLM-EUR": {
+            "min_qty": "1.00000000",
+            "min_price": "0.1",
+            "base_step_size": "1.00000000",
             "currency_step_size": "0.00000100"
         },
-        "LINK-ETH": {
+        "GNT-USDC": {
             "min_qty": "1.00000000",
             "min_price": "0.01",
+            "base_step_size": "1.00000000",
+            "currency_step_size": "0.00000100"
+        },
+        "BTC-USDC": {
+            "min_qty": "0.00100000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.01000000"
+        },
+        "BCH-BTC": {
+            "min_qty": "0.01000000",
+            "min_price": "0.001",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.00001000"
+        },
+        "XTZ-USD": {
+            "min_qty": "1.00000000",
+            "min_price": "10",
+            "base_step_size": "0.01000000",
+            "currency_step_size": "0.00010000"
+        },
+        "XTZ-BTC": {
+            "min_qty": "1.00000000",
+            "min_price": "0.001",
             "base_step_size": "0.01000000",
             "currency_step_size": "0.00000001"
+        },
+        "LTC-BTC": {
+            "min_qty": "0.10000000",
+            "min_price": "0.001",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.00000100"
+        },
+        "ZRX-EUR": {
+            "min_qty": "1.00000000",
+            "min_price": "10",
+            "base_step_size": "0.00001000",
+            "currency_step_size": "0.00000100"
+        },
+        "ETC-BTC": {
+            "min_qty": "0.10000000",
+            "min_price": "0.001",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.00000100"
+        },
+        "BTC-USD": {
+            "min_qty": "0.00100000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.01000000"
         },
         "LOOM-USDC": {
             "min_qty": "1.00000000",
@@ -24,7 +108,37 @@
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00000100"
         },
-        "BCH-GBP": {
+        "LINK-USD": {
+            "min_qty": "1.00000000",
+            "min_price": "10",
+            "base_step_size": "0.01000000",
+            "currency_step_size": "0.00001000"
+        },
+        "LINK-ETH": {
+            "min_qty": "1.00000000",
+            "min_price": "0.01",
+            "base_step_size": "0.01000000",
+            "currency_step_size": "0.00000001"
+        },
+        "ETH-USD": {
+            "min_qty": "0.01000000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.01000000"
+        },
+        "XLM-BTC": {
+            "min_qty": "1.00000000",
+            "min_price": "0.001",
+            "base_step_size": "1.00000000",
+            "currency_step_size": "0.00000001"
+        },
+        "ETC-USD": {
+            "min_qty": "0.10000000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.00100000"
+        },
+        "ETH-EUR": {
             "min_qty": "0.01000000",
             "min_price": "10",
             "base_step_size": "0.00000001",
@@ -36,17 +150,41 @@
             "base_step_size": "0.00000001",
             "currency_step_size": "0.01000000"
         },
-        "BTC-USDC": {
-            "min_qty": "0.00100000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
+        "ZRX-BTC": {
+            "min_qty": "1.00000000",
+            "min_price": "0.001",
+            "base_step_size": "0.00001000",
+            "currency_step_size": "0.00000001"
         },
         "XRP-EUR": {
             "min_qty": "1.00000000",
             "min_price": "10",
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00010000"
+        },
+        "BAT-USDC": {
+            "min_qty": "1.00000000",
+            "min_price": "10",
+            "base_step_size": "1.00000000",
+            "currency_step_size": "0.00000100"
+        },
+        "EOS-USD": {
+            "min_qty": "0.10000000",
+            "min_price": "10",
+            "base_step_size": "0.10000000",
+            "currency_step_size": "0.00100000"
+        },
+        "LTC-USD": {
+            "min_qty": "0.10000000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.01000000"
+        },
+        "ZEC-BTC": {
+            "min_qty": "0.01000000",
+            "min_price": "0.001",
+            "base_step_size": "0.00010000",
+            "currency_step_size": "0.00000100"
         },
         "ETH-BTC": {
             "min_qty": "0.01000000",
@@ -60,23 +198,17 @@
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00010000"
         },
-        "DASH-USD": {
-            "min_qty": "0.01000000",
-            "min_price": "1",
-            "base_step_size": "0.00100000",
-            "currency_step_size": "0.00100000"
-        },
-        "LTC-BTC": {
-            "min_qty": "0.10000000",
-            "min_price": "0.001",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.00000100"
-        },
-        "BAT-USDC": {
+        "CVC-USDC": {
             "min_qty": "1.00000000",
-            "min_price": "10",
+            "min_price": "0.1",
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00000100"
+        },
+        "EOS-EUR": {
+            "min_qty": "0.10000000",
+            "min_price": "10",
+            "base_step_size": "0.10000000",
+            "currency_step_size": "0.00100000"
         },
         "ETH-DAI": {
             "min_qty": "0.01000000",
@@ -84,14 +216,20 @@
             "base_step_size": "0.00010000",
             "currency_step_size": "0.01000000"
         },
-        "BTC-EUR": {
-            "min_qty": "0.00100000",
+        "DASH-USD": {
+            "min_qty": "0.01000000",
+            "min_price": "1",
+            "base_step_size": "0.00100000",
+            "currency_step_size": "0.00100000"
+        },
+        "LTC-EUR": {
+            "min_qty": "0.10000000",
             "min_price": "10",
             "base_step_size": "0.00000001",
             "currency_step_size": "0.01000000"
         },
-        "LTC-USD": {
-            "min_qty": "0.10000000",
+        "BTC-EUR": {
+            "min_qty": "0.00100000",
             "min_price": "10",
             "base_step_size": "0.00000001",
             "currency_step_size": "0.01000000"
@@ -102,103 +240,7 @@
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00000100"
         },
-        "ZRX-BTC": {
-            "min_qty": "1.00000000",
-            "min_price": "0.001",
-            "base_step_size": "0.00001000",
-            "currency_step_size": "0.00000001"
-        },
         "ETC-GBP": {
-            "min_qty": "0.10000000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.00100000"
-        },
-        "XLM-EUR": {
-            "min_qty": "1.00000000",
-            "min_price": "0.1",
-            "base_step_size": "1.00000000",
-            "currency_step_size": "0.00000100"
-        },
-        "REP-USD": {
-            "min_qty": "0.10000000",
-            "min_price": "10",
-            "base_step_size": "0.00000100",
-            "currency_step_size": "0.01000000"
-        },
-        "BCH-EUR": {
-            "min_qty": "0.01000000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
-        },
-        "DNT-USDC": {
-            "min_qty": "1.00000000",
-            "min_price": "0.1",
-            "base_step_size": "1.00000000",
-            "currency_step_size": "0.00000100"
-        },
-        "DASH-BTC": {
-            "min_qty": "0.01000000",
-            "min_price": "0.0001",
-            "base_step_size": "0.00100000",
-            "currency_step_size": "0.00000001"
-        },
-        "EOS-USD": {
-            "min_qty": "0.10000000",
-            "min_price": "10",
-            "base_step_size": "0.10000000",
-            "currency_step_size": "0.00100000"
-        },
-        "XTZ-BTC": {
-            "min_qty": "1.00000000",
-            "min_price": "0.001",
-            "base_step_size": "0.01000000",
-            "currency_step_size": "0.00000001"
-        },
-        "BTC-USD": {
-            "min_qty": "0.00100000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
-        },
-        "LINK-USD": {
-            "min_qty": "1.00000000",
-            "min_price": "10",
-            "base_step_size": "0.01000000",
-            "currency_step_size": "0.00001000"
-        },
-        "ZRX-USD": {
-            "min_qty": "1.00000000",
-            "min_price": "10",
-            "base_step_size": "0.00001000",
-            "currency_step_size": "0.00000100"
-        },
-        "ETC-BTC": {
-            "min_qty": "0.10000000",
-            "min_price": "0.001",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.00000100"
-        },
-        "DAI-USDC": {
-            "min_qty": "1.00000000",
-            "min_price": "5",
-            "base_step_size": "0.00001000",
-            "currency_step_size": "0.00000100"
-        },
-        "CVC-USDC": {
-            "min_qty": "1.00000000",
-            "min_price": "0.1",
-            "base_step_size": "1.00000000",
-            "currency_step_size": "0.00000100"
-        },
-        "REP-BTC": {
-            "min_qty": "0.10000000",
-            "min_price": "0.001",
-            "base_step_size": "0.00000100",
-            "currency_step_size": "0.00000100"
-        },
-        "ETC-EUR": {
             "min_qty": "0.10000000",
             "min_price": "10",
             "base_step_size": "0.00000001",
@@ -210,7 +252,25 @@
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00000001"
         },
-        "ETH-GBP": {
+        "BTC-GBP": {
+            "min_qty": "0.00100000",
+            "min_price": "10",
+            "base_step_size": "0.00000001",
+            "currency_step_size": "0.01000000"
+        },
+        "DNT-USDC": {
+            "min_qty": "1.00000000",
+            "min_price": "0.1",
+            "base_step_size": "1.00000000",
+            "currency_step_size": "0.00000100"
+        },
+        "REP-BTC": {
+            "min_qty": "0.10000000",
+            "min_price": "0.001",
+            "base_step_size": "0.00000100",
+            "currency_step_size": "0.00000100"
+        },
+        "ZEC-USDC": {
             "min_qty": "0.01000000",
             "min_price": "10",
             "base_step_size": "0.00000001",
@@ -222,35 +282,17 @@
             "base_step_size": "0.00000001",
             "currency_step_size": "0.01000000"
         },
-        "BTC-GBP": {
-            "min_qty": "0.00100000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
-        },
-        "GNT-USDC": {
+        "ZRX-USD": {
             "min_qty": "1.00000000",
-            "min_price": "0.01",
-            "base_step_size": "1.00000000",
+            "min_price": "10",
+            "base_step_size": "0.00001000",
             "currency_step_size": "0.00000100"
         },
-        "XTZ-USD": {
-            "min_qty": "1.00000000",
-            "min_price": "10",
-            "base_step_size": "0.01000000",
-            "currency_step_size": "0.00010000"
-        },
-        "LTC-EUR": {
-            "min_qty": "0.10000000",
+        "BCH-EUR": {
+            "min_qty": "0.01000000",
             "min_price": "10",
             "base_step_size": "0.00000001",
             "currency_step_size": "0.01000000"
-        },
-        "EOS-EUR": {
-            "min_qty": "0.10000000",
-            "min_price": "10",
-            "base_step_size": "0.10000000",
-            "currency_step_size": "0.00100000"
         },
         "XRP-BTC": {
             "min_qty": "1.00000000",
@@ -258,23 +300,11 @@
             "base_step_size": "1.00000000",
             "currency_step_size": "0.00000001"
         },
-        "XRP-USD": {
-            "min_qty": "1.00000000",
-            "min_price": "10",
-            "base_step_size": "1.00000000",
-            "currency_step_size": "0.00010000"
-        },
-        "XLM-BTC": {
-            "min_qty": "1.00000000",
-            "min_price": "0.001",
-            "base_step_size": "1.00000000",
-            "currency_step_size": "0.00000001"
-        },
-        "BCH-BTC": {
+        "ETH-GBP": {
             "min_qty": "0.01000000",
-            "min_price": "0.001",
+            "min_price": "10",
             "base_step_size": "0.00000001",
-            "currency_step_size": "0.00001000"
+            "currency_step_size": "0.01000000"
         },
         "EOS-BTC": {
             "min_qty": "0.10000000",
@@ -282,42 +312,125 @@
             "base_step_size": "0.10000000",
             "currency_step_size": "0.00000100"
         },
-        "ZEC-USDC": {
-            "min_qty": "0.01000000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
-        },
-        "ETH-USD": {
-            "min_qty": "0.01000000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
-        },
-        "ZRX-EUR": {
+        "XRP-USD": {
             "min_qty": "1.00000000",
             "min_price": "10",
-            "base_step_size": "0.00001000",
-            "currency_step_size": "0.00000100"
-        },
-        "ETH-USDC": {
-            "min_qty": "0.01000000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
-        },
-        "ETH-EUR": {
-            "min_qty": "0.01000000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.01000000"
-        },
-        "ETC-USD": {
-            "min_qty": "0.10000000",
-            "min_price": "10",
-            "base_step_size": "0.00000001",
-            "currency_step_size": "0.00100000"
+            "base_step_size": "1.00000000",
+            "currency_step_size": "0.00010000"
         }
     },
-    "assets": {}
+    "assets": {
+        "ALGO": {
+            "disabled": false,
+            "delisted": false
+        },
+        "DASH": {
+            "disabled": false,
+            "delisted": false
+        },
+        "XLM": {
+            "disabled": false,
+            "delisted": false
+        },
+        "XRP": {
+            "disabled": false,
+            "delisted": false
+        },
+        "EOS": {
+            "disabled": false,
+            "delisted": false
+        },
+        "ZRX": {
+            "disabled": false,
+            "delisted": false
+        },
+        "BAT": {
+            "disabled": false,
+            "delisted": false
+        },
+        "LOOM": {
+            "disabled": false,
+            "delisted": false
+        },
+        "CVC": {
+            "disabled": false,
+            "delisted": false
+        },
+        "DNT": {
+            "disabled": false,
+            "delisted": false
+        },
+        "MANA": {
+            "disabled": false,
+            "delisted": false
+        },
+        "GNT": {
+            "disabled": false,
+            "delisted": false
+        },
+        "REP": {
+            "disabled": false,
+            "delisted": false
+        },
+        "LINK": {
+            "disabled": false,
+            "delisted": false
+        },
+        "BTC": {
+            "disabled": false,
+            "delisted": false
+        },
+        "EUR": {
+            "disabled": false,
+            "delisted": false
+        },
+        "LTC": {
+            "disabled": false,
+            "delisted": false
+        },
+        "GBP": {
+            "disabled": false,
+            "delisted": false
+        },
+        "USD": {
+            "disabled": false,
+            "delisted": false
+        },
+        "ETH": {
+            "disabled": false,
+            "delisted": false
+        },
+        "BCH": {
+            "disabled": false,
+            "delisted": false
+        },
+        "ETC": {
+            "disabled": false,
+            "delisted": false
+        },
+        "USDC": {
+            "disabled": false,
+            "delisted": false
+        },
+        "ZEC": {
+            "disabled": false,
+            "delisted": false
+        },
+        "XTZ": {
+            "disabled": false,
+            "delisted": false
+        },
+        "DAI": {
+            "disabled": false,
+            "delisted": false
+        },
+        "ZIL": {
+            "disabled": false,
+            "delisted": false
+        },
+        "MKR": {
+            "disabled": false,
+            "delisted": false
+        }
+    }
 }
