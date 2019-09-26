@@ -25,13 +25,25 @@ class AccountBase(object):
     def get_symbol_currency(self, symbol):
         pass
 
+    def load_exchange_info(self):
+        pass
+
+    def get_exchange_info(self):
+        pass
+
+    def parse_exchange_info(self, pair_info, asset_info):
+        pass
+
+    def get_exchange_pairs(self):
+        pass
+
+    def is_exchange_pair(self, symbol):
+        pass
+
+    def get_account_total_value(self, currency, detailed=False):
+        pass
+
     def get_account_balances(self, detailed=False):
-        pass
-
-    def get_deposit_address(self):
-        pass
-
-    def get_orders(self):
         pass
 
     def buy_market(self, size, ticker_id=None):
@@ -52,10 +64,7 @@ class AccountBase(object):
     def sell_limit_complete(self, price, size, ticker_id=None):
         pass
 
-    def cancel_order(self, order_id):
-        pass
-
-    def cancel_all(self):
+    def cancel_order(self, orderid, ticker_id=None):
         pass
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
