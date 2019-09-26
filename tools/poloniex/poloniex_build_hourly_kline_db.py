@@ -72,6 +72,10 @@ if __name__ == '__main__':
     symbol_table_list = []
     symbols = accnt.get_exchange_pairs()
     for symbol in symbols:
+        base, currency = accnt.split_ticker_id(symbol)
+        if not accnt.is_asset_available(base):
+            print("Skipping {}".format(symbol))
+            continue
         symbol_table_list.append(symbol)
     print(symbol_table_list)
 
