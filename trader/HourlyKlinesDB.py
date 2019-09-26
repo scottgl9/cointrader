@@ -22,6 +22,7 @@ class HourlyKlinesDB(object):
         # column names
         self.cnames_list = self.accnt.get_hourly_column_names()
         self.cnames = ','.join(self.cnames_list)
+        self.fmt_values = ','.join(['?'] * len(self.cnames_list))
 
         # short list column names
         self.scname_list = self.accnt.get_hourly_short_column_names()
@@ -57,7 +58,7 @@ class HourlyKlinesDB(object):
         result = 0
 
         if not end_ts:
-            end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
+            end_ts = int(self.accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
 
         for symbol in self.get_table_list():
             last_ts = self.update_table(symbol, end_ts)
@@ -152,12 +153,12 @@ class HourlyKlinesDB(object):
         start_ts = int(result[0])
 
         if not end_ts:
-            end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
+            end_ts = int(self.accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
 
         end_ts = self.accnt.get_hourly_ts(end_ts)
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
-        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(table_name, self.cnames)
+        sql = """INSERT INTO {} ({}) values({})""".format(table_name, self.cnames, self.fmt_values)
 
         count = 0
 
@@ -183,7 +184,6 @@ class HourlyKlinesDB(object):
     # return list of specific kline column by specifying which column to select
     def get_kline_values_by_column(self, symbol, column='close', start_ts=0, end_ts=0):
         result = []
-        #cindex = self.cnames.index(column)
         cur = self.conn.cursor()
         sql = self.build_sql_select_field_query(symbol, column, start_ts, end_ts)
         cur.execute(sql)
