@@ -6,7 +6,6 @@ import time
 from datetime import datetime
 from trader.lib.struct.Kline import Kline
 import pandas as pd
-#from trader.account.binance.client import Client
 
 
 class HourlyKlinesDB(object):
@@ -180,6 +179,33 @@ class HourlyKlinesDB(object):
             self.conn.commit()
 
         return last_ts
+
+    def check_duplicates(self):
+        for symbol in self.get_table_list():
+            cur = self.conn.cursor()
+            sql = "SELECT ts, COUNT(*) c FROM {} GROUP BY ts HAVING c > 1;".format(symbol)
+            result = cur.execute(sql)
+            count = 0
+            for row in result:
+                count += 1
+            if count:
+                print("{}: {} Duplicate entries found".format(symbol, count))
+
+    def list_table_dates(self, symbol):
+        cur = self.conn.cursor()
+        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+        result = cur.fetchone()
+        end_ts = int(self.accnt.ts_to_seconds(result[0]))
+        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
+        result = cur.fetchone()
+        start_ts = int(self.accnt.ts_to_seconds(result[0]))
+
+        start_date = time.ctime(start_ts)
+        end_date = time.ctime(end_ts)
+        if len(symbol) <= 5:
+            print("{}: \t\t{} \t{}".format(symbol, start_date, end_date))
+        else:
+            print("{}: \t{} \t{}".format(symbol, start_date, end_date))
 
     # return list of specific kline column by specifying which column to select
     def get_kline_values_by_column(self, symbol, column='close', start_ts=0, end_ts=0):

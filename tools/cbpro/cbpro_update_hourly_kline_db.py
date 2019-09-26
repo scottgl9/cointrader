@@ -76,16 +76,18 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if results.list_table_dates:
-        for symbol in get_table_list(conn):
-            list_table_dates(conn, symbol)
-        conn.close()
+        for symbol in hkdb.get_table_list():
+            hkdb.list_table_dates(symbol)
+        hkdb.close()
+        sys.exit(0)
+
+    if results.check_duplicates:
+        hkdb.check_duplicates()
+        hkdb.close()
         sys.exit(0)
 
     if results.update:
         end_ts = int(accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
         for symbol in hkdb.get_table_list():
-            update_table(conn, client, symbol, end_ts)
-        #if results.remove_outdated_tables:
-        #    remove_outdated_tables(conn, end_ts)
-    #elif results.check_duplicates:
-    #    check_duplicates(conn)
+            hkdb.update_table(symbol, end_ts)
+

@@ -14,83 +14,11 @@ import sys
 import os
 import argparse
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from trader.config import *
 from trader.account.binance.client import Client
 from trader.account.AccountBinance import AccountBinance
+from trader.HourlyKlinesDB import HourlyKlinesDB
 
-def get_table_list(c):
-    result = []
-    res = c.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    for name in res:
-        result.append(name[0])
-    return result
-
-def check_duplicates(c):
-    for symbol in get_table_list(c):
-        cur = c.cursor()
-        sql = "SELECT ts, COUNT(*) c FROM {} GROUP BY ts HAVING c > 1;".format(symbol)
-        result = cur.execute(sql)
-        count=0
-        for row in result:
-            count += 1
-        if count:
-            print("{}: {} Duplicate entries found".format(symbol, count))
-
-def list_table_dates(c, symbol):
-    cur = conn.cursor()
-    cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
-    result = cur.fetchone()
-    end_ts = int(result[0] / 1000)
-    cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
-    result = cur.fetchone()
-    start_ts = int(result[0] / 1000)
-
-    start_date = time.ctime(start_ts)
-    end_date = time.ctime(end_ts)
-    if len(symbol) <= 5:
-        print("{}: \t\t{} \t{}".format(symbol, start_date, end_date))
-    else:
-        print("{}: \t{} \t{}".format(symbol, start_date, end_date))
-
-def remove_outdated_tables(conn, end_ts):
-    table_remove_list = []
-    cur = conn.cursor()
-    for symbol in get_table_list(conn):
-            cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
-            result = cur.fetchone()
-            end_ts_table = int(result[0])
-            if end_ts_table < (end_ts - 1000 * 3600 * 24):
-                table_remove_list.append(symbol)
-    for symbol in table_remove_list:
-        print("Removing table {}".format(symbol))
-        cur.execute("DROP TABLE {}".format(symbol))
-    conn.commit()
-
-def update_table(conn, client, symbol, end_ts):
-    cur = conn.cursor()
-    cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
-    result = cur.fetchone()
-    start_ts = result[0]
-    print("Getting {} through {} for {}".format(start_ts, end_ts, symbol))
-    cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"
-    klines = client.get_historical_klines_generator(
-        symbol=symbol,
-        interval=Client.KLINE_INTERVAL_1HOUR,
-        start_str=start_ts,
-        end_str=end_ts,
-    )
-
-    sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
-
-    for k in klines:
-        if k[0] == start_ts:
-            continue
-        del k[6]
-        k = k[:-1]
-        cur = conn.cursor()
-        cur.execute(sql, k)
-    conn.commit()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -135,32 +63,29 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.INFO)
 
-    print("Loading {}".format(filename))
-    conn = sqlite3.connect(filename)
-
-    if results.list_table_names:
-        for symbol in get_table_list(conn):
-            print(symbol)
-        conn.close()
-        sys.exit(0)
-
-    if results.list_table_dates:
-        for symbol in get_table_list(conn):
-            list_table_dates(conn, symbol)
-        conn.close()
-        sys.exit(0)
-
     client = Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client, logger=logger)
     accnt.load_exchange_info()
+    hkdb = HourlyKlinesDB(accnt=accnt, filename=filename, logger=logger)
+
+    if results.list_table_names:
+        for symbol in hkdb.get_table_list():
+            print(symbol)
+        hkdb.close()
+        sys.exit(0)
+
+    if results.list_table_dates:
+        for symbol in hkdb.get_table_list():
+            hkdb.list_table_dates(symbol)
+        hkdb.close()
+        sys.exit(0)
+
+    if results.check_duplicates:
+        hkdb.check_duplicates()
+        hkdb.close()
+        sys.exit(0)
 
     if results.update:
-        end_ts = int(time.mktime(datetime.today().timetuple()) * 1000.0)
-        for symbol in get_table_list(conn):
-            update_table(conn, client, symbol, end_ts)
-        if results.remove_outdated_tables:
-            remove_outdated_tables(conn, end_ts)
-    elif results.check_duplicates:
-        check_duplicates(conn)
-
-    conn.close()
+        end_ts = int(accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
+        for symbol in hkdb.get_table_list():
+            hkdb.update_table(symbol=symbol, end_ts=end_ts)
