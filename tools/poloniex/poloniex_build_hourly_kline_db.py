@@ -93,15 +93,8 @@ if __name__ == '__main__':
         count = 0
         while ts <= end_ts:
             ts2 = ts + 3600 * 250
-            print(ts, ts2)
             klines = accnt.get_hourly_klines(symbol, ts, ts2)
             ts = ts2 + 3600
-            # if not isinstance(klines, list):
-            #     if klines['message'] == 'NotFound':
-            #         time.sleep(1)
-            #         continue
-            #     print(klines['message'])
-            #     sys.exit(-1)
             for kline in klines:
                 # since we are grabbing klines at 30 minute intervals, only add hourly klines
                 if not accnt.is_hourly_ts(int(kline['date'])):

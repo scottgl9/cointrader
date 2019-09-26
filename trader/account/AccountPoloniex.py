@@ -261,7 +261,7 @@ class AccountPoloniex(AccountBase):
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
-        if not self.simulate:
+        if not self.simulate and os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
             self.info_all_assets = info['pairs']
             self.details_all_assets = info['assets']
@@ -293,6 +293,7 @@ class AccountPoloniex(AccountBase):
             self._exchange_pairs = []
             update_exchange_pairs = True
 
+        # process pairs
         for pair in pair_info:
             if update_exchange_pairs:
                 self._exchange_pairs.append(pair)
@@ -306,8 +307,18 @@ class AccountPoloniex(AccountBase):
                            #'quotePrecision': quotePrecision,
                            #'orderTypes': orderTypes
                           }
+
+        # process assets
         for asset, info in asset_info.items():
-            assets[asset] = info
+            assets[asset] = {}
+            if info['delisted']:
+                assets[asset]['delisted'] = True
+            else:
+                assets[asset]['delisted'] = False
+            if info['disabled']:
+                assets[asset]['disabled'] = True
+            else:
+                assets[asset]['disabled'] = False
 
         exchange_info['pairs'] = pairs
         exchange_info['assets'] = assets

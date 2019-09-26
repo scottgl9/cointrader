@@ -13,6 +13,7 @@ from trader.config import *
 if __name__ == '__main__':
     client = Poloniex(key=POLONIEX_API_KEY, secret=POLONIEX_SECRET_KEY, coach=False)
     accnt = AccountPoloniex(client=client, simulation=False)
+    accnt.load_exchange_info()
     #print(client.returnBalances())
     #print(client.returnCompleteBalances())
     #print(client.returnCurrencies())
@@ -20,7 +21,6 @@ if __name__ == '__main__':
     #print(accnt.get_exchange_info())
     #print(accnt.get_all_tickers())
     #print(accnt.get_all_ticker_symbols())
-    print(accnt.get_exchange_info())
     #accnt = AccountPoloniex(client=client)
     #balances = accnt.get_account_balances()
     #print(balances)

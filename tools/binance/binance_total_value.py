@@ -13,6 +13,7 @@ from trader.config import *
 if __name__ == '__main__':
     client = client.Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client)
+    accnt.load_exchange_info()
     accnt_info = accnt.get_account_total_value()
     accnt_assets = accnt_info['assets']
     assets = sorted(accnt_assets, key=lambda x: (accnt_assets[x]['usd']), reverse=True)

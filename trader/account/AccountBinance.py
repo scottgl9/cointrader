@@ -350,7 +350,7 @@ class AccountBinance(AccountBase):
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
-        if not self.simulate:
+        if not self.simulate and os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
             self.info_all_assets = info['pairs']
             self.details_all_assets = info['assets']
@@ -374,9 +374,11 @@ class AccountBinance(AccountBase):
     def parse_exchange_info(self, pair_info, asset_info):
         exchange_info = {}
         pairs = {}
+        assets = {}
         #if not info:
         #    info = self.client.get_exchange_info()
 
+        # process pairs
         for key, value in pair_info.items():
             if key != 'symbols':
                 continue
@@ -427,8 +429,21 @@ class AccountBinance(AccountBase):
                                            'quotePrecision': quotePrecision,
                                            'orderTypes': orderTypes
                                            }
+
+        # process assets
+        for key, value in asset_info['assetDetail'].items():
+            assets[key] = {}
+            if not value['depositStatus'] or not value['withdrawStatus']:
+                assets[key]['disabled'] = True
+            else:
+                assets[key]['disabled'] = False
+            if assets[key]['disabled'] and 'depositTip' in value:
+                assets[key]['delisted'] = True
+            else:
+                assets[key]['delisted'] = False
+
         exchange_info['pairs'] = pairs
-        exchange_info['assets'] = asset_info
+        exchange_info['assets'] = assets
 
         return exchange_info
 

@@ -296,7 +296,7 @@ class AccountCoinbasePro(AccountBase):
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
-        if not self.simulate:
+        if not self.simulate and os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
             self.info_all_assets = info['pairs']
             self.details_all_assets = info['assets']
