@@ -21,11 +21,12 @@ class HourlyKlinesDB(object):
         # column names
         self.cnames_list = self.accnt.get_hourly_column_names()
         self.cnames = ','.join(self.cnames_list)
-        self.fmt_values = ','.join(['?'] * len(self.cnames_list))
 
         # short list column names
-        self.scname_list = self.accnt.get_hourly_short_column_names()
-        self.scnames = ','.join(self.scname_list)
+        self.scnames_list = self.accnt.get_hourly_short_column_names()
+        self.scnames = ','.join(self.scnames_list)
+        self.fmt_values = ','.join(['?'] * len(self.scnames_list))
+
         self.table_symbols = self.get_table_list()
         self.table_last_update_ts = None
 
@@ -157,9 +158,10 @@ class HourlyKlinesDB(object):
         end_ts = self.accnt.get_hourly_ts(end_ts)
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
-        sql = """INSERT INTO {} ({}) values({})""".format(table_name, self.cnames, self.fmt_values)
+        sql = """INSERT INTO {} ({}) values({})""".format(table_name, self.scnames, self.fmt_values)
 
         count = 0
+        cur = self.conn.cursor()
 
         for k in klines:
             if int(k[0]) == start_ts:
@@ -167,9 +169,7 @@ class HourlyKlinesDB(object):
             if self.ts_in_table(symbol, int(k[0])):
                 continue
             last_ts = int(k[0])
-            del k[6]
-            k = k[:-1]
-            cur = self.conn.cursor()
+            k = k[:len(self.scnames_list)]
             cur.execute(sql, k)
             count += 1
 
@@ -181,6 +181,7 @@ class HourlyKlinesDB(object):
         return last_ts
 
     def check_duplicates(self):
+        found = False
         for symbol in self.get_table_list():
             cur = self.conn.cursor()
             sql = "SELECT ts, COUNT(*) c FROM {} GROUP BY ts HAVING c > 1;".format(symbol)
@@ -190,6 +191,8 @@ class HourlyKlinesDB(object):
                 count += 1
             if count:
                 print("{}: {} Duplicate entries found".format(symbol, count))
+                found = True
+        return found
 
     def list_table_dates(self, symbol):
         cur = self.conn.cursor()
@@ -355,8 +358,8 @@ class HourlyKlinesDB(object):
             if start_ts and row[0] < start_ts:
                 continue
             msg = {}
-            for i in range(0, len(self.scname_list)):
-                msg[self.scname_list[i]] = row[i]
+            for i in range(0, len(self.scnames_list)):
+                msg[self.scnames_list[i]] = row[i]
             result.append(msg)
             if end_ts and row[0] >= end_ts:
                 break
@@ -376,8 +379,8 @@ class HourlyKlinesDB(object):
             return None
 
         result = {}
-        for i in range(0, len(self.scname_list)):
-            result[self.scname_list[i]] = k[i]
+        for i in range(0, len(self.scnames_list)):
+            result[self.scnames_list[i]] = k[i]
         return result
 
     # load daily klines in pandas dataframe
