@@ -24,10 +24,11 @@ class AccountBinance(AccountBase):
         self.details_all_assets = {}
         self.balances = {}
         # hourly db column names
-        self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
-                              'trade_count', 'taker_buy_base_volume', 'taker_buy_quote_volume']
+        self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'volume']
+        #self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
+        #                      'trade_count', 'taker_buy_base_volume', 'taker_buy_quote_volume']
         # hourly db column names short list
-        self.hourly_scnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
+        #self.hourly_scnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
 
         if self.simulate:
             self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
@@ -1258,12 +1259,15 @@ class AccountBinance(AccountBase):
         return klines
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
+        result = []
         klines = self.client.get_historical_klines_generator(
             symbol=symbol,
             interval=Client.KLINE_INTERVAL_1HOUR,
             start_str=start_ts,
             end_str=end_ts,
         )
+        # ['ts', 'open', 'high', 'low', 'close', 'quote_volume']
+        for k in klines:
+            result.append([k[0], k[1], k[2], k[3], k[4], k[6]])
 
-        return klines
-
+        return result
