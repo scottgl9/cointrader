@@ -102,10 +102,6 @@ class AccountBinance(AccountBase):
     def get_hourly_column_names(self):
         return self.hourly_cnames
 
-    # get hourly db column names (short list)
-    def get_hourly_short_column_names(self):
-        return self.hourly_scnames
-
     def get_ticker(self, symbol):
         if not self.simulate and len(self._tickers) == 0:
             self._tickers = self.get_all_tickers()

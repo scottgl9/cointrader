@@ -21,11 +21,7 @@ class HourlyKlinesDB(object):
         # column names
         self.cnames_list = self.accnt.get_hourly_column_names()
         self.cnames = ','.join(self.cnames_list)
-
-        # short list column names
-        self.scnames_list = self.accnt.get_hourly_short_column_names()
-        self.scnames = ','.join(self.scnames_list)
-        self.fmt_values = ','.join(['?'] * len(self.scnames_list))
+        self.fmt_values = ','.join(['?'] * len(self.cnames_list))
 
         self.table_symbols = self.get_table_list()
         self.table_last_update_ts = None
@@ -158,7 +154,7 @@ class HourlyKlinesDB(object):
         end_ts = self.accnt.get_hourly_ts(end_ts)
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
-        sql = """INSERT INTO {} ({}) values({})""".format(table_name, self.scnames, self.fmt_values)
+        sql = """INSERT INTO {} ({}) values({})""".format(table_name, self.cnames, self.fmt_values)
 
         count = 0
         cur = self.conn.cursor()
@@ -169,7 +165,6 @@ class HourlyKlinesDB(object):
             if self.ts_in_table(symbol, int(k[0])):
                 continue
             last_ts = int(k[0])
-            k = k[:len(self.scnames_list)]
             cur.execute(sql, k)
             count += 1
 
@@ -276,7 +271,7 @@ class HourlyKlinesDB(object):
     def build_sql_select_query(self, symbol, start_ts, end_ts, daily=False, columns=None):
         table_name = self.get_table_from_symbol(symbol)
         if not columns:
-            columns = self.scnames
+            columns = self.cnames
         elif isinstance(columns, list):
             columns = ','.join(columns)
         sql = "SELECT {} FROM {} ".format(columns, table_name)
@@ -336,7 +331,7 @@ class HourlyKlinesDB(object):
         table_name = self.get_table_from_symbol(symbol)
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, table_name))
+        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.cnames, table_name))
         for row in cur:
             if start_ts and row[0] < start_ts:
                 continue
@@ -358,8 +353,8 @@ class HourlyKlinesDB(object):
             if start_ts and row[0] < start_ts:
                 continue
             msg = {}
-            for i in range(0, len(self.scnames_list)):
-                msg[self.scnames_list[i]] = row[i]
+            for i in range(0, len(self.cnames_list)):
+                msg[self.cnames_list[i]] = row[i]
             result.append(msg)
             if end_ts and row[0] >= end_ts:
                 break
@@ -368,7 +363,7 @@ class HourlyKlinesDB(object):
     # load single hourly kline in dict format
     def get_dict_kline(self, symbol, hourly_ts=0):
         table_name = self.get_table_from_symbol(symbol)
-        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, table_name, self.accnt.format_ts(hourly_ts))
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.cnames, table_name, self.accnt.format_ts(hourly_ts))
         cur = self.conn.cursor()
         cur.execute(sql)
         k = cur.fetchone()
@@ -379,8 +374,8 @@ class HourlyKlinesDB(object):
             return None
 
         result = {}
-        for i in range(0, len(self.scnames_list)):
-            result[self.scnames_list[i]] = k[i]
+        for i in range(0, len(self.cnames_list)):
+            result[self.cnames_list[i]] = k[i]
         return result
 
     # load daily klines in pandas dataframe
@@ -406,7 +401,7 @@ class HourlyKlinesDB(object):
     def get_pandas_kline(self, symbol, hourly_ts=0, columns=None):
         table_name = self.get_table_from_symbol(symbol)
         if not columns:
-            columns = self.scnames
+            columns = self.cnames
         elif isinstance(columns, list):
             columns = ','.join(columns)
         sql = "SELECT {} FROM {} WHERE ts = {}".format(columns, table_name, hourly_ts)
@@ -423,7 +418,7 @@ class HourlyKlinesDB(object):
         table_name = self.get_table_from_symbol(symbol)
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.scnames, table_name))
+        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.cnames, table_name))
         for row in cur:
             if start_ts and row[0] < start_ts:
                 continue
@@ -442,7 +437,7 @@ class HourlyKlinesDB(object):
 
     def get_kline(self, symbol, hourly_ts=0):
         table_name = self.get_table_from_symbol(symbol)
-        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.scnames, table_name, hourly_ts)
+        sql = "SELECT {} FROM {} WHERE ts = {}".format(self.cnames, table_name, hourly_ts)
         cur = self.conn.cursor()
         cur.execute(sql)
         k = cur.fetchone()
