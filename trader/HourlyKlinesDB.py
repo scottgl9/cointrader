@@ -151,7 +151,11 @@ class HourlyKlinesDB(object):
         if not end_ts:
             end_ts = int(self.accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
 
+        # if ts already in table, do not add and return ts
         end_ts = self.accnt.get_hourly_ts(end_ts)
+        if self.ts_in_table(table_name, end_ts):
+            return end_ts
+
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
 
         sql = """INSERT INTO {} ({}) values({})""".format(table_name, self.cnames, self.fmt_values)
@@ -164,7 +168,7 @@ class HourlyKlinesDB(object):
         for k in klines:
             if int(k[ts_index]) == start_ts:
                 continue
-            if self.ts_in_table(symbol, int(k[ts_index])):
+            if self.ts_in_table(table_name, int(k[ts_index])):
                 continue
             last_ts = int(k[ts_index])
             cur.execute(sql, k)
