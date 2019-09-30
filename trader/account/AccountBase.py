@@ -10,6 +10,27 @@ class AccountBase(object):
     EXCHANGE_KRAKEN = 4
     EXCHANGE_POLONIEX = 5
 
+    def ts_to_seconds(self, ts):
+        pass
+
+    def is_hourly_ts(self, ts):
+        pass
+
+    def get_hourly_ts(self, ts):
+        pass
+
+    def seconds_to_ts(self, seconds):
+        pass
+
+    def hours_to_ts(self, hours):
+        pass
+
+    def get_hourly_table_name(self, symbol):
+        pass
+
+    def get_symbol_hourly_table(self, table_name):
+        pass
+
     def make_ticker_id(self, base, currency):
         pass
 
