@@ -98,6 +98,11 @@ class AccountBinance(AccountBase):
     def get_hourly_table_name(self, symbol):
         return symbol
 
+    # get symbol name from hourly table name
+    # ex. table name 'BTC_USD', return symbol 'BTC-USD'
+    def get_symbol_hourly_table(self, table_name):
+        return table_name
+
     # get hourly db column names
     def get_hourly_column_names(self):
         return self.hourly_cnames

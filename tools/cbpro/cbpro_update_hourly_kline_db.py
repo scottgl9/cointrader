@@ -88,6 +88,6 @@ if __name__ == '__main__':
 
     if results.update:
         end_ts = int(accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
-        for symbol in hkdb.get_table_list():
-            hkdb.update_table(symbol, end_ts)
-
+        for table_name in hkdb.get_table_list():
+            print("Updating {}".format(table_name))
+            hkdb.update_table(table_name=table_name, end_ts=end_ts)

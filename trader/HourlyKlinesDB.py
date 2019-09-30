@@ -138,8 +138,8 @@ class HourlyKlinesDB(object):
         return True
 
     # update hourly values missing in table through end_ts
-    def update_table(self, symbol, end_ts=0):
-        table_name = self.get_table_from_symbol(symbol)
+    def update_table(self, table_name, end_ts=0):
+        symbol = self.get_symbol_from_table(table_name)
         last_ts = 0
         if not self.accnt:
             return 0
@@ -157,6 +157,9 @@ class HourlyKlinesDB(object):
             return end_ts
 
         klines = self.accnt.get_hourly_klines(symbol, start_ts, end_ts)
+        if not len(klines):
+            return end_ts
+        #print(klines)
 
         sql = """INSERT INTO {} ({}) values({})""".format(table_name, self.cnames, self.fmt_values)
 
@@ -228,6 +231,14 @@ class HourlyKlinesDB(object):
         else:
             table_name = symbol
         return table_name
+
+    # if table name differs from symbol, translate table name to symbol
+    def get_symbol_from_table(self, table_name):
+        if self.accnt:
+            symbol = self.accnt.get_symbol_hourly_table(table_name)
+        else:
+            symbol = table_name
+        return symbol
 
     def get_table_ts_by_offset(self, symbol, offset=0):
         table_name = self.get_table_from_symbol(symbol)

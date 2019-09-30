@@ -89,6 +89,11 @@ class AccountCoinbasePro(AccountBase):
     def get_hourly_table_name(self, symbol):
         return symbol.replace('-', '_')
 
+    # get symbol name from hourly table name
+    # ex. table name 'BTC_USD', return symbol 'BTC-USD'
+    def get_symbol_hourly_table(self, table_name):
+        return table_name.replace('_', '-')
+
     # get hourly db column names
     def get_hourly_column_names(self):
         return self.hourly_cnames
@@ -872,10 +877,12 @@ class AccountCoinbasePro(AccountBase):
             ts = ts2 + 3600
             if not isinstance(klines, list):
                 if klines['message'] == 'NotFound':
+                    print(symbol, start, end)
                     time.sleep(1)
                     continue
                 print("ERROR get_hourly_klines(): {}".format(klines['message']))
                 return result
             result.extend(klines)
+            time.sleep(1)
 
         return result

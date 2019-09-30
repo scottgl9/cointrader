@@ -66,6 +66,16 @@ class AccountKraken(AccountBase):
     def hours_to_ts(self, hours):
         return float(hours * 3600 * 1000)
 
+    # if hourly table name doesn't match symbol name
+    # ex. symbol 'BTC-USD', table name 'BTC_USD'
+    def get_hourly_table_name(self, symbol):
+        return symbol
+
+    # get symbol name from hourly table name
+    # ex. table name 'BTC_USD', return symbol 'BTC-USD'
+    def get_symbol_hourly_table(self, table_name):
+        return table_name
+
     def get_ticker(self, symbol):
         if not self.simulate and len(self._tickers) == 0:
             self._tickers = self.get_all_tickers()
