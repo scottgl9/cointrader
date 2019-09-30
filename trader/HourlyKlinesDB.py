@@ -184,7 +184,7 @@ class HourlyKlinesDB(object):
 
         return last_ts
 
-    def check_duplicates(self):
+    def check_tables_duplicates(self):
         found = False
         for symbol in self.get_table_list():
             cur = self.conn.cursor()
@@ -198,21 +198,53 @@ class HourlyKlinesDB(object):
                 found = True
         return found
 
-    def list_table_dates(self, symbol):
+    def check_duplicates(self, table_name):
+        found = False
         cur = self.conn.cursor()
-        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(symbol))
+        sql = "SELECT ts, COUNT(*) c FROM {} GROUP BY ts HAVING c > 1;".format(table_name)
+        result = cur.execute(sql)
+        count = 0
+        for row in result:
+            count += 1
+        if count:
+            print("{}: {} Duplicate entries found".format(table_name, count))
+            found = True
+        return found
+
+    # check hourly kline db table for any errors, return True if error(s) found
+    def check_table(self, table_name):
+        found = False
+        if self.check_duplicates(table_name):
+            found = True
+
+        last_ts = 0
+        cur = self.conn.cursor()
+        result = cur.execute("SELECT ts from {} ORDER by ts ASC".format(table_name))
+        for row in result:
+            ts = int(row[0])
+            if last_ts:
+                delta_ts = int(self.accnt.ts_to_seconds(ts - last_ts))
+                if delta_ts != 3600:
+                    print("{}: invalid delta ts found {}".format(table_name, delta_ts))
+                    found = True
+            last_ts = ts
+        return found
+
+    def list_table_dates(self, table_name):
+        cur = self.conn.cursor()
+        cur.execute("SELECT ts FROM {} ORDER BY ts DESC LIMIT 1".format(table_name))
         result = cur.fetchone()
         end_ts = int(self.accnt.ts_to_seconds(result[0]))
-        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(symbol))
+        cur.execute("SELECT ts FROM {} ORDER BY ts ASC LIMIT 1".format(table_name))
         result = cur.fetchone()
         start_ts = int(self.accnt.ts_to_seconds(result[0]))
 
         start_date = time.ctime(start_ts)
         end_date = time.ctime(end_ts)
-        if len(symbol) <= 5:
-            print("{}: \t\t{} \t{}".format(symbol, start_date, end_date))
+        if len(table_name) <= 5:
+            print("{}: \t\t{} \t{}".format(table_name, start_date, end_date))
         else:
-            print("{}: \t{} \t{}".format(symbol, start_date, end_date))
+            print("{}: \t{} \t{}".format(table_name, start_date, end_date))
 
     # return list of specific kline column by specifying which column to select
     def get_kline_values_by_column(self, symbol, column='close', start_ts=0, end_ts=0):

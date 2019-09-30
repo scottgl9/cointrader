@@ -34,6 +34,10 @@ if __name__ == '__main__':
                         default=False,
                         help='List table names with date ranges in db')
 
+    parser.add_argument('--check', action='store_true', dest='check_errors',
+                        default=False,
+                        help='Check hourly kline db tables for errors')
+
     parser.add_argument('--check-duplicates', action='store_true', dest='check_duplicates',
                         default=False,
                         help='Check for duplicate entries in db')
@@ -69,19 +73,25 @@ if __name__ == '__main__':
     hkdb = HourlyKlinesDB(accnt=accnt, filename=filename, logger=logger)
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
-            print(symbol)
+        for table_name in hkdb.get_table_list():
+            print(table_name)
         hkdb.close()
         sys.exit(0)
 
     if results.list_table_dates:
-        for symbol in hkdb.get_table_list():
-            hkdb.list_table_dates(symbol)
+        for table_name in hkdb.get_table_list():
+            hkdb.list_table_dates(table_name)
         hkdb.close()
         sys.exit(0)
 
     if results.check_duplicates:
-        hkdb.check_duplicates()
+        hkdb.check_tables_duplicates()
+        hkdb.close()
+        sys.exit(0)
+
+    if results.check_errors:
+        for table_name in hkdb.get_table_list():
+            hkdb.check_table(table_name)
         hkdb.close()
         sys.exit(0)
 
