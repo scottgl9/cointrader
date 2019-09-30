@@ -87,6 +87,9 @@ if __name__ == '__main__':
     print(accnt.ts_to_iso8601(start_ts))
     print(accnt.ts_to_iso8601(end_ts))
 
+    last_ts = 0
+    last_kline = None
+
     for symbol in symbol_table_list:
         print("Processing {} klines...".format(symbol))
         table_symbol = symbol.replace('-', '_')
@@ -94,13 +97,13 @@ if __name__ == '__main__':
         cur = db_conn.cursor()
         cur.execute("""CREATE TABLE {} ({})""".format(table_symbol, columns))
         sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?)""".format(table_symbol, cnames)
-        ts = start_ts
+        ts1 = start_ts
         count = 0
-        while ts <= end_ts:
-            ts2 = ts + 3600 * 250
-            print(ts, ts2)
-            klines = accnt.get_hourly_klines(symbol, ts, ts2)
-            ts = ts2 + 3600
+        while ts1 <= end_ts:
+            ts2 = ts1 + 3600 * 250
+            print(ts1, ts2)
+            klines = accnt.get_hourly_klines(symbol, ts1, ts2)
+            ts1 = ts2 + 3600
             if not isinstance(klines, list):
                 if klines['message'] == 'NotFound':
                     time.sleep(1)
@@ -108,11 +111,24 @@ if __name__ == '__main__':
                 print(klines['message'])
                 sys.exit(-1)
             for kline in klines:
+                cur_ts = int(kline[0])
+                if not accnt.is_hourly_ts(cur_ts):
+                    print("{}: skipping {}".format(symbol, cur_ts))
+                    continue
+                if last_kline and int(cur_ts - last_ts) != 3600:
+                    print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
+                    ts = last_ts + 3600
+                    while ts < cur_ts:
+                        last_kline[0] = int(ts)
+                        cur.execute(sql, last_kline)
+                        ts += 3600
                 try:
                     cur.execute(sql, kline)
                 except sqlite3.ProgrammingError:
                     print("SQLITE ERROR")
                     sys.exit(-1)
+                last_ts = cur_ts
+                last_kline = kline
             time.sleep(1)
         db_conn.commit()
     db_conn.close()
