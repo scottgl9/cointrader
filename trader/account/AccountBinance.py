@@ -683,6 +683,8 @@ class AccountBinance(AccountBase):
     # determine if asset is available (not disabled or delisted)
     # if not, don't trade
     def is_asset_available(self, name):
+        if name not in self.details_all_assets.keys():
+            return False
         status = self.get_asset_status(name)
         try:
             if status['disabled']:

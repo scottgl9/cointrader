@@ -97,8 +97,8 @@ if __name__ == '__main__':
     start_ts = int(time.mktime(time.strptime(results.start_date, "%m/%d/%Y")))
     end_ts = int(time.mktime(time.strptime(results.end_date, "%m/%d/%Y")))
 
-    columns = "ts integer,open real,high real,low real,close real,base_volume real,quote_volume real,trade_count integer,taker_buy_base_volume real,taker_buy_quote_volume real"
-    cnames = "ts, open, high, low, close, base_volume, quote_volume, trade_count, taker_buy_base_volume, taker_buy_quote_volume"
+    columns = "ts integer,open real,high real,low real,close real,volume real"
+    cnames = "ts, open, high, low, close, volume"
 
     current_ts = int(time.time()) * 1000
 
@@ -116,8 +116,9 @@ if __name__ == '__main__':
 
         kline_list = []
         for k in klines:
-            del k[6]
-            k = k[:-1]
+            k = k[:6]
+            #del k[6]
+            #k = k[:-1]
             kline_list.append(k)
 
         if (current_ts - kline_list[-1][0]) > 3600*24*1000:
@@ -126,7 +127,7 @@ if __name__ == '__main__':
 
         cur.execute("""CREATE TABLE {} ({})""".format(symbol, columns))
 
-        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
+        sql = """INSERT INTO {} ({}) values(?, ?, ?, ?, ?, ?)""".format(symbol, cnames)
 
         last_ts = 0
         last_kline = None
