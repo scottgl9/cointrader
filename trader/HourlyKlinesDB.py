@@ -434,8 +434,7 @@ class HourlyKlinesDB(object):
             kline.high = row[2]
             kline.low = row[3]
             kline.close = row[4]
-            kline.volume_base = row[5]
-            kline.volume_quote = row[6]
+            kline.volume = row[5]
             result.append(kline)
             if end_ts and row[0] >= end_ts:
                 break
@@ -458,6 +457,5 @@ class HourlyKlinesDB(object):
         kline.high = k[2]
         kline.low = k[3]
         kline.close = k[4]
-        kline.volume_base = k[5]
-        kline.volume_quote = k[6]
+        kline.volume = k[5]
         return kline

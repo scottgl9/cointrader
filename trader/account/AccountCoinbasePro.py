@@ -7,6 +7,7 @@ from trader.account.cbpro import AuthenticatedClient, PublicClient
 from trader.config import *
 import json
 import os
+import time
 from datetime import datetime, timedelta
 import aniso8601
 import stix.utils.dates
@@ -855,11 +856,26 @@ class AccountCoinbasePro(AccountBase):
 
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
-        start = self.ts_to_iso8601(start_ts)
-        end = self.ts_to_iso8601(end_ts)
-        klines = self.pc.get_product_historic_rates(product_id=symbol,
-                                                    start=start,
-                                                    end=end,
-                                                    granularity=3600)
+        result = []
+        ts = start_ts
+        while ts <= end_ts:
+            if (end_ts - start_ts) < 3600 * 250:
+                ts2 = end_ts
+            else:
+                ts2 = ts + 3600 * 250
+            start = self.ts_to_iso8601(ts)
+            end = self.ts_to_iso8601(ts2)
+            klines = self.pc.get_product_historic_rates(product_id=symbol,
+                                                        start=start,
+                                                        end=end,
+                                                        granularity=3600)
+            ts = ts2 + 3600
+            if not isinstance(klines, list):
+                if klines['message'] == 'NotFound':
+                    time.sleep(1)
+                    continue
+                print("ERROR get_hourly_klines(): {}".format(klines['message']))
+                return result
+            result.extend(klines)
 
-        return klines
+        return result
