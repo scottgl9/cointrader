@@ -159,12 +159,14 @@ class HourlyKlinesDB(object):
         count = 0
         cur = self.conn.cursor()
 
+        ts_index = self.cnames.index('ts')
+
         for k in klines:
-            if int(k[0]) == start_ts:
+            if int(k[ts_index]) == start_ts:
                 continue
-            if self.ts_in_table(symbol, int(k[0])):
+            if self.ts_in_table(symbol, int(k[ts_index])):
                 continue
-            last_ts = int(k[0])
+            last_ts = int(k[ts_index])
             cur.execute(sql, k)
             count += 1
 
