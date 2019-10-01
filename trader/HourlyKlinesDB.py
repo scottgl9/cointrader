@@ -219,7 +219,7 @@ class HourlyKlinesDB(object):
 
         last_ts = 0
         cur = self.conn.cursor()
-        result = cur.execute("SELECT ts from {} ORDER by ts ASC".format(table_name))
+        result = cur.execute("SELECT ts from {}".format(table_name))
         for row in result:
             ts = int(row[0])
             if last_ts:

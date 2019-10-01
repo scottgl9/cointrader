@@ -882,7 +882,8 @@ class AccountCoinbasePro(AccountBase):
                     continue
                 print("ERROR get_hourly_klines(): {}".format(klines['message']))
                 return result
-            result.extend(klines)
+            #result.extend(klines)
+            result += klines
             time.sleep(1)
 
         return result
