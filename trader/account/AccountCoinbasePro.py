@@ -864,7 +864,7 @@ class AccountCoinbasePro(AccountBase):
         result = []
         ts = start_ts
         while ts <= end_ts:
-            if (end_ts - start_ts) < 3600 * 250:
+            if (end_ts - start_ts) <= 3600 * 250:
                 ts2 = end_ts
             else:
                 ts2 = ts + 3600 * 250

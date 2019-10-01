@@ -157,3 +157,4 @@ if __name__ == '__main__':
             last_ts = cur_ts
             last_kline = k
         db_conn.commit()
+        db_conn.close()
