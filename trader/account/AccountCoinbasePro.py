@@ -362,7 +362,7 @@ class AccountCoinbasePro(AccountBase):
     def get_exchange_pairs(self):
         if not self._exchange_pairs:
             self.load_exchange_info()
-        return self._exchange_pairs
+        return sorted(self._exchange_pairs)
 
     # is a valid exchange pair
     def is_exchange_pair(self, symbol):
@@ -863,47 +863,58 @@ class AccountCoinbasePro(AccountBase):
     def get_hourly_klines(self, symbol, start_ts, end_ts, reverse=False):
         result = []
         if not reverse:
-            ts = start_ts
-            while ts <= end_ts:
-                if (end_ts - start_ts) <= 3600 * 250:
-                    ts2 = end_ts
-                else:
-                    ts2 = ts + 3600 * 250
-                start = self.ts_to_iso8601(ts)
+            ts1 = start_ts
+            ts2 = end_ts
+            while ts1 <= end_ts:
+                ts2 = end_ts
+                if (ts2 - ts1) > 3600 * 250:
+                    ts2 = ts1 + 3600 * 250
+                start = self.ts_to_iso8601(ts1)
                 end = self.ts_to_iso8601(ts2)
+
                 klines = self.pc.get_product_historic_rates(product_id=symbol,
                                                             start=start,
                                                             end=end,
                                                             granularity=3600)
-                ts = ts2 + 3600
-                if not isinstance(klines, list):
+                ts1 = ts2 + 3600
+                if isinstance(klines, list):
+                    try:
+                        if len(klines):
+                            result += reversed(klines)
+                    except TypeError:
+                        print(klines, type(klines))
+                        pass
+                    time.sleep(1)
+                else:
                     if klines['message'] == 'NotFound':
                         time.sleep(1)
                         continue
                     print("ERROR get_hourly_klines(): {}".format(klines['message']))
                     return result
-                result += klines
-                time.sleep(1)
-        else:
-            ts1 = start_ts
-            ts2 = end_ts
-            while ts1 >= start_ts:
-                if (end_ts - start_ts) <= 3600 * 250:
-                    ts1 = start_ts
-                else:
-                    ts1 = ts2 - 3600 * 250
-                start = self.ts_to_iso8601(ts1)
-                end = self.ts_to_iso8601(ts2)
-                klines = self.pc.get_product_historic_rates(product_id=symbol,
-                                                            start=start,
-                                                            end=end,
-                                                            granularity=3600)
-                ts1 = ts2 - 3600
-                if not isinstance(klines, list):
-                    if klines['message'] == 'NotFound':
-                        break
-                    print("ERROR get_hourly_klines(): {}".format(klines['message']))
-                    return result
-                result = klines + result
-                time.sleep(1)
+        # else:
+        #     ts1 = start_ts
+        #     ts2 = end_ts
+        #     while ts1 >= start_ts:
+        #         ts1 = start_ts
+        #         if (ts2 - ts1) > 3600 * 250:
+        #             ts1 = ts2 - 3600 * 250
+        #         start = self.ts_to_iso8601(ts1)
+        #         end = self.ts_to_iso8601(ts2)
+        #         klines = self.pc.get_product_historic_rates(product_id=symbol,
+        #                                                     start=start,
+        #                                                     end=end,
+        #                                                     granularity=3600)
+        #         ts1 = ts2 - 3600
+        #         if isinstance(klines, list):
+        #             try:
+        #                 result = reversed(klines) + result
+        #             except TypeError:
+        #                 pass
+        #             time.sleep(1)
+        #         else:
+        #             if klines['message'] == 'NotFound':
+        #                 break
+        #             print("ERROR get_hourly_klines(): {}".format(klines['message']))
+        #             return result
+
         return result

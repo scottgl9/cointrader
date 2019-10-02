@@ -110,13 +110,13 @@ if __name__ == '__main__':
                 continue
             cur = db_conn.cursor()
             # check for gaps in hourly klines, for gaps fill with previous kline
-            # if last_kline and int(cur_ts - last_ts) != 3600:
-            #     print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
-            #     ts = last_ts + 3600
-            #     while ts < cur_ts:
-            #         last_kline[0] = int(ts)
-            #         cur.execute(sql, last_kline)
-            #         ts += 3600
+            if last_kline and int(cur_ts - last_ts) != 3600:
+                print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
+                ts = last_ts + 3600
+                while ts < cur_ts:
+                    last_kline[0] = int(ts)
+                    cur.execute(sql, last_kline)
+                    ts += 3600
             cur.execute(sql, k)
             last_ts = cur_ts
             last_kline = k
