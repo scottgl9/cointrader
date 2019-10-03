@@ -5,7 +5,6 @@ from trader.lib.struct.Order import Order
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
 from trader.lib.MessageHandler import Message, MessageHandler
-from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
 from trader.symbol_filter.SymbolFilterHandler import SymbolFilterHandler
 from datetime import datetime
 import time
@@ -154,11 +153,8 @@ class MultiTrader(object):
         self.stopped = False
         self.running = True
         self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger, self.store_trades)
-        self.global_strategy = None
         self.global_en = global_en
         self.symbol_filter = None
-        if self.global_en:
-            self.global_strategy = global_obv_strategy()
 
         if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
             self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb, logger=self.logger)
@@ -396,9 +392,6 @@ class MultiTrader(object):
                 symbol_trader.filter_buy_disabled = False
 
         symbol_trader.run_update(kline, cache_db=cache_db)
-
-        if self.global_strategy:
-            self.global_strategy.run_update(kline)
 
         self.order_handler.stored_trades_update(kline)
         self.order_handler.process_limit_order(kline)

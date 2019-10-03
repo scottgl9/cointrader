@@ -1,5 +1,5 @@
 from trader.lib.MessageHandler import Message
-from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
+#from trader.strategy.trade_size_strategy.static_trade_size import static_trade_size
 from trader.lib.struct.StrategyBase import StrategyBase
 from trader.indicator.OBV import OBV
 
@@ -48,7 +48,7 @@ class basic_signal_stop_loss_strategy(StrategyBase):
         self.min_trade_size_qty = 1.0
         self.min_price = 0.0
         self.max_price = 0.0
-        self.trade_size_handler = static_trade_size(base, currency, base_min_size, tick_size, usdt=10)
+        #self.trade_size_handler = static_trade_size(base, currency, base_min_size, tick_size, usdt=10)
 
     # clear pending sell trades which have been bought
     def reset(self):

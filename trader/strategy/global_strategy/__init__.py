@@ -1,1 +1,0 @@
-from trader.strategy.global_strategy.global_obv_strategy import global_obv_strategy
