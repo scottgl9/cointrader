@@ -108,7 +108,7 @@ class OrderLimitHandler(object):
             buy_type = "buy_stop_loss"
         elif order_type == Order.TYPE_LIMIT:
             buy_type = "buy_limit"
-        elif order_type == Order.MSG_STOP_LOSS_BUY:
+        elif order_type == Message.MSG_STOP_LOSS_BUY:
             buy_type = "buy_stop_loss"
         elif order_type == Message.MSG_MARKET_BUY:
             buy_type = "buy_market"

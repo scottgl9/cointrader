@@ -29,7 +29,7 @@ class OrderHandler(object):
         if not self.accnt.simulate:
             self.trade_db_init("trade.db")
             self.notify = Email()
-            self.update_initial_btc()
+            self.update_initial_currency()
             self.logger.info("Initial BTC value = {}".format(self.accnt.initial_btc))
 
     def trade_db_init(self, filename):
@@ -283,7 +283,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         if not result:
-            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_STOP_LOSS)
+            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Order.TYPE_STOP_LOSS)
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
@@ -318,7 +318,7 @@ class OrderHandler(object):
             self.logger.info(result)
 
         if not result:
-            self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Message.TYPE_STOP_LOSS)
+            self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Order.TYPE_STOP_LOSS)
             return
 
         order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
@@ -343,13 +343,13 @@ class OrderHandler(object):
         currency = msg.asset_info.currency
 
         if self.buy_disabled:
-            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET, sig_oid=sig_oid)
+            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Order.TYPE_MARKET, sig_oid=sig_oid)
             return
 
         result = self.accnt.buy_market(size=size, price=price, ticker_id=ticker_id)
 
         if not result:
-            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Message.TYPE_MARKET, sig_oid=sig_oid)
+            self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Order.TYPE_MARKET, sig_oid=sig_oid)
             return
 
         if self.accnt.simulate:
