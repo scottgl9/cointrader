@@ -138,7 +138,7 @@ class HourlyKlinesDB(object):
         return True
 
     # update hourly values missing in table through end_ts
-    def update_table(self, table_name, end_ts=0):
+    def update_table(self, table_name, end_ts=0, fix_gaps=False):
         symbol = self.get_symbol_from_table(table_name)
         last_ts = 0
         if not self.accnt:
@@ -168,14 +168,37 @@ class HourlyKlinesDB(object):
 
         ts_index = self.cnames.index('ts')
 
-        for k in klines:
-            if int(k[ts_index]) == start_ts:
-                continue
-            if self.ts_in_table(table_name, int(k[ts_index])):
-                continue
-            last_ts = int(k[ts_index])
-            cur.execute(sql, k)
-            count += 1
+        last_ts = 0
+        last_kline = None
+
+        if fix_gaps:
+            for k in klines:
+                cur_ts = int(k[0])
+                # skip if is not an hourly ts
+                if not self.accnt.is_hourly_ts(cur_ts):
+                    print("{}: skipping {}".format(symbol, cur_ts))
+                    continue
+                # check for gaps in hourly klines, for gaps fill with previous kline
+                if last_kline and int(cur_ts - last_ts) != int(self.accnt.hours_to_ts(1)):
+                    print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
+                    ts = last_ts + int(self.accnt.hours_to_ts(1))
+                    while ts < cur_ts:
+                        last_kline[0] = int(ts)
+                        cur.execute(sql, last_kline)
+                        ts += int(self.accnt.hours_to_ts(1))
+                cur.execute(sql, k)
+                count += 1
+                last_ts = cur_ts
+                last_kline = k
+        else:
+            for k in klines:
+                if int(k[ts_index]) == start_ts:
+                    continue
+                if self.ts_in_table(table_name, int(k[ts_index])):
+                    continue
+                last_ts = int(k[ts_index])
+                cur.execute(sql, k)
+                count += 1
 
         if count:
             if last_ts:
