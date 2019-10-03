@@ -317,6 +317,8 @@ if __name__ == '__main__':
     if not os.path.exists(cache_path):
         os.mkdir(cache_path)
 
+    print(config.get_section_options())
+
     # get balances from trader.ini to be used in creating filename
     btc_balance = float(config.get('BTC'))
     eth_balance = float(config.get('ETH'))

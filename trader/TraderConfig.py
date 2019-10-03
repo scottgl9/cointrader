@@ -67,11 +67,13 @@ class TraderConfig(object):
     def option_in_section_exists(self, section, option):
         return self.config.has_option(section, option)
 
+    # get value of specified option (section pre-set with select_section()
     def get(self, option):
         if not self.section:
             return None
         return self.get_section(self.section, option)
 
+    # get value of specified option from specified section
     def get_section(self, section, option):
         result = self.config.get(section, option)
         if result == 'True':
@@ -79,6 +81,12 @@ class TraderConfig(object):
         elif result == 'False':
             return False
         return result
+
+    # return dict with all options with values in section
+    def get_section_options(self, section=None):
+        if not section:
+            section = self.section
+        return dict(self.config.items(section=section))
 
     def set(self, option, value):
         if not self.section:
