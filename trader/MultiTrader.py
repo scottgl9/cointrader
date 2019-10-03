@@ -170,9 +170,8 @@ class MultiTrader(object):
             run_type = "simulation"
         else:
             run_type = "live"
-            #self.accnt.load_detail_all_assets()
             # purge trades from TraderDB which have been sold
-            self.accnt.load_info_all_assets()
+            self.accnt.load_exchange_info()
             self.purge_trade_db()
 
         if sigstr:
