@@ -443,11 +443,11 @@ class basic_signal_market_strategy(StrategyBase):
             return
 
         # don't re-buy less than 60 minutes after a sell
-        if signal.last_sell_ts != 0 and (self.timestamp - signal.last_sell_ts) < 1000 * 3600:
+        if signal.last_sell_ts != 0 and (self.timestamp - signal.last_sell_ts) < self.accnt.hours_to_ts(1):
             return
 
         # don't re-buy less than 60 minutes after start of sell
-        if signal.last_start_sell_ts != 0 and (self.timestamp - signal.last_start_sell_ts) < 1000 * 3600:
+        if signal.last_start_sell_ts != 0 and (self.timestamp - signal.last_start_sell_ts) < self.accnt.hours_to_ts(1):
             return
 
         min_trade_size = self.min_trade_size
