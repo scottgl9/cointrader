@@ -31,7 +31,7 @@ class filter_daily_volume(symbol_filter_base):
             daily_volume = DailyVolume()
             end_ts = self.accnt.get_hourly_ts(kline.ts)
             start_ts = end_ts - int(self.accnt.hours_to_ts(24 - 1))
-            volumes = self.hkdb.get_kline_values_by_column(kline.symbol, 'quote_volume', start_ts, end_ts)
+            volumes = self.hkdb.get_kline_values_by_column(kline.symbol, 'volume', start_ts, end_ts)
             for volume in volumes:
                 daily_volume.update(volume)
 
