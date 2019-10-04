@@ -108,19 +108,10 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         print("Section binance.simulate does not exist")
         sys.exit(-1)
 
-    #config.select_section('binance.simulate')
-    btc_balance = config.get('BTC')
-    eth_balance = config.get('ETH')
-    bnb_balance = config.get('BNB')
-
-    if btc_balance:
-        accnt.update_asset_balance('BTC', float(btc_balance), float(btc_balance))
-
-    if eth_balance:
-        accnt.update_asset_balance('ETH', float(eth_balance), float(eth_balance))
-
-    if bnb_balance:
-        accnt.update_asset_balance('BNB', float(bnb_balance), float(bnb_balance))
+    # set balances from config
+    balances = config.get_section_field_options(field='balance')
+    for key, value in balances.items():
+        accnt.update_asset_balance(key, float(value), float(value))
 
     multitrader = MultiTrader(client,
                               accnt=accnt,
@@ -317,23 +308,21 @@ if __name__ == '__main__':
     if not os.path.exists(cache_path):
         os.mkdir(cache_path)
 
-    print(config.get_section_options())
-
     # get balances from trader.ini to be used in creating filename
-    btc_balance = float(config.get('BTC'))
-    eth_balance = float(config.get('ETH'))
-    bnb_balance = float(config.get('BNB'))
-    balance_txt = ""
-    if btc_balance:
-        balance_txt += "{}BTC".format(btc_balance)
-    if eth_balance:
-        balance_txt += "{}ETH".format(eth_balance)
-    if bnb_balance:
-        balance_txt += "{}BNB".format(bnb_balance)
+    # btc_balance = float(config.get('BTC'))
+    # eth_balance = float(config.get('ETH'))
+    # bnb_balance = float(config.get('BNB'))
+    # balance_txt = ""
+    # if btc_balance:
+    #     balance_txt += "{}BTC".format(btc_balance)
+    # if eth_balance:
+    #     balance_txt += "{}ETH".format(eth_balance)
+    # if bnb_balance:
+    #     balance_txt += "{}BNB".format(bnb_balance)
 
     trade_cache = {}
 
-    trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
+    trade_cache_name = "{}-{}".format(signal_name, hourly_name)
 
     trade_log_path = "{}/{}.log".format(cache_path, trade_cache_name)
     trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)

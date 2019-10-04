@@ -1,9 +1,10 @@
 import os
 import sys
 try:
-    from ConfigParser import SafeConfigParser
+    from ConfigParser import ConfigParser
 except ImportError:
-    from configparser import SafeConfigParser
+    from configparser import ConfigParser
+
 
 class TraderConfig(object):
     def __init__(self, filename, exchange='binance', simulate=False):
@@ -11,7 +12,8 @@ class TraderConfig(object):
         self.exchange = exchange
         self.default_config_path = "config/defaults/{}.ini".format(self.exchange)
         self.simulate = simulate
-        self.config = SafeConfigParser()
+        self.config = ConfigParser()
+        self.config.optionxform = str
         self.section = None
         self.load()
 
@@ -21,7 +23,7 @@ class TraderConfig(object):
             print("{} doesn't exist, exiting...".format(self.default_config_path))
             sys.exit(-1)
         self.config.add_section(section)
-        default_config = SafeConfigParser()
+        default_config = ConfigParser()
         default_config.read(self.default_config_path)
         for key, value in default_config.items(section):
             self.config.set(section, key, value)
@@ -86,7 +88,20 @@ class TraderConfig(object):
     def get_section_options(self, section=None):
         if not section:
             section = self.section
-        return dict(self.config.items(section=section))
+        return dict(self.config.items(section=section, raw=True))
+
+    # return dict with all options for given field:
+    # ex. field='balance', balance.BTC = 0.2
+    # returns: {'BTC': 0.2 }
+    def get_section_field_options(self, field, section=None):
+        result = {}
+        field = "{}.".format(field)
+        options = self.get_section_options(section)
+        for key in options.keys():
+            if key.startswith(field):
+                entry = key[len(field):].upper()
+                result[entry] = options[key]
+        return result
 
     def set(self, option, value):
         if not self.section:
