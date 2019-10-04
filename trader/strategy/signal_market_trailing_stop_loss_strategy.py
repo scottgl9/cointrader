@@ -17,24 +17,10 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                                         reverse_trade_mode,
                                                                         logger)
         self.strategy_name = 'signal_market_trailing_stop_loss_strategy'
-        if not self.accnt.simulate:
-            self.trade_size_handler = fixed_trade_size(self.accnt,
-                                                       asset_info,
-                                                       btc=0.003,
-                                                       eth=0.1,
-                                                       bnb=3,
-                                                       pax=10.0,
-                                                       usdt=10.0,
-                                                       multiplier=5.0)
-        else:
-            self.trade_size_handler = fixed_trade_size(self.accnt,
-                                                       asset_info,
-                                                       btc=0.004,
-                                                       eth=0.1,
-                                                       bnb=3,
-                                                       pax=10.0,
-                                                       usdt=10.0,
-                                                       multiplier=5.0)
+
+        # get trade_sizes from config
+        trade_sizes = config.get_section_field_options(field='trade_size')
+        self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
         signal_names = [self.config.get('signals')]
