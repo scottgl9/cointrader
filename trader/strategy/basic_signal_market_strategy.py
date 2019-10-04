@@ -43,21 +43,10 @@ class basic_signal_market_strategy(StrategyBase):
         else:
             signal_names = [self.config.get('signals')]
             hourly_signal_name = self.config.get('hourly_signal')
-            btc_trade_size = float(self.config.get('btc_trade_size'))
-            eth_trade_size = float(self.config.get('eth_trade_size'))
-            bnb_trade_size = float(self.config.get('bnb_trade_size'))
-            pax_trade_size = float(self.config.get('pax_trade_size'))
-            usdt_trade_size = float(self.config.get('usdt_trade_size'))
-            trade_size_multiplier = float(self.config.get('trade_size_multiplier'))
 
-            self.trade_size_handler = fixed_trade_size(self.accnt,
-                                                       asset_info,
-                                                       btc=btc_trade_size,
-                                                       eth=eth_trade_size,
-                                                       bnb=bnb_trade_size,
-                                                       pax=pax_trade_size,
-                                                       usdt=usdt_trade_size,
-                                                       multiplier=trade_size_multiplier)
+            # get trade_sizes from config
+            trade_sizes = config.get_section_field_options(field='trade_size')
+            self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
