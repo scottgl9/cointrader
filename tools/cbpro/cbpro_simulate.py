@@ -99,22 +99,10 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         print("Section cbpro.simulate does not exist")
         sys.exit(-1)
 
-    btc_balance = config.get('BTC')
-    eth_balance = config.get('ETH')
-    usd_balance = config.get('USD')
-    usdc_balance = config.get('USDC')
-
-    if btc_balance:
-        accnt.update_asset_balance('BTC', float(btc_balance), float(btc_balance))
-
-    if eth_balance:
-        accnt.update_asset_balance('ETH', float(eth_balance), float(eth_balance))
-
-    if usd_balance:
-        accnt.update_asset_balance('USD', float(usd_balance), float(usd_balance))
-
-    if usdc_balance:
-        accnt.update_asset_balance('USDC', float(usdc_balance), float(usdc_balance))
+    # set balances from config
+    balances = config.get_section_field_options(field='balance')
+    for key, value in balances.items():
+        accnt.update_asset_balance(key, float(value), float(value))
 
     multitrader = MultiTrader(client,
                               accnt=accnt,
@@ -316,7 +304,7 @@ if __name__ == '__main__':
 
     trade_cache = {}
 
-    trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
+    trade_cache_name = "{}-{}".format(signal_name, hourly_name)
 
     trade_log_path = "{}/{}.log".format(cache_path, trade_cache_name)
     trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
