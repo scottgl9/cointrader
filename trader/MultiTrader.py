@@ -19,9 +19,6 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
     elif sname == 'multi_market_order_strategy':
         from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
         strategy = multi_market_order_strategy
-    elif sname == 'basic_signal_stop_loss_strategy':
-        from trader.strategy.basic_signal_stop_loss_strategy import basic_signal_stop_loss_strategy
-        strategy = basic_signal_stop_loss_strategy
     elif sname == 'signal_market_trailing_stop_loss_strategy':
         from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
         strategy = signal_market_trailing_stop_loss_strategy
