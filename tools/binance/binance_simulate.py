@@ -176,8 +176,9 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                           close=float(msg['c']),
                           low=float(msg['l']),
                           high=float(msg['h']),
-                          volume_base=float(msg['v']),
-                          volume_quote=float(msg['q']),
+                          #volume_base=float(msg['v']),
+                          #volume_quote=float(msg['q']),
+                          volume=float(msg['q']),
                           ts=int(msg['E']))
         else:
             kline.symbol = msg['s']

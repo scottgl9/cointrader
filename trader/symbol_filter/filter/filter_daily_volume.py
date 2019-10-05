@@ -47,7 +47,7 @@ class filter_daily_volume(symbol_filter_base):
                 return False
 
             hkline = self.hkdb.get_kline(kline.symbol, hourly_ts)
-            daily_volume.update(hkline.volume_quote, ts=hkline.ts)
+            daily_volume.update(hkline.volume, ts=hkline.ts)
             self.daily_volumes[kline.symbol] = daily_volume
             if daily_volume.result < self.daily_volume_btc_cutoff:
                 return True
