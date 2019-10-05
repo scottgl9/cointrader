@@ -15,7 +15,7 @@ class TSI_Signal(SignalBase):
         self.tsi_cross_zero = Crossover(window=10)
         self.tsi_cross_high = Crossover(window=10)
 
-    def pre_update(self, close, volume, ts, cache_db=None):
+    def pre_update(self, close, volume, ts):
         #obv_value = self.obv.update(close=float(close), volume=float(volume))
         tsi_result = self.tsi.update(float(close))
 

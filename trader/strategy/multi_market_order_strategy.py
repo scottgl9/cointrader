@@ -260,7 +260,7 @@ class multi_market_order_strategy(StrategyBase):
             self.accnt.loaded_model_count += 1
 
 
-    def run_update(self, kline, cache_db=None):
+    def run_update(self, kline):
         if self.is_currency_pair():
             return False
 
@@ -301,7 +301,7 @@ class multi_market_order_strategy(StrategyBase):
                 self.logger.info("Hourly update FAILED 5 times for {}".format(self.ticker_id))
                 self.hourly_klines_disabled = True
 
-        self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
+        self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp)
 
         completed = self.handle_incoming_messages()
 

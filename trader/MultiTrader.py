@@ -265,64 +265,8 @@ class MultiTrader(object):
             result = self.add_trade_pair(symbol, price)
         return result
 
-    # process hourly kline from db
-    def process_hourly_kline(self, kline):
-        self.current_ts = kline.ts
-
-        # keep track of all current price values for all symbols being processed
-        self.accnt.update_ticker(kline.symbol, kline.close, kline.ts)
-
-        symbol_trader = self.get_trader(kline.symbol, kline.close)
-        if not symbol_trader:
-            return None
-
-        # compute current total percent profit, and update info in strategy
-        tpprofit = self.order_handler.get_total_percent_profit()
-        if tpprofit != 0:
-            symbol_trader.update_total_percent_profit(tpprofit)
-
-        # print alive check message once every hour
-        if not self.accnt.simulate:
-            if self.last_ts == 0 and self.current_ts != 0:
-                self.last_ts = self.current_ts
-            elif self.current_ts != 0:
-                if (self.current_ts - self.last_ts) > self.check_ts:
-                    self.accnt.get_account_balances()
-
-                    self.accnt.load_exchange_info()
-
-                    self.last_ts = self.current_ts
-                    timestr = datetime.now().strftime("%Y-%m-%d %I:%M %p")
-                    self.logger.info("MultiTrader running {}".format(timestr))
-
-                    # purge trades from TraderDB which have been sold
-                    self.purge_trade_db()
-
-        # if apply_filters() returns True, then disable buys for this trader
-        #if self.symbol_filter:
-        #    if self.symbol_filter.apply_filters(kline):
-        #        symbol_trader.filter_buy_disabled = True
-        #    elif symbol_trader.filter_buy_disabled:
-        #        symbol_trader.filter_buy_disabled = False
-
-        symbol_trader.run_update(kline)
-
-        #if self.global_strategy:
-        #    self.global_strategy.run_update(kline)
-
-        self.order_handler.stored_trades_update(kline)
-        self.order_handler.process_limit_order(kline)
-
-        # handle incoming messages
-        self.order_handler.process_order_messages()
-
-        if self.accnt.simulate:
-            return symbol_trader
-        return None
-
-
     # process websocket or captured websocket realtime klines
-    def process_message(self, kline, cache_db=None):
+    def process_message(self, kline):
         self.current_ts = kline.ts
 
         # keep track of all current price values for all symbols being processed
@@ -361,7 +305,7 @@ class MultiTrader(object):
             elif symbol_trader.filter_buy_disabled:
                 symbol_trader.filter_buy_disabled = False
 
-        symbol_trader.run_update(kline, cache_db=cache_db)
+        symbol_trader.run_update(kline)
 
         self.order_handler.stored_trades_update(kline)
         self.order_handler.process_limit_order(kline)

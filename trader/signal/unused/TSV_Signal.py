@@ -25,7 +25,7 @@ class TSV_Signal(SignalBase):
         self.tsv_ema = ZLEMA(100, scale=24)
         self.detector = PeakValleyDetect()
 
-    def pre_update(self, close, volume, ts, cache_db=None):
+    def pre_update(self, close, volume, ts):
         obv_value = self.obv.update(close=close, volume=volume)
         self.obv_ema12.update(obv_value)
         self.obv_ema26.update(obv_value)

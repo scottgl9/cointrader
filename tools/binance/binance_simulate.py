@@ -129,19 +129,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     last_ts = None
 
     kline = None
-    cache_filename = simulate_db_filename
-
     profit_mode = config.get('trader_profit_mode')
-
-    #if os.path.exists(cache_filename):
-    #    logger.info("Loading indicator cache {}".format(cache_filename))
-    #    cache_db = create_db_connection(cache_filename)
-    #    #cache_db = create_db_connection(':memory:')
-    #    #cache_db.backup(cache_db_file)
-    #    #cache_db_file.close()
-    #else:
-    #    cache_db = create_db_connection(cache_filename)
-    cache_db = None
 
     for row in c:
         msg = {'E': row[0], 'c': row[1], 'h': row[2], 'l': row[3],
@@ -191,11 +179,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
             kline.volume = kline.volume_quote
             kline.ts = int(msg['E'])
 
-        multitrader.process_message(kline, cache_db=cache_db)
-
-    if cache_db:
-        cache_db.commit()
-        cache_db.close()
+        multitrader.process_message(kline)
 
     logger.info("\nTrade Symbol Profits:")
     if profit_mode == 'BTC':

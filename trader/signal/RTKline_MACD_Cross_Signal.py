@@ -29,7 +29,7 @@ class RTKline_MACD_Cross_Signal(SignalBase):
         self.max_price = 0
         self.ts = 0
 
-    def pre_update(self, close, volume, ts, cache_db=None):
+    def pre_update(self, close, volume, ts):
         self.rtkline.update(close, ts, volume)
         if self.rtkline.ready():
             kline = self.rtkline.get_kline()

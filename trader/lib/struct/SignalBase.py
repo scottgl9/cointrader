@@ -86,7 +86,7 @@ class SignalBase(object):
         self.symbol = symbol
 
     # realtime pre update
-    def pre_update(self, close, volume, ts, cache_db=None):
+    def pre_update(self, close, volume, ts):
         pass
 
     # realtime post update

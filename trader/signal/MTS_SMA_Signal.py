@@ -32,7 +32,7 @@ class MTS_SMA_Signal(SignalBase):
             return None
         return self.cache.get_cache_list()
 
-    def pre_update(self, close, volume, ts, cache_db=None):
+    def pre_update(self, close, volume, ts):
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:

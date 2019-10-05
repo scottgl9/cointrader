@@ -104,7 +104,7 @@ class TD_Sequential_Signal(SignalBase):
                 self.isSellSetup = True
             self.sSetupCounter = 0
 
-    def pre_update(self, close, volume=0, ts=0, cache_db=None):
+    def pre_update(self, close, volume=0, ts=0):
         if close in self.fkline.values.carray:
             return
         #close = self.filter.update(close)

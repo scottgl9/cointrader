@@ -300,7 +300,7 @@ class basic_signal_market_strategy(StrategyBase):
             self.accnt.loaded_model_count += 1
 
 
-    def run_update(self, kline, cache_db=None):
+    def run_update(self, kline):
         close = kline.close
         self.low = kline.low
         self.high = kline.high
@@ -355,7 +355,7 @@ class basic_signal_market_strategy(StrategyBase):
 
         # handle realtime signal updates
         if self.realtime_signals_enabled:
-            self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
+            self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp)
 
         completed = self.handle_incoming_messages()
 

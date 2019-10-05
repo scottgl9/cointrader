@@ -1,4 +1,5 @@
 from trader.lib.struct.Message import Message
+from trader.lib.struct.Order import Order
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
 from trader.lib.struct.StrategyBase import StrategyBase
 from trader.lib.struct.SignalBase import SignalBase
@@ -185,7 +186,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                                                                              msg_type))
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     signal.last_sell_price = msg.price
-                    if msg.order_type == Message.TYPE_MARKET:
+                    if msg.order_type == Order.TYPE_MARKET:
                         self.cancel_sell_stop_loss(signal)
 
                     if self.min_trade_size_qty != 1.0:
@@ -259,7 +260,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         return completed
 
 
-    def run_update(self, kline, cache_db=None):
+    def run_update(self, kline):
         if self.is_currency_pair():
             return False
 
