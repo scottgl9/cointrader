@@ -212,6 +212,8 @@ class MultiTrader(object):
             self.logger.info("No asset info for {}".format(symbol))
             return None
 
+        base_min_size = 0
+
         if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
             try:
                 base_min_size = float(asset_info['base_step_size'])

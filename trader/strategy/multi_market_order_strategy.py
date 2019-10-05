@@ -261,9 +261,6 @@ class multi_market_order_strategy(StrategyBase):
 
 
     def run_update(self, kline):
-        if self.is_currency_pair():
-            return False
-
         close = kline.close
         self.low = kline.low
         self.high = kline.high

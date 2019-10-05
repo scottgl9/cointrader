@@ -304,7 +304,7 @@ class basic_signal_market_strategy(StrategyBase):
         close = kline.close
         self.low = kline.low
         self.high = kline.high
-        volume = kline.volume_quote
+        volume = kline.volume
 
         if not self.timestamp:
             if self.hourly_signals_enabled and not self.hourly_klines_loaded:
@@ -355,7 +355,7 @@ class basic_signal_market_strategy(StrategyBase):
 
         # handle realtime signal updates
         if self.realtime_signals_enabled:
-            self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp)
+            self.signal_handler.pre_update(close=close, volume=kline.volume, ts=self.timestamp)
 
         completed = self.handle_incoming_messages()
 

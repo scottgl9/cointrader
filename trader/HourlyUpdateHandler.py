@@ -47,6 +47,7 @@ class HourlyUpdateHandler(threading.Thread):
             time.sleep(1)
         self.hkdb.close()
 
+
 class HourlyUpdateInfo(object):
     def __init__(self):
         self.last_hourly_update_ts = 0
