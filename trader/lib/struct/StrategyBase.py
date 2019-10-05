@@ -47,7 +47,7 @@ class StrategyBase(object):
     MULTI_SIGNAL_MULTI_ORDER = 4
 
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 asset_info=None, config=None, reverse_trade_mode=False, logger=None):
+                 asset_info=None, config=None, logger=None):
         self.strategy_name = None
         # default setting for signal_modes
         self.signal_modes = [StrategyBase.SIGNAL_MODE_REALTIME, StrategyBase.SIGNAL_MODE_HOURLY]
@@ -70,9 +70,6 @@ class StrategyBase(object):
         self.quote_increment = 0
         # disable ability to buy in a strategy based on filters
         self.filter_buy_disabled = False
-        # if true, strategy is allowed to sell currency balance for another currency
-        # (ex. BTCUSDT) which wasn't bought by trader
-        self.reverse_trade_mode = reverse_trade_mode
 
         if self.asset_info:
             self.base_precision = self.asset_info.baseAssetPrecision

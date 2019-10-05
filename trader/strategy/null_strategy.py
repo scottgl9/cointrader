@@ -11,7 +11,7 @@ def datetime_to_float(d):
 
 class null_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 config=None, asset_info=None, reverse_trade_mode=False, logger=None):
+                 config=None, asset_info=None, logger=None):
         super(null_strategy, self).__init__(client,
                                             base,
                                             currency,
@@ -19,7 +19,6 @@ class null_strategy(StrategyBase):
                                             order_handler,
                                             asset_info,
                                             config,
-                                            reverse_trade_mode,
                                             logger)
         self.strategy_name = 'null_strategy'
         signal_names = [self.config.get('signals')]
@@ -45,8 +44,8 @@ class null_strategy(StrategyBase):
         self.trend_upward_count = 0
         self.trend_downward_count = 0
         self.last_macd_diff = 0.0
-        self.base_min_size = float(base_min_size)
-        self.quote_increment = float(tick_size)
+        self.base_min_size = 0 #float(base_min_size)
+        self.quote_increment = 0 #float(tick_size)
         self.buy_price_list = []
         self.buy_price = 0.0
         if not self.accnt.simulate:

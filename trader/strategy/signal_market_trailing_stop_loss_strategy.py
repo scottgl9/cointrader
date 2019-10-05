@@ -6,7 +6,7 @@ from trader.lib.struct.SignalBase import SignalBase
 
 class signal_market_trailing_stop_loss_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 config=None, asset_info=None, reverse_trade_mode=False, logger=None):
+                 config=None, asset_info=None, logger=None):
         super(signal_market_trailing_stop_loss_strategy, self).__init__(client,
                                                                         base,
                                                                         currency,
@@ -14,7 +14,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
                                                                         order_handler,
                                                                         asset_info,
                                                                         config,
-                                                                        reverse_trade_mode,
                                                                         logger)
         self.strategy_name = 'signal_market_trailing_stop_loss_strategy'
 

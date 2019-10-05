@@ -1,6 +1,7 @@
 # handle running strategy for each base / currency pair we want to trade
 import os
 from trader.account.AccountBinance import AccountBinance, AccountBase
+from trader.lib.struct.Frame import Frame
 from trader.lib.struct.Order import Order
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
@@ -11,7 +12,7 @@ import time
 
 
 def select_strategy(sname, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                    asset_info=None, config=None, reverse_trade_mode=False, logger=None):
+                    asset_info=None, config=None, logger=None):
     strategy = None
     if sname == 'basic_signal_market_strategy':
         from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
@@ -35,7 +36,6 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
                     order_handler=order_handler,
                     asset_info=asset_info,
                     config=config,
-                    reverse_trade_mode=reverse_trade_mode,
                     logger=logger)
 
 
@@ -60,10 +60,6 @@ class MultiTrader(object):
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.symbol_filter_names = self.config.get('symbol_filters').split(',')
         self.hourly_update_handler = None
-
-        # handle reverse currency trading config
-        self.reverse_currency_trading = self.config.get('reverse_currency_trading')
-        self.reverse_strategy = self.config.get('reverse_strategy')
 
         # sets what currency to use when calculating trade profits
         self.trader_profit_mode = self.config.get('trader_profit_mode')
@@ -187,25 +183,6 @@ class MultiTrader(object):
             self.hourly_update_handler.stop()
             self.hourly_update_handler.join(timeout=5)
 
-    def use_reverse_trade_mode(self, symbol, base, currency, asset_info):
-        if not self.reverse_currency_trading:
-            return False
-
-        if not self.accnt.is_currency_pair(symbol, base, currency):
-            return False
-
-        try:
-            currency_min_size = float(asset_info['tickSize'])
-        except (KeyError, TypeError):
-            if not self.simulate:
-                self.logger.info("symbol {} attributes not in asset info".format(symbol))
-            return False
-
-        balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base)['balance']))
-        if balance > currency_min_size:
-            return True
-        return False
-
     # create new trade pair handler and select strategy
     def add_trade_pair(self, symbol, price=0):
         base_name, currency_name = self.accnt.split_symbol(symbol)
@@ -247,8 +224,6 @@ class MultiTrader(object):
             if min_notional > base_min_size:
                 base_min_size = min_notional
 
-        reverse_trade_mode = self.use_reverse_trade_mode(symbol, base_name, currency_name, asset_info)
-
         trade_pair = select_strategy(self.strategy_name,
                                      self.client,
                                      base_name,
@@ -257,7 +232,6 @@ class MultiTrader(object):
                                      order_handler=self.order_handler,
                                      asset_info=self.accnt.get_asset_info(base=base_name, currency=currency_name),
                                      config=self.config,
-                                     reverse_trade_mode=reverse_trade_mode,
                                      logger=self.logger)
 
         self.trade_pairs[symbol] = trade_pair

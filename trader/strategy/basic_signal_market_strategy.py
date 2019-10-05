@@ -6,7 +6,7 @@ from trader.lib.struct.SignalBase import SignalBase
 
 class basic_signal_market_strategy(StrategyBase):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
-                 config=None, asset_info=None, reverse_trade_mode=False, logger=None):
+                 config=None, asset_info=None, logger=None):
         super(basic_signal_market_strategy, self).__init__(client,
                                                            base,
                                                            currency,
@@ -14,7 +14,6 @@ class basic_signal_market_strategy(StrategyBase):
                                                            order_handler,
                                                            asset_info,
                                                            config,
-                                                           reverse_trade_mode,
                                                            logger)
         self.strategy_name = 'basic_signal_market_strategy'
 
@@ -33,20 +32,12 @@ class basic_signal_market_strategy(StrategyBase):
                 self.hourly_signals_enabled = True
                 self.signal_modes.append(StrategyBase.SIGNAL_MODE_HOURLY)
 
-        if self.reverse_trade_mode:
-            signal_names = [self.config.get('reverse_signals')]
-            hourly_signal_name = self.config.get('reverse_hourly_signal')
-            trade_fraction = float(self.config.get('reverse_trade_percent_size')) / 100.0
-            balance = self.accnt.round_base(float(self.accnt.get_asset_balance(base)['balance']))
-            self.min_trade_size = balance * trade_fraction
-            self.logger.info("{} {} REVERSE_TRADE_MODE trade size={} {}".format(self.ticker_id, self.strategy_name, self.min_trade_size, base))
-        else:
-            signal_names = [self.config.get('signals')]
-            hourly_signal_name = self.config.get('hourly_signal')
+        signal_names = [self.config.get('signals')]
+        hourly_signal_name = self.config.get('hourly_signal')
 
-            # get trade_sizes from config
-            trade_sizes = config.get_section_field_options(field='trade_size')
-            self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
+        # get trade_sizes from config
+        trade_sizes = config.get_section_field_options(field='trade_size')
+        self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
@@ -82,9 +73,6 @@ class basic_signal_market_strategy(StrategyBase):
         if self.filter_buy_disabled:
             return False
 
-        if not self.reverse_trade_mode and self.is_currency_pair():
-            return False
-
         try:
             if self.accnt.trades_disabled():
                 return False
@@ -106,10 +94,9 @@ class basic_signal_market_strategy(StrategyBase):
         if max_market_buy != 0 and self.order_handler.open_market_buy_count >= max_market_buy:
             return False
 
-        if not self.reverse_trade_mode:
-            self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
-            if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):
-                return False
+        self.min_trade_size = self.trade_size_handler.compute_trade_size(price)
+        if not self.trade_size_handler.check_buy_trade_size(price, self.min_trade_size):
+            return False
 
         if self.last_close == 0:
             return False
@@ -314,18 +301,12 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def run_update(self, kline, cache_db=None):
-        if not self.reverse_trade_mode and self.is_currency_pair():
-            return False
-
         close = kline.close
         self.low = kline.low
         self.high = kline.high
         volume = kline.volume_quote
 
         if not self.timestamp:
-            if self.reverse_trade_mode:
-                self.reset(buy_price=close, buy_size=self.min_trade_size)
-
             if self.hourly_signals_enabled and not self.hourly_klines_loaded:
                 # set initial hourly update ts
                 self.first_hourly_update_ts = self.accnt.get_hourly_ts(kline.ts)
