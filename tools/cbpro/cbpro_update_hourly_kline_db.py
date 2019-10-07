@@ -24,7 +24,7 @@ from trader.KlinesDB import KlinesDB
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cbpro_hourly_klines.db',
+                        default='db/cbpro_hourly_klines.db',
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('--update', action='store_true', dest='update',
