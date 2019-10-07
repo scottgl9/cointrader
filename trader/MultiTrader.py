@@ -1,7 +1,7 @@
 # handle running strategy for each base / currency pair we want to trade
 import os
 from trader.account.AccountBinance import AccountBinance, AccountBase
-from trader.lib.struct.MarketPacket import MarketPacket
+from trader.lib.struct.MarketMessage import MarketMessage
 from trader.lib.struct.Order import Order
 from trader.OrderHandler import OrderHandler
 from trader.KlinesDB import KlinesDB
