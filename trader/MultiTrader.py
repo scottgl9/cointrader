@@ -1,7 +1,7 @@
 # handle running strategy for each base / currency pair we want to trade
 import os
 from trader.account.AccountBinance import AccountBinance, AccountBase
-from trader.lib.struct.Frame import Frame
+from trader.lib.struct.MarketPacket import MarketPacket
 from trader.lib.struct.Order import Order
 from trader.OrderHandler import OrderHandler
 from trader.HourlyKlinesDB import HourlyKlinesDB
@@ -94,9 +94,6 @@ class MultiTrader(object):
                     hourly_symbols_only = self.config.get('hourly_symbols_only')
                 self.hkdb_table_symbols = self.hkdb.table_symbols
                 self.latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
-                #if self.simulate:
-                #    self.hkdb.close()
-                #    self.hkdb = None
             except IOError:
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.kdb_path))
 
@@ -112,8 +109,6 @@ class MultiTrader(object):
                 self.hkdb.update_all_tables()
                 self.logger.info("Removing outdated hourly kline tables in {}...".format(self.kdb_path))
                 self.hkdb.remove_outdated_tables()
-            #self.hkdb.close()
-            #self.hkdb = None
 
         # start thread for hourly kline db updates
         if not self.simulate and self.kdb_path and self.kdb_path:

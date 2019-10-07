@@ -206,7 +206,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cbpro_database.miniticker_collection_09132019.db',
+                        default='db/cbpro_database.miniticker_collection_09132019.db',
                         help='filename of kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='strategy',
@@ -230,7 +230,7 @@ if __name__ == '__main__':
                         help='binance hourly klines DB file')
 
     parser.add_argument('-d', action='store_true', dest='disable_caching',
-                        default=False,
+                        default=True,
                         help='Disable caching results for this simulation run')
 
     results = parser.parse_args()
@@ -263,36 +263,26 @@ if __name__ == '__main__':
     disable_caching = results.disable_caching
 
     if disable_caching:
+        trade_cache_name = ""
+        trade_log_path = ""
+        trade_result_path = ""
+        trade_json_path = ""
         print("Caching of results to {} DISABLED".format(results.cache_dir))
+    else:
+        # create folder for strategy name in cache
+        cache_path = "{}/{}".format(results.cache_dir, strategy)
+        if not os.path.exists(cache_path):
+            os.mkdir(cache_path)
 
-    # create folder for strategy name in cache
-    cache_path = "{}/{}".format(results.cache_dir, strategy)
-    if not os.path.exists(cache_path):
-        os.mkdir(cache_path)
-
-    cache_path = "{}/{}".format(cache_path, results.filename.replace(".db", ""))
-    if not os.path.exists(cache_path):
-        os.mkdir(cache_path)
-
-    # get balances from trader.ini to be used in creating filename
-    #btc_balance = float(config.get('BTC'))
-    #eth_balance = float(config.get('ETH'))
-    #bnb_balance = float(config.get('BNB'))
-    balance_txt = ""
-    #if btc_balance:
-    #    balance_txt += "{}BTC".format(btc_balance)
-    #if eth_balance:
-    #    balance_txt += "{}ETH".format(eth_balance)
-    #if bnb_balance:
-    #    balance_txt += "{}BNB".format(bnb_balance)
+        cache_path = "{}/{}".format(cache_path, results.filename.replace(".db", ""))
+        if not disable_caching and not os.path.exists(cache_path):
+            os.mkdir(cache_path)
+        trade_cache_name = "{}-{}".format(signal_name, hourly_name)
+        trade_log_path = "{}/{}.log".format(cache_path, trade_cache_name)
+        trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
+        trade_json_path = "{}/trades.json".format(cache_path)
 
     trade_cache = {}
-
-    trade_cache_name = "{}-{}".format(signal_name, hourly_name)
-
-    trade_log_path = "{}/{}.log".format(cache_path, trade_cache_name)
-    trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
-    trade_json_path = "{}/trades.json".format(cache_path)
 
     # if caching disabled, do not write to log file
     if not disable_caching:
