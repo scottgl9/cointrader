@@ -511,6 +511,9 @@ class AccountCoinbasePro(AccountBase):
                 if asset == 'USD' or asset == 'USDC':
                     total_balance += value
                     continue
+                elif asset == currency:
+                    total_balance += value
+                    continue
                 symbol = self.make_ticker_id(asset, currency)
                 if not self.is_exchange_pair(symbol) and currency == 'USD':
                     symbol = self.make_ticker_id(asset, 'USDC')
@@ -521,14 +524,14 @@ class AccountCoinbasePro(AccountBase):
                     continue
                 total_balance += value * price
 
-        if currency != 'USD' and currency != 'USDC':
-            symbol = self.make_ticker_id(currency, 'USD')
-            if not self.is_exchange_pair(symbol):
-                symbol = self.make_ticker_id(currency, 'USDC')
-            price = float(self.get_ticker(symbol))
-            result_balance = total_balance / price
-        else:
-            result_balance = total_balance
+        # if currency != 'USD' and currency != 'USDC':
+        #     symbol = self.make_ticker_id(currency, 'USD')
+        #     if not self.is_exchange_pair(symbol):
+        #         symbol = self.make_ticker_id(currency, 'USDC')
+        #     price = float(self.get_ticker(symbol))
+        #     result_balance = total_balance / price
+        # else:
+        result_balance = total_balance
 
         #     if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
         #         if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':

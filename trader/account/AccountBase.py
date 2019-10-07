@@ -31,6 +31,9 @@ class AccountBase(object):
     def get_symbol_hourly_table(self, table_name):
         pass
 
+    def get_hourly_column_names(self):
+        pass
+
     def make_ticker_id(self, base, currency):
         pass
 
