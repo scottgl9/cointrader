@@ -426,10 +426,10 @@ class basic_signal_market_strategy(StrategyBase):
             min_trade_size = float(min_trade_size) * self.min_trade_size_qty
 
         # fix rounding issues for BNB currency symbols
-        if self.currency == 'BNB':
-            signal.buy_size = self.round_quantity(min_trade_size)
-        else:
-            signal.buy_size = min_trade_size
+        #if self.currency == 'BNB':
+        #    signal.buy_size = self.round_quantity(min_trade_size)
+        #else:
+        signal.buy_size = min_trade_size
 
         if not float(signal.buy_size):
             return

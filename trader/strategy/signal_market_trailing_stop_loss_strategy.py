@@ -280,7 +280,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         if self.timestamp == self.last_timestamp:
             return
 
-        self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp, cache_db=cache_db)
+        self.signal_handler.pre_update(close=close, volume=kline.volume_quote, ts=self.timestamp)
 
         completed = self.handle_incoming_messages()
 
@@ -346,8 +346,6 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             return
 
         if self.accnt.test_stop_loss() and not self.stop_loss_set and not self.next_stop_loss_price:
-            #balance_available = self.round_base(float(self.accnt.get_asset_balance_tuple(self.base)[1]))
-            #if signal.buy_size == balance_available:
             if 0.98 * signal.buy_price < price < signal.buy_price:
                     self.stop_loss_price = self.round_quote(0.98 * signal.buy_price)
                     self.set_sell_stop_loss(signal, self.stop_loss_price)
