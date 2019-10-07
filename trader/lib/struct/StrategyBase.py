@@ -1,6 +1,6 @@
 # base class for all strategies
 from datetime import datetime
-from trader.lib.MessageHandler import MessageHandler
+from trader.lib.TraderMessageHandler import TraderMessageHandler
 from trader.lib.SignalHandler import SignalHandler
 from trader.KlinesDB import KlinesDB
 
@@ -90,7 +90,7 @@ class StrategyBase(object):
         # true if base, and currency are both tradable currencies (ex ETH/BTC)
         self._currency_pair = self.accnt.is_currency_pair(base=self.base, currency=self.currency)
 
-        self.msg_handler = MessageHandler()
+        self.msg_handler = TraderMessageHandler()
         self.signal_handler = SignalHandler(self.ticker_id, logger=logger)
         self.simulate = self.accnt.simulate
         self.trade_size_handler = None

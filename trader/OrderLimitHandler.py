@@ -1,4 +1,4 @@
-from trader.lib.struct.Message import Message
+from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 
 
@@ -40,14 +40,14 @@ class OrderLimitHandler(object):
 
         order = self.open_orders[kline.symbol]
         close = kline.close
-        if ((order.type == Message.MSG_STOP_LOSS_BUY and close > order.price) or
-            (order.type == Message.MSG_STOP_LOSS_LIMIT_BUY and close > order.price) or
-            (order.type == Message.MSG_TAKE_PROFIT_BUY and close > order.price) or
-            (order.type == Message.MSG_PROFIT_LIMIT_BUY and close > order.price) or
-            (order.type == Message.MSG_LIMIT_BUY and close < order.price)):
+        if ((order.type == TraderMessage.MSG_STOP_LOSS_BUY and close > order.price) or
+            (order.type == TraderMessage.MSG_STOP_LOSS_LIMIT_BUY and close > order.price) or
+            (order.type == TraderMessage.MSG_TAKE_PROFIT_BUY and close > order.price) or
+            (order.type == TraderMessage.MSG_PROFIT_LIMIT_BUY and close > order.price) or
+            (order.type == TraderMessage.MSG_LIMIT_BUY and close < order.price)):
 
             # convert Message.MSG_* to Message.TYPE_* (ex. Message.MSG_STOP_LOSS_BUY -> Message.TYPE_STOP_LOSS)
-            order_type = Message.get_type_from_cmd(order.type)
+            order_type = TraderMessage.get_type_from_cmd(order.type)
 
             if self.accnt.simulate:
                 self.send_buy_complete(ticker_id=kline.symbol,
@@ -69,14 +69,14 @@ class OrderLimitHandler(object):
                     self.send_buy_complete(order.symbol, order.price, order.size,
                                             order.sig_id, order_type=order_type)
                     self.remove_open_order(kline.symbol)
-        elif ((order.type == Message.MSG_STOP_LOSS_LIMIT_SELL and close < order.price) or
-              (order.type == Message.MSG_STOP_LOSS_SELL and close < order.price) or
-              (order.type == Message.MSG_TAKE_PROFIT_SELL and close < order.price) or
-              (order.type == Message.MSG_PROFIT_LIMIT_SELL and close < order.price) or
-              (order.type == Message.MSG_LIMIT_SELL and close > order.price)):
+        elif ((order.type == TraderMessage.MSG_STOP_LOSS_LIMIT_SELL and close < order.price) or
+              (order.type == TraderMessage.MSG_STOP_LOSS_SELL and close < order.price) or
+              (order.type == TraderMessage.MSG_TAKE_PROFIT_SELL and close < order.price) or
+              (order.type == TraderMessage.MSG_PROFIT_LIMIT_SELL and close < order.price) or
+              (order.type == TraderMessage.MSG_LIMIT_SELL and close > order.price)):
 
             # convert Message.MSG_* to Message.TYPE_* (ex. Message.MSG_STOP_LOSS_SELL -> Message.TYPE_STOP_LOSS)
-            order_type = Message.get_type_from_cmd(order.type)
+            order_type = TraderMessage.get_type_from_cmd(order.type)
 
             if self.accnt.simulate:
                 self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
@@ -108,11 +108,11 @@ class OrderLimitHandler(object):
             buy_type = "buy_stop_loss"
         elif order_type == Order.TYPE_LIMIT:
             buy_type = "buy_limit"
-        elif order_type == Message.MSG_STOP_LOSS_BUY:
+        elif order_type == TraderMessage.MSG_STOP_LOSS_BUY:
             buy_type = "buy_stop_loss"
-        elif order_type == Message.MSG_MARKET_BUY:
+        elif order_type == TraderMessage.MSG_MARKET_BUY:
             buy_type = "buy_market"
-        elif order_type == Message.MSG_LIMIT_BUY:
+        elif order_type == TraderMessage.MSG_LIMIT_BUY:
             buy_type = "buy_limit"
 
         message = "{}({}, {}, {}, {}) @ {}".format(buy_type, sig_id, sig_oid, ticker_id, size, price)
@@ -127,11 +127,11 @@ class OrderLimitHandler(object):
             sell_type = "sell_stop_loss"
         elif order_type == Order.TYPE_LIMIT:
             sell_type = "sell_limit"
-        elif order_type == Message.MSG_STOP_LOSS_SELL:
+        elif order_type == TraderMessage.MSG_STOP_LOSS_SELL:
             sell_type = "sell_stop_loss"
-        elif order_type == Message.MSG_MARKET_SELL:
+        elif order_type == TraderMessage.MSG_MARKET_SELL:
             sell_type = "sell_market"
-        elif order_type == Message.MSG_LIMIT_SELL:
+        elif order_type == TraderMessage.MSG_LIMIT_SELL:
             sell_type = "sell_limit"
 
         pprofit = 0

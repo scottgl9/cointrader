@@ -1,5 +1,5 @@
 # OrderHandler: order handler for MultiTrader
-from trader.lib.struct.Message import Message
+from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.notify.Email import Email
 from trader.lib.TraderDB import TraderDB
@@ -120,47 +120,47 @@ class OrderHandler(object):
         received = False
         # handle incoming messages
         if not self.msg_handler.empty():
-            for msg in self.msg_handler.get_messages_by_dst_id(Message.ID_MULTI):
+            for msg in self.msg_handler.get_messages_by_dst_id(TraderMessage.ID_MULTI):
                 if msg.is_read():
                     continue
-                if msg.cmd == Message.MSG_MARKET_BUY:
+                if msg.cmd == TraderMessage.MSG_MARKET_BUY:
                     self.place_buy_market_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_MARKET_SELL:
+                elif msg.cmd == TraderMessage.MSG_MARKET_SELL:
                     self.place_sell_market_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_BUY_CANCEL:
+                elif msg.cmd == TraderMessage.MSG_BUY_CANCEL:
                     self.place_cancel_buy_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_SELL_CANCEL:
+                elif msg.cmd == TraderMessage.MSG_SELL_CANCEL:
                     self.place_cancel_sell_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_LIMIT_BUY:
+                elif msg.cmd == TraderMessage.MSG_LIMIT_BUY:
                     self.place_buy_limit_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_LIMIT_SELL:
+                elif msg.cmd == TraderMessage.MSG_LIMIT_SELL:
                     self.place_sell_limit_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_STOP_LOSS_BUY:
+                elif msg.cmd == TraderMessage.MSG_STOP_LOSS_BUY:
                     self.place_buy_stop_loss_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_STOP_LOSS_SELL:
+                elif msg.cmd == TraderMessage.MSG_STOP_LOSS_SELL:
                     self.place_sell_stop_loss_order(msg)
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_BUY_DISABLE:
+                elif msg.cmd == TraderMessage.MSG_BUY_DISABLE:
                     self.buy_disabled = True
                     self.logger.info("BUY_DISABLE")
                     msg.mark_read()
                     received = True
-                elif msg.cmd == Message.MSG_BUY_ENABLE:
+                elif msg.cmd == TraderMessage.MSG_BUY_ENABLE:
                     self.buy_disabled = False
                     self.logger.info("BUY_ENABLE")
                     msg.mark_read()
@@ -223,7 +223,7 @@ class OrderHandler(object):
             self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Order.TYPE_LIMIT)
             return
 
-        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_LIMIT_BUY)
+        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=TraderMessage.MSG_LIMIT_BUY)
 
         # add orderid for live trading
         if not self.accnt.simulate:
@@ -252,7 +252,7 @@ class OrderHandler(object):
             self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Order.TYPE_LIMIT)
             return
 
-        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_LIMIT_SELL)
+        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=TraderMessage.MSG_LIMIT_SELL)
 
         # add orderid for live trading
         if not self.accnt.simulate:
@@ -286,7 +286,7 @@ class OrderHandler(object):
             self.send_buy_failed(ticker_id, price, size, sig_id, order_type=Order.TYPE_STOP_LOSS)
             return
 
-        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=Message.MSG_STOP_LOSS_BUY)
+        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, type=TraderMessage.MSG_STOP_LOSS_BUY)
 
         # add orderid for live trading
         if not self.accnt.simulate:
@@ -321,7 +321,7 @@ class OrderHandler(object):
             self.send_sell_failed(ticker_id, price, size, buy_price, sig_id, order_type=Order.TYPE_STOP_LOSS)
             return
 
-        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=Message.MSG_STOP_LOSS_SELL)
+        order = Order(symbol=ticker_id, price=price, size=size, sig_id=sig_id, buy_price=buy_price, type=TraderMessage.MSG_STOP_LOSS_SELL)
 
         # add orderid for live trading
         if not self.accnt.simulate:

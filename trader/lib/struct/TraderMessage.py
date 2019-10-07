@@ -1,7 +1,7 @@
 from .Order import Order
 
 
-class Message(object):
+class TraderMessage(object):
     ID_ROOT = "ROOT"
     ID_MULTI = 'MULTI'
     MSG_MARKET_SELL_ALL = 1
@@ -69,29 +69,29 @@ class Message(object):
 
     @staticmethod
     def get_type_from_cmd(cmd):
-        if cmd == Message.MSG_MARKET_BUY:
+        if cmd == TraderMessage.MSG_MARKET_BUY:
             msg_type = Order.TYPE_MARKET
-        elif cmd == Message.MSG_MARKET_SELL:
+        elif cmd == TraderMessage.MSG_MARKET_SELL:
             msg_type = Order.TYPE_MARKET
-        elif cmd == Message.MSG_LIMIT_BUY:
+        elif cmd == TraderMessage.MSG_LIMIT_BUY:
             msg_type = Order.TYPE_LIMIT
-        elif cmd == Message.MSG_LIMIT_SELL:
+        elif cmd == TraderMessage.MSG_LIMIT_SELL:
             msg_type = Order.TYPE_LIMIT
-        elif cmd == Message.MSG_STOP_LOSS_BUY:
+        elif cmd == TraderMessage.MSG_STOP_LOSS_BUY:
             msg_type = Order.TYPE_STOP_LOSS
-        elif cmd == Message.MSG_STOP_LOSS_SELL:
+        elif cmd == TraderMessage.MSG_STOP_LOSS_SELL:
             msg_type = Order.TYPE_STOP_LOSS
-        elif cmd == Message.MSG_STOP_LOSS_LIMIT_BUY:
+        elif cmd == TraderMessage.MSG_STOP_LOSS_LIMIT_BUY:
             msg_type = Order.TYPE_STOP_LOSS_LIMIT
-        elif cmd == Message.MSG_STOP_LOSS_LIMIT_SELL:
+        elif cmd == TraderMessage.MSG_STOP_LOSS_LIMIT_SELL:
             msg_type = Order.TYPE_STOP_LOSS_LIMIT
-        elif cmd == Message.MSG_PROFIT_LIMIT_BUY:
+        elif cmd == TraderMessage.MSG_PROFIT_LIMIT_BUY:
             msg_type = Order.TYPE_PROFIT_LIMIT
-        elif cmd == Message.MSG_PROFIT_LIMIT_SELL:
+        elif cmd == TraderMessage.MSG_PROFIT_LIMIT_SELL:
             msg_type = Order.TYPE_PROFIT_LIMIT
-        elif cmd == Message.MSG_TAKE_PROFIT_BUY:
+        elif cmd == TraderMessage.MSG_TAKE_PROFIT_BUY:
             msg_type = Order.TYPE_TAKE_PROFIT
-        elif cmd == Message.MSG_TAKE_PROFIT_SELL:
+        elif cmd == TraderMessage.MSG_TAKE_PROFIT_SELL:
             msg_type = Order.TYPE_TAKE_PROFIT
         else:
             msg_type = Order.TYPE_NONE
@@ -100,35 +100,35 @@ class Message(object):
 
     @staticmethod
     def get_msg_cmd_string(cmd):
-        if cmd == Message.MSG_MARKET_SELL_ALL: return 'MARKET_SELL_ALL'
-        elif cmd == Message.MSG_MARKET_BUY: return 'MARKET_BUY'
-        elif cmd == Message.MSG_MARKET_SELL: return 'MARKET_SELL'
-        elif cmd == Message.MSG_LIMIT_BUY: return 'LIMIT_BUY'
-        elif cmd == Message.MSG_LIMIT_SELL: return 'LIMIT_SELL'
-        elif cmd == Message.MSG_STOP_LOSS_BUY: return 'STOP_LOSS_BUY'
-        elif cmd == Message.MSG_STOP_LOSS_SELL: return 'STOP_LOSS_SELL'
-        elif cmd == Message.MSG_PROFIT_LIMIT_BUY: return 'PROFIT_LIMIT_BUY'
-        elif cmd == Message.MSG_PROFIT_LIMIT_SELL: return 'PROFIT_LIMIT_SELL'
-        elif cmd == Message.MSG_STOP_LOSS_LIMIT_BUY: return 'STOP_LOSS_LIMIT_BUY'
-        elif cmd == Message.MSG_STOP_LOSS_LIMIT_SELL: return 'STOP_LOSS_LIMIT_SELL'
-        elif cmd == Message.MSG_TAKE_PROFIT_BUY: return 'TAKE_PROFIT_BUY'
-        elif cmd == Message.MSG_TAKE_PROFIT_SELL: return 'TAKE_PROFIT_SELL'
-        elif cmd == Message.MSG_BUY_COMPLETE: return 'BUY_COMPLETE'
-        elif cmd == Message.MSG_SELL_COMPLETE: return 'SELL_COMPLETE'
-        elif cmd == Message.MSG_BUY_REPLACE: return 'BUY_REPLACE'
-        elif cmd == Message.MSG_SELL_REPLACE: return 'SELL_REPLACE'
-        elif cmd == Message.MSG_BUY_FAILED: return 'BUY_FAILED'
-        elif cmd == Message.MSG_SELL_FAILED: return 'SELL_FAILED'
-        elif cmd == Message.MSG_BUY_UPDATE: return 'BUY_UPDATE'
-        elif cmd == Message.MSG_SELL_UPDATE: return 'SELL_UPDATE'
-        elif cmd == Message.MSG_BUY_CANCEL: return 'BUY_CANCEL'
-        elif cmd == Message.MSG_SELL_CANCEL: return 'SELL_CANCEL'
-        elif cmd == Message.MSG_BUY_DISABLE: return 'BUY_DISABLE'
-        elif cmd == Message.MSG_SELL_DISABLE: return 'SELL_DISABLE'
-        elif cmd == Message.MSG_BUY_ENABLE: return 'BUY_ENABLE'
-        elif cmd == Message.MSG_SELL_ENABLE: return 'SELL_ENABLE'
-        elif cmd == Message.MSG_ORDER_SIZE_UPDATE: return 'ORDER_SIZE_UPDATE'
-        elif cmd == Message.MSG_NONE: return 'NONE'
+        if cmd == TraderMessage.MSG_MARKET_SELL_ALL: return 'MARKET_SELL_ALL'
+        elif cmd == TraderMessage.MSG_MARKET_BUY: return 'MARKET_BUY'
+        elif cmd == TraderMessage.MSG_MARKET_SELL: return 'MARKET_SELL'
+        elif cmd == TraderMessage.MSG_LIMIT_BUY: return 'LIMIT_BUY'
+        elif cmd == TraderMessage.MSG_LIMIT_SELL: return 'LIMIT_SELL'
+        elif cmd == TraderMessage.MSG_STOP_LOSS_BUY: return 'STOP_LOSS_BUY'
+        elif cmd == TraderMessage.MSG_STOP_LOSS_SELL: return 'STOP_LOSS_SELL'
+        elif cmd == TraderMessage.MSG_PROFIT_LIMIT_BUY: return 'PROFIT_LIMIT_BUY'
+        elif cmd == TraderMessage.MSG_PROFIT_LIMIT_SELL: return 'PROFIT_LIMIT_SELL'
+        elif cmd == TraderMessage.MSG_STOP_LOSS_LIMIT_BUY: return 'STOP_LOSS_LIMIT_BUY'
+        elif cmd == TraderMessage.MSG_STOP_LOSS_LIMIT_SELL: return 'STOP_LOSS_LIMIT_SELL'
+        elif cmd == TraderMessage.MSG_TAKE_PROFIT_BUY: return 'TAKE_PROFIT_BUY'
+        elif cmd == TraderMessage.MSG_TAKE_PROFIT_SELL: return 'TAKE_PROFIT_SELL'
+        elif cmd == TraderMessage.MSG_BUY_COMPLETE: return 'BUY_COMPLETE'
+        elif cmd == TraderMessage.MSG_SELL_COMPLETE: return 'SELL_COMPLETE'
+        elif cmd == TraderMessage.MSG_BUY_REPLACE: return 'BUY_REPLACE'
+        elif cmd == TraderMessage.MSG_SELL_REPLACE: return 'SELL_REPLACE'
+        elif cmd == TraderMessage.MSG_BUY_FAILED: return 'BUY_FAILED'
+        elif cmd == TraderMessage.MSG_SELL_FAILED: return 'SELL_FAILED'
+        elif cmd == TraderMessage.MSG_BUY_UPDATE: return 'BUY_UPDATE'
+        elif cmd == TraderMessage.MSG_SELL_UPDATE: return 'SELL_UPDATE'
+        elif cmd == TraderMessage.MSG_BUY_CANCEL: return 'BUY_CANCEL'
+        elif cmd == TraderMessage.MSG_SELL_CANCEL: return 'SELL_CANCEL'
+        elif cmd == TraderMessage.MSG_BUY_DISABLE: return 'BUY_DISABLE'
+        elif cmd == TraderMessage.MSG_SELL_DISABLE: return 'SELL_DISABLE'
+        elif cmd == TraderMessage.MSG_BUY_ENABLE: return 'BUY_ENABLE'
+        elif cmd == TraderMessage.MSG_SELL_ENABLE: return 'SELL_ENABLE'
+        elif cmd == TraderMessage.MSG_ORDER_SIZE_UPDATE: return 'ORDER_SIZE_UPDATE'
+        elif cmd == TraderMessage.MSG_NONE: return 'NONE'
         return None
 
     @staticmethod
@@ -146,29 +146,29 @@ class Message(object):
     @staticmethod
     def get_order_msg_cmd(order_type, side):
         if order_type == 'MARKET' and side == 'BUY':
-            type = Message.MSG_MARKET_BUY
+            type = TraderMessage.MSG_MARKET_BUY
         elif order_type == 'MARKET' and side == 'SELL':
-            type = Message.MSG_MARKET_SELL
+            type = TraderMessage.MSG_MARKET_SELL
         elif order_type == 'LIMIT' and side == 'BUY':
-            type = Message.MSG_LIMIT_BUY
+            type = TraderMessage.MSG_LIMIT_BUY
         elif order_type == 'LIMIT' and side == 'SELL':
-            type = Message.MSG_LIMIT_SELL
+            type = TraderMessage.MSG_LIMIT_SELL
         elif order_type == "STOP_LOSS" and side == 'BUY':
-            type = Message.MSG_STOP_LOSS_BUY
+            type = TraderMessage.MSG_STOP_LOSS_BUY
         elif order_type == "STOP_LOSS" and side == 'SELL':
-            type = Message.MSG_STOP_LOSS_SELL
+            type = TraderMessage.MSG_STOP_LOSS_SELL
         elif order_type == "STOP_LOSS_LIMIT" and side == "BUY":
-            type = Message.MSG_STOP_LOSS_LIMIT_BUY
+            type = TraderMessage.MSG_STOP_LOSS_LIMIT_BUY
         elif order_type == "STOP_LOSS_LIMIT" and side == "SELL":
-            type = Message.MSG_STOP_LOSS_LIMIT_SELL
+            type = TraderMessage.MSG_STOP_LOSS_LIMIT_SELL
         elif order_type == "TAKE_PROFIT_LIMIT" and side == "BUY":
-            type = Message.MSG_PROFIT_LIMIT_BUY
+            type = TraderMessage.MSG_PROFIT_LIMIT_BUY
         elif order_type == "TAKE_PROFIT_LIMIT" and side == "SELL":
-            type = Message.MSG_PROFIT_LIMIT_SELL
+            type = TraderMessage.MSG_PROFIT_LIMIT_SELL
         elif order_type == "TAKE_PROFIT" and side == "BUY":
-            type = Message.MSG_TAKE_PROFIT_BUY
+            type = TraderMessage.MSG_TAKE_PROFIT_BUY
         elif order_type == "TAKE_PROFIT" and side == "SELL":
-            type = Message.MSG_TAKE_PROFIT_SELL
+            type = TraderMessage.MSG_TAKE_PROFIT_SELL
         else:
-            type = Message.MSG_NONE
+            type = TraderMessage.MSG_NONE
         return type

@@ -1,10 +1,9 @@
 from trader.account.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
-from trader.lib.struct.Message import Message
+from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
-
 import json
 import os
 
@@ -572,7 +571,7 @@ class AccountBinance(AccountBase):
         if not symbol:
             return None
 
-        msg_status = Message.MSG_NONE
+        msg_status = TraderMessage.MSG_NONE
 
         if not order_type:
             return None
@@ -581,14 +580,14 @@ class AccountBinance(AccountBase):
 
         if exec_type == 'TRADE' and order_status == 'FILLED':
             if side == 'BUY':
-                msg_status = Message.MSG_BUY_COMPLETE
+                msg_status = TraderMessage.MSG_BUY_COMPLETE
             elif side == 'SELL':
-                msg_status = Message.MSG_SELL_COMPLETE
+                msg_status = TraderMessage.MSG_SELL_COMPLETE
         elif exec_type == 'REJECTED' and order_status == 'REJECTED':
             if side == 'BUY':
-                msg_status = Message.MSG_BUY_FAILED
+                msg_status = TraderMessage.MSG_BUY_FAILED
             elif side == 'SELL':
-                msg_status = Message.MSG_SELL_FAILED
+                msg_status = TraderMessage.MSG_SELL_FAILED
 
         order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type, exec_type,
                                    side, ts, order_id, orig_id, order_status, reject_reason, msg_type, msg_status)
@@ -656,15 +655,15 @@ class AccountBinance(AccountBase):
             side_type = Order.SIDE_SELL
 
         if status == 'FILLED':
-            type = Message.get_order_msg_cmd(order_type, side)
+            type = TraderMessage.get_order_msg_cmd(order_type, side)
         elif status == 'CANCELED' and side == 'BUY':
-            type = Message.MSG_BUY_CANCEL
+            type = TraderMessage.MSG_BUY_CANCEL
         elif status == 'CANCELED' and side == 'SELL':
-            type = Message.MSG_SELL_CANCEL
+            type = TraderMessage.MSG_SELL_CANCEL
         elif status == 'REJECTED' and side == 'BUY':
-            type = Message.MSG_BUY_FAILED
+            type = TraderMessage.MSG_BUY_FAILED
         elif status == 'REJECTED' and side == 'SELL':
-            type = Message.MSG_SELL_FAILED
+            type = TraderMessage.MSG_SELL_FAILED
 
         order = Order(symbol=symbol,
                       price=price,

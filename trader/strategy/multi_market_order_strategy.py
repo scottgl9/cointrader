@@ -1,4 +1,4 @@
-from trader.lib.struct.Message import Message
+from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.MultiOrderTracker import MultiOrderTracker
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
 from trader.lib.struct.StrategyBase import StrategyBase, select_hourly_signal
@@ -163,12 +163,12 @@ class multi_market_order_strategy(StrategyBase):
         completed = False
 
         if not self.msg_handler.empty():
-            for msg in self.msg_handler.get_messages(src_id=Message.ID_MULTI, dst_id=self.ticker_id):
+            for msg in self.msg_handler.get_messages(src_id=TraderMessage.ID_MULTI, dst_id=self.ticker_id):
                 if not msg:
                     continue
                 if msg.is_read():
                     continue
-                if msg.cmd == Message.MSG_BUY_COMPLETE:
+                if msg.cmd == TraderMessage.MSG_BUY_COMPLETE:
                     if not self.simulate:
                         self.logger.info("BUY_COMPLETE for {} price={} size={} sigid={} sigoid={}".format(msg.dst_id,
                                                                                                           msg.price,
@@ -184,7 +184,7 @@ class multi_market_order_strategy(StrategyBase):
                     signal.last_buy_ts = self.timestamp
                     msg.mark_read()
                     completed = True
-                elif msg.cmd == Message.MSG_SELL_COMPLETE:
+                elif msg.cmd == TraderMessage.MSG_SELL_COMPLETE:
                     if not self.simulate:
                         self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
                                                                                                      msg.price,
@@ -207,7 +207,7 @@ class multi_market_order_strategy(StrategyBase):
 
                     msg.mark_read()
                     completed = True
-                elif msg.cmd == Message.MSG_BUY_FAILED:
+                elif msg.cmd == TraderMessage.MSG_BUY_FAILED:
                     sig_oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
@@ -221,7 +221,7 @@ class multi_market_order_strategy(StrategyBase):
                     signal.disabled = True
                     signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
                     msg.mark_read()
-                elif msg.cmd == Message.MSG_SELL_FAILED:
+                elif msg.cmd == TraderMessage.MSG_SELL_FAILED:
                     oid = msg.sig_oid
                     signal = self.signal_handler.get_handler(id=msg.sig_id)
                     self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
@@ -230,7 +230,7 @@ class multi_market_order_strategy(StrategyBase):
                                                                                                msg.size))
                     signal.buy_price = signal.last_buy_price
                     msg.mark_read()
-                elif msg.cmd == Message.MSG_ORDER_SIZE_UPDATE:
+                elif msg.cmd == TraderMessage.MSG_ORDER_SIZE_UPDATE:
                     id = msg.sig_id
                     signal = self.signal_handler.get_handler(id=id)
                     self.logger.info("ORDER_SIZE_UPDATE for {} orig_size={} new_size={}".format(msg.dst_id,
@@ -239,8 +239,8 @@ class multi_market_order_strategy(StrategyBase):
                     signal.buy_size = msg.size
                     msg.mark_read()
 
-            for msg in self.msg_handler.get_messages(src_id=Message.ID_ROOT, dst_id=self.ticker_id):
-                if msg and msg.cmd == Message.MSG_BUY_UPDATE:
+            for msg in self.msg_handler.get_messages(src_id=TraderMessage.ID_ROOT, dst_id=self.ticker_id):
+                if msg and msg.cmd == TraderMessage.MSG_BUY_UPDATE:
                     msg.mark_read()
             self.msg_handler.clear_read()
 
@@ -355,15 +355,15 @@ class multi_market_order_strategy(StrategyBase):
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
         if self.accnt.simulate and not self.delayed_buy_msg:
-            self.delayed_buy_msg = Message(self.ticker_id,
-                                           Message.ID_MULTI,
-                                           Message.MSG_MARKET_BUY,
-                                           signal.id,
-                                           price,
-                                           min_trade_size,
-                                           asset_info=self.asset_info,
-                                           buy_type=signal.buy_type,
-                                           sig_oid=sig_oid)
+            self.delayed_buy_msg = TraderMessage(self.ticker_id,
+                                                 TraderMessage.ID_MULTI,
+                                                 TraderMessage.MSG_MARKET_BUY,
+                                                 signal.id,
+                                                 price,
+                                                 min_trade_size,
+                                                 asset_info=self.asset_info,
+                                                 buy_type=signal.buy_type,
+                                                 sig_oid=sig_oid)
         else:
             self.msg_handler.buy_market(self.ticker_id,
                                         price,
@@ -395,16 +395,16 @@ class multi_market_order_strategy(StrategyBase):
                 if not self.delayed_sell_msg:
                     self.delayed_sell_msg = []
 
-                msg = Message(self.ticker_id,
-                              Message.ID_MULTI,
-                              Message.MSG_MARKET_SELL,
-                              signal.id,
-                              price=sell_price,
-                              size=buy_size,
-                              buy_price=buy_price,
-                              asset_info=self.asset_info,
-                              sell_type=signal.sell_type,
-                              sig_oid=sigoid)
+                msg = TraderMessage(self.ticker_id,
+                                    TraderMessage.ID_MULTI,
+                                    TraderMessage.MSG_MARKET_SELL,
+                                    signal.id,
+                                    price=sell_price,
+                                    size=buy_size,
+                                    buy_price=buy_price,
+                                    asset_info=self.asset_info,
+                                    sell_type=signal.sell_type,
+                                    sig_oid=sigoid)
                 self.delayed_sell_msg.append(msg)
                 signal.multi_order_tracker.mark_sell_started(sigoid)
             else:

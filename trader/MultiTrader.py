@@ -5,7 +5,7 @@ from trader.lib.struct.MarketPacket import MarketPacket
 from trader.lib.struct.Order import Order
 from trader.OrderHandler import OrderHandler
 from trader.KlinesDB import KlinesDB
-from trader.lib.MessageHandler import Message, MessageHandler
+from trader.lib.TraderMessageHandler import TraderMessage, TraderMessageHandler
 from trader.symbol_filter.SymbolFilterHandler import SymbolFilterHandler
 from datetime import datetime
 import time
@@ -79,7 +79,7 @@ class MultiTrader(object):
         self.assets_info = assets_info
 
         self.tickers = None
-        self.msg_handler = MessageHandler()
+        self.msg_handler = TraderMessageHandler()
         self.kdb = None
         self.kdb_table_symbols = []
         self.last_hourly_ts = 0
@@ -359,7 +359,7 @@ class MultiTrader(object):
 
         order_update = self.accnt.parse_order_update(msg)
 
-        if order_update.msg_status == Message.MSG_SELL_COMPLETE:
+        if order_update.msg_status == TraderMessage.MSG_SELL_COMPLETE:
 
             o = self.order_handler.get_open_order(order_update.symbol)
             if o:
@@ -382,7 +382,7 @@ class MultiTrader(object):
                                                       order_type=order_update.msg_type)
                 self.order_handler.trader_db.remove_trade(o.symbol, 0)
 
-        elif order_update.msg_status == Message.MSG_SELL_FAILED:
+        elif order_update.msg_status == TraderMessage.MSG_SELL_FAILED:
             o = self.order_handler.get_open_order(order_update.symbol)
             if o:
                 self.logger.info("process_user_message({}) SELL_FAILED".format(o.symbol))
