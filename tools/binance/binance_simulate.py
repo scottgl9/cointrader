@@ -6,6 +6,7 @@ try:
 except ImportError:
     sys.path.append('.')
 
+import os
 import os.path
 import time
 import sqlite3
@@ -224,7 +225,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='db/cryptocurrency_database.miniticker_collection_04092018.db',
                         help='filename of kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='strategy',
@@ -243,9 +244,9 @@ if __name__ == '__main__':
                         default='cache',
                         help='simulation cache directory')
 
-    parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
-                        default='binance_hourly_klines_BTC.db',
-                        help='binance hourly klines DB file')
+    # parser.add_argument('-k', action='store', dest='hourly_klines_db_file',
+    #                     default='db/binance_hourly_klines_BTC.db',
+    #                     help='binance hourly klines DB file')
 
     parser.add_argument('-d', action='store_true', dest='disable_caching',
                         default=False,
@@ -289,7 +290,9 @@ if __name__ == '__main__':
     if not os.path.exists(cache_path):
         os.mkdir(cache_path)
 
-    cache_path = "{}/{}".format(cache_path, results.filename.replace(".db", ""))
+    capture_db_filename = os.path.basename(results.filename).replace('.db', '')
+
+    cache_path = "{}/{}".format(cache_path, capture_db_filename)
     if not os.path.exists(cache_path):
         os.mkdir(cache_path)
 
@@ -341,7 +344,7 @@ if __name__ == '__main__':
 
     logger.info("Running simulate with {} signal {}".format(results.filename, signal_name))
 
-    hourly_kline_db_file = results.hourly_klines_db_file
+    hourly_kline_db_file = config.get("hourly_kline_db_file") #results.hourly_klines_db_file
 
     try:
         simulate_db_filename = os.path.basename(results.filename)

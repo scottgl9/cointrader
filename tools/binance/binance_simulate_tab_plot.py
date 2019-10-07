@@ -200,7 +200,7 @@ class mainWindow(QtGui.QDialog):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', action='store', dest='filename',
-                        default='cryptocurrency_database.miniticker_collection_04092018.db',
+                        default='db/cryptocurrency_database.miniticker_collection_04092018.db',
                         help='filename of kline sqlite db')
 
     parser.add_argument('-c', action='store', dest='cache_dir',
@@ -244,8 +244,10 @@ if __name__ == '__main__':
 
     trade_cache_name = "{}-{}-{}".format(signal_name, hourly_name, balance_txt)
 
+    capture_db_filename = os.path.basename(results.filename).replace('.db', '')
+
     cache_path = "{}/{}".format(results.cache_dir, strategy)
-    cache_path = "{}/{}".format(cache_path, results.filename.replace(".db", ""))
+    cache_path = "{}/{}".format(cache_path, capture_db_filename)
     if not os.path.exists(cache_path):
         logger.error("Cache directory {} doesn't exist, exiting...".format(cache_path))
         sys.exit(-1)

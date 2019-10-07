@@ -105,17 +105,20 @@ class StrategyBase(object):
 
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         if self.use_hourly_klines:
+            root_path = self.config.get('path')
+            db_path = self.config.get('db_path')
             hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+            kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
             try:
                 self.hourly_klines_handler = HourlyKlinesDB(self.accnt,
-                                                            hourly_klines_db_file,
+                                                            kdb_path,
                                                             symbol=self.ticker_id,
                                                             logger=self.logger)
                 if not self.hourly_klines_handler.symbol_in_table_list(self.ticker_id):
                     self.hourly_klines_handler.close()
                     self.hourly_klines_handler = None
             except IOError:
-                self.logger.warning("hourly_klines_handler: Failed to load {}".format(hourly_klines_db_file))
+                self.logger.warning("hourly_klines_handler: Failed to load {}".format(kdb_path))
                 self.hourly_klines_handler = None
 
         self.tpprofit = 0

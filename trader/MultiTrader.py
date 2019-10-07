@@ -51,12 +51,14 @@ class MultiTrader(object):
         self.logger = logger
 
         self.simulate = self.config.get('simulate')
-        self.path = self.config.get('path')
+        self.root_path = self.config.get('path')
+        self.db_path = self.config.get('db_path')
         self.store_trades = self.config.get('store_trades')
         self.strategy_name = self.config.get('strategy')
         self.signal_names = [self.config.get('signals')]
         self.hourly_signal_name = self.config.get('hourly_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+        self.kdb_path = "{}/{}/{}".format(self.root_path, self.db_path, self.hourly_klines_db_file)
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.symbol_filter_names = self.config.get('symbol_filters').split(',')
         self.hourly_update_handler = None
@@ -86,8 +88,8 @@ class MultiTrader(object):
 
         if self.use_hourly_klines:
             try:
-                self.hkdb = HourlyKlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
-                self.logger.info("hourly_klines_handler: loaded {}".format(self.hourly_klines_db_file))
+                self.hkdb = HourlyKlinesDB(self.accnt, self.kdb_path, self.logger)
+                self.logger.info("hourly_klines_handler: loaded {}".format(self.kdb_path))
                 if self.config.option_exists('hourly_symbols_only'):
                     hourly_symbols_only = self.config.get('hourly_symbols_only')
                 self.hkdb_table_symbols = self.hkdb.table_symbols
@@ -96,31 +98,31 @@ class MultiTrader(object):
                 #    self.hkdb.close()
                 #    self.hkdb = None
             except IOError:
-                self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.hourly_klines_db_file))
+                self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.kdb_path))
 
         # update hourly kline tables on start if running in live mode
         if not self.simulate and self.hkdb:
             latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
-            hourly_ts = self.accnt.get_hourly_ts(self.accnt.seconds_to_ts(int(time.time() * 1000)))
+            hourly_ts = self.accnt.get_hourly_ts(self.accnt.seconds_to_ts(int(time.time())))
             if hourly_ts == latest_hourly_ts:
-                self.logger.info("Hourly kline tables up to date in {}...".format(self.hourly_klines_db_file))
+                self.logger.info("Hourly kline tables up to date in {}...".format(self.kdb_path))
             else:
                 self.last_hourly_ts = hourly_ts
-                self.logger.info("Updating hourly kline tables in {}...".format(self.hourly_klines_db_file))
+                self.logger.info("Updating hourly kline tables in {}...".format(self.kdb_path))
                 self.hkdb.update_all_tables()
-                self.logger.info("Removing outdated hourly kline tables in {}...".format(self.hourly_klines_db_file))
+                self.logger.info("Removing outdated hourly kline tables in {}...".format(self.kdb_path))
                 self.hkdb.remove_outdated_tables()
             #self.hkdb.close()
             #self.hkdb = None
 
         # start thread for hourly kline db updates
-        if not self.simulate and self.use_hourly_klines and self.hourly_klines_db_file:
-            if os.path.exists(self.hourly_klines_db_file):
+        if not self.simulate and self.kdb_path and self.kdb_path:
+            if os.path.exists(self.kdb_path):
                 from trader.HourlyUpdateHandler import HourlyUpdateHandler
-                self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.hourly_klines_db_file, self.logger)
+                self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.kdb_path, self.logger)
                 self.hourly_update_handler.start()
             else:
-                self.logger.info("Failed to setup hourly updates for {}".format(self.hourly_klines_db_file))
+                self.logger.info("Failed to setup hourly updates for {}".format(self.kdb_path))
 
         # config options for AccountBinance
         if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
