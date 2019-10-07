@@ -100,4 +100,4 @@ if __name__ == '__main__':
         end_ts = int(accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
         for table_name in kdb.get_table_list():
             print("Updating {}".format(table_name))
-            kdb.update_table(table_name=table_name, end_ts=end_ts)
+            kdb.update_table(table_name=table_name, end_ts=end_ts, fix_gaps=True)

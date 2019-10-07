@@ -172,7 +172,11 @@ class KlinesDB(object):
 
         if fix_gaps:
             for k in klines:
-                cur_ts = int(k[0])
+                if int(k[ts_index]) == start_ts:
+                    continue
+                if self.ts_in_table(table_name, int(k[ts_index])):
+                    continue
+                cur_ts = int(k[ts_index])
                 # skip if is not an hourly ts
                 if not self.accnt.is_hourly_ts(cur_ts):
                     print("{}: skipping {}".format(symbol, cur_ts))
@@ -181,12 +185,14 @@ class KlinesDB(object):
                 if last_kline and int(cur_ts - last_ts) != int(self.accnt.hours_to_ts(1)):
                     print("{}: gap from {} to {}, filling...".format(symbol, last_ts, cur_ts))
                     ts = last_ts + int(self.accnt.hours_to_ts(1))
-                    while ts < cur_ts:
-                        last_kline[0] = int(ts)
+                    while ts <= cur_ts:
+                        last_kline[ts_index] = int(ts)
                         cur.execute(sql, last_kline)
                         ts += int(self.accnt.hours_to_ts(1))
-                cur.execute(sql, k)
-                count += 1
+                        count += 1
+                else:
+                    cur.execute(sql, k)
+                    count += 1
                 last_ts = cur_ts
                 last_kline = k
         else:
