@@ -19,7 +19,7 @@ from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.lib.hourly.HourlyMapMovement import HourlyMapMovement
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.account.AccountBinance import AccountBinance
 from trader.indicator.EMA import EMA
 
@@ -131,7 +131,7 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = HourlyKlinesDB(accnt, hourly_filename, None)
+    hkdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
     if not start_ts or not end_ts:
         start_ts = hkdb.get_table_start_ts(symbol) + accnt.hours_to_ts(24)

@@ -14,7 +14,7 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.account.AccountCoinbasePro import AccountCoinbasePro
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     accnt = AccountCoinbasePro(client=None, simulation=True)
-    hkdb = HourlyKlinesDB(accnt, hourly_filename, None)
+    hkdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:

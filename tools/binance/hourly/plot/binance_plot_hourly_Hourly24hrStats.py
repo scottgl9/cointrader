@@ -17,7 +17,7 @@ from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.account.AccountBinance import AccountBinance
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.lib.hourly.Hourly24hrStats import Hourly24hrStats
 from trader.indicator.OBV import OBV
 try:
@@ -159,7 +159,7 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = HourlyKlinesDB(None, hourly_filename, None)
+    hkdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:

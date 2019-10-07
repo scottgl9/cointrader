@@ -2,7 +2,7 @@
 from datetime import datetime
 from trader.lib.MessageHandler import MessageHandler
 from trader.lib.SignalHandler import SignalHandler
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 
 def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
     signal = None
@@ -110,7 +110,7 @@ class StrategyBase(object):
             hourly_klines_db_file = self.config.get('hourly_kline_db_file')
             kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
             try:
-                self.hourly_klines_handler = HourlyKlinesDB(self.accnt,
+                self.hourly_klines_handler = KlinesDB(self.accnt,
                                                             kdb_path,
                                                             symbol=self.ticker_id,
                                                             logger=self.logger)

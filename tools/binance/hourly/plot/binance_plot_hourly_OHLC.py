@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from mpl_finance import candlestick_ohlc
 import argparse
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.indicator.OBV import OBV
 try:
     from trader.indicator.native.EMA import EMA
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = HourlyKlinesDB(None, hourly_filename, None)
+    hkdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:

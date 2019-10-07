@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from pyts.image import MarkovTransitionField
 from pyts.datasets import load_gunpoint
 import argparse
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 
 def simulate(hkdb, symbol, start_ts, end_ts):
     msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
@@ -141,7 +141,7 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = HourlyKlinesDB(None, hourly_filename, None)
+    hkdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:

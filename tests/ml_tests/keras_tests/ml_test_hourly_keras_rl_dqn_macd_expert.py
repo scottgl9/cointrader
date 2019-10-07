@@ -17,7 +17,7 @@ from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.account.AccountBinance import AccountBinance
 import keras
 import tensorflow as tf
@@ -356,7 +356,7 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.DEBUG)
 
-    hkdb = HourlyKlinesDB(accnt, results.hourly_filename, logger=logger)
+    hkdb = KlinesDB(accnt, results.hourly_filename, logger=logger)
     print("Loading {}".format(results.hourly_filename))
 
     total_row_count = hkdb.get_table_row_count(results.symbol)

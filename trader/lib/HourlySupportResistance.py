@@ -15,7 +15,7 @@
 # 4) With established support / resistance lines. If the price has exceeded above the resistance line for amount of time
 # of specified timeframe, then resistance line converted to support line, and again do step #1 to get new support
 
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.lib.struct.CircularArray import CircularArray
 
 
@@ -81,7 +81,7 @@ class HourlySupportResistance(object):
         self.symbol = symbol
         self.db = db
         if not self.db:
-            self.db = HourlyKlinesDB(self.accnt, self.filename, self.symbol)
+            self.db = KlinesDB(self.accnt, self.filename, self.symbol)
         self.win_daily = 24
         self.win_weekly = 168
         self.win_monthly = 730

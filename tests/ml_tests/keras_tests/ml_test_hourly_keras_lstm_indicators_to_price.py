@@ -21,7 +21,7 @@ from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.account.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
 from trader.lib.Crossover2 import Crossover2
@@ -305,7 +305,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
 
-    hkdb = HourlyKlinesDB(accnt, results.hourly_filename, None)
+    hkdb = KlinesDB(accnt, results.hourly_filename, None)
     print("Loading {}".format(results.hourly_filename))
 
     total_row_count = hkdb.get_table_row_count(results.symbol)

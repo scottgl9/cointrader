@@ -1,5 +1,4 @@
-# Manage hourly klines sqlite DB
-
+# Manage hourly klines sqlite DB (formerly HourlyKlinesDB)
 import os
 import sqlite3
 import time
@@ -8,7 +7,7 @@ from trader.lib.struct.Kline import Kline
 import pandas as pd
 
 
-class HourlyKlinesDB(object):
+class KlinesDB(object):
     def __init__(self, accnt, filename, symbol=None, logger=None):
         self.accnt = accnt
         self.filename = filename

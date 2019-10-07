@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.account.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
 from keras.layers.core import Dense, Activation, Dropout
@@ -323,7 +323,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
 
-    hkdb = HourlyKlinesDB(accnt, hourly_filename, None)
+    hkdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:

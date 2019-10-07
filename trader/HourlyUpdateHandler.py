@@ -2,7 +2,7 @@
 import time
 import threading
 from queue import Queue
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 
 
 class HourlyUpdateHandler(threading.Thread):
@@ -31,7 +31,7 @@ class HourlyUpdateHandler(threading.Thread):
 
     def run(self):
         self._running = True
-        self.hkdb = HourlyKlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
+        self.hkdb = KlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
         #hourly_start_ts = int(self.start_ts / 3600) * 3600
         #last_hourly_ts = hourly_start_ts
         self.logger.info("HourlyUpdateHandler started on {}".format(time.ctime(int(time.time()))))

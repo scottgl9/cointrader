@@ -12,7 +12,7 @@ import os
 import time
 from trader.account.AccountBinance import AccountBinance
 import argparse
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.lib.ValueLag import ValueLag
 
 
@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     accnt = AccountBinance(None, simulation=True)
 
-    hkdb = HourlyKlinesDB(accnt, hourly_filename, None)
+    hkdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:

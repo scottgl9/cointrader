@@ -18,7 +18,7 @@ from dateutil.relativedelta import relativedelta
 from trader.config import *
 from trader.account.cbpro import AuthenticatedClient, PublicClient
 from trader.account.AccountCoinbasePro import AccountCoinbasePro
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 
 
 if __name__ == '__main__':
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
     accnt = AccountCoinbasePro(client=client, logger=logger, simulation=False)
     accnt.load_exchange_info()
-    hkdb = HourlyKlinesDB(accnt=accnt, filename=filename, logger=logger)
+    hkdb = KlinesDB(accnt=accnt, filename=filename, logger=logger)
 
     if results.list_table_names:
         for table_name in hkdb.get_table_list():

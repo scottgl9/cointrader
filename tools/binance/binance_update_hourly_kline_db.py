@@ -17,7 +17,7 @@ from datetime import datetime
 from trader.config import *
 from trader.account.binance.client import Client
 from trader.account.AccountBinance import AccountBinance
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 
 
 if __name__ == '__main__':
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     client = Client(MY_API_KEY, MY_API_SECRET)
     accnt = AccountBinance(client, logger=logger)
     accnt.load_exchange_info()
-    hkdb = HourlyKlinesDB(accnt=accnt, filename=filename, logger=logger)
+    hkdb = KlinesDB(accnt=accnt, filename=filename, logger=logger)
 
     if results.list_table_names:
         for table_name in hkdb.get_table_list():

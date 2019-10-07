@@ -16,7 +16,7 @@ from trader.account.binance.client import Client
 from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.HourlyKlinesDB import HourlyKlinesDB
+from trader.KlinesDB import KlinesDB
 from trader.indicator.OBV import OBV
 from trader.indicator.EMA import EMA
 from trader.indicator.ROC import ROC
@@ -169,7 +169,7 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = HourlyKlinesDB(None, hourly_filename, None)
+    hkdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     #print(hkdb.get_outdated_table_names())
