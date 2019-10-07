@@ -39,9 +39,9 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
 
-def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+def simulate(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
-    df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
+    df = kdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     lsma = LSMA(window=30)
     train_lsma_values = []
     train_close_values = df['close'].values
@@ -56,7 +56,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     scaler = MinMaxScaler(feature_range=(0, 1))
     train_lsma_values = scaler.fit_transform(np.array(train_lsma_values).reshape(-1, 1))
 
-    df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
+    df_test = kdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     test_close_values = df_test['close'].values
     test_timestamps = df_test['ts'].values
     test_lsma_values = []
@@ -132,19 +132,19 @@ if __name__ == '__main__':
         sys.exit(-1)
 
 
-    hkdb = KlinesDB(accnt, results.hourly_filename, None)
+    kdb = KlinesDB(accnt, results.hourly_filename, None)
     print("Loading {}".format(results.hourly_filename))
 
-    total_row_count = hkdb.get_table_row_count(results.symbol)
+    total_row_count = kdb.get_table_row_count(results.symbol)
     train_end_index = int(total_row_count * float(results.split_percent) / 100.0)
 
-    train_start_ts = hkdb.get_table_start_ts(results.symbol)
-    train_end_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index)
-    test_start_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
-    test_end_ts = hkdb.get_table_end_ts(results.symbol)
+    train_start_ts = kdb.get_table_start_ts(results.symbol)
+    train_end_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index)
+    test_start_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
+    test_end_ts = kdb.get_table_end_ts(results.symbol)
 
     if results.symbol:
-        simulate(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+        simulate(kdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

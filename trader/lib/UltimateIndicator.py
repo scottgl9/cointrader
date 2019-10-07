@@ -10,8 +10,8 @@ from trader.lib.struct.CircularArray import CircularArray
 from trader.indicator.EMA import EMA
 
 class UltimateIndicator(object):
-    def __init__(self, hkdb=None, accnt=None, symbol=None, asset_info=None):
-        self.hkdb = hkdb
+    def __init__(self, kdb=None, accnt=None, symbol=None, asset_info=None):
+        self.kdb = kdb
         self.accnt = accnt
         self.symbol = symbol
         self.asset_info = asset_info
@@ -34,7 +34,7 @@ class UltimateIndicator(object):
 
     # hourly update
     def update_hourly(self, hourly_ts):
-        kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
+        kline = self.kdb.get_dict_kline(self.symbol, hourly_ts)
 
         # hourly kline not in db yet, wait until next update() call
         if not kline:

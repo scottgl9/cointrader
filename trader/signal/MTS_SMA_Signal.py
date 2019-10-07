@@ -13,8 +13,8 @@ from trader.lib.struct.SignalBase import SignalBase
 
 
 class MTS_SMA_Signal(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
-        super(MTS_SMA_Signal, self).__init__(accnt, symbol, asset_info, hkdb)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
+        super(MTS_SMA_Signal, self).__init__(accnt, symbol, asset_info, kdb)
         self.signal_name = "MTS_SMA_Signal"
         self.disabled = False
         self.disabled_end_ts = 0

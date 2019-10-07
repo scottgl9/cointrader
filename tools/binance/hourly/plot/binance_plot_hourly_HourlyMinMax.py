@@ -24,10 +24,10 @@ try:
 except ImportError:
     from trader.indicator.EMA import EMA
 
-def simulate(hkdb, symbol, start_ts, end_ts):
-    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+def simulate(kdb, symbol, start_ts, end_ts):
+    msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    hourly_minmax = HourlyMinMax(symbol, None, hkdb)
+    hourly_minmax = HourlyMinMax(symbol, None, kdb)
     obv = OBV()
     obv_ema12 = EMA(12)
     obv_ema26 = EMA(26)
@@ -176,15 +176,15 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(None, hourly_filename, None)
+    kdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts)
+        simulate(kdb, symbol, start_ts, end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

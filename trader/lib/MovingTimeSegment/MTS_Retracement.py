@@ -19,13 +19,13 @@ from .MTSCrossover2 import MTSCrossover2
 
 
 class MTS_Retracement(object):
-    def __init__(self, win_secs=3600, short_smoother=None, symbol=None, accnt=None, hkdb=None):
+    def __init__(self, win_secs=3600, short_smoother=None, symbol=None, accnt=None, kdb=None):
         self.win_secs = win_secs
         self.win_secs = win_secs
         self.smoother = short_smoother
         self.symbol = symbol
         self.accnt = accnt
-        self.hkdb = hkdb
+        self.kdb = kdb
         self.mts1 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts2 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
         self.mts3 = MovingTimeSegment(seconds=self.win_secs, disable_fmm=False, track_ts=False)
@@ -89,7 +89,7 @@ class MTS_Retracement(object):
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
         start_ts = end_ts - self.accnt.hours_to_ts(self.pre_load_hours - 1)
-        klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
+        klines = self.kdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         if len(klines) < self.pre_load_hours:
             return
         self.klines = klines
@@ -109,7 +109,7 @@ class MTS_Retracement(object):
         if not self.klines:
             return
 
-        kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
+        kline = self.kdb.get_dict_kline(self.symbol, hourly_ts)
 
         # hourly kline not in db yet, wait until next update() call
         if not kline:

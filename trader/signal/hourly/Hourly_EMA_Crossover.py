@@ -4,8 +4,8 @@ from trader.indicator.EMA import EMA
 
 
 class Hourly_EMA_Crossover(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
-        super(Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, hkdb)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
+        super(Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, kdb)
         self.name = "Hourly_EMA_Crossover"
         self.ema12 = EMA(12)
         self.ema26 = EMA(26)
@@ -17,7 +17,7 @@ class Hourly_EMA_Crossover(SignalBase):
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
         start_ts = end_ts - self.accnt.hours_to_ts(pre_load_hours)
-        self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
+        self.klines = self.kdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         for kline in self.klines:
             ts = int(kline['ts'])
             close = float(kline['close'])
@@ -31,7 +31,7 @@ class Hourly_EMA_Crossover(SignalBase):
         self.last_hourly_ts = self.first_hourly_ts
 
     def hourly_update(self, hourly_ts):
-        kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
+        kline = self.kdb.get_dict_kline(self.symbol, hourly_ts)
 
         # hourly kline not in db yet, wait until next update() call
         if not kline:

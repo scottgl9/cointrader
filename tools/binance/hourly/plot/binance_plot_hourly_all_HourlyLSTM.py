@@ -28,8 +28,8 @@ except ImportError:
     from trader.indicator.EMA import EMA
 
 
-def simulate(hkdb, symbol, start_ts, end_ts):
-    hourly_lstm = HourlyLSTM(hkdb, symbol)
+def simulate(kdb, symbol, start_ts, end_ts):
+    hourly_lstm = HourlyLSTM(kdb, symbol)
 
     hourly_lstm.load(model_start_ts=0, model_end_ts=start_ts)
 
@@ -98,19 +98,19 @@ if __name__ == '__main__':
         sys.exit(-1)
 
 
-    hkdb = KlinesDB(accnt, hourly_filename, None)
+    kdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        timestamps = hkdb.get_kline_values_by_column(symbol, 'ts')
+        timestamps = kdb.get_kline_values_by_column(symbol, 'ts')
         train_index = int(len(timestamps) * 0.80)
         start_ts = int(timestamps[train_index])
         end_ts = int(timestamps[-1])
-        simulate(hkdb, symbol, start_ts, end_ts)
+        simulate(kdb, symbol, start_ts, end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

@@ -1,9 +1,9 @@
 
 class SymbolFilterHandler(object):
-    def __init__(self, accnt=None, config=None, hkdb=None, logger=None):
+    def __init__(self, accnt=None, config=None, kdb=None, logger=None):
         self.accnt = accnt
         self.config = config
-        self.hkdb = hkdb
+        self.kdb = kdb
         self.logger = logger
         self.filters = []
 
@@ -19,7 +19,7 @@ class SymbolFilterHandler(object):
             from .filter.filter_delta_ts_rank import filter_delta_ts_rank
             filter_type = filter_delta_ts_rank
         if filter_type:
-            filter = filter_type(self.accnt, self.config, self.hkdb, self.logger)
+            filter = filter_type(self.accnt, self.config, self.kdb, self.logger)
             self.filters.append(filter)
             if self.logger:
                 self.logger.info("Loaded filter {}".format(filter_name))

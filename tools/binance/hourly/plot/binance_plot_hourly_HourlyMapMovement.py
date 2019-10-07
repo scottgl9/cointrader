@@ -24,8 +24,8 @@ from trader.account.AccountBinance import AccountBinance
 from trader.indicator.EMA import EMA
 
 
-def simulate(hkdb, symbol, start_ts, end_ts, test_hours=0):
-    hourly_map = HourlyMapMovement(symbol, accnt, hkdb, win_hours=24)
+def simulate(kdb, symbol, start_ts, end_ts, test_hours=0):
+    hourly_map = HourlyMapMovement(symbol, accnt, kdb, win_hours=24)
 
     hourly_map.hourly_load(start_ts)
 
@@ -34,7 +34,7 @@ def simulate(hkdb, symbol, start_ts, end_ts, test_hours=0):
     close_prices = []
 
     count = 0
-    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+    msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
     for msg in msgs:
         close_prices.append(float(msg['close']))
 
@@ -131,20 +131,20 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(accnt, hourly_filename, None)
+    kdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
     if not start_ts or not end_ts:
-        start_ts = hkdb.get_table_start_ts(symbol) + accnt.hours_to_ts(24)
-        end_ts = hkdb.get_table_end_ts(symbol)
+        start_ts = kdb.get_table_start_ts(symbol) + accnt.hours_to_ts(24)
+        end_ts = kdb.get_table_end_ts(symbol)
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     test_hours = int(results.test_hours)
 
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts, test_hours)
+        simulate(kdb, symbol, start_ts, end_ts, test_hours)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

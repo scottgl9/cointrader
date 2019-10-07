@@ -180,13 +180,13 @@ def getState(data, t, n_days):
     return np.array([res])
 
 
-def run_expert_signal(hkdb, symbol, start_ts, end_ts):
-    signal = Hourly_MACD_Signal(accnt=hkdb.accnt, symbol=symbol, hkdb=hkdb)
+def run_expert_signal(kdb, symbol, start_ts, end_ts):
+    signal = Hourly_MACD_Signal(accnt=kdb.accnt, symbol=symbol, kdb=kdb)
     hourly_ts = start_ts
     buys = []
     sells = []
     while hourly_ts <= end_ts:
-        hourly_ts += hkdb.accnt.hours_to_ts(1)
+        hourly_ts += kdb.accnt.hours_to_ts(1)
         signal.hourly_update(hourly_ts)
         if signal.hourly_buy_signal():
             buys.append(hourly_ts)
@@ -196,8 +196,8 @@ def run_expert_signal(hkdb, symbol, start_ts, end_ts):
     print(sells)
 
 
-def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
-    df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
+def train_model(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+    df_train = kdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
     #scaler = MinMaxScaler(feature_range=(0, 1))
@@ -256,8 +256,8 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
             agent.save(e)
 
 
-def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
-    df_train = hkdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
+def eval_model(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+    df_train = kdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
     window_size = 10
     #scaler = MinMaxScaler(feature_range=(0, 1))
     close_values = df_train['close'].values
@@ -356,17 +356,17 @@ if __name__ == '__main__':
     logger.addHandler(consoleHandler)
     logger.setLevel(logging.DEBUG)
 
-    hkdb = KlinesDB(accnt, results.hourly_filename, logger=logger)
+    kdb = KlinesDB(accnt, results.hourly_filename, logger=logger)
     print("Loading {}".format(results.hourly_filename))
 
-    total_row_count = hkdb.get_table_row_count(results.symbol)
+    total_row_count = kdb.get_table_row_count(results.symbol)
     train_end_index = int(total_row_count * float(results.split_percent) / 100.0)
 
-    train_start_ts = hkdb.get_table_start_ts(results.symbol)
+    train_start_ts = kdb.get_table_start_ts(results.symbol)
     print(train_start_ts)
-    train_end_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index)
-    test_start_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
-    test_end_ts = hkdb.get_table_end_ts(results.symbol)
+    train_end_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index)
+    test_start_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
+    test_end_ts = kdb.get_table_end_ts(results.symbol)
 
     enable_gpu = False
     device_types = []
@@ -384,11 +384,11 @@ if __name__ == '__main__':
     if results.verify:
         train = False
     if results.symbol:
-        run_expert_signal(hkdb, results.symbol, train_start_ts, train_end_ts)
+        run_expert_signal(kdb, results.symbol, train_start_ts, train_end_ts)
         #if train:
-        #    train_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+        #    train_model(kdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
         #else:
-        #    eval_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+        #    eval_model(kdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

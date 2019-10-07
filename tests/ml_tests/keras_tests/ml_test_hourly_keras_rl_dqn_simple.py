@@ -110,12 +110,12 @@ class Agent(object):
             self.epsilon *= self.epsilon_decay 
 
 
-def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train=True):
-    df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
+def simulate(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train=True):
+    df_train = kdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
     data = df_train['close'].values.tolist()
-    #df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
+    #df_test = kdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     l = len(data) - 1
     batch_size = 32
     agent = Agent(window_size)
@@ -197,16 +197,16 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(accnt, results.hourly_filename, None)
+    kdb = KlinesDB(accnt, results.hourly_filename, None)
     print("Loading {}".format(results.hourly_filename))
 
-    total_row_count = hkdb.get_table_row_count(results.symbol)
+    total_row_count = kdb.get_table_row_count(results.symbol)
     train_end_index = int(total_row_count * float(results.split_percent) / 100.0)
 
-    train_start_ts = hkdb.get_table_start_ts(results.symbol)
-    train_end_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index)
-    test_start_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
-    test_end_ts = hkdb.get_table_end_ts(results.symbol)
+    train_start_ts = kdb.get_table_start_ts(results.symbol)
+    train_end_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index)
+    test_start_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
+    test_end_ts = kdb.get_table_end_ts(results.symbol)
 
     config = tf.ConfigProto(device_count={'GPU': 1, 'CPU': 8})
     sess = tf.Session(config=config)
@@ -216,7 +216,7 @@ if __name__ == '__main__':
     if results.verify:
         train = False
     if results.symbol:
-        simulate(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train)
+        simulate(kdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts, train)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

@@ -177,13 +177,13 @@ def getState(data, t, n):
     return np.array([res])
 
 
-def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
-    df_train = hkdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
+def train_model(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+    df_train = kdb.get_pandas_daily_klines(symbol, train_start_ts, train_end_ts)
     window_size = 10
     episode_count = 1000
     scaler = MinMaxScaler(feature_range=(0, 1))
     data = scaler.fit_transform(df_train['close'].values.reshape(-1, 1)).reshape(1, -1)[0].tolist()
-    #df_test = hkdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
+    #df_test = kdb.get_pandas_klines(symbol, test_start_ts, test_end_ts)
     l = len(data) - 1
     batch_size = 32
     agent = DQNAgent(symbol, state_size=window_size, action_size=3, is_eval=False)
@@ -240,8 +240,8 @@ def train_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_
             agent.model.save(model_path)
 
 
-def eval_model(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
-    df_train = hkdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
+def eval_model(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+    df_train = kdb.get_pandas_daily_klines(symbol, test_start_ts, test_end_ts)
     window_size = 10
     scaler = MinMaxScaler(feature_range=(0, 1))
     close_values = df_train['close'].values
@@ -334,16 +334,16 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(accnt, results.hourly_filename, None)
+    kdb = KlinesDB(accnt, results.hourly_filename, None)
     print("Loading {}".format(results.hourly_filename))
 
-    total_row_count = hkdb.get_table_row_count(results.symbol)
+    total_row_count = kdb.get_table_row_count(results.symbol)
     train_end_index = int(total_row_count * float(results.split_percent) / 100.0)
 
-    train_start_ts = hkdb.get_table_start_ts(results.symbol)
-    train_end_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index)
-    test_start_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
-    test_end_ts = hkdb.get_table_end_ts(results.symbol)
+    train_start_ts = kdb.get_table_start_ts(results.symbol)
+    train_end_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index)
+    test_start_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
+    test_end_ts = kdb.get_table_end_ts(results.symbol)
 
     enable_gpu = False
     device_types = []
@@ -362,9 +362,9 @@ if __name__ == '__main__':
         train = False
     if results.symbol:
         if train:
-            train_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+            train_model(kdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
         else:
-            eval_model(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+            eval_model(kdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

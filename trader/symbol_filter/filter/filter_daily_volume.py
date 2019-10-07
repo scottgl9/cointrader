@@ -4,8 +4,8 @@ from trader.lib.hourly.DailyVolume import DailyVolume
 
 
 class filter_daily_volume(symbol_filter_base):
-    def __init__(self, accnt=None, config=None, hkdb=None, logger=None):
-        super(filter_daily_volume, self).__init__(accnt, config, hkdb, logger)
+    def __init__(self, accnt=None, config=None, kdb=None, logger=None):
+        super(filter_daily_volume, self).__init__(accnt, config, kdb, logger)
         self.name = "filter_daily_volume"
         self.daily_volumes = {}
         self.daily_volume_btc_cutoff = float(self.config.get('daily_volume_btc_cutoff'))
@@ -15,14 +15,14 @@ class filter_daily_volume(symbol_filter_base):
 
     # return True if filter is applied, False if not applied
     def apply_filter(self, kline, asset_info=None):
-        if not self.hkdb:
+        if not self.kdb:
             return False
 
         # for now only handle BTC symbols
         if not kline.symbol.endswith('BTC'):
             return False
 
-        if self.hkdb and self.accnt.hourly_symbols_only() and kline.symbol not in self.hkdb.table_symbols:
+        if self.kdb and self.accnt.hourly_symbols_only() and kline.symbol not in self.kdb.table_symbols:
             return False
 
         try:
@@ -31,7 +31,7 @@ class filter_daily_volume(symbol_filter_base):
             daily_volume = DailyVolume()
             end_ts = self.accnt.get_hourly_ts(kline.ts)
             start_ts = end_ts - int(self.accnt.hours_to_ts(24 - 1))
-            volumes = self.hkdb.get_kline_values_by_column(kline.symbol, 'volume', start_ts, end_ts)
+            volumes = self.kdb.get_kline_values_by_column(kline.symbol, 'volume', start_ts, end_ts)
             for volume in volumes:
                 daily_volume.update(volume)
 
@@ -43,10 +43,10 @@ class filter_daily_volume(symbol_filter_base):
             hourly_ts = self.accnt.get_hourly_ts(kline.ts)
             if hourly_ts == daily_volume.last_ts:
                 return False
-            if not self.hkdb.ts_in_table(kline.symbol, hourly_ts):
+            if not self.kdb.ts_in_table(kline.symbol, hourly_ts):
                 return False
 
-            hkline = self.hkdb.get_kline(kline.symbol, hourly_ts)
+            hkline = self.kdb.get_kline(kline.symbol, hourly_ts)
             daily_volume.update(hkline.volume, ts=hkline.ts)
             self.daily_volumes[kline.symbol] = daily_volume
             if daily_volume.result < self.daily_volume_btc_cutoff:

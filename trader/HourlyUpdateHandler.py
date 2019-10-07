@@ -16,7 +16,7 @@ class HourlyUpdateHandler(threading.Thread):
         self.last_hourly_ts = self.start_hourly_ts
         self.info = HourlyUpdateInfo()
         self.info.last_hourly_update_ts = self.last_hourly_ts
-        self.hkdb = None
+        self.kdb = None
         self._running = False
         self.daemon = True
 
@@ -31,7 +31,7 @@ class HourlyUpdateHandler(threading.Thread):
 
     def run(self):
         self._running = True
-        self.hkdb = KlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
+        self.kdb = KlinesDB(self.accnt, self.hourly_klines_db_file, self.logger)
         #hourly_start_ts = int(self.start_ts / 3600) * 3600
         #last_hourly_ts = hourly_start_ts
         self.logger.info("HourlyUpdateHandler started on {}".format(time.ctime(int(time.time()))))
@@ -41,11 +41,11 @@ class HourlyUpdateHandler(threading.Thread):
                 # wait 15 seconds before updating tables
                 time.sleep(15)
                 self.logger.info("Updating hourly DB tables on {}".format(time.ctime(int(time.time()))))
-                self.hkdb.update_all_tables()
+                self.kdb.update_all_tables()
                 self.last_hourly_ts = int(time.time() / 3600) * 3600
                 self.info.last_hourly_update_ts = self.last_hourly_ts
             time.sleep(1)
-        self.hkdb.close()
+        self.kdb.close()
 
 
 class HourlyUpdateInfo(object):

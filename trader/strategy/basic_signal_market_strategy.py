@@ -45,7 +45,7 @@ class basic_signal_market_strategy(StrategyBase):
 
         if self.hourly_signals_enabled and self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
-                                                             hkdb=self.hourly_klines_handler,
+                                                             kdb=self.hourly_klines_handler,
                                                              accnt=self.accnt,
                                                              symbol=self.ticker_id,
                                                              asset_info=self.asset_info)
@@ -57,7 +57,7 @@ class basic_signal_market_strategy(StrategyBase):
                                                      self.accnt,
                                                      self.ticker_id,
                                                      asset_info,
-                                                     hkdb=self.hourly_klines_handler)
+                                                     kdb=self.hourly_klines_handler)
             self.signal_handler.add(signal)
 
     # clear pending sell trades which have been bought

@@ -10,10 +10,10 @@ import pandas as pd
 
 
 class HourlyMapMovement(object):
-    def __init__(self, symbol=None, accnt=None, hkdb=None, win_hours=24):
+    def __init__(self, symbol=None, accnt=None, kdb=None, win_hours=24):
         self.symbol = symbol
         self.accnt = accnt
-        self.hkdb = hkdb
+        self.kdb = kdb
         self.win_hours = win_hours
         self.first_hourly_ts = 0
         self.last_hourly_ts = 0
@@ -32,7 +32,7 @@ class HourlyMapMovement(object):
     def hourly_load(self, hourly_ts=0, ts=0):
         end_ts = hourly_ts
         start_ts = end_ts - self.accnt.hours_to_ts(self.win_hours)
-        klines = self.hkdb.get_pandas_klines(self.symbol, start_ts=start_ts, end_ts=end_ts, columns=self.columns)
+        klines = self.kdb.get_pandas_klines(self.symbol, start_ts=start_ts, end_ts=end_ts, columns=self.columns)
         if len(klines) < self.win_hours + 1:
             return
 
@@ -44,7 +44,7 @@ class HourlyMapMovement(object):
         self.last_hourly_ts = self.first_hourly_ts
 
     def hourly_update(self, hourly_ts):
-        new_kline = self.hkdb.get_pandas_kline(self.symbol, hourly_ts, columns=self.columns).values
+        new_kline = self.kdb.get_pandas_kline(self.symbol, hourly_ts, columns=self.columns).values
         if not len(new_kline):
             return
         self.klines = np.concatenate((self.klines[1:], new_kline), axis=0)

@@ -95,8 +95,8 @@ def train_model(symbol, X_train, Y_train, epoch=50, batch_size=32):
     return model
 
 
-def simulate(hkdb, symbol, start_ts, end_ts):
-    df = hkdb.get_pandas_klines(symbol)
+def simulate(kdb, symbol, start_ts, end_ts):
+    df = kdb.get_pandas_klines(symbol)
     # remove ts columns from input data
     #df = df.drop(columns=['ts', 'base_volume', 'quote_volume'])
 
@@ -226,13 +226,13 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(None, hourly_filename, None)
+    kdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts)
-    hkdb.close()
+        simulate(kdb, symbol, start_ts, end_ts)
+    kdb.close()

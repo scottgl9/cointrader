@@ -15,10 +15,10 @@
 from trader.indicator.EMA import EMA
 
 class HourlyMinMax(object):
-    def __init__(self, symbol=None, accnt=None, hkdb=None):
+    def __init__(self, symbol=None, accnt=None, kdb=None):
         self.symbol = symbol
         self.accnt = accnt
-        self.hkdb = hkdb
+        self.kdb = kdb
         self.pre_load_hours = 192
         self.ema_high = EMA(26)
         self.ema_low = EMA(26)
@@ -58,7 +58,7 @@ class HourlyMinMax(object):
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
         start_ts = end_ts - self.accnt.hours_to_ts(self.pre_load_hours - 1)
-        klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
+        klines = self.kdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         if len(klines) < self.pre_load_hours:
             return
         self.klines = klines
@@ -77,7 +77,7 @@ class HourlyMinMax(object):
         #if not self.klines:
         #    return False
 
-        kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
+        kline = self.kdb.get_dict_kline(self.symbol, hourly_ts)
 
         # hourly kline not in db yet, wait until next update() call
         if not kline:

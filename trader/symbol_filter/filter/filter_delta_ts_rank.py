@@ -4,8 +4,8 @@ from trader.lib.MovingTimeSegment.MTS_SMA import MTS_SMA
 
 
 class filter_delta_ts_rank(symbol_filter_base):
-    def __init__(self, accnt=None, config=None, hkdb=None, logger=None, min_table_size=10, max_secs=60):
-        super(filter_delta_ts_rank, self).__init__(accnt, config, hkdb, logger)
+    def __init__(self, accnt=None, config=None, kdb=None, logger=None, min_table_size=10, max_secs=60):
+        super(filter_delta_ts_rank, self).__init__(accnt, config, kdb, logger)
         self.name = "filter_delta_ts_rank"
         self.prev_ts_symbol = {}
         self.mts_sma_symbol = {}
@@ -22,7 +22,7 @@ class filter_delta_ts_rank(symbol_filter_base):
     # return True if filter is applied, False if not applied
     def apply_filter(self, kline, asset_info=None):
         result = True
-        if self.hkdb and self.accnt.hourly_symbols_only() and kline.symbol not in self.hkdb.table_symbols:
+        if self.kdb and self.accnt.hourly_symbols_only() and kline.symbol not in self.kdb.table_symbols:
             return result
 
         try:

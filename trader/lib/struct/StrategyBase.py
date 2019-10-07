@@ -4,7 +4,7 @@ from trader.lib.MessageHandler import MessageHandler
 from trader.lib.SignalHandler import SignalHandler
 from trader.KlinesDB import KlinesDB
 
-def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
+def select_hourly_signal(sname, kdb, accnt, symbol, asset_info):
     signal = None
     if sname == 'Hourly_EMA_Crossover':
         from trader.signal.hourly.Hourly_EMA_Crossover import Hourly_EMA_Crossover
@@ -30,7 +30,7 @@ def select_hourly_signal(sname, hkdb, accnt, symbol, asset_info):
     if not signal:
         return None
 
-    return signal(accnt, symbol, asset_info, hkdb)
+    return signal(accnt, symbol, asset_info, kdb)
 
 
 class StrategyBase(object):
@@ -152,7 +152,7 @@ class StrategyBase(object):
         self.hourly_klines_loaded = False
 
     @staticmethod
-    def select_signal_name(name, accnt=None, symbol=None, asset_info=None, hkdb=None):
+    def select_signal_name(name, accnt=None, symbol=None, asset_info=None, kdb=None):
         signal = None
         # hourly signals
         if name == 'Hourly_EMA_Crossover':
@@ -206,7 +206,7 @@ class StrategyBase(object):
             signal = RTKline_MACD_Cross_Signal
 
         if signal:
-            return signal(accnt, symbol, asset_info, hkdb=hkdb)
+            return signal(accnt, symbol, asset_info, kdb=kdb)
 
         return None
 

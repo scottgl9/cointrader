@@ -99,9 +99,9 @@ def shift_features_and_labels(df_feats, df_labels, shift=1):
     return df_feats, df_labels
 
 
-def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
+def simulate(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
     mlhelper = DataFrameMLHelper()
-    df = hkdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
+    df = kdb.get_pandas_klines(symbol, train_start_ts, train_end_ts)
     df, indicators = process_raw_klines(df)
     df_train, indicators = create_features(df, indicators)
     #df_train = df_train.drop(columns="CLOSE")
@@ -141,7 +141,7 @@ def simulate(hkdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end
     while ts <= test_end_ts:
         start_ts = ts
         end_ts = ts + 1000 * 3600 * (n_input - 1)
-        df2 = hkdb.get_pandas_klines(symbol, start_ts, end_ts)
+        df2 = kdb.get_pandas_klines(symbol, start_ts, end_ts)
         df2, indicators = process_raw_klines(df2, indicators)
         test_df, indicators = create_features(df2, indicators)
         test_labels_df = create_labels(test_df)
@@ -207,19 +207,19 @@ if __name__ == '__main__':
         sys.exit(-1)
 
 
-    hkdb = KlinesDB(accnt, results.hourly_filename, None)
+    kdb = KlinesDB(accnt, results.hourly_filename, None)
     print("Loading {}".format(results.hourly_filename))
 
-    total_row_count = hkdb.get_table_row_count(results.symbol)
+    total_row_count = kdb.get_table_row_count(results.symbol)
     train_end_index = int(total_row_count * float(results.split_percent) / 100.0)
 
-    train_start_ts = hkdb.get_table_start_ts(results.symbol)
-    train_end_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index)
-    test_start_ts = hkdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
-    test_end_ts = hkdb.get_table_end_ts(results.symbol)
+    train_start_ts = kdb.get_table_start_ts(results.symbol)
+    train_end_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index)
+    test_start_ts = kdb.get_table_ts_by_offset(results.symbol, train_end_index + 1)
+    test_end_ts = kdb.get_table_end_ts(results.symbol)
 
     if results.symbol:
-        simulate(hkdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
+        simulate(kdb, results.symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

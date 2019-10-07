@@ -7,8 +7,8 @@ import time
 
 
 class Hourly_ROC_Signal(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
-        super(Hourly_ROC_Signal, self).__init__(accnt, symbol, asset_info, hkdb, uses_models=False)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
+        super(Hourly_ROC_Signal, self).__init__(accnt, symbol, asset_info, kdb, uses_models=False)
         self.name = "Hourly_ROC_Signal"
         self.roc = ROC(window=1,  smoother=EMA(12))
         self.roc_cross = Crossover2(window=10)
@@ -18,7 +18,7 @@ class Hourly_ROC_Signal(SignalBase):
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         end_ts = hourly_ts
         start_ts = end_ts - self.accnt.hours_to_ts(pre_load_hours)
-        self.klines = self.hkdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
+        self.klines = self.kdb.get_dict_klines(self.symbol, start_ts=start_ts, end_ts=end_ts)
         for kline in self.klines:
             ts = int(kline['ts'])
             close = float(kline['close'])
@@ -45,7 +45,7 @@ class Hourly_ROC_Signal(SignalBase):
         #    if self.last_hourly_ts == last_hourly_ts:
         #        return True
 
-        kline = self.hkdb.get_dict_kline(self.symbol, hourly_ts)
+        kline = self.kdb.get_dict_kline(self.symbol, hourly_ts)
 
         # hourly kline not in db yet, wait until next update() call
         if not kline:

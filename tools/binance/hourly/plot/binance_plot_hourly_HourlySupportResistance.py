@@ -20,8 +20,8 @@ from trader.indicator.EMA import EMA
 from trader.lib.HourlySupportResistance import HourlySupportResistance, HourlySRLine
 
 
-def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
-    klines = hkdb.get_klines(symbol, start_ts, end_ts)
+def plot(kdb, symbol, start_ts, end_ts, daily, weekly, monthly):
+    klines = kdb.get_klines(symbol, start_ts, end_ts)
 
     # plot all if all are false
     if not daily and not weekly and not monthly:
@@ -29,7 +29,7 @@ def plot(hkdb, symbol, start_ts, end_ts, daily, weekly, monthly):
         weekly = True
         monthly = True
 
-    hourlysr = HourlySupportResistance(symbol, None, None, hkdb)
+    hourlysr = HourlySupportResistance(symbol, None, None, kdb)
     close_prices = []
     timestamps = []
     ema12 = EMA(12)
@@ -147,15 +147,15 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(None, hourly_filename, None)
+    kdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        plot(hkdb, symbol, start_ts, end_ts, results.daily, results.weekly, results.monthly)
+        plot(kdb, symbol, start_ts, end_ts, results.daily, results.weekly, results.monthly)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

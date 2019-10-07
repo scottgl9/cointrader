@@ -30,7 +30,7 @@ class multi_market_order_strategy(StrategyBase):
 
         if self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
-                                                             hkdb=self.hourly_klines_handler,
+                                                             kdb=self.hourly_klines_handler,
                                                              accnt=self.accnt,
                                                              symbol=self.ticker_id,
                                                              asset_info=self.asset_info)

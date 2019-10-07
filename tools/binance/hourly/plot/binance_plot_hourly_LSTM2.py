@@ -36,8 +36,8 @@ from trader.indicator.EMA import EMA
 
 
 class HourlyLSTM2(object):
-    def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
-        self.hkdb = hkdb
+    def __init__(self, kdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
+        self.kdb = kdb
         self.symbol = symbol
         self.start_ts = start_ts
         self.simulate_db_filename = simulate_db_filename
@@ -95,8 +95,8 @@ class HourlyLSTM2(object):
         self.test_start_ts = test_start_ts
         self.test_end_ts = test_end_ts
 
-        self.max_quote = hkdb.get_max_field_value(symbol, 'quote_volume', model_start_ts, model_end_ts)
-        self.max_close = hkdb.get_max_field_value(symbol, 'close', model_start_ts, model_end_ts)
+        self.max_quote = kdb.get_max_field_value(symbol, 'quote_volume', model_start_ts, model_end_ts)
+        self.max_close = kdb.get_max_field_value(symbol, 'close', model_start_ts, model_end_ts)
         print("Max close={}".format(self.max_close))
         print("Max quote_volume={}".format(self.max_quote))
 
@@ -106,7 +106,7 @@ class HourlyLSTM2(object):
             self.test_model = self.create_model(columns=self.column_count, batch_size=1, model=self.model)
             return
 
-        self.df = self.hkdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
+        self.df = self.kdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
         # normalize close and quote_volume to [0, 1]
         self.df['close'] /= self.max_close
         self.df['quote_volume'] /= self.max_quote
@@ -145,8 +145,8 @@ class HourlyLSTM2(object):
 
         hourly_end_ts = hourly_ts
         hourly_start_ts = hourly_ts - 1000 * 3600 * self.column_count
-        df_update = self.hkdb.get_pandas_klines(self.symbol, hourly_start_ts, hourly_end_ts)
-        #df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+        df_update = self.kdb.get_pandas_klines(self.symbol, hourly_start_ts, hourly_end_ts)
+        #df_update = self.kdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
 
         # normalize close and quote_volume to [0, 1]
         df_update['close'] /= self.max_close
@@ -165,7 +165,7 @@ class HourlyLSTM2(object):
 
     # initialize indicators if model loaded from file
     def init_indicators(self, start_ts, end_ts):
-        df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+        df = self.kdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         df['close'] /= self.max_close
         df['quote_volume'] /= self.max_quote
         self.create_features(df, store=False)
@@ -246,8 +246,8 @@ class HourlyLSTM2(object):
         return testX
 
 
-def simulate(hkdb, symbol, start_ts, end_ts):
-    hourly_lstm = HourlyLSTM2(hkdb, symbol)
+def simulate(kdb, symbol, start_ts, end_ts):
+    hourly_lstm = HourlyLSTM2(kdb, symbol)
 
     hourly_lstm.load(model_start_ts=0, model_end_ts=start_ts)
 
@@ -323,19 +323,19 @@ if __name__ == '__main__':
         sys.exit(-1)
 
 
-    hkdb = KlinesDB(accnt, hourly_filename, None)
+    kdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        timestamps = hkdb.get_kline_values_by_column(symbol, 'ts')
+        timestamps = kdb.get_kline_values_by_column(symbol, 'ts')
         train_index = int(len(timestamps) * 0.80)
         start_ts = int(timestamps[train_index])
         end_ts = int(timestamps[-1])
-        simulate(hkdb, symbol, start_ts, end_ts)
+        simulate(kdb, symbol, start_ts, end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

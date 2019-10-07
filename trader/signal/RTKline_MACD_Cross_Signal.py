@@ -8,8 +8,8 @@ from trader.lib.struct.SignalBase import SignalBase
 
 
 class RTKline_MACD_Cross_Signal(SignalBase):
-    def __init__(self,accnt=None, symbol=None, asset_info=None, hkdb=None):
-        super(RTKline_MACD_Cross_Signal, self).__init__(accnt, symbol, asset_info, hkdb)
+    def __init__(self,accnt=None, symbol=None, asset_info=None, kdb=None):
+        super(RTKline_MACD_Cross_Signal, self).__init__(accnt, symbol, asset_info, kdb)
         self.signal_name = "RTKline_MACD_Cross_Signal"
         self.rtkline = RTKline(win_secs=60, symbol=self.symbol)
         self.obv = OBV()

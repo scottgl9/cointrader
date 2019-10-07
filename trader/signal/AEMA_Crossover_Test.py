@@ -12,8 +12,8 @@ from trader.lib.TrendState.TrendStateTrack import TrendStateTrack
 
 
 class AEMA_Crossover_Test(SignalBase):
-    def __init__(self, accnt=None, symbol=None, asset_info=None, hkdb=None):
-        super(AEMA_Crossover_Test, self).__init__(accnt, symbol, asset_info, hkdb)
+    def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
+        super(AEMA_Crossover_Test, self).__init__(accnt, symbol, asset_info, kdb)
         self.signal_name = "AEMA_Crossover_Test"
         self.disabled = False
         self.disabled_end_ts = 0

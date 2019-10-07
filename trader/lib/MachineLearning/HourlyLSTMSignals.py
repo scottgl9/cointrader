@@ -17,8 +17,8 @@ from trader.lib.Crossover import Crossover
 from trader.lib.Crossover2 import Crossover2
 
 class HourlyLSTMSignals(object):
-    def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
-        self.hkdb = hkdb
+    def __init__(self, kdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
+        self.kdb = kdb
         self.symbol = symbol
         self.start_ts = start_ts
         self.simulate_db_filename = simulate_db_filename
@@ -64,12 +64,12 @@ class HourlyLSTMSignals(object):
         self.test_start_ts = test_start_ts
         self.test_end_ts = test_end_ts
 
-        self.max_quote = self.hkdb.get_max_field_value(self.symbol, 'quote_volume', model_start_ts, model_end_ts)
-        self.max_close = self.hkdb.get_max_field_value(self.symbol, 'close', model_start_ts, model_end_ts)
+        self.max_quote = self.kdb.get_max_field_value(self.symbol, 'quote_volume', model_start_ts, model_end_ts)
+        self.max_close = self.kdb.get_max_field_value(self.symbol, 'close', model_start_ts, model_end_ts)
         print("Max close={}".format(self.max_close))
         print("Max quote_volume={}".format(self.max_quote))
 
-        self.df = self.hkdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
+        self.df = self.kdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
         # normalize close and quote_volume to [0, 1]
         self.df['close'] /= self.max_close
         self.df['quote_volume'] /= self.max_quote
@@ -118,8 +118,8 @@ class HourlyLSTMSignals(object):
 
         hourly_end_ts = hourly_ts
         hourly_start_ts = hourly_ts - 1000 * 3600 * (self.column_count - 1)
-        df_update = self.hkdb.get_pandas_klines(self.symbol, hourly_start_ts, hourly_end_ts)
-        #df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+        df_update = self.kdb.get_pandas_klines(self.symbol, hourly_start_ts, hourly_end_ts)
+        #df_update = self.kdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
 
         # normalize close and quote_volume to [0, 1]
         df_update['close'] /= self.max_close
@@ -178,7 +178,7 @@ class HourlyLSTMSignals(object):
 
     # initialize indicators if model loaded from file
     def init_indicators(self, start_ts, end_ts):
-        df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+        df = self.kdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         df['close'] /= self.max_close
         df['quote_volume'] /= self.max_quote
         self.create_features(df, store=False)

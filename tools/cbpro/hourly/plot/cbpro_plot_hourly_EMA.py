@@ -24,8 +24,8 @@ try:
 except ImportError:
     from trader.indicator.EMA import EMA
 
-def simulate(hkdb, symbol, start_ts, end_ts):
-    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+def simulate(kdb, symbol, start_ts, end_ts):
+    msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
 
     obv = OBV()
     scale = 24
@@ -182,15 +182,15 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     accnt = AccountCoinbasePro(client=None, simulation=True)
-    hkdb = KlinesDB(accnt, hourly_filename, None)
+    kdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts)
+        simulate(kdb, symbol, start_ts, end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

@@ -80,35 +80,35 @@ class MultiTrader(object):
 
         self.tickers = None
         self.msg_handler = MessageHandler()
-        self.hkdb = None
-        self.hkdb_table_symbols = []
+        self.kdb = None
+        self.kdb_table_symbols = []
         self.last_hourly_ts = 0
 
         hourly_symbols_only = False
 
         if self.use_hourly_klines:
             try:
-                self.hkdb = KlinesDB(self.accnt, self.kdb_path, self.logger)
+                self.kdb = KlinesDB(self.accnt, self.kdb_path, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.kdb_path))
                 if self.config.option_exists('hourly_symbols_only'):
                     hourly_symbols_only = self.config.get('hourly_symbols_only')
-                self.hkdb_table_symbols = self.hkdb.table_symbols
-                self.latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
+                self.kdb_table_symbols = self.kdb.table_symbols
+                self.latest_hourly_ts = self.kdb.get_latest_db_hourly_ts()
             except IOError:
                 self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.kdb_path))
 
         # update hourly kline tables on start if running in live mode
-        if not self.simulate and self.hkdb:
-            latest_hourly_ts = self.hkdb.get_latest_db_hourly_ts()
+        if not self.simulate and self.kdb:
+            latest_hourly_ts = self.kdb.get_latest_db_hourly_ts()
             hourly_ts = self.accnt.get_hourly_ts(self.accnt.seconds_to_ts(int(time.time())))
             if hourly_ts == latest_hourly_ts:
                 self.logger.info("Hourly kline tables up to date in {}...".format(self.kdb_path))
             else:
                 self.last_hourly_ts = hourly_ts
                 self.logger.info("Updating hourly kline tables in {}...".format(self.kdb_path))
-                self.hkdb.update_all_tables()
+                self.kdb.update_all_tables()
                 self.logger.info("Removing outdated hourly kline tables in {}...".format(self.kdb_path))
-                self.hkdb.remove_outdated_tables()
+                self.kdb.remove_outdated_tables()
 
         # start thread for hourly kline db updates
         if not self.simulate and self.kdb_path and self.kdb_path:
@@ -147,7 +147,7 @@ class MultiTrader(object):
         self.symbol_filter = None
 
         # if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
-        #     self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, hkdb=self.hkdb, logger=self.logger)
+        #     self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, kdb=self.kdb, logger=self.logger)
         #     for filter_name in self.symbol_filter_names:
         #         self.symbol_filter.add_filter(filter_name)
 
@@ -174,8 +174,8 @@ class MultiTrader(object):
 
     # close() called when exiting MultiTrader
     def close(self):
-        if self.hkdb:
-            self.hkdb.close()
+        if self.kdb:
+            self.kdb.close()
         if self.hourly_update_handler:
             self.hourly_update_handler.stop()
             self.hourly_update_handler.join(timeout=5)
@@ -193,7 +193,7 @@ class MultiTrader(object):
         #         return None
         #     elif self.accnt.bnb_only() and currency_name != 'BNB':
         #         return None
-        #     elif self.accnt.hourly_symbols_only() and symbol not in self.hkdb_table_symbols:
+        #     elif self.accnt.hourly_symbols_only() and symbol not in self.kdb_table_symbols:
         #         return None
 
         # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled

@@ -18,8 +18,8 @@ from trader.lib.Indicator import Indicator
 
 
 class HourlyLSTM(object):
-    def __init__(self, hkdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
-        self.hkdb = hkdb
+    def __init__(self, kdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):
+        self.kdb = kdb
         self.symbol = symbol
         self.start_ts = start_ts
         self.simulate_db_filename = simulate_db_filename
@@ -83,7 +83,7 @@ class HourlyLSTM(object):
 
 
     def create_scaler_model(self):
-        df = self.hkdb.get_pandas_klines(self.symbol, start_ts=0, end_ts=self.model_end_ts)
+        df = self.kdb.get_pandas_klines(self.symbol, start_ts=0, end_ts=self.model_end_ts)
         self.df = self.create_features(df)
         self.create_train_dataset(self.df, column='LSMA_CLOSE', transform=False)
 
@@ -100,7 +100,7 @@ class HourlyLSTM(object):
             self.test_model = self.create_model(batch_size=1, model=self.model)
             return
 
-        df = self.hkdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
+        df = self.kdb.get_pandas_klines(self.symbol, self.model_start_ts, self.model_end_ts)
 
         self.start_ts = df['ts'].values.tolist()[-1]
         self.df = self.create_features(df)
@@ -140,7 +140,7 @@ class HourlyLSTM(object):
         hourly_ts = self.test_start_ts
 
         while hourly_ts <= self.test_end_ts:
-            df_test = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+            df_test = self.kdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
             df_test = self.create_features(df_test)
             if not len(df_test):
                 continue
@@ -165,7 +165,7 @@ class HourlyLSTM(object):
             self.init_indicators(start_ts=0, end_ts=self.model_end_ts)
             self.indicators_loaded = True
 
-        df_update = self.hkdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
+        df_update = self.kdb.get_pandas_kline(self.symbol, hourly_ts=hourly_ts)
         #self.last_ts = df_update['ts'].values.tolist()[-1]
         self.df_update = self.create_features(df_update)
         if not len(self.df_update):
@@ -209,7 +209,7 @@ class HourlyLSTM(object):
 
     # initialize indicators if model loaded from file
     def init_indicators(self, start_ts, end_ts):
-        df = self.hkdb.get_pandas_klines(self.symbol, start_ts, end_ts)
+        df = self.kdb.get_pandas_klines(self.symbol, start_ts, end_ts)
         self.create_features(df, store=False)
 
 

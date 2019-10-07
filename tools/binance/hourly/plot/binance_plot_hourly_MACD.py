@@ -22,8 +22,8 @@ from trader.indicator.MACD import MACD
 from trader.lib.Crossover2 import Crossover2
 from trader.lib.Crossover import Crossover
 
-def simulate(hkdb, symbol, start_ts, end_ts):
-    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+def simulate(kdb, symbol, start_ts, end_ts):
+    msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
 
     cross = Crossover2()
     obv = OBV()
@@ -153,11 +153,11 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(None, hourly_filename, None)
+    kdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
     elif results.start_date and results.end_date:
         start_dt = datetime.strptime(results.start_date, '%m/%d/%Y')
@@ -166,7 +166,7 @@ if __name__ == '__main__':
         end_ts = int(time.mktime(end_dt.timetuple()) * 1000.0)
 
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts)
+        simulate(kdb, symbol, start_ts, end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

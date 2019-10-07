@@ -71,33 +71,33 @@ if __name__ == '__main__':
     client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
     accnt = AccountCoinbasePro(client=client, logger=logger, simulation=False)
     accnt.load_exchange_info()
-    hkdb = KlinesDB(accnt=accnt, filename=filename, logger=logger)
+    kdb = KlinesDB(accnt=accnt, filename=filename, logger=logger)
 
     if results.list_table_names:
-        for table_name in hkdb.get_table_list():
+        for table_name in kdb.get_table_list():
             print(table_name)
-        hkdb.close()
+        kdb.close()
         sys.exit(0)
 
     if results.list_table_dates:
-        for table_name in hkdb.get_table_list():
-            hkdb.list_table_dates(table_name)
-        hkdb.close()
+        for table_name in kdb.get_table_list():
+            kdb.list_table_dates(table_name)
+        kdb.close()
         sys.exit(0)
 
     if results.check_duplicates:
-        hkdb.check_tables_duplicates()
-        hkdb.close()
+        kdb.check_tables_duplicates()
+        kdb.close()
         sys.exit(0)
 
     if results.check_errors:
-        for table_name in hkdb.get_table_list():
-            hkdb.check_table(table_name)
-        hkdb.close()
+        for table_name in kdb.get_table_list():
+            kdb.check_table(table_name)
+        kdb.close()
         sys.exit(0)
 
     if results.update:
         end_ts = int(accnt.seconds_to_ts(time.mktime(datetime.today().timetuple())))
-        for table_name in hkdb.get_table_list():
+        for table_name in kdb.get_table_list():
             print("Updating {}".format(table_name))
-            hkdb.update_table(table_name=table_name, end_ts=end_ts)
+            kdb.update_table(table_name=table_name, end_ts=end_ts)

@@ -22,8 +22,8 @@ from trader.KlinesDB import KlinesDB
 from trader.indicator.OBV import OBV
 
 
-def simulate(hkdb, symbol, start_ts, end_ts):
-    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+def simulate(kdb, symbol, start_ts, end_ts):
+    msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
 
     close_prices = []
     open_prices = []
@@ -140,15 +140,15 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    hkdb = KlinesDB(None, hourly_filename, None)
+    kdb = KlinesDB(None, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        simulate(hkdb, symbol, start_ts, end_ts)
+        simulate(kdb, symbol, start_ts, end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()

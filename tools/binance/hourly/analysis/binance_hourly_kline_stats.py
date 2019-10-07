@@ -101,8 +101,8 @@ def get_longest_trend(msgs, field='close', direction=1, percent=True):
     return max_count, max_change, max_start_ts, max_end_ts
 
 
-def analyze(hkdb, symbol, start_ts, end_ts):
-    msgs = hkdb.get_dict_klines(symbol, start_ts, end_ts)
+def analyze(kdb, symbol, start_ts, end_ts):
+    msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
     print("Largest 4 hour price change {}:".format(symbol))
     value_change, start_ts, end_ts = get_largest_value_change(msgs, hours=4, direction=1)
     print(value_change, time.ctime(start_ts/1000), time.ctime(end_ts/1000))
@@ -191,15 +191,15 @@ if __name__ == '__main__':
 
     accnt = AccountBinance(None, simulation=True)
 
-    hkdb = KlinesDB(accnt, hourly_filename, None)
+    kdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
 
     if results.list_table_names:
-        for symbol in hkdb.get_table_list():
+        for symbol in kdb.get_table_list():
             print(symbol)
 
     if symbol:
-        analyze(hkdb, symbol, start_ts, end_ts)
+        analyze(kdb, symbol, start_ts, end_ts)
     else:
         parser.print_help()
-    hkdb.close()
+    kdb.close()
