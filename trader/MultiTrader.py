@@ -1,5 +1,6 @@
 # handle running strategy for each base / currency pair we want to trade
 import os
+import sys
 from trader.account.AccountBinance import AccountBinance, AccountBase
 from trader.lib.struct.MarketMessage import MarketMessage
 from trader.lib.struct.Order import Order
@@ -72,6 +73,16 @@ class MultiTrader(object):
             self.accnt = AccountBinance(self.client,
                                         simulation=simulate,
                                         logger=logger)
+
+        # set trader mode to realtime or hourly
+        trader_mode = self.config.get('trader_mode')
+        if trader_mode == 'realtime':
+            self.accnt.set_trader_mode(AccountBase.TRADER_MODE_REALTIME)
+        elif trader_mode == 'hourly':
+            self.accnt.set_trader_mode(AccountBase.TRADER_MODE_HOURLY)
+        else:
+            print("Unknown trader mode {}".format(trader_mode))
+            sys.exit(-1)
 
         self.logger.info("Setting trader profit mode to {}".format(self.trader_profit_mode))
         self.accnt.set_trader_profit_mode(self.trader_profit_mode)
