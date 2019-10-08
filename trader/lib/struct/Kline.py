@@ -23,6 +23,9 @@ class Kline(object):
             'ts': int(self.ts)
         }
 
+    def __str__(self):
+        return str(self.__repr__())
+
     def reset(self):
         self.symbol = None
         self.open = 0

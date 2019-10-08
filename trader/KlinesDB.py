@@ -492,13 +492,14 @@ class KlinesDB(object):
 
     # get klines as list of Kline class from db table
     def get_klines(self, symbol, start_ts=0, end_ts=0):
-        table_name = self.get_table_from_symbol(symbol)
+        #table_name = self.get_table_from_symbol(symbol)
         result = []
         cur = self.conn.cursor()
-        cur.execute("SELECT {} from {} ORDER BY ts ASC".format(self.cnames, table_name))
+        sql = self.build_sql_select_query(symbol, start_ts, end_ts, daily=False)
+        cur.execute(sql)
         for row in cur:
-            if start_ts and row[0] < start_ts:
-                continue
+            #if start_ts and row[0] < start_ts:
+            #    continue
             kline = Kline()
             kline.ts = row[0]
             kline.open = row[1]
@@ -507,8 +508,8 @@ class KlinesDB(object):
             kline.close = row[4]
             kline.volume = row[5]
             result.append(kline)
-            if end_ts and row[0] >= end_ts:
-                break
+            #if end_ts and row[0] >= end_ts:
+            #    break
         return result
 
     def get_kline(self, symbol, hourly_ts=0):

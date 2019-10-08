@@ -84,63 +84,57 @@ def simulate(config, logger, start_date, end_date):
     start_ts = int(accnt.seconds_to_ts(time.mktime(start_dt.timetuple())))
     end_ts = int(accnt.seconds_to_ts(time.mktime(end_dt.timetuple())))
     kdb = multitrader.kdb
-    symbols = accnt.get_exchange_pairs()
+    #symbols = accnt.get_exchange_pairs()
+    table_names = kdb.get_table_list()
     symbol_klines = {}
 
-    for symbol in symbols:
-        symbol_klines[symbol] = kdb.get_klines(symbol, start_ts, end_ts)
+    first_ts = 0
+    last_ts = 0
 
-    print(symbol_klines)
-
-    sys.exit(0)
+    symbols = []
+    for name in table_names:
+        symbol = accnt.get_symbol_hourly_table(name)
+        klines = kdb.get_klines(symbol, start_ts, end_ts)
+        if not len(klines):
+            continue
+        cur_first_ts = klines[0].ts
+        cur_last_ts = klines[-1].ts
+        if not first_ts or cur_first_ts < first_ts:
+            first_ts = cur_first_ts
+        if cur_last_ts > last_ts:
+            last_ts = cur_last_ts
+        symbols.append(symbol)
+        symbol_klines[symbol] = klines
 
     found = False
 
     initial_total = 0.0
 
-    first_ts = None
-    last_ts = None
-
-    kline = None
     mmsg = None
     profit_mode = config.get('trader_profit_mode')
 
-    last_close = 0
+    cur_ts = first_ts
 
-    for row in c:
-        if not first_ts:
-            first_ts = datetime.utcfromtimestamp(int(msg['ts']))
-        else:
-            last_ts = datetime.utcfromtimestamp(int(msg['ts']))
+    while cur_ts <= last_ts:
+        for symbol in symbols:
+            if not found:
+                if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
+                    found = True
+                    initial_total = multitrader.accnt.get_total_btc_value()
+                    multitrader.update_initial_currency()
 
-        if not found:
-            if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
-                found = True
-                initial_total = multitrader.accnt.get_total_btc_value()
-                multitrader.update_initial_currency()
-
-        if not kline or not msg:
-            kline = Kline(symbol=msg['s'],
-                          open=last_close,
-                          close=float(msg['p']),
-                          low=float(msg['bid']),
-                          high=float(msg['ask']),
-                          volume=float(msg['q']),
-                          ts=int(msg['ts']))
-            mmsg = MarketMessage(kline.symbol, msg_type=MarketMessage.TYPE_WS_MSG, kline=kline)
-        else:
-            kline.symbol = msg['s']
-            kline.open = last_close
-            kline.close = float(msg['p'])
-            kline.low = float(msg['bid'])
-            kline.high= float(msg['ask'])
-            kline.volume = float(msg['q'])
-            kline.ts = int(msg['ts'])
-            mmsg.update(kline=kline)
-
-        last_close = kline.close
-
-        multitrader.process_market_message(mmsg)
+            kline = symbol_klines[symbol][0]
+            if kline.ts != cur_ts:
+                continue
+            if not mmsg:
+                kline.symbol = symbol
+                mmsg = MarketMessage(symbol, msg_type=MarketMessage.TYPE_DB_KLINE_MSG, kline=kline)
+            else:
+                kline.symbol = symbol
+                mmsg.update(kline=kline)
+            multitrader.process_market_message(mmsg)
+            symbol_klines[symbol].remove(kline)
+        cur_ts += int(accnt.hours_to_ts(1))
 
     logger.info("\nTrade Symbol Profits:")
     if profit_mode == 'BTC':
@@ -164,9 +158,9 @@ def simulate(config, logger, start_date, end_date):
                 pprofit = round(100.0 * (last_price - buy_price) / buy_price, 2)
                 logger.info("{} ({}): {}%".format(symbol, signal.id, pprofit))
 
-    total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
+    #total_time_hours = (last_ts - first_ts).total_seconds() / (60 * 60)
     logger.info("\nResults:")
-    logger.info("Total Capture Time:\t{} hours".format(round(total_time_hours, 2)))
+    #logger.info("Total Capture Time:\t{} hours".format(round(total_time_hours, 2)))
     logger.info("Initial {} total:\t{}".format(profit_mode, initial_total))
     logger.info("Final {} total:\t{}".format(profit_mode, final_total))
     logger.info("Percent Profit ({}): \t{}%".format(profit_mode, total_pprofit))
