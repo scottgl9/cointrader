@@ -9,6 +9,19 @@ class AccountBase(object):
     EXCHANGE_BITTREX = 3
     EXCHANGE_KRAKEN = 4
     EXCHANGE_POLONIEX = 5
+    # trader modes
+    TRADER_MODE_NONE=0
+    TRADER_MODE_REALTIME=1
+    TRADER_MODE_HOURLY=2
+
+    def get_config_section_name(self):
+        pass
+
+    def get_trader_mode(self):
+        pass
+
+    def set_trader_mode(self, trader_mode):
+        pass
 
     def ts_to_seconds(self, ts):
         pass

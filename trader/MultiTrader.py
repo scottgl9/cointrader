@@ -84,7 +84,7 @@ class MultiTrader(object):
         self.kdb_table_symbols = []
         self.last_hourly_ts = 0
 
-        hourly_symbols_only = False
+        #hourly_symbols_only = False
 
         if self.use_hourly_klines:
             try:

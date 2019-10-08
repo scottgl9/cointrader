@@ -27,6 +27,7 @@ class AccountKraken(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
+        self._trader_mode = AccountBase.TRADER_MODE_NONE
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
@@ -42,6 +43,20 @@ class AccountKraken(AccountBase):
         self._tpprofit = 0
         self.initial_currency = 0
         self.loaded_model_count = 0
+
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        if self.simulate:
+            name = "{}.simulate".format(self.exchange_name)
+        else:
+            name = "{}.live".format(self.exchange_name)
+        return name
+
+    def get_trader_mode(self):
+        return self._trader_mode
+
+    def set_trader_mode(self, trader_mode):
+        self._trader_mode = trader_mode
 
     def format_ts(self, ts):
         return int(ts)

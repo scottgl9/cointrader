@@ -22,6 +22,8 @@ class AccountBinance(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
+        self._trader_mode = AccountBase.TRADER_MODE_NONE
+
         # hourly db column names
         self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'volume']
         #self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume',
@@ -68,6 +70,12 @@ class AccountBinance(AccountBase):
         else:
             name = "{}.live".format(self.exchange_name)
         return name
+
+    def get_trader_mode(self):
+        return self._trader_mode
+
+    def set_trader_mode(self, trader_mode):
+        self._trader_mode = trader_mode
 
     def format_ts(self, ts):
         return int(ts)

@@ -29,6 +29,8 @@ class AccountCoinbasePro(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
+        self._trader_mode = AccountBase.TRADER_MODE_NONE
+
         # hourly db column names
         self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
 
@@ -56,6 +58,12 @@ class AccountCoinbasePro(AccountBase):
         else:
             name = "{}.live".format(self.exchange_name)
         return name
+
+    def get_trader_mode(self):
+        return self._trader_mode
+
+    def set_trader_mode(self, trader_mode):
+        self._trader_mode = trader_mode
 
     def ts_to_iso8601(self, ts):
         dt = datetime.fromtimestamp(ts)
