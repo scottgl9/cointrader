@@ -13,7 +13,7 @@ from datetime import datetime
 import sys
 from trader.MultiTrader import MultiTrader
 from trader.lib.struct.Kline import Kline
-
+from trader.lib.struct.MarketMessage import MarketMessage
 from trader.account.AccountCoinbasePro import AccountCoinbasePro
 from trader.TraderConfig import TraderConfig
 from trader.config import *
@@ -120,6 +120,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     last_ts = None
 
     kline = None
+    mmsg = None
     profit_mode = config.get('trader_profit_mode')
 
     last_close = 0
@@ -139,29 +140,28 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                 initial_total = multitrader.accnt.get_total_btc_value()
                 multitrader.update_initial_currency()
 
-        if not kline:
+        if not kline or not msg:
             kline = Kline(symbol=msg['s'],
                           open=last_close,
                           close=float(msg['p']),
                           low=float(msg['bid']),
                           high=float(msg['ask']),
-                          #volume_base=float(msg['q']),
                           volume=float(msg['q']),
                           ts=int(msg['ts']))
+            mmsg = MarketMessage(kline.symbol, msg_type=MarketMessage.TYPE_WS_MSG, kline=kline)
         else:
             kline.symbol = msg['s']
             kline.open = last_close
             kline.close = float(msg['p'])
             kline.low = float(msg['bid'])
             kline.high= float(msg['ask'])
-            kline.volume_base = float(msg['q'])
-            kline.volume_quote = float(msg['q'])
-            kline.volume = kline.volume_quote
+            kline.volume = float(msg['q'])
             kline.ts = int(msg['ts'])
+            mmsg.update(kline=kline)
 
         last_close = kline.close
 
-        multitrader.process_message(kline)
+        multitrader.process_market_message(mmsg)
 
     logger.info("\nTrade Symbol Profits:")
     if profit_mode == 'BTC':

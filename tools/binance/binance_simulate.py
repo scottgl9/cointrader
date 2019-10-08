@@ -19,7 +19,7 @@ from trader.MultiTrader import MultiTrader
 #    from trader.lib.native.Kline import Kline
 #except ImportError:
 from trader.lib.struct.Kline import Kline
-
+from trader.lib.struct.MarketMessage import MarketMessage
 from trader.account.AccountBinance import AccountBinance
 from trader.TraderConfig import TraderConfig
 from trader.config import *
@@ -130,6 +130,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
     last_ts = None
 
     kline = None
+    mmsg = None
     profit_mode = config.get('trader_profit_mode')
 
     for row in c:
@@ -158,8 +159,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         #    balance = accnt.get_asset_balance("USDT")["balance"]
         #    if balance < minqty:
         #        continue
-
-        if not kline:
+        if not kline or not mmsg:
             kline = Kline(symbol=msg['s'],
                           open=float(msg['o']),
                           close=float(msg['c']),
@@ -169,6 +169,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                           #volume_quote=float(msg['q']),
                           volume=float(msg['q']),
                           ts=int(msg['E']))
+            mmsg = MarketMessage(kline.symbol, msg_type=MarketMessage.TYPE_WS_MSG, kline=kline)
         else:
             kline.symbol = msg['s']
             kline.open = float(msg['o'])
@@ -179,8 +180,9 @@ def simulate(conn, config, logger, simulate_db_filename=None):
             kline.volume_quote = float(msg['q'])
             kline.volume = kline.volume_quote
             kline.ts = int(msg['E'])
+            mmsg.update(kline=kline)
 
-        multitrader.process_message(kline)
+        multitrader.process_market_message(mmsg)
 
     logger.info("\nTrade Symbol Profits:")
     if profit_mode == 'BTC':

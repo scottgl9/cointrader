@@ -264,8 +264,9 @@ class MultiTrader(object):
             result = self.add_trade_pair(symbol, price)
         return result
 
-    # process websocket or captured websocket realtime klines
-    def process_message(self, kline):
+    # process market update message
+    def process_market_message(self, msg):
+        kline = msg.kline
         self.current_ts = kline.ts
 
         # keep track of all current price values for all symbols being processed
