@@ -84,6 +84,8 @@ class MultiTrader(object):
             print("Unknown trader mode {}".format(trader_mode))
             sys.exit(-1)
 
+        self.trader_mode = self.accnt.get_trader_mode()
+
         self.logger.info("Setting trader profit mode to {}".format(self.trader_profit_mode))
         self.accnt.set_trader_profit_mode(self.trader_profit_mode)
 
@@ -97,12 +99,12 @@ class MultiTrader(object):
 
         #hourly_symbols_only = False
 
-        if self.use_hourly_klines:
+        if self.use_hourly_klines or self.trader_mode == AccountBase.TRADER_MODE_HOURLY:
             try:
                 self.kdb = KlinesDB(self.accnt, self.kdb_path, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.kdb_path))
-                if self.config.option_exists('hourly_symbols_only'):
-                    hourly_symbols_only = self.config.get('hourly_symbols_only')
+                #if self.config.option_exists('hourly_symbols_only'):
+                #    hourly_symbols_only = self.config.get('hourly_symbols_only')
                 self.kdb_table_symbols = self.kdb.table_symbols
                 self.latest_hourly_ts = self.kdb.get_latest_db_hourly_ts()
             except IOError:
@@ -122,7 +124,7 @@ class MultiTrader(object):
                 self.kdb.remove_outdated_tables()
 
         # start thread for hourly kline db updates
-        if not self.simulate and self.kdb_path and self.kdb_path:
+        if not self.simulate and self.kdb_path:
             if os.path.exists(self.kdb_path):
                 from trader.HourlyUpdateHandler import HourlyUpdateHandler
                 self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.kdb_path, self.logger)
