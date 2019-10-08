@@ -3,14 +3,19 @@
 from .Kline import Kline
 
 class MarketMessage(object):
+    TYPE_EMPTY_MSG = 0
     TYPE_WS_MSG = 1
     TYPE_RT_KLINE_MSG = 2
     TYPE_DB_KLINE_MSG = 3
 
     def __init__(self, symbol, msg_type, data=None, kline=None):
         self.msg_type = msg_type
+        self.symbol = symbol
+
+        if msg_type == MarketMessage.TYPE_EMPTY_MSG:
+            return
+
         if data and self.msg_type == MarketMessage.TYPE_WS_MSG:
-            self.symbol = symbol
             self.ts = int(data.get('ts', 0))
             self.ask = float(data.get('ask', 0))
             self.bid = float(data.get('bid', 0))
@@ -33,6 +38,9 @@ class MarketMessage(object):
 
     # Update MarketMessage without needing to re-create a new instance of object
     def update(self, data=None, kline=None):
+        if self.msg_type == MarketMessage.TYPE_EMPTY_MSG:
+            return
+
         if data and self.msg_type == MarketMessage.TYPE_WS_MSG:
             self.ts = int(data.get('ts', 0))
             self.ask = float(data.get('ask', 0))
