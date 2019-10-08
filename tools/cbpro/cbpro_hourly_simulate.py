@@ -53,7 +53,7 @@ def process_trade_cache(trades, end_tickers):
     return trade_info
 
 
-def simulate(config, logger):
+def simulate(config, logger, start_date, end_date):
     start_time = time.time()
 
     client = None
@@ -78,6 +78,21 @@ def simulate(config, logger):
 
     initial_balances = multitrader.accnt.balances
     print(initial_balances)
+
+    start_dt = datetime.strptime(start_date, '%m/%d/%Y')
+    end_dt = datetime.strptime(end_date, '%m/%d/%Y')
+    start_ts = int(accnt.seconds_to_ts(time.mktime(start_dt.timetuple())))
+    end_ts = int(accnt.seconds_to_ts(time.mktime(end_dt.timetuple())))
+    kdb = multitrader.kdb
+    symbols = accnt.get_exchange_pairs()
+    symbol_klines = {}
+
+    for symbol in symbols:
+        symbol_klines[symbol] = kdb.get_klines(symbol, start_ts, end_ts)
+
+    print(symbol_klines)
+
+    sys.exit(0)
 
     found = False
 
@@ -207,6 +222,13 @@ if __name__ == '__main__':
     if not os.path.exists(results.cache_dir):
         os.mkdir(results.cache_dir)
 
+    if not results.start_date or not results.end_date:
+        parser.print_help()
+        sys.exit(0)
+
+    start_date = results.start_date
+    end_date = results.end_date
+
     logFormatter = logging.Formatter("%(message)s")
     logger = logging.getLogger()
 
@@ -273,12 +295,12 @@ if __name__ == '__main__':
             except json.decoder.JSONDecodeError:
                 logger.warn("Failed to load {}".format(trade_json_path))
 
-    logger.info("Running simulate with {} signal {}".format(results.filename, signal_name))
+    logger.info("Running hourly simulate with signal {}".format(signal_name))
 
     hourly_kline_db_file = results.hourly_klines_db_file
 
     try:
-        trades, end_tickers, min_tickers, max_tickers, total_pprofit, initial_total = simulate(config, logger)
+        trades, end_tickers, min_tickers, max_tickers, total_pprofit, initial_total = simulate(config, logger, start_date, end_date)
     except (KeyboardInterrupt, SystemExit):
         logger.info("CTRL+C: Exiting....")
         sys.exit(0)

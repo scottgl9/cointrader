@@ -330,10 +330,6 @@ class AccountCoinbasePro(AccountBase):
         exchange_info = {}
         pairs = {}
         assets = {}
-        update_exchange_pairs = False
-        if not self._exchange_pairs:
-            self._exchange_pairs = []
-            update_exchange_pairs = True
 
         for info in pair_info:
             symbol = info['id']
@@ -341,8 +337,7 @@ class AccountCoinbasePro(AccountBase):
             min_price = info['min_market_funds']
             base_step_size = info['base_increment']
             currency_step_size = info['quote_increment']
-            if update_exchange_pairs:
-                self._exchange_pairs.append(symbol)
+
             pairs[symbol] = {'min_qty': min_qty,
                              'min_price': min_price,
                              'base_step_size': base_step_size,
@@ -370,6 +365,12 @@ class AccountCoinbasePro(AccountBase):
     def get_exchange_pairs(self):
         if not self._exchange_pairs:
             self.load_exchange_info()
+            self._exchange_pairs = []
+            for pair in self.info_all_assets.keys():
+                # ignore trade pairs with GBP and EUR currency
+                if pair.endswith('GBP') or pair.endswith('EUR'):
+                    continue
+                self._exchange_pairs.append(pair)
         return sorted(self._exchange_pairs)
 
     # is a valid exchange pair
