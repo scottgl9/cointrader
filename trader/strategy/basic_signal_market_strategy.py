@@ -110,12 +110,10 @@ class basic_signal_market_strategy(StrategyBase):
         if self.last_close == 0:
             return False
 
-        # don't buy if use_hourly_klines is True, and hourly klines aren't being used
-        if self.use_hourly_klines:
+        if self.use_hourly_klines or self.accnt.trade_mode_hourly():
+            # don't buy if use_hourly_klines is True, and hourly klines aren't being used
             if not self.hourly_klines_handler or self.hourly_klines_disabled:
                 return False
-
-        if self.use_hourly_klines:
             if self.realtime_signals_enabled and self.hourly_klines_signal:
                 if not self.hourly_klines_signal.hourly_buy_enable():
                     return False

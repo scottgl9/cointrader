@@ -65,6 +65,12 @@ class AccountPoloniex(AccountBase):
     def set_trader_mode(self, trader_mode):
         self._trader_mode = trader_mode
 
+    def trade_mode_hourly(self):
+        return self._trader_mode == AccountBase.TRADER_MODE_HOURLY
+
+    def trade_mode_realtime(self):
+        return self._trader_mode == AccountBase.TRADER_MODE_REALTIME
+
     def format_ts(self, ts):
         return int(ts)
 

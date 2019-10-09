@@ -23,6 +23,12 @@ class AccountBase(object):
     def set_trader_mode(self, trader_mode):
         pass
 
+    def trade_mode_hourly(self):
+        pass
+
+    def trade_mode_realtime(self):
+        pass
+
     def ts_to_seconds(self, ts):
         pass
 

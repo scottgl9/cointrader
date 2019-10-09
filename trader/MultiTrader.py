@@ -99,7 +99,7 @@ class MultiTrader(object):
 
         #hourly_symbols_only = False
 
-        if self.use_hourly_klines or self.trader_mode == AccountBase.TRADER_MODE_HOURLY:
+        if self.use_hourly_klines or self.accnt.trade_mode_hourly():
             try:
                 self.kdb = KlinesDB(self.accnt, self.kdb_path, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.kdb_path))
