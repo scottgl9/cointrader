@@ -2,6 +2,7 @@ from trader.lib.struct.TraderMessage import TraderMessage
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
 from trader.lib.struct.StrategyBase import StrategyBase, select_hourly_signal
 from trader.lib.struct.SignalBase import SignalBase
+from trader.KlinesDB import KlinesDB
 
 
 class basic_signal_market_strategy(StrategyBase):
@@ -31,6 +32,11 @@ class basic_signal_market_strategy(StrategyBase):
             elif mode == 'hourly':
                 self.hourly_signals_enabled = True
                 self.signal_modes.append(StrategyBase.SIGNAL_MODE_HOURLY)
+                root_path = self.config.get('path')
+                db_path = self.config.get('db_path')
+                hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+                self.kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
+                self.hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id, logger=self.logger)
 
         signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('hourly_signal')
@@ -67,6 +73,9 @@ class basic_signal_market_strategy(StrategyBase):
             signal.buy_size = buy_size
             signal.buy_order_id = None
 
+    def close(self):
+        if self.hourly_klines_signal:
+            self.hourly_klines_signal.close()
 
     def buy_signal(self, signal, price):
         # buy signal disabled by filter

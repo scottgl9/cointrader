@@ -189,6 +189,8 @@ class MultiTrader(object):
     def close(self):
         if self.kdb:
             self.kdb.close()
+        for trade_pair in self.trade_pairs.values():
+            trade_pair.close()
         if self.hourly_update_handler:
             self.hourly_update_handler.stop()
             self.hourly_update_handler.join(timeout=5)
