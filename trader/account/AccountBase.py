@@ -188,8 +188,8 @@ class AccountBase(object):
         return True
 
     # use for both limit orders and stop loss orders
-    def buy_limit_complete(self, price, size, ticker_id=None):
-        if self.simulate:
+    def buy_limit_complete(self, price, size, ticker_id, simulate):
+        if simulate:
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
@@ -203,8 +203,8 @@ class AccountBase(object):
             self.get_account_balances()
 
     # use for both limit orders and stop loss orders
-    def sell_limit_complete(self, price, size, ticker_id=None):
-        if self.simulate:
+    def sell_limit_complete(self, price, size, ticker_id, simulate):
+        if simulate:
             base, currency = self.split_ticker_id(ticker_id)
             bbalance, bavailable = self.get_asset_balance_tuple(base)
             cbalance, cavailable = self.get_asset_balance_tuple(currency)
@@ -219,7 +219,7 @@ class AccountBase(object):
             self.get_account_balances()
 
     # for handling a canceled sell order during simulation
-    def cancel_sell_limit_complete(self, size, ticker_id=None):
+    def cancel_sell_limit_complete(self, size, ticker_id):
         #if not self.simulate:
         #    return
         base, currency = self.split_ticker_id(ticker_id)

@@ -55,7 +55,7 @@ class OrderLimitHandler(object):
                                               price=order.price,
                                               size=order.size,
                                               order_type=order_type)
-                self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
+                self.accnt.buy_limit_complete(order.price, order.size, order.symbol, simulate=self.accnt.simulate)
                 self.remove_open_order(kline.symbol)
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
@@ -65,7 +65,7 @@ class OrderLimitHandler(object):
                                            price=order.price,
                                            size=order.size,
                                            order_type=order_type)
-                    self.accnt.buy_limit_complete(order.price, order.size, order.symbol)
+                    self.accnt.buy_limit_complete(order.price, order.size, order.symbol, simulate=self.accnt.simulate)
                     self.send_buy_complete(order.symbol, order.price, order.size,
                                             order.sig_id, order_type=order_type)
                     self.remove_open_order(kline.symbol)
@@ -79,14 +79,14 @@ class OrderLimitHandler(object):
             order_type = TraderMessage.get_type_from_cmd(order.type)
 
             if self.accnt.simulate:
-                self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
+                self.accnt.sell_limit_complete(order.price, order.size, order.symbol, simulate=self.accnt.simulate)
                 self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
                                         order.sig_id, order_type=order_type)
                 self.remove_open_order(kline.symbol)
             else:
                 result = self.accnt.get_order(order_id=order.orderid, ticker_id=order.symbol)
                 if ('status' in result and result['status'] == 'FILLED'):
-                    self.accnt.sell_limit_complete(order.price, order.size, order.symbol)
+                    self.accnt.sell_limit_complete(order.price, order.size, order.symbol, simulate=self.accnt.simulate)
                     self.send_sell_complete(order.symbol, order.price, order.size, order.buy_price,
                                             order.sig_id, order_type=order_type)
                     self.remove_open_order(kline.symbol)
