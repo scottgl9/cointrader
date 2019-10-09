@@ -53,14 +53,20 @@ class AccountBase(object):
     def get_hourly_column_names(self):
         pass
 
+    def round_base_symbol(self, symbol, price):
+        return 0
+
+    def round_quote_symbol(self, symbol, price):
+        return 0
+
     def make_ticker_id(self, base, currency):
         pass
 
     def split_ticker_id(self, symbol):
-        pass
+        return None, None
 
     def split_symbol(self, symbol):
-        pass
+        return None, None
 
     def get_symbol_base(self, symbol):
         pass
@@ -92,23 +98,133 @@ class AccountBase(object):
     def get_account_balances(self, detailed=False):
         pass
 
-    def buy_market(self, size, ticker_id=None):
+    def get_asset_balance_tuple(self, asset):
+        return 0, 0
+
+    def update_asset_balance(self, name, balance, available):
         pass
 
-    def sell_market(self, size, ticker_id=None):
+    def buy_market(self, size, price=0.0, ticker_id=None):
         pass
 
-    def buy_limit(self, price, size):
+    def sell_market(self, size, price=0.0, ticker_id=None):
         pass
 
-    def sell_limit(self, price, size):
+    def buy_limit(self, price, size, ticker_id=None):
         pass
 
+    def sell_limit(self, price, size, ticker_id=None):
+        pass
+
+    # simulate buy market order
+    def buy_market_simulate(self, size, price=0.0, ticker_id=None):
+        size = self.round_base_symbol(ticker_id, size)
+        base, currency = self.split_ticker_id(ticker_id)
+        bbalance, bavailable = self.get_asset_balance_tuple(base)
+        cbalance, cavailable = self.get_asset_balance_tuple(currency)
+        amount = self.round_quote_symbol(ticker_id, float(price) * float(size))
+        if amount > cavailable:
+            return False
+
+        self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
+        self.update_asset_balance(currency, cbalance - amount, cavailable - amount)
+        return True
+
+    # simulate sell market order
+    def sell_market_simulate(self, size, price=0.0, ticker_id=None):
+        base, currency = self.split_ticker_id(ticker_id)
+        bbalance, bavailable = self.get_asset_balance_tuple(base)
+        cbalance, cavailable = self.get_asset_balance_tuple(currency)
+
+        if float(size) > bavailable:
+            #if self.logger:
+            #    self.logger.warning("{}: {} > {}".format(ticker_id, float(size), bavailable))
+            return False
+
+        amount = self.round_quote_symbol(ticker_id, float(price) * float(size))
+        self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable) - float(size))
+        self.update_asset_balance(currency, cbalance + amount, cavailable + amount)
+        return True
+
+    # simulate buy limit order
+    def buy_limit_simulate(self, price, size, ticker_id=None):
+        base, currency = self.split_ticker_id(ticker_id)
+        cbalance, cavailable = self.get_asset_balance_tuple(currency)
+        usd_value = float(price) * float(size)  # self.round_quote(price * size)
+
+        if usd_value > cavailable: return
+
+        self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+
+    # simulate sell limit order
+    def sell_limit_simulate(self, price, size, ticker_id=None):
+        base, currency = self.split_ticker_id(ticker_id)
+        bbalance, bavailable = self.get_asset_balance_tuple(base)
+
+        if float(size) > bavailable: return
+
+        self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+
+    # simulate buy limit stop order
+    def buy_limit_stop_simulate(self, price, size, stop_price, ticker_id=None):
+        base, currency = self.split_ticker_id(ticker_id)
+        cbalance, cavailable = self.get_asset_balance_tuple(currency)
+        usd_value = float(price) * float(size)  # self.round_quote(price * size)
+
+        if usd_value > cavailable: return False
+
+        self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+        return True
+
+    # simulate sell limit stop order
+    def sell_limit_stop_simulate(self, price, size, stop_price, ticker_id=None):
+        # self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+        base, currency = self.split_ticker_id(ticker_id)
+        bbalance, bavailable = self.get_asset_balance_tuple(base)
+
+        if float(size) > bavailable: return False
+
+        self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+        return True
+
+    # use for both limit orders and stop loss orders
     def buy_limit_complete(self, price, size, ticker_id=None):
-        pass
+        if self.simulate:
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+            usd_value = float(price) * float(size) #self.round_quote(price * size)
+            if usd_value > cbalance: return False
+            #print("buy_market({}, {}, {}".format(size, price, ticker_id))
+            self.update_asset_balance(base, bbalance + float(size), bavailable + float(size))
+            self.update_asset_balance(currency, cbalance - usd_value, cavailable)
+            return True
+        else:
+            self.get_account_balances()
 
+    # use for both limit orders and stop loss orders
     def sell_limit_complete(self, price, size, ticker_id=None):
-        pass
+        if self.simulate:
+            base, currency = self.split_ticker_id(ticker_id)
+            bbalance, bavailable = self.get_asset_balance_tuple(base)
+            cbalance, cavailable = self.get_asset_balance_tuple(currency)
+
+            if float(size) > bbalance: return False
+
+            usd_value = float(price) * float(size)
+            self.update_asset_balance(base, float(bbalance) - float(size), float(bavailable))
+            self.update_asset_balance(currency, cbalance + usd_value, cavailable + usd_value)
+            return True
+        else:
+            self.get_account_balances()
+
+    # for handling a canceled sell order during simulation
+    def cancel_sell_limit_complete(self, size, ticker_id=None):
+        #if not self.simulate:
+        #    return
+        base, currency = self.split_ticker_id(ticker_id)
+        bbalance, bavailable = self.get_asset_balance_tuple(base)
+        self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
 
     def cancel_order(self, orderid, ticker_id=None):
         pass
