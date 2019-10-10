@@ -3,10 +3,10 @@ from trader.lib.Crossover2 import Crossover2
 from trader.indicator.EMA import EMA
 
 
-class Hourly_EMA_Crossover(SignalBase):
+class RT_Hourly_EMA_Crossover(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
         super(Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, kdb)
-        self.name = "Hourly_EMA_Crossover"
+        self.name = "RT_Hourly_EMA_Crossover"
         self.ema12 = EMA(12)
         self.ema26 = EMA(26)
         self.ema50 = EMA(50)

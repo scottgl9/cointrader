@@ -2,10 +2,10 @@ from trader.lib.struct.SignalBase import SignalBase
 from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 
 
-class Hourly_LSTM_Signal(SignalBase):
+class RT_Hourly_LSTM_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
         super(Hourly_LSTM_Signal, self).__init__(accnt, symbol, asset_info, kdb, uses_models=True)
-        self.name = "Hourly_LSTM_Signal"
+        self.name = "RT_Hourly_LSTM_Signal"
         self.batch_size = 32
         self.hourly_lstm = HourlyLSTM(self.kdb, self.symbol,
                                       simulate_db_filename=self.accnt.simulate_db_filename, batch_size=self.batch_size)

@@ -1,6 +1,6 @@
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
-from trader.lib.struct.StrategyBase import StrategyBase, select_hourly_signal
+from trader.lib.struct.StrategyBase import StrategyBase, select_rt_hourly_signal
 from trader.lib.struct.SignalBase import SignalBase
 from trader.KlinesDB import KlinesDB
 
@@ -50,11 +50,11 @@ class basic_signal_market_strategy(StrategyBase):
         self.hourly_preload_hours = int(self.config.get('hourly_preload_hours'))
 
         if self.hourly_signals_enabled and self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
-            self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
-                                                             kdb=self.hourly_klines_handler,
-                                                             accnt=self.accnt,
-                                                             symbol=self.ticker_id,
-                                                             asset_info=self.asset_info)
+            self.hourly_klines_signal = select_rt_hourly_signal(hourly_signal_name,
+                                                                kdb=self.hourly_klines_handler,
+                                                                accnt=self.accnt,
+                                                                symbol=self.ticker_id,
+                                                                asset_info=self.asset_info)
         else:
             self.hourly_klines_signal = None
 

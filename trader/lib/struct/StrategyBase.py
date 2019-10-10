@@ -1,31 +1,36 @@
 # base class for all strategies
+import sys
 from datetime import datetime
 from trader.lib.TraderMessageHandler import TraderMessageHandler
 from trader.lib.SignalHandler import SignalHandler
 from trader.KlinesDB import KlinesDB
 
-def select_hourly_signal(sname, kdb, accnt, symbol, asset_info):
+# realtime hourly signals are used in conjunction with trade_mode = realtime
+def select_rt_hourly_signal(sname, kdb, accnt, symbol, asset_info):
     signal = None
-    if sname == 'Hourly_EMA_Crossover':
-        from trader.signal.hourly.realtime.Hourly_EMA_Crossover import Hourly_EMA_Crossover
-        signal = Hourly_EMA_Crossover
-    elif sname == 'Hourly_LSMA_Crossover':
-        from trader.signal.hourly.realtime.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
-        signal = Hourly_LSMA_Crossover
-    elif sname == 'Hourly_LSTM_Signal':
-        from trader.signal.hourly.realtime.Hourly_LSTM_Signal import Hourly_LSTM_Signal
-        signal = Hourly_LSTM_Signal
-    elif sname == 'Hourly_MACD_Signal':
-        from trader.signal.hourly.realtime.Hourly_MACD_Signal import Hourly_MACD_Signal
-        signal = Hourly_MACD_Signal
-    elif sname == 'Hourly_MinMax_Signal':
-        from trader.signal.hourly.realtime.Hourly_MinMax_Signal import Hourly_MinMax_Signal
-        signal = Hourly_MinMax_Signal
-    elif sname == 'Hourly_ROC_Signal':
-        from trader.signal.hourly.realtime.Hourly_ROC_Signal import Hourly_ROC_Signal
-        signal = Hourly_ROC_Signal
+    if sname == 'RT_Hourly_EMA_Crossover':
+        from trader.signal.hourly.realtime.RT_Hourly_EMA_Crossover import RT_Hourly_EMA_Crossover
+        signal = RT_Hourly_EMA_Crossover
+    elif sname == 'RT_Hourly_LSMA_Crossover':
+        from trader.signal.hourly.realtime.RT_Hourly_LSMA_Crossover import RT_Hourly_LSMA_Crossover
+        signal = RT_Hourly_LSMA_Crossover
+    elif sname == 'RT_Hourly_LSTM_Signal':
+        from trader.signal.hourly.realtime.RT_Hourly_LSTM_Signal import RT_Hourly_LSTM_Signal
+        signal = RT_Hourly_LSTM_Signal
+    elif sname == 'RT_Hourly_MACD_Signal':
+        from trader.signal.hourly.realtime.RT_Hourly_MACD_Signal import RT_Hourly_MACD_Signal
+        signal = RT_Hourly_MACD_Signal
+    elif sname == 'RT_Hourly_MinMax_Signal':
+        from trader.signal.hourly.realtime.RT_Hourly_MinMax_Signal import RT_Hourly_MinMax_Signal
+        signal = RT_Hourly_MinMax_Signal
+    elif sname == 'RT_Hourly_ROC_Signal':
+        from trader.signal.hourly.realtime.RT_Hourly_ROC_Signal import RT_Hourly_ROC_Signal
+        signal = RT_Hourly_ROC_Signal
     elif sname == "None":
         return None
+    else:
+        print("Unable to load realtime hourly signal {}".format(sname))
+        sys.exit(-1)
 
     if not signal:
         return None
@@ -154,27 +159,12 @@ class StrategyBase(object):
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None, kdb=None):
         signal = None
-        # hourly signals
-        if name == 'Hourly_EMA_Crossover':
-            from trader.signal.hourly.realtime.Hourly_EMA_Crossover import Hourly_EMA_Crossover
-            signal = Hourly_EMA_Crossover
-        elif name == 'Hourly_LSMA_Crossover':
-            from trader.signal.hourly.realtime.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
-            signal = Hourly_LSMA_Crossover
-        elif name == 'Hourly_LSTM_Signal':
-            from trader.signal.hourly.realtime.Hourly_LSTM_Signal import Hourly_LSTM_Signal
-            signal = Hourly_LSTM_Signal
-        elif name == 'Hourly_MACD_Signal':
-            from trader.signal.hourly.realtime.Hourly_MACD_Signal import Hourly_MACD_Signal
-            signal = Hourly_MACD_Signal
-        elif name == 'Hourly_MinMax_Signal':
-            from trader.signal.hourly.realtime.Hourly_MinMax_Signal import Hourly_MinMax_Signal
-            signal = Hourly_MinMax_Signal
-        elif name == 'Hourly_ROC_Signal':
-            from trader.signal.hourly.realtime.Hourly_ROC_Signal import Hourly_ROC_Signal
-            signal = Hourly_ROC_Signal
+        # hourly rt signals
+        signal = select_rt_hourly_signal(name, kdb, accnt, symbol, asset_info)
+        if signal:
+            return signal
         # realtime signals
-        elif name == "BTC_USDT_Signal":
+        if name == "BTC_USDT_Signal":
             from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
             signal = BTC_USDT_Signal
         elif name == "AEMA_Crossover_Test":
@@ -204,6 +194,9 @@ class StrategyBase(object):
         elif name == "RTKline_MACD_Cross_Signal":
             from trader.signal.RTKline_MACD_Cross_Signal import RTKline_MACD_Cross_Signal
             signal = RTKline_MACD_Cross_Signal
+        else:
+            print("Unable to load signal {}".format(name))
+            sys.exit(-1)
 
         if signal:
             return signal(accnt, symbol, asset_info, kdb=kdb)

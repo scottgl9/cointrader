@@ -2,10 +2,10 @@ from trader.lib.struct.SignalBase import SignalBase
 from trader.lib.hourly.HourlyMinMax import HourlyMinMax
 
 
-class Hourly_MinMax_Signal(SignalBase):
+class RT_Hourly_MinMax_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
         super(Hourly_MinMax_Signal, self).__init__(accnt, symbol, asset_info, kdb, uses_models=False)
-        self.name = "Hourly_MinMax_Signal"
+        self.name = "RT_Hourly_MinMax_Signal"
         self.hourly_minmax = HourlyMinMax(self.symbol, self.accnt, self.kdb)
 
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):

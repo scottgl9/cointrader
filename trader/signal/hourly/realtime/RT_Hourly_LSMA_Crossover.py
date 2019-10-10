@@ -2,10 +2,10 @@ from trader.lib.struct.SignalBase import SignalBase
 from trader.indicator.LSMA import LSMA
 
 
-class Hourly_LSMA_Crossover(SignalBase):
+class RT_Hourly_LSMA_Crossover(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
         super(Hourly_LSMA_Crossover, self).__init__(kdb, accnt, symbol, asset_info, kdb)
-        self.name = "Hourly_LSMA_Crossover"
+        self.name = "RT_Hourly_LSMA_Crossover"
         self.lsma24 = LSMA(24)
         # 1 week LSMA
         self.lsma168 = LSMA(168)
