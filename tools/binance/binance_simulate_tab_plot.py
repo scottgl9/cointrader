@@ -221,7 +221,7 @@ if __name__ == '__main__':
     config.select_section('binance.simulate')
     strategy = config.get('strategy')
     signal_name = config.get('signals')
-    hourly_name = config.get('hourly_signal')
+    hourly_name = config.get('rt_hourly_signal')
     profit_mode = config.get('trader_profit_mode')
 
     if not os.path.exists(results.cache_dir):

@@ -65,7 +65,7 @@ if __name__ == '__main__':
     strategy = config.get('strategy')
 
 
-    fnames = ['strategy', 'dbname', 'signal', 'hourly_signal', 'init_balance', 'profit']
+    fnames = ['strategy', 'dbname', 'signal', 'rt_hourly_signal', 'init_balance', 'profit']
     csvfile = open(results.out_csv_file, 'w', newline='')
     writer = csv.DictWriter(csvfile, fieldnames=fnames)
     writer.writeheader()
@@ -86,7 +86,7 @@ if __name__ == '__main__':
                 entry = {'strategy': strategy,
                          'dbname': dbname,
                          'signal': parts[0],
-                         'hourly_signal': parts[1],
+                         'rt_hourly_signal': parts[1],
                          'init_balance': parts[2],
                          'profit': percent
                          }

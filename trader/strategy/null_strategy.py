@@ -22,7 +22,7 @@ class null_strategy(StrategyBase):
                                             logger)
         self.strategy_name = 'null_strategy'
         signal_names = [self.config.get('signals')]
-        hourly_signal_name = self.config.get('hourly_signal')
+        #hourly_signal_name = self.config.get('rt_hourly_signal')
         self.last_price = self.price = 0.0
         self.rsi_result = 0.0
         self.last_rsi_result = 0.0

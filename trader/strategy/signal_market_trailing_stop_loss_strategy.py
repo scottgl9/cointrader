@@ -24,7 +24,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
 
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
         signal_names = [self.config.get('signals')]
-        hourly_signal_name = self.config.get('hourly_signal')
+        hourly_signal_name = self.config.get('rt_hourly_signal')
 
         if signal_names:
             for name in signal_names:

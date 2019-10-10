@@ -301,7 +301,7 @@ if __name__ == '__main__':
         config.set('signals', results.signal_name)
 
     if results.hourly_signal_name:
-        config.set('hourly_signal', results.hourly_signal_name)
+        config.set('rt_hourly_signal', results.hourly_signal_name)
 
     if results.hourly_klines_db_file:
         config.set('hourly_kline_db_file', results.hourly_klines_db_file)

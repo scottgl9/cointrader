@@ -39,7 +39,7 @@ class basic_signal_market_strategy(StrategyBase):
                 self.hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id, logger=self.logger)
 
         signal_names = [self.config.get('signals')]
-        hourly_signal_name = self.config.get('hourly_signal')
+        hourly_signal_name = self.config.get('rt_hourly_signal')
 
         # get trade_sizes from config
         trade_sizes = config.get_section_field_options(field='trade_size')

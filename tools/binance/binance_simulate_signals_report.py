@@ -330,7 +330,7 @@ if __name__ == '__main__':
         config.set('strategy', results.strategy)
 
     if results.hourly_signal_name:
-        config.set('hourly_signal', results.hourly_signal_name)
+        config.set('rt_hourly_signal', results.hourly_signal_name)
 
     strategy = config.get('strategy')
     signal_name = config.get('signals')
@@ -368,7 +368,7 @@ if __name__ == '__main__':
         config.set('signals', signal)
         hourly_kline_db_file = results.hourly_klines_db_file
         hourly_signal = results.hourly_signal_name
-        profit_entry_name = "{}-{}-{}".format(signal, config.get('hourly_signal'), config.get('strategy'))
+        profit_entry_name = "{}-{}-{}".format(signal, config.get('rt_hourly_signal'), config.get('strategy'))
         print(profit_entry_name)
         try:
             simulate_db_filename = os.path.join(results.cache_dir, os.path.basename(results.filename))
