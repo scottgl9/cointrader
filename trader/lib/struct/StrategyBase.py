@@ -5,8 +5,9 @@ from trader.lib.TraderMessageHandler import TraderMessageHandler
 from trader.lib.SignalHandler import SignalHandler
 from trader.KlinesDB import KlinesDB
 
+
 # realtime hourly signals are used in conjunction with trade_mode = realtime
-def select_rt_hourly_signal(sname, kdb, accnt, symbol, asset_info):
+def select_rt_hourly_signal(sname, kdb, accnt, symbol, asset_info, exit_fail=True):
     signal = None
     if sname == 'RT_Hourly_EMA_Crossover':
         from trader.signal.hourly.realtime.RT_Hourly_EMA_Crossover import RT_Hourly_EMA_Crossover
@@ -28,7 +29,7 @@ def select_rt_hourly_signal(sname, kdb, accnt, symbol, asset_info):
         signal = RT_Hourly_ROC_Signal
     elif sname == "None":
         return None
-    else:
+    elif exit_fail:
         print("Unable to load realtime hourly signal {}".format(sname))
         sys.exit(-1)
 
@@ -160,7 +161,7 @@ class StrategyBase(object):
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None, kdb=None):
         signal = None
         # hourly rt signals
-        signal = select_rt_hourly_signal(name, kdb, accnt, symbol, asset_info)
+        signal = select_rt_hourly_signal(name, kdb, accnt, symbol, asset_info, exit_fail=False)
         if signal:
             return signal
         # realtime signals
