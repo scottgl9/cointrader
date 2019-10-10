@@ -7,22 +7,22 @@ from trader.KlinesDB import KlinesDB
 def select_hourly_signal(sname, kdb, accnt, symbol, asset_info):
     signal = None
     if sname == 'Hourly_EMA_Crossover':
-        from trader.signal.hourly.Hourly_EMA_Crossover import Hourly_EMA_Crossover
+        from trader.signal.hourly.realtime.Hourly_EMA_Crossover import Hourly_EMA_Crossover
         signal = Hourly_EMA_Crossover
     elif sname == 'Hourly_LSMA_Crossover':
-        from trader.signal.hourly.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
+        from trader.signal.hourly.realtime.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
         signal = Hourly_LSMA_Crossover
     elif sname == 'Hourly_LSTM_Signal':
-        from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
+        from trader.signal.hourly.realtime.Hourly_LSTM_Signal import Hourly_LSTM_Signal
         signal = Hourly_LSTM_Signal
     elif sname == 'Hourly_MACD_Signal':
-        from trader.signal.hourly.Hourly_MACD_Signal import Hourly_MACD_Signal
+        from trader.signal.hourly.realtime.Hourly_MACD_Signal import Hourly_MACD_Signal
         signal = Hourly_MACD_Signal
     elif sname == 'Hourly_MinMax_Signal':
-        from trader.signal.hourly.Hourly_MinMax_Signal import Hourly_MinMax_Signal
+        from trader.signal.hourly.realtime.Hourly_MinMax_Signal import Hourly_MinMax_Signal
         signal = Hourly_MinMax_Signal
     elif sname == 'Hourly_ROC_Signal':
-        from trader.signal.hourly.Hourly_ROC_Signal import Hourly_ROC_Signal
+        from trader.signal.hourly.realtime.Hourly_ROC_Signal import Hourly_ROC_Signal
         signal = Hourly_ROC_Signal
     elif sname == "None":
         return None
@@ -156,22 +156,22 @@ class StrategyBase(object):
         signal = None
         # hourly signals
         if name == 'Hourly_EMA_Crossover':
-            from trader.signal.hourly.Hourly_EMA_Crossover import Hourly_EMA_Crossover
+            from trader.signal.hourly.realtime.Hourly_EMA_Crossover import Hourly_EMA_Crossover
             signal = Hourly_EMA_Crossover
         elif name == 'Hourly_LSMA_Crossover':
-            from trader.signal.hourly.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
+            from trader.signal.hourly.realtime.Hourly_LSMA_Crossover import Hourly_LSMA_Crossover
             signal = Hourly_LSMA_Crossover
         elif name == 'Hourly_LSTM_Signal':
-            from trader.signal.hourly.Hourly_LSTM_Signal import Hourly_LSTM_Signal
+            from trader.signal.hourly.realtime.Hourly_LSTM_Signal import Hourly_LSTM_Signal
             signal = Hourly_LSTM_Signal
         elif name == 'Hourly_MACD_Signal':
-            from trader.signal.hourly.Hourly_MACD_Signal import Hourly_MACD_Signal
+            from trader.signal.hourly.realtime.Hourly_MACD_Signal import Hourly_MACD_Signal
             signal = Hourly_MACD_Signal
         elif name == 'Hourly_MinMax_Signal':
-            from trader.signal.hourly.Hourly_MinMax_Signal import Hourly_MinMax_Signal
+            from trader.signal.hourly.realtime.Hourly_MinMax_Signal import Hourly_MinMax_Signal
             signal = Hourly_MinMax_Signal
         elif name == 'Hourly_ROC_Signal':
-            from trader.signal.hourly.Hourly_ROC_Signal import Hourly_ROC_Signal
+            from trader.signal.hourly.realtime.Hourly_ROC_Signal import Hourly_ROC_Signal
             signal = Hourly_ROC_Signal
         # realtime signals
         elif name == "BTC_USDT_Signal":
