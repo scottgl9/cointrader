@@ -61,7 +61,7 @@ class MultiTrader(object):
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.kdb_path = "{}/{}/{}".format(self.root_path, self.db_path, self.hourly_klines_db_file)
         self.use_hourly_klines = self.config.get('use_hourly_klines')
-        self.symbol_filter_names = self.config.get('symbol_filters').split(',')
+        #self.symbol_filter_names = self.config.get('symbol_filters').split(',')
         self.hourly_update_handler = None
 
         # sets what currency to use when calculating trade profits
