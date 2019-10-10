@@ -8,7 +8,7 @@ import time
 
 class RT_Hourly_ROC_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
-        super(Hourly_ROC_Signal, self).__init__(accnt, symbol, asset_info, kdb, uses_models=False)
+        super(RT_Hourly_ROC_Signal, self).__init__(accnt, symbol, asset_info, kdb, uses_models=False)
         self.name = "RT_Hourly_ROC_Signal"
         self.roc = ROC(window=1,  smoother=EMA(12))
         self.roc_cross = Crossover2(window=10)

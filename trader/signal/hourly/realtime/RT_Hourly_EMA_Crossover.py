@@ -5,7 +5,7 @@ from trader.indicator.EMA import EMA
 
 class RT_Hourly_EMA_Crossover(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
-        super(Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, kdb)
+        super(RT_Hourly_EMA_Crossover, self).__init__(accnt, symbol, asset_info, kdb)
         self.name = "RT_Hourly_EMA_Crossover"
         self.ema12 = EMA(12)
         self.ema26 = EMA(26)

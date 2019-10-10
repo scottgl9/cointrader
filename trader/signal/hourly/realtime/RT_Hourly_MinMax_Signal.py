@@ -4,7 +4,7 @@ from trader.lib.hourly.HourlyMinMax import HourlyMinMax
 
 class RT_Hourly_MinMax_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
-        super(Hourly_MinMax_Signal, self).__init__(accnt, symbol, asset_info, kdb, uses_models=False)
+        super(RT_Hourly_MinMax_Signal, self).__init__(accnt, symbol, asset_info, kdb, uses_models=False)
         self.name = "RT_Hourly_MinMax_Signal"
         self.hourly_minmax = HourlyMinMax(self.symbol, self.accnt, self.kdb)
 

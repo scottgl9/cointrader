@@ -6,7 +6,7 @@ from trader.indicator.MACD import MACD
 class RT_Hourly_MACD_Signal(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None, short_weight=12.0,
                  long_weight=26.0, signal_weight=9.0, scale=1.0):
-        super(Hourly_MACD_Signal, self).__init__(accnt, symbol, asset_info, kdb)
+        super(RT_Hourly_MACD_Signal, self).__init__(accnt, symbol, asset_info, kdb)
         self.name = "RT_Hourly_MACD_Signal"
         self.short_weight = short_weight
         self.long_weight = long_weight

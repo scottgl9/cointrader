@@ -4,7 +4,7 @@ from trader.indicator.LSMA import LSMA
 
 class RT_Hourly_LSMA_Crossover(SignalBase):
     def __init__(self, accnt=None, symbol=None, asset_info=None, kdb=None):
-        super(Hourly_LSMA_Crossover, self).__init__(kdb, accnt, symbol, asset_info, kdb)
+        super(RT_Hourly_LSMA_Crossover, self).__init__(kdb, accnt, symbol, asset_info, kdb)
         self.name = "RT_Hourly_LSMA_Crossover"
         self.lsma24 = LSMA(24)
         # 1 week LSMA
