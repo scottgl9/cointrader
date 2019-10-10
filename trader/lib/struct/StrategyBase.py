@@ -39,6 +39,24 @@ def select_rt_hourly_signal(sname, kdb, accnt, symbol, asset_info, exit_fail=Tru
     return signal(accnt, symbol, asset_info, kdb)
 
 
+# realtime hourly signals are used in conjunction with trade_mode = hourly
+def select_hourly_signal(sname, kdb, accnt, symbol, asset_info, exit_fail=True):
+    signal = None
+    if sname == 'Hourly_MACD_Signal':
+        from trader.signal.hourly.Hourly_MACD_Signal import Hourly_MACD_Signal
+        signal = Hourly_MACD_Signal
+    elif sname == "None":
+        return None
+    elif exit_fail:
+        print("Unable to load hourly signal {}".format(sname))
+        sys.exit(-1)
+
+    if not signal:
+        return None
+
+    return signal(accnt, symbol, asset_info, kdb)
+
+
 class StrategyBase(object):
     # signal modes
     SIGNAL_MODE_HOURLY = 1
@@ -117,9 +135,9 @@ class StrategyBase(object):
             kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
             try:
                 self.hourly_klines_handler = KlinesDB(self.accnt,
-                                                            kdb_path,
-                                                            symbol=self.ticker_id,
-                                                            logger=self.logger)
+                                                      kdb_path,
+                                                      symbol=self.ticker_id,
+                                                      logger=self.logger)
                 if not self.hourly_klines_handler.symbol_in_table_list(self.ticker_id):
                     self.hourly_klines_handler.close()
                     self.hourly_klines_handler = None
@@ -164,6 +182,10 @@ class StrategyBase(object):
         signal = select_rt_hourly_signal(name, kdb, accnt, symbol, asset_info, exit_fail=False)
         if signal:
             return signal
+        # hourly signals
+        signal = select_hourly_signal(name, kdb, accnt, symbol, asset_info, exit_fail=False)
+        if signal:
+            return signal
         # realtime signals
         if name == "BTC_USDT_Signal":
             from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
@@ -203,7 +225,6 @@ class StrategyBase(object):
             return signal(accnt, symbol, asset_info, kdb=kdb)
 
         return None
-
 
     def get_ticker_id(self):
         return self.ticker_id
@@ -247,8 +268,6 @@ class StrategyBase(object):
             if is_base:
                 return self.base_fmt.format(float(value))
             return self.quote_fmt.format(float(value))
-
-
 
     def reset(self):
         pass
