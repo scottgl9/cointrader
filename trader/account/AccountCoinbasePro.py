@@ -362,6 +362,14 @@ class AccountCoinbasePro(AccountBase):
             else:
                 assets[name] = {'disabled': True, 'delisted': False }
 
+        self._exchange_pairs = []
+
+        for pair in pairs.keys():
+            # ignore trade pairs with GBP and EUR currency
+            if pair.endswith('GBP') or pair.endswith('EUR'):
+                continue
+            self._exchange_pairs.append(pair)
+
         exchange_info['pairs'] = pairs
         exchange_info['assets'] = assets
 
@@ -371,12 +379,7 @@ class AccountCoinbasePro(AccountBase):
     def get_exchange_pairs(self):
         if not self._exchange_pairs:
             self.load_exchange_info()
-            self._exchange_pairs = []
-            for pair in self.info_all_assets.keys():
-                # ignore trade pairs with GBP and EUR currency
-                if pair.endswith('GBP') or pair.endswith('EUR'):
-                    continue
-                self._exchange_pairs.append(pair)
+
         return sorted(self._exchange_pairs)
 
     # is a valid exchange pair
@@ -516,25 +519,24 @@ class AccountCoinbasePro(AccountBase):
         if self.simulate:
             tickers = self.get_all_tickers()
 
-        result_balance = 0.0
         total_balance = 0.0
 
         for asset, value in self.get_account_balances(detailed=False).items():
             if float(value) == 0:
                 continue
             if not self.simulate:
-                if asset == 'USD' or asset == 'USDC':
+                if asset == currency:
                     total_balance += value
                     continue
-                elif asset == currency:
+                elif currency == 'USDC' and asset == 'USD':
+                    total_balance += value
+                    continue
+                elif currency == 'USD' and asset == 'USDC':
                     total_balance += value
                     continue
                 symbol = self.make_ticker_id(asset, currency)
-                if not self.is_exchange_pair(symbol) and currency == 'USD':
-                    symbol = self.make_ticker_id(asset, 'USDC')
-                #print(symbol)
                 price = float(self.get_ticker(symbol))
-                #print(asset, value, price)
+                print(asset, value, price)
                 if not price:
                     continue
                 total_balance += value * price
@@ -546,7 +548,6 @@ class AccountCoinbasePro(AccountBase):
         #     price = float(self.get_ticker(symbol))
         #     result_balance = total_balance / price
         # else:
-        result_balance = total_balance
 
         #     if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
         #         if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
@@ -581,7 +582,7 @@ class AccountCoinbasePro(AccountBase):
         #         result['total']['bnb'] = total_balance_btc / bnb_btc_price
         #     result['total']['usd'] = total_balance_usd
         #     return result
-        return result_balance
+        return total_balance
 
     def get_account_total_btc_value(self):
         return self.get_account_total_value(currency='BTC')
