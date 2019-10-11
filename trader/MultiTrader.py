@@ -60,7 +60,7 @@ class MultiTrader(object):
         self.hourly_signal_name = self.config.get('rt_hourly_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.kdb_path = "{}/{}/{}".format(self.root_path, self.db_path, self.hourly_klines_db_file)
-        self.use_hourly_klines = self.config.get('use_hourly_klines')
+        self.use_hourly_klines = self.config.get('rt_use_hourly_klines')
         #self.symbol_filter_names = self.config.get('symbol_filters').split(',')
         self.hourly_update_handler = None
 

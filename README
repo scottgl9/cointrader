@@ -1,0 +1,15 @@
+# configuration
+
+The default trade configuration for a given exchange (ex. binance) is loaded from config/defaults/binance.ini,
+and saved in trader.ini if binance sections in trader.ini don't already exist.
+
+# Trade modes
+
+trade_mode realtime:
+- In trade mode realtime, either captured or live websocket feed market data is processed to determine if a
+given signal will 1) buy 2) sell 3) do nothing
+- Setting rt_use_hourly_klines and rt_hourly_signal will allow limiting realtime trading by disabling or
+enabling trading on a given trade symbol based on the rt_hourly_signal specified
+
+trade_mode hourly:
+- TODO

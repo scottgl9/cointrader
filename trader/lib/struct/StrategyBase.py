@@ -74,7 +74,6 @@ class StrategyBase(object):
                  asset_info=None, config=None, logger=None):
         self.strategy_name = None
         self.realtime_signals_enabled = True
-        self.hourly_signals_enabled = True
 
         # by default, only one executed buy order without matching sell order allowed for one signal
         self.order_method = StrategyBase.SINGLE_SIGNAL_SINGLE_ORDER
@@ -125,7 +124,7 @@ class StrategyBase(object):
         self.first_hourly_update_ts = 0
         self.last_hourly_update_ts = 0
 
-        self.use_hourly_klines = self.config.get('use_hourly_klines')
+        self.use_hourly_klines = self.config.get('rt_use_hourly_klines')
         if self.use_hourly_klines:
             root_path = self.config.get('path')
             db_path = self.config.get('db_path')
