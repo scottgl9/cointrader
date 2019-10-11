@@ -534,9 +534,21 @@ class AccountCoinbasePro(AccountBase):
                 elif currency == 'USD' and asset == 'USDC':
                     total_balance += value
                     continue
+                elif currency != 'USDC' and asset == 'USDC':
+                    symbol = self.make_ticker_id(currency, asset)
+                    price = float(self.get_ticker(symbol))
+                    if price:
+                        total_balance += value / price
+                    continue
+                elif currency != 'USD' and asset == 'USD':
+                    symbol = self.make_ticker_id(currency, asset)
+                    price = float(self.get_ticker(symbol))
+                    if price:
+                        total_balance += value / price
+                    continue
                 symbol = self.make_ticker_id(asset, currency)
                 price = float(self.get_ticker(symbol))
-                print(asset, value, price)
+                #print(asset, value, price)
                 if not price:
                     continue
                 total_balance += value * price
@@ -601,33 +613,6 @@ class AccountCoinbasePro(AccountBase):
                     print(ticker_id)
                     return False
         return True
-
-
-    def get_total_btc_value(self, tickers=None):
-        total_balance_btc = 0.0
-
-        if not tickers:
-            tickers = self._tickers
-
-        for symbol, size in self.balances.items():
-            size_btc = 0.0
-            if symbol == 'BTC':
-                size_btc = float(self.balances['BTC']['balance'])
-            elif symbol != 'USD' and symbol != 'USDC':
-                ticker_id = self.make_ticker_id(symbol, 'BTC')
-                if ticker_id not in tickers.keys():
-                    continue
-                amount = float(self.balances[symbol]['balance'])
-
-                if isinstance(tickers[ticker_id], float):
-                    size_btc = float(tickers[ticker_id]) * amount
-                else:
-                    size_btc = float(tickers[ticker_id][4]) * amount
-
-            total_balance_btc += size_btc
-
-        return total_balance_btc
-
 
     def get_account_status(self):
         return self.client.get_account_status()
