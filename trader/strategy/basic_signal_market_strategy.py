@@ -23,20 +23,7 @@ class basic_signal_market_strategy(StrategyBase):
         # set signal modes from config
         self.realtime_signals_enabled = False
         self.hourly_signals_enabled = False
-        self.signal_modes = []
-        signal_modes = self.config.get('signal_modes').split(',')
-        for mode in signal_modes:
-            if mode == 'realtime':
-                self.realtime_signals_enabled = True
-                self.signal_modes.append(StrategyBase.SIGNAL_MODE_REALTIME)
-            elif mode == 'hourly':
-                self.hourly_signals_enabled = True
-                self.signal_modes.append(StrategyBase.SIGNAL_MODE_HOURLY)
-                root_path = self.config.get('path')
-                db_path = self.config.get('db_path')
-                hourly_klines_db_file = self.config.get('hourly_kline_db_file')
-                self.kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
-                self.hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id, logger=self.logger)
+        self.realtime_signals_enabled = True
 
         signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('rt_hourly_signal')
@@ -48,6 +35,14 @@ class basic_signal_market_strategy(StrategyBase):
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
         self.hourly_preload_hours = int(self.config.get('hourly_preload_hours'))
+
+        if self.use_hourly_klines:
+            self.hourly_signals_enabled = True
+            root_path = self.config.get('path')
+            db_path = self.config.get('db_path')
+            hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+            self.kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
+            self.hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id, logger=self.logger)
 
         if self.hourly_signals_enabled and self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_rt_hourly_signal(hourly_signal_name,

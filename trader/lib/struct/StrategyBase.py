@@ -73,8 +73,6 @@ class StrategyBase(object):
     def __init__(self, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
                  asset_info=None, config=None, logger=None):
         self.strategy_name = None
-        # default setting for signal_modes
-        self.signal_modes = [StrategyBase.SIGNAL_MODE_REALTIME, StrategyBase.SIGNAL_MODE_HOURLY]
         self.realtime_signals_enabled = True
         self.hourly_signals_enabled = True
 
