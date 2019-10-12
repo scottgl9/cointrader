@@ -25,7 +25,7 @@ class basic_signal_market_strategy(StrategyBase):
         self.realtime_signals_enabled = True
 
         signal_names = [self.config.get('signals')]
-        hourly_signal_name = self.config.get('rt_hourly_signal')
+        rt_hourly_signal_name = self.config.get('rt_hourly_signal')
 
         # get trade_sizes from config
         trade_sizes = config.get_section_field_options(field='trade_size')
@@ -42,8 +42,8 @@ class basic_signal_market_strategy(StrategyBase):
             self.kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
             self.rt_hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id, logger=self.logger)
 
-        if self.rt_use_hourly_klines and self.rt_hourly_klines_handler and hourly_signal_name:
-            self.rt_hourly_klines_signal = select_rt_hourly_signal(hourly_signal_name,
+        if self.rt_use_hourly_klines and self.rt_hourly_klines_handler and rt_hourly_signal_name:
+            self.rt_hourly_klines_signal = select_rt_hourly_signal(rt_hourly_signal_name,
                                                                    kdb=self.rt_hourly_klines_handler,
                                                                    accnt=self.accnt,
                                                                    symbol=self.ticker_id,
@@ -67,7 +67,7 @@ class basic_signal_market_strategy(StrategyBase):
             signal.buy_order_id = None
 
     def close(self):
-        if self.rt_hourly_klines_signal:
+        if self.accnt.trade_mode_realtime() and self.rt_hourly_klines_signal:
             self.rt_hourly_klines_signal.close()
 
     def buy_signal(self, signal, price):
@@ -103,7 +103,7 @@ class basic_signal_market_strategy(StrategyBase):
         if self.last_close == 0:
             return False
 
-        if self.rt_use_hourly_klines or self.accnt.trade_mode_hourly():
+        if self.rt_use_hourly_klines:
             # don't buy if rt_use_hourly_klines is True, and hourly klines aren't being used
             if not self.rt_hourly_klines_handler or self.rt_hourly_klines_disabled:
                 return False
@@ -301,26 +301,25 @@ class basic_signal_market_strategy(StrategyBase):
         self.high = kline.high
         volume = kline.volume
 
-        if not self.timestamp:
-            if not self.rt_hourly_klines_loaded:
-                # set initial hourly update ts
-                self.first_hourly_update_ts = self.accnt.get_hourly_ts(kline.ts)
-                self.last_hourly_update_ts = self.first_hourly_update_ts
-                # hourly klines with model loading
-                if self.rt_hourly_klines_signal and self.rt_hourly_klines_signal.uses_models:
-                    # limit maximum number of models to load, unless rt_max_hourly_model_count is zero
-                    if not self.rt_max_hourly_model_count or self.accnt.loaded_model_count <= self.rt_max_hourly_model_count:
-                        self.load_hourly_klines(kline.ts)
-                        self.rt_hourly_klines_loaded = True
-                    else:
-                        self.rt_hourly_klines_disabled = True
-                else:
-                    end_ts = self.accnt.get_hourly_ts(kline.ts)
-                    start_ts = end_ts - self.accnt.hours_to_ts(self.rt_hourly_preload_hours)
-                    self.signal_handler.hourly_load(start_ts, end_ts, kline.ts)
-                    if self.rt_hourly_klines_signal:
-                        self.load_hourly_klines(kline.ts)
+        if not self.timestamp and not self.rt_hourly_klines_loaded:
+            # set initial hourly update ts
+            self.first_hourly_update_ts = self.accnt.get_hourly_ts(kline.ts)
+            self.last_hourly_update_ts = self.first_hourly_update_ts
+            # hourly klines with model loading
+            if self.rt_hourly_klines_signal and self.rt_hourly_klines_signal.uses_models:
+                # limit maximum number of models to load, unless rt_max_hourly_model_count is zero
+                if not self.rt_max_hourly_model_count or self.accnt.loaded_model_count <= self.rt_max_hourly_model_count:
+                    self.load_hourly_klines(kline.ts)
                     self.rt_hourly_klines_loaded = True
+                else:
+                    self.rt_hourly_klines_disabled = True
+            else:
+                end_ts = self.accnt.get_hourly_ts(kline.ts)
+                start_ts = end_ts - self.accnt.hours_to_ts(self.rt_hourly_preload_hours)
+                self.signal_handler.hourly_load(start_ts, end_ts, kline.ts)
+                if self.rt_hourly_klines_signal:
+                    self.load_hourly_klines(kline.ts)
+                self.rt_hourly_klines_loaded = True
 
         self.timestamp = kline.ts
 
