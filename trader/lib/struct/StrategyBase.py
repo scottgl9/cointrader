@@ -169,8 +169,10 @@ class StrategyBase(object):
 
         # buy information loaded from trade.db
         self.buy_loaded = False
-        self.hourly_klines_processed = False
-        self.hourly_klines_loaded = False
+        self.rt_hourly_klines_handler = None
+        self.rt_hourly_klines_processed = False
+        self.rt_hourly_klines_loaded = False
+        self.rt_hourly_klines_disabled = False
 
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None, kdb=None):
