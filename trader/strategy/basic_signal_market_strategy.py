@@ -21,15 +21,14 @@ class basic_signal_market_strategy(StrategyBase):
         self.trader_mode = self.config.get('trader_mode')
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
 
+        # get trade_sizes from config
+        trade_sizes = config.get_section_field_options(field='trade_size')
+        self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
+
         # set signal modes from config
         self.realtime_signals_enabled = True
 
         signal_names = [self.config.get('signals')]
-        rt_hourly_signal_name = self.config.get('rt_hourly_signal')
-
-        # get trade_sizes from config
-        trade_sizes = config.get_section_field_options(field='trade_size')
-        self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
         self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
         self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
@@ -40,7 +39,10 @@ class basic_signal_market_strategy(StrategyBase):
             db_path = self.config.get('db_path')
             hourly_klines_db_file = self.config.get('hourly_kline_db_file')
             self.kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
-            self.rt_hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id, logger=self.logger)
+            self.rt_hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id,
+                                                     logger=self.logger)
+
+        rt_hourly_signal_name = self.config.get('rt_hourly_signal')
 
         if self.rt_use_hourly_klines and self.rt_hourly_klines_handler and rt_hourly_signal_name:
             self.rt_hourly_klines_signal = select_rt_hourly_signal(rt_hourly_signal_name,

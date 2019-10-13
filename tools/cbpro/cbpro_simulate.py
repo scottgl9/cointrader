@@ -248,6 +248,9 @@ if __name__ == '__main__':
     config = TraderConfig("trader.ini", exchange='cbpro')
     config.select_section('cbpro.simulate')
 
+    # set trader_mode to realtime
+    config.set('trader_mode', 'realtime')
+
     if results.strategy:
         config.set('strategy', results.strategy)
 

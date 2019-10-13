@@ -270,6 +270,9 @@ if __name__ == '__main__':
     config = TraderConfig("trader.ini")
     config.select_section('binance.simulate')
 
+    # set trader_mode to realtime
+    config.set('trader_mode', 'realtime')
+
     if results.strategy:
         config.set('strategy', results.strategy)
 
