@@ -333,7 +333,7 @@ if __name__ == '__main__':
         config.set('rt_hourly_signal', results.hourly_signal_name)
 
     strategy = config.get('strategy')
-    signal_name = config.get('signals')
+    signal_name = config.get('rt_signals')
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
@@ -365,7 +365,7 @@ if __name__ == '__main__':
     for signal in get_signal_names():
         conn = sqlite3.connect(results.filename)
         print("Testing with signal {}".format(signal))
-        config.set('signals', signal)
+        config.set('rt_signals', signal)
         hourly_kline_db_file = results.hourly_klines_db_file
         hourly_signal = results.hourly_signal_name
         profit_entry_name = "{}-{}-{}".format(signal, config.get('rt_hourly_signal'), config.get('strategy'))

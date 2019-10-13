@@ -19,7 +19,7 @@ class multi_market_order_strategy(StrategyBase):
         self.order_method = StrategyBase.SINGLE_SIGNAL_MULTI_ORDER
 
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
-        signal_names = [self.config.get('signals')]
+        signal_names = [self.config.get('rt_signals')]
         hourly_signal_name = self.config.get('rt_hourly_signal')
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))

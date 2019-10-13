@@ -28,7 +28,7 @@ class basic_signal_market_strategy(StrategyBase):
         # set signal modes from config
         self.realtime_signals_enabled = True
 
-        signal_names = [self.config.get('signals')]
+        signal_names = [self.config.get('rt_signals')]
 
         self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
         self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))

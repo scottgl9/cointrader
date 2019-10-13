@@ -56,12 +56,12 @@ class MultiTrader(object):
         self.db_path = self.config.get('db_path')
         self.store_trades = self.config.get('store_trades')
         self.strategy_name = self.config.get('strategy')
-        self.signal_names = [self.config.get('signals')]
+        self.signal_names = [self.config.get('rt_signals')]
         self.hourly_signal_name = self.config.get('rt_hourly_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.kdb_path = "{}/{}/{}".format(self.root_path, self.db_path, self.hourly_klines_db_file)
         self.use_hourly_klines = self.config.get('rt_use_hourly_klines')
-        #self.symbol_filter_names = self.config.get('symbol_filters').split(',')
+        #self.symbol_filter_names = self.config.get('rt_symbol_filters').split(',')
         self.hourly_update_handler = None
 
         # sets what currency to use when calculating trade profits
