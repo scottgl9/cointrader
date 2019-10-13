@@ -17,20 +17,20 @@ class multi_market_order_strategy(StrategyBase):
                                                           logger)
         self.strategy_name = 'multi_market_order_strategy'
         self.order_method = StrategyBase.SINGLE_SIGNAL_MULTI_ORDER
-
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
-        signal_names = [self.config.get('rt_signals')]
-        hourly_signal_name = self.config.get('rt_hourly_signal')
-        self.use_hourly_klines = self.config.get('use_hourly_klines')
-        self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
 
         # get trade_sizes from config
         trade_sizes = config.get_section_field_options(field='trade_size')
         self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
-        if self.use_hourly_klines and self.hourly_klines_handler and hourly_signal_name:
+        signal_names = [self.config.get('rt_signals')]
+        hourly_signal_name = self.config.get('rt_hourly_signal')
+        self.use_hourly_klines = self.config.get('use_hourly_klines')
+        self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))
+
+        if self.rt_use_hourly_klines and self.rt_hourly_klines_handler and hourly_signal_name:
             self.hourly_klines_signal = select_hourly_signal(hourly_signal_name,
-                                                             kdb=self.hourly_klines_handler,
+                                                             kdb=self.rt_hourly_klines_handler,
                                                              accnt=self.accnt,
                                                              symbol=self.ticker_id,
                                                              asset_info=self.asset_info)
@@ -314,13 +314,17 @@ class multi_market_order_strategy(StrategyBase):
 
     def run_update_signal(self, signal, price, signal_completed=False):
         # handle delayed buy/sell message
-        if self.accnt.simulate and self.delayed_buy_msg:# and self.delayed_buy_msg.sig_id == signal.id:
+        if self.accnt.simulate and self.delayed_buy_msg and self.delayed_buy_msg.sig_id == signal.id:
+            signal.buy_price = price
+            self.delayed_buy_msg.price = signal.buy_price
             self.msg_handler.add(self.delayed_buy_msg)
             self.delayed_buy_msg = None
 
-        if self.accnt.simulate and self.delayed_sell_msg:
-            for msg in self.delayed_sell_msg:
-                self.msg_handler.add(msg)
+        if self.accnt.simulate and self.delayed_sell_msg and self.delayed_sell_msg.sig_id == signal.id:
+            self.delayed_sell_msg.price = price
+            signal.buy_price = 0
+            signal.buy_size = 0
+            self.msg_handler.add(self.delayed_sell_msg)
             self.delayed_sell_msg = None
 
         # prevent buying at the same price with the same timestamp with more than one signal

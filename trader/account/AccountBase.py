@@ -10,9 +10,9 @@ class AccountBase(object):
     EXCHANGE_KRAKEN = 4
     EXCHANGE_POLONIEX = 5
     # trader modes
-    TRADER_MODE_NONE=0
-    TRADER_MODE_REALTIME=1
-    TRADER_MODE_HOURLY=2
+    TRADER_MODE_NONE = 0
+    TRADER_MODE_REALTIME = 1
+    TRADER_MODE_HOURLY = 2
 
     def get_config_section_name(self):
         pass

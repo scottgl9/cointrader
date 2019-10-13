@@ -18,48 +18,40 @@ class basic_signal_market_strategy(StrategyBase):
                                                            logger)
         self.strategy_name = 'basic_signal_market_strategy'
 
-        self.trader_mode = self.config.get('trader_mode')
         self.min_percent_profit = float(self.config.get('min_percent_profit'))
 
         # get trade_sizes from config
         trade_sizes = config.get_section_field_options(field='trade_size')
         self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
-        # set signal modes from config
-        self.realtime_signals_enabled = True
+        # if trader_mode is realtime
+        if self.trader_mode_realtime:
+            # set signal modes from config
+            self.realtime_signals_enabled = True
 
-        signal_names = [self.config.get('rt_signals')]
+            signal_names = [self.config.get('rt_signals')]
 
-        self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
-        self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
-        self.rt_hourly_preload_hours = int(self.config.get('rt_hourly_preload_hours'))
+            self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
+            self.rt_hourly_preload_hours = int(self.config.get('rt_hourly_preload_hours'))
 
-        if self.rt_use_hourly_klines:
-            root_path = self.config.get('path')
-            db_path = self.config.get('db_path')
-            hourly_klines_db_file = self.config.get('hourly_kline_db_file')
-            self.kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
-            self.rt_hourly_klines_handler = KlinesDB(self.accnt, self.kdb_path, symbol=self.ticker_id,
-                                                     logger=self.logger)
+            rt_hourly_signal_name = self.config.get('rt_hourly_signal')
 
-        rt_hourly_signal_name = self.config.get('rt_hourly_signal')
+            if self.rt_use_hourly_klines and self.rt_hourly_klines_handler and rt_hourly_signal_name:
+                self.rt_hourly_klines_signal = select_rt_hourly_signal(rt_hourly_signal_name,
+                                                                       kdb=self.rt_hourly_klines_handler,
+                                                                       accnt=self.accnt,
+                                                                       symbol=self.ticker_id,
+                                                                       asset_info=self.asset_info)
+            else:
+                self.rt_hourly_klines_signal = None
 
-        if self.rt_use_hourly_klines and self.rt_hourly_klines_handler and rt_hourly_signal_name:
-            self.rt_hourly_klines_signal = select_rt_hourly_signal(rt_hourly_signal_name,
-                                                                   kdb=self.rt_hourly_klines_handler,
-                                                                   accnt=self.accnt,
-                                                                   symbol=self.ticker_id,
-                                                                   asset_info=self.asset_info)
-        else:
-            self.rt_hourly_klines_signal = None
-
-        for name in signal_names:
-            signal = StrategyBase.select_signal_name(name,
-                                                     self.accnt,
-                                                     self.ticker_id,
-                                                     asset_info,
-                                                     kdb=self.rt_hourly_klines_handler)
-            self.signal_handler.add(signal)
+            for name in signal_names:
+                signal = StrategyBase.select_signal_name(name,
+                                                         self.accnt,
+                                                         self.ticker_id,
+                                                         asset_info,
+                                                         kdb=self.rt_hourly_klines_handler)
+                self.signal_handler.add(signal)
 
     # clear pending sell trades which have been bought
     def reset(self, buy_price=0, buy_size=0):
@@ -285,7 +277,7 @@ class basic_signal_market_strategy(StrategyBase):
         return completed
 
 
-    def load_hourly_klines(self, ts):
+    def rt_load_hourly_klines(self, ts):
         if self.ticker_id not in self.rt_hourly_klines_handler.table_symbols:
             self.rt_hourly_klines_disabled = True
             return
@@ -311,7 +303,7 @@ class basic_signal_market_strategy(StrategyBase):
             if self.rt_hourly_klines_signal and self.rt_hourly_klines_signal.uses_models:
                 # limit maximum number of models to load, unless rt_max_hourly_model_count is zero
                 if not self.rt_max_hourly_model_count or self.accnt.loaded_model_count <= self.rt_max_hourly_model_count:
-                    self.load_hourly_klines(kline.ts)
+                    self.rt_load_hourly_klines(kline.ts)
                     self.rt_hourly_klines_loaded = True
                 else:
                     self.rt_hourly_klines_disabled = True
@@ -320,7 +312,7 @@ class basic_signal_market_strategy(StrategyBase):
                 start_ts = end_ts - self.accnt.hours_to_ts(self.rt_hourly_preload_hours)
                 self.signal_handler.hourly_load(start_ts, end_ts, kline.ts)
                 if self.rt_hourly_klines_signal:
-                    self.load_hourly_klines(kline.ts)
+                    self.rt_load_hourly_klines(kline.ts)
                 self.rt_hourly_klines_loaded = True
 
         self.timestamp = kline.ts
@@ -434,7 +426,7 @@ class basic_signal_market_strategy(StrategyBase):
 
         # for more accurate simulation, delay buy message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
-        if self.accnt.simulate and not self.delayed_buy_msg:
+        if self.accnt.simulate and self.trader_mode_realtime and not self.delayed_buy_msg:
             self.delayed_buy_msg = TraderMessage(self.ticker_id,
                                                  TraderMessage.ID_MULTI,
                                                  TraderMessage.MSG_MARKET_BUY,
@@ -459,7 +451,7 @@ class basic_signal_market_strategy(StrategyBase):
 
         # for more accurate simulation, delay sell message for one cycle in order to have the buy price
         # be the value immediately following the price that the buy signal was triggered
-        if self.accnt.simulate and not self.delayed_sell_msg:
+        if self.accnt.simulate and self.trader_mode_realtime and not self.delayed_sell_msg:
             self.delayed_sell_msg = TraderMessage(self.ticker_id,
                                                   TraderMessage.ID_MULTI,
                                                   TraderMessage.MSG_MARKET_SELL,

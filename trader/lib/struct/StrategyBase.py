@@ -116,31 +116,40 @@ class StrategyBase(object):
         self.simulate = self.accnt.simulate
         self.trade_size_handler = None
         self.count_prices_added = 0
-        self.mm_enabled = False
         self.kline = None
-        self.hourly_klines = None
-        self.hourly_klines_handler = None
         self.hourly_update_fail_count = 0
         self.first_hourly_update_ts = 0
         self.last_hourly_update_ts = 0
 
-        self.use_hourly_klines = self.config.get('rt_use_hourly_klines')
-        if self.use_hourly_klines:
-            root_path = self.config.get('path')
-            db_path = self.config.get('db_path')
-            hourly_klines_db_file = self.config.get('hourly_kline_db_file')
-            kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
-            try:
-                self.hourly_klines_handler = KlinesDB(self.accnt,
-                                                      kdb_path,
-                                                      symbol=self.ticker_id,
-                                                      logger=self.logger)
-                if not self.hourly_klines_handler.symbol_in_table_list(self.ticker_id):
-                    self.hourly_klines_handler.close()
-                    self.hourly_klines_handler = None
-            except IOError:
-                self.logger.warning("hourly_klines_handler: Failed to load {}".format(kdb_path))
-                self.hourly_klines_handler = None
+        self.rt_hourly_klines = None
+        self.rt_hourly_klines_handler = None
+        self.rt_hourly_klines_processed = False
+        self.rt_hourly_klines_loaded = False
+        self.rt_hourly_klines_disabled = False
+        self.rt_use_hourly_klines = False
+
+        self.trader_mode_realtime = self.accnt.trade_mode_realtime()
+        self.trade_mode_hourly = self.accnt.trade_mode_hourly()
+
+        if self.accnt.trade_mode_realtime():
+            self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
+
+            if self.rt_use_hourly_klines:
+                root_path = self.config.get('path')
+                db_path = self.config.get('db_path')
+                hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+                kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
+                try:
+                    self.rt_hourly_klines_handler = KlinesDB(self.accnt,
+                                                             kdb_path,
+                                                             symbol=self.ticker_id,
+                                                             logger=self.logger)
+                    if not self.rt_hourly_klines_handler.symbol_in_table_list(self.ticker_id):
+                        self.rt_hourly_klines_handler.close()
+                        self.rt_hourly_klines_handler = None
+                except IOError:
+                    self.logger.warning("hourly_klines_handler: Failed to load {}".format(kdb_path))
+                    self.rt_hourly_klines_handler = None
 
         self.tpprofit = 0
         self.last_tpprofit = 0
@@ -169,10 +178,6 @@ class StrategyBase(object):
 
         # buy information loaded from trade.db
         self.buy_loaded = False
-        self.rt_hourly_klines_handler = None
-        self.rt_hourly_klines_processed = False
-        self.rt_hourly_klines_loaded = False
-        self.rt_hourly_klines_disabled = False
 
     @staticmethod
     def select_signal_name(name, accnt=None, symbol=None, asset_info=None, kdb=None):
