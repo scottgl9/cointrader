@@ -42,6 +42,12 @@ class Hourly_MACD_Signal(SignalBase):
     #     self.cross.update(self.macd.result, self.macd.result2, hourly_ts)
     #     self.cross_zero.update(self.macd.result, 0, hourly_ts)
 
+    def hourly_mode_update(self, kline):
+        # print(kline)
+        self.macd.update(kline.close)
+        self.cross.update(self.macd.result, self.macd.result2, kline.ts)
+        self.cross_zero.update(self.macd.result, 0, kline.ts)
+
     def hourly_buy_signal(self):
         # if self.cross_zero.crossup_detected():
         #     return True
