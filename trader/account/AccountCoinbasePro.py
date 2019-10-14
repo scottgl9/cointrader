@@ -629,17 +629,24 @@ class AccountCoinbasePro(AccountBase):
 
     # implemented for CoinBase Pro
     def get_account_balances(self, detailed=False):
-        self.balances = {}
-        result = {}
-        for account in self.client.get_accounts():
-            asset_name = account['currency']
-            balance = float(account['balance'])
-            available = float(account['available'])
-            hold = float(account['hold'])
-            self.balances[asset_name] = {'balance': balance, 'available': available, 'hold': hold}
-            result[asset_name] = balance
-        if detailed:
-            return self.balances
+        if not self.simulate:
+            self.balances = {}
+            result = {}
+            for account in self.client.get_accounts():
+                asset_name = account['currency']
+                balance = float(account['balance'])
+                available = float(account['available'])
+                hold = float(account['hold'])
+                self.balances[asset_name] = {'balance': balance, 'available': available, 'hold': hold}
+                result[asset_name] = balance
+            if detailed:
+                return self.balances
+        else:
+            if detailed:
+                return self.balances
+            result = {}
+            for asset, info in self.balances.items():
+                result[asset] = info['balance']
         return result
 
     def get_asset_balance(self, asset):
