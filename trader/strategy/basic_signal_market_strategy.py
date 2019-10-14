@@ -31,9 +31,6 @@ class basic_signal_market_strategy(StrategyBase):
 
             signal_names = [self.config.get('rt_signals')]
 
-            self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
-            self.rt_hourly_preload_hours = int(self.config.get('rt_hourly_preload_hours'))
-
             rt_hourly_signal_name = self.config.get('rt_hourly_signal')
 
             if self.rt_use_hourly_klines and self.rt_hourly_klines_handler and rt_hourly_signal_name:

@@ -122,17 +122,23 @@ class StrategyBase(object):
         self.last_hourly_update_ts = 0
 
         self.rt_hourly_klines = None
+        self.rt_hourly_klines_signal = None
         self.rt_hourly_klines_handler = None
         self.rt_hourly_klines_processed = False
         self.rt_hourly_klines_loaded = False
         self.rt_hourly_klines_disabled = False
         self.rt_use_hourly_klines = False
 
+        self.rt_max_hourly_model_count = 0
+        self.rt_hourly_preload_hours = 0
+
         self.trader_mode_realtime = self.accnt.trade_mode_realtime()
         self.trade_mode_hourly = self.accnt.trade_mode_hourly()
 
         if self.accnt.trade_mode_realtime():
             self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
+            self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
+            self.rt_hourly_preload_hours = int(self.config.get('rt_hourly_preload_hours'))
 
             if self.rt_use_hourly_klines:
                 root_path = self.config.get('path')
