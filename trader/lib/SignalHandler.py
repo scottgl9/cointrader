@@ -32,6 +32,13 @@ class SignalHandler(object):
         if handler in self.handlers:
             self.handlers.remove(handler)
 
+    def hourly_mode_update(self, kline):
+        if self.empty():
+            return
+
+        for handler in self.handlers:
+            handler.hourly_mode_update(kline)
+
     def hourly_load(self, hourly_ts=0, pre_load_hours=0, ts=0):
         for handler in self.handlers:
             handler.hourly_load(hourly_ts, pre_load_hours, ts)

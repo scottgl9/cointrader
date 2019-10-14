@@ -121,6 +121,9 @@ class SignalBase(object):
     def hourly_sell_enable(self):
         return True
 
+    def hourly_mode_update(self, kline):
+        pass
+
     # hourly buy signal
     def hourly_buy_signal(self):
         return False

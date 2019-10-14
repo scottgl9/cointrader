@@ -133,7 +133,7 @@ class StrategyBase(object):
         self.rt_hourly_preload_hours = 0
 
         self.trader_mode_realtime = self.accnt.trade_mode_realtime()
-        self.trade_mode_hourly = self.accnt.trade_mode_hourly()
+        self.trader_mode_hourly = self.accnt.trade_mode_hourly()
 
         if self.accnt.trade_mode_realtime():
             self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')

@@ -49,6 +49,15 @@ class basic_signal_market_strategy(StrategyBase):
                                                          asset_info,
                                                          kdb=self.rt_hourly_klines_handler)
                 self.signal_handler.add(signal)
+        elif self.trader_mode_hourly:
+            self.realtime_signals_enabled = False
+            hourly_mode_signal_name = self.config.get('hourly_mode_signal')
+            signal = StrategyBase.select_signal_name(hourly_mode_signal_name,
+                                                     self.accnt,
+                                                     self.ticker_id,
+                                                     asset_info,
+                                                     kdb=None)
+            self.signal_handler.add(signal)
 
     # clear pending sell trades which have been bought
     def reset(self, buy_price=0, buy_size=0):
@@ -94,16 +103,20 @@ class basic_signal_market_strategy(StrategyBase):
         if self.last_close == 0:
             return False
 
-        if self.rt_use_hourly_klines:
-            # don't buy if rt_use_hourly_klines is True, and hourly klines aren't being used
-            if not self.rt_hourly_klines_handler or self.rt_hourly_klines_disabled:
-                return False
-            if self.realtime_signals_enabled and self.rt_hourly_klines_signal:
-                if not self.rt_hourly_klines_signal.hourly_buy_enable():
+        if self.trader_mode_realtime:
+            if self.rt_use_hourly_klines:
+                # don't buy if rt_use_hourly_klines is True, and hourly klines aren't being used
+                if not self.rt_hourly_klines_handler or self.rt_hourly_klines_disabled:
                     return False
+                if self.realtime_signals_enabled and self.rt_hourly_klines_signal:
+                    if not self.rt_hourly_klines_signal.hourly_buy_enable():
+                        return False
 
-        if self.realtime_signals_enabled and signal.buy_signal():
-            return True
+            if self.realtime_signals_enabled and signal.buy_signal():
+                return True
+        elif self.trader_mode_hourly:
+            if signal.hourly_buy_signal():
+                return True
 
         return False
 
@@ -148,13 +161,17 @@ class basic_signal_market_strategy(StrategyBase):
         if self.buy_loaded:
             return True
 
-        if self.rt_use_hourly_klines:
-            if self.realtime_signals_enabled and self.rt_hourly_klines_signal:
-                if not self.rt_hourly_klines_signal.hourly_sell_enable():
-                    return False
+        if self.trader_mode_realtime:
+            if self.rt_use_hourly_klines:
+                if self.realtime_signals_enabled and self.rt_hourly_klines_signal:
+                    if not self.rt_hourly_klines_signal.hourly_sell_enable():
+                        return False
 
-        if self.realtime_signals_enabled and signal.sell_signal():
-            return True
+            if self.realtime_signals_enabled and signal.sell_signal():
+                return True
+        elif self.trader_mode_hourly:
+            if signal.hourly_sell_signal():
+                return True
 
         return False
 
@@ -287,6 +304,32 @@ class basic_signal_market_strategy(StrategyBase):
 
 
     def run_update(self, kline):
+        if self.trader_mode_realtime:
+            return self.run_update_realtime(kline)
+        elif self.trader_mode_hourly:
+            return self.run_update_hourly(kline)
+
+    def run_update_hourly(self, kline):
+        self.timestamp = kline.ts
+        close = kline.close
+        volume = kline.volume
+
+        if not close or not volume:
+            return
+
+        if self.timestamp == self.last_timestamp:
+            return
+
+        self.signal_handler.hourly_mode_update(kline)
+
+        completed = self.handle_incoming_messages()
+
+        for signal in self.signal_handler.get_handlers():
+            self.run_update_signal(signal, close, signal_completed=completed)
+
+        self.last_timestamp = self.timestamp
+
+    def run_update_realtime(self, kline):
         close = kline.close
         self.low = kline.low
         self.high = kline.high
