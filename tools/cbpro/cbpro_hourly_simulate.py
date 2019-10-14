@@ -120,7 +120,7 @@ def simulate(config, logger, start_date, end_date):
             if not found:
                 if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
                     found = True
-                    initial_total = multitrader.accnt.get_total_btc_value()
+                    initial_total = multitrader.accnt.get_account_total_value('BTC') #multitrader.accnt.get_total_btc_value()
                     multitrader.update_initial_currency()
 
             kline = symbol_klines[symbol][0]

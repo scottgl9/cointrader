@@ -136,8 +136,12 @@ class basic_signal_market_strategy(StrategyBase):
         if balance_available < float(self.min_trade_size) or balance_available == 0.0:
             return False
 
-        if signal.sell_long_signal():
-            return True
+        if self.trader_mode_realtime:
+            if signal.sell_long_signal():
+                return True
+        elif self.trader_mode_hourly:
+            if signal.hourly_sell_long_signal():
+                return True
 
         if price < float(signal.buy_price):
             return False
