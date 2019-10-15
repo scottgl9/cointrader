@@ -71,6 +71,10 @@ class basic_signal_market_strategy(StrategyBase):
             self.rt_hourly_klines_signal.close()
 
     def buy_signal(self, signal, price):
+        # wait until initial currency determined before placing buy order
+        if self.accnt.simulate and self.accnt.initial_currency == 0:
+            return False
+
         # buy signal disabled by filter
         if self.filter_buy_disabled:
             return False
