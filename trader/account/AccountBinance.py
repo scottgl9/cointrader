@@ -721,12 +721,16 @@ class AccountBinance(AccountBase):
                 price = float(self.get_ticker(symbol))
                 if price:
                     total_balance += value / price
+                elif self.simulate:
+                    return 0.0
                 continue
             symbol = self.make_ticker_id(asset, currency)
             price = float(self.get_ticker(symbol))
             #print(asset, value, price)
-            if not price:
+            if self.simulate and not price:
                 return 0.0
+            elif not price:
+                continue
             total_balance += value * price
 
         return total_balance

@@ -257,8 +257,8 @@ class MultiTrader(object):
                 self.order_handler.trade_db_load_symbol(symbol, trade_pair)
         return trade_pair
 
-    def update_initial_currency(self):
-        self.order_handler.update_initial_currency()
+    def update_initial_currency(self, total=0.0):
+        self.order_handler.update_initial_currency(total)
 
     def get_stored_trades(self):
         return self.order_handler.get_stored_trades()
