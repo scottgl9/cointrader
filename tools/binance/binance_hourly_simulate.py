@@ -118,10 +118,11 @@ def simulate(config, logger, start_date, end_date):
     while cur_ts <= last_ts:
         for symbol in symbols:
             if not found:
-                if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
+                total = multitrader.accnt.get_account_total_value(currency=profit_mode)
+                if total:
                     found = True
-                    initial_total = multitrader.accnt.get_total_btc_value()
-                    multitrader.update_initial_currency()
+                    initial_total = total
+                    multitrader.update_initial_currency(initial_total)
 
             kline = symbol_klines[symbol][0]
             if kline.ts != cur_ts:
@@ -137,12 +138,7 @@ def simulate(config, logger, start_date, end_date):
         cur_ts += int(accnt.hours_to_ts(1))
 
     logger.info("\nTrade Symbol Profits:")
-    if profit_mode == 'BTC':
-        final_total = multitrader.accnt.get_total_btc_value()
-    elif profit_mode == 'BNB':
-        final_total = multitrader.accnt.get_total_bnb_value()
-    else:
-        final_total = 0
+    final_total = multitrader.accnt.get_account_total_value(currency=profit_mode)
 
     total_pprofit = 0
 

@@ -145,15 +145,8 @@ class OrderLimitHandler(object):
             self.logger.info("initial_btc = 0 for {}".format(ticker_id))
 
         if self.accnt.initial_currency:
-            if self.accnt.simulate:
-                profit_mode = self.accnt.get_trader_profit_mode()
-                if profit_mode == 'BNB':
-                    current_currency = self.accnt.get_total_bnb_value()
-                else:
-                    current_currency = self.accnt.get_total_btc_value()
-            else:
-                #self.accnt.get_account_balances()
-                current_currency = self.accnt.get_account_total_btc_value()
+            profit_mode = self.accnt.get_trader_profit_mode()
+            current_currency = self.accnt.get_account_total_value(currency=profit_mode)
             tpprofit = 100.0 * (current_currency - self.accnt.initial_currency) / self.accnt.initial_currency
             self.accnt.set_total_percent_profit(tpprofit)
             message = "{}({}, {}, {}, {}) @ {} (bought @ {}, {}%)\t{}%".format(sell_type,

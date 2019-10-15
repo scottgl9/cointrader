@@ -143,15 +143,11 @@ def simulate(conn, config, logger, simulate_db_filename=None):
             last_ts = datetime.utcfromtimestamp(int(msg['E'])/1000)
 
         if not found:
-            if profit_mode == 'BTC' and multitrader.accnt.total_btc_available():
+            total = multitrader.accnt.get_account_total_value(currency=profit_mode)
+            if total:
                 found = True
-                initial_total = multitrader.accnt.get_total_btc_value()
-                multitrader.update_initial_currency()
-            elif profit_mode == 'BNB' and multitrader.accnt.total_bnb_available():
-                found = True
-                initial_total = multitrader.accnt.get_total_bnb_value()
-                print("initial_total: {}".format(initial_total))
-                multitrader.update_initial_currency()
+                initial_total = total
+                multitrader.update_initial_currency(initial_total)
 
         # if balance of USDT less than 20.0, then ignore all symbols ending in USDT
         #if msg['s'].endswith("USDT"):
@@ -185,12 +181,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
         multitrader.process_market_message(mmsg)
 
     logger.info("\nTrade Symbol Profits:")
-    if profit_mode == 'BTC':
-        final_total = multitrader.accnt.get_total_btc_value()
-    elif profit_mode == 'BNB':
-        final_total = multitrader.accnt.get_total_bnb_value()
-    else:
-        final_total = 0
+    final_total = multitrader.accnt.get_account_total_value(currency=profit_mode)
 
     total_pprofit = 0
 
