@@ -122,8 +122,8 @@ class AccountCoinbasePro(AccountBase):
                     except KeyError:
                         price = 0.0
                     return price
-            elif not len(self._tickers):
-                self._tickers = self.get_all_tickers()
+            #elif not len(self._tickers):
+            #    self._tickers = self.get_all_tickers()
         try:
             price = self._tickers[symbol]
         except KeyError:
@@ -514,86 +514,42 @@ class AccountCoinbasePro(AccountBase):
         return True
 
     def get_account_total_value(self, currency='USD', detailed=False):
-        result = {}
+        result = dict()
         result['assets'] = {}
-        if self.simulate:
-            tickers = self.get_all_tickers()
 
         total_balance = 0.0
 
         for asset, value in self.get_account_balances(detailed=False).items():
             if float(value) == 0:
                 continue
-            if not self.simulate:
-                if asset == currency:
-                    total_balance += value
-                    continue
-                elif currency == 'USDC' and asset == 'USD':
-                    total_balance += value
-                    continue
-                elif currency == 'USD' and asset == 'USDC':
-                    total_balance += value
-                    continue
-                elif currency != 'USDC' and asset == 'USDC':
-                    symbol = self.make_ticker_id(currency, asset)
-                    price = float(self.get_ticker(symbol))
-                    if price:
-                        total_balance += value / price
-                    continue
-                elif currency != 'USD' and asset == 'USD':
-                    symbol = self.make_ticker_id(currency, asset)
-                    price = float(self.get_ticker(symbol))
-                    if price:
-                        total_balance += value / price
-                    continue
-                symbol = self.make_ticker_id(asset, currency)
+            if asset == currency:
+                total_balance += value
+                continue
+            elif currency == 'USDC' and asset == 'USD':
+                total_balance += value
+                continue
+            elif currency == 'USD' and asset == 'USDC':
+                total_balance += value
+                continue
+            elif currency != 'USDC' and asset == 'USDC':
+                symbol = self.make_ticker_id(currency, asset)
                 price = float(self.get_ticker(symbol))
-                #print(asset, value, price)
-                if not price:
-                    continue
-                total_balance += value * price
+                if price:
+                    total_balance += value / price
+                continue
+            elif currency != 'USD' and asset == 'USD':
+                symbol = self.make_ticker_id(currency, asset)
+                price = float(self.get_ticker(symbol))
+                if price:
+                    total_balance += value / price
+                continue
+            symbol = self.make_ticker_id(asset, currency)
+            price = float(self.get_ticker(symbol))
+            #print(asset, value, price)
+            if not price:
+                continue
+            total_balance += value * price
 
-        # if currency != 'USD' and currency != 'USDC':
-        #     symbol = self.make_ticker_id(currency, 'USD')
-        #     if not self.is_exchange_pair(symbol):
-        #         symbol = self.make_ticker_id(currency, 'USDC')
-        #     price = float(self.get_ticker(symbol))
-        #     result_balance = total_balance / price
-        # else:
-
-        #     if float(accnt['free']) != 0.0 or float(accnt['locked']) != 0.0:
-        #         if accnt['asset'] != 'BTC' and accnt['asset'] != 'USDT':
-        #             symbol = "{}BTC".format(accnt['asset'])
-        #             if symbol not in tickers:
-        #                 continue
-        #             price = float(tickers[symbol])
-        #             total_amount = float(accnt['free']) + float(accnt['locked'])
-        #             price_btc = price * total_amount
-        #         elif accnt['asset'] != 'USDT':
-        #             total_amount = float(accnt['free']) + float(accnt['locked'])
-        #             price_btc = total_amount
-        #         else:
-        #             total_amount = float(accnt['free']) + float(accnt['locked'])
-        #             price_btc = total_amount / btc_usd_price
-        #
-        #         price_usd = price_btc * btc_usd_price
-        #         total_balance_usd += price_usd
-        #         total_balance_btc += price_btc
-        #
-        #         if price_usd > 1.0:
-        #             if not total_btc_only:
-        #                 asset = accnt['asset']
-        #                 result['assets'][asset] = {}
-        #                 result['assets'][asset]['amount'] = total_amount
-        #                 result['assets'][asset]['btc'] = price_btc
-        #                 result['assets'][asset]['usd'] = price_usd
-        # if not total_btc_only:
-        #     result['total'] = {}
-        #     result['total']['btc'] = total_balance_btc
-        #     if bnb_btc_price:
-        #         result['total']['bnb'] = total_balance_btc / bnb_btc_price
-        #     result['total']['usd'] = total_balance_usd
-        #     return result
         return total_balance
 
     def get_account_total_btc_value(self):
