@@ -6,12 +6,18 @@ class fixed_trade_size(trade_size_strategy_base):
         super(fixed_trade_size, self).__init__(accnt, asset_info)
         self.trade_sizes = trade_sizes
         try:
-            self.trade_size = float(trade_sizes[self.currency])
+            if self.currency:
+                self.trade_size = float(trade_sizes[self.currency])
+            else:
+                self.trade_size = 0
         except KeyError:
             self.trade_size = 0
 
     def check_buy_trade_size(self, price, size):
         if float(price) == 0 or float(size) == 0:
+            return False
+
+        if not self.currency:
             return False
 
         # if we have insufficient funds to buy
