@@ -196,7 +196,7 @@ if __name__ == '__main__':
                         help='binance hourly klines DB file')
 
     parser.add_argument('--start-date', action='store', dest='start_date',
-                        default='',
+                        default='01/01/2017',
                         help='Start date for hourly simulation')
 
     parser.add_argument('--end-date', action='store', dest='end_date',
