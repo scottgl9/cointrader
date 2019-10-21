@@ -336,7 +336,10 @@ class basic_signal_market_strategy(StrategyBase):
             self.run_update_signal(signal, close, signal_completed=completed)
 
         self.last_timestamp = self.timestamp
+        self.last_price = close
         self.last_close = close
+        self.last_low = self.low
+        self.last_high = self.high
 
     def run_update_realtime(self, kline):
         close = kline.close
