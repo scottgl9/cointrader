@@ -37,27 +37,22 @@ class multi_market_order_strategy(StrategyBase):
         else:
             self.hourly_klines_signal = None
 
-        if signal_names:
-            for name in signal_names:
-                if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
-                    continue
-                signal = StrategyBase.select_signal_name(name, self.accnt, self.ticker_id, asset_info)
-                if signal.mm_enabled:
-                    self.mm_enabled = True
-                # don't add global signal if global_filter doesn't match ticker_id
-                if signal.global_signal and signal.global_filter != self.ticker_id:
-                    continue
-                if not signal.global_signal and self.ticker_id.endswith('USDT'):
-                    continue
-                signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=multi_order_max_count)
-                self.signal_handler.add(signal)
-        else:
-            signal = StrategyBase.select_signal_name("Hybrid_Crossover",
-                                                     self.accnt,
-                                                     self.ticker_id,
-                                                     asset_info)
+        for name in signal_names:
+            if name == "BTC_USDT_Signal" and self.ticker_id != 'BTCUSDT':
+                continue
+            signal = StrategyBase.select_signal_name(name, self.accnt, self.ticker_id, asset_info)
+            if signal.mm_enabled:
+                self.mm_enabled = True
+            # don't add global signal if global_filter doesn't match ticker_id
+            if signal.global_signal and signal.global_filter != self.ticker_id:
+                continue
+            if not signal.global_signal and self.ticker_id.endswith('USDT'):
+                continue
             signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=multi_order_max_count)
             self.signal_handler.add(signal)
+
+            #signal.multi_order_tracker = MultiOrderTracker(sig_id=signal.id, max_count=multi_order_max_count)
+            #self.signal_handler.add(signal)
 
 
     # clear pending sell trades which have been bought
@@ -65,6 +60,9 @@ class multi_market_order_strategy(StrategyBase):
         for signal in self.signal_handler.get_handlers():
             signal.multi_order_tracker.clear()
 
+    def close(self):
+        if self.accnt.trade_mode_realtime() and self.rt_hourly_klines_signal:
+            self.rt_hourly_klines_signal.close()
 
     def buy_signal(self, signal, price):
         if self.accnt.trades_disabled():
@@ -94,7 +92,7 @@ class multi_market_order_strategy(StrategyBase):
 
         # don't buy if use_hourly_klines is True, and hourly klines aren't being used
         if self.use_hourly_klines:
-            if not self.hourly_klines_handler or self.hourly_klines_disabled:
+            if not self.rt_hourly_klines_handler or self.hourly_klines_disabled:
                 return False
 
         if self.use_hourly_klines and self.hourly_klines_signal and not self.hourly_klines_signal.buy_enable():
@@ -247,37 +245,66 @@ class multi_market_order_strategy(StrategyBase):
         return completed
 
 
-    def load_hourly_klines(self, ts):
-        if self.ticker_id not in self.hourly_klines_handler.table_symbols:
-            self.hourly_klines_disabled = True
+    def rt_load_hourly_klines(self, ts):
+        if self.ticker_id not in self.rt_hourly_klines_handler.table_symbols:
+            self.rt_hourly_klines_disabled = True
             return
 
         # end_ts is first hourly ts for simulation
         end_ts = self.accnt.get_hourly_ts(ts)
         start_ts = end_ts - self.accnt.hours_to_ts(48)
-        self.hourly_klines_signal.load(start_ts, end_ts, ts)
-        if self.hourly_klines_signal.uses_models:
+        self.rt_hourly_klines_signal.hourly_load(start_ts, end_ts, ts)
+        if self.rt_hourly_klines_signal.uses_models:
             self.accnt.loaded_model_count += 1
 
-
     def run_update(self, kline):
+        if self.trader_mode_realtime:
+            return self.run_update_realtime(kline)
+        elif self.trader_mode_hourly:
+            return self.run_update_hourly(kline)
+
+    def run_update_hourly(self, kline):
+        self.timestamp = kline.ts
+        close = kline.close
+        volume = kline.volume
+
+        if not close or not volume:
+            return
+
+        if self.timestamp == self.last_timestamp:
+            return
+
+        self.signal_handler.hourly_mode_update(kline)
+
+        completed = self.handle_incoming_messages()
+
+        for signal in self.signal_handler.get_handlers():
+            self.run_update_signal(signal, close, signal_completed=completed)
+
+        self.last_timestamp = self.timestamp
+        self.last_price = close
+        self.last_close = close
+        self.last_low = self.low
+        self.last_high = self.high
+
+    def run_update_realtime(self, kline):
         close = kline.close
         self.low = kline.low
         self.high = kline.high
         volume = kline.volume_quote
 
         if not self.timestamp:
-            if self.hourly_klines_signal and not self.hourly_klines_loaded:
+            if self.hourly_klines_signal and not self.rt_hourly_klines_loaded:
                 if self.hourly_klines_signal.uses_models:
                     # limit maximum number of models to load, unless max_hourly_model_count is zero
                     if not self.max_hourly_model_count or self.accnt.loaded_model_count <= self.max_hourly_model_count:
-                        self.load_hourly_klines(kline.ts)
-                        self.hourly_klines_loaded = True
+                        self.rt_load_hourly_klines(kline.ts)
+                        self.rt_hourly_klines_loaded = True
                     else:
-                        self.hourly_klines_disabled = True
+                        self.rt_hourly_klines_disabled = True
                 else:
-                    self.load_hourly_klines(kline.ts)
-                    self.hourly_klines_loaded = True
+                    self.rt_load_hourly_klines(kline.ts)
+                    self.rt_hourly_klines_loaded = True
 
         self.timestamp = kline.ts
 
