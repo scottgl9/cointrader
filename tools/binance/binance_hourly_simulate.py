@@ -288,8 +288,6 @@ if __name__ == '__main__':
             except json.decoder.JSONDecodeError:
                 logger.warn("Failed to load {}".format(trade_json_path))
 
-    logger.info("Running hourly simulate with signal {}".format(signal_name))
-
     hourly_kline_db_file = results.hourly_klines_db_file
 
     try:

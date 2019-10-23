@@ -58,6 +58,7 @@ class MultiTrader(object):
         self.strategy_name = self.config.get('strategy')
         self.signal_names = [self.config.get('rt_signals')]
         self.hourly_signal_name = self.config.get('rt_hourly_signal')
+        self.hourly_mode_signal = self.config.get('hourly_mode_signal')
         self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
         self.kdb_path = "{}/{}/{}".format(self.root_path, self.db_path, self.hourly_klines_db_file)
         self.use_hourly_klines = self.config.get('rt_use_hourly_klines')
@@ -177,13 +178,15 @@ class MultiTrader(object):
             self.accnt.load_exchange_info()
             self.purge_trade_db()
 
-        if sigstr:
-            self.logger.info("Running MultiTrade {} strategy {} signal(s) {} hourly signal: {}".format(run_type,
+        if self.accnt.trade_mode_realtime():
+            self.logger.info("Running MultiTrade {} strategy: {} signal(s): {} hourly signal: {}".format(run_type,
                                                                                                        self.strategy_name,
                                                                                                        sigstr,
                                                                                                        self.hourly_signal_name))
-        else:
-            self.logger.info("Running MultiTrade {} strategy {}".format(run_type, self.strategy_name))
+        elif self.accnt.trade_mode_hourly():
+            self.logger.info("Running MultiTrade {} strategy: {} hourly_mode_signal: {}".format(run_type,
+                                                                                                self.strategy_name,
+                                                                                                self.hourly_mode_signal))
 
     # close() called when exiting MultiTrader
     def close(self):
