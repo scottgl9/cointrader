@@ -1,5 +1,5 @@
 from trader.lib.struct.TraderMessage import TraderMessage
-from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
+from trader.strategy.trade_size.fixed_trade_size import fixed_trade_size
 from trader.lib.struct.StrategyBase import StrategyBase, select_rt_hourly_signal
 from trader.lib.struct.SignalBase import SignalBase
 from trader.KlinesDB import KlinesDB

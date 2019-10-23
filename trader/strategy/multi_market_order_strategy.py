@@ -1,6 +1,6 @@
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.MultiOrderTracker import MultiOrderTracker
-from trader.strategy.trade_size_strategy.fixed_trade_size import fixed_trade_size
+from trader.strategy.trade_size.fixed_trade_size import fixed_trade_size
 from trader.lib.struct.StrategyBase import StrategyBase, select_hourly_signal
 
 

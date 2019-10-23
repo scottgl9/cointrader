@@ -1,2 +1,0 @@
-from trader.strategy.trade_size_strategy.trade_size_strategy_base import trade_size_strategy_base
-

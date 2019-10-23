@@ -1,4 +1,4 @@
-from trader.strategy.trade_size_strategy import trade_size_strategy_base
+from .trade_size_strategy_base import trade_size_strategy_base
 
 
 class fixed_trade_size(trade_size_strategy_base):

@@ -1,5 +1,5 @@
 # Buy / sell in a fixed percent amount of available currency(s)
-from trader.strategy.trade_size_strategy import trade_size_strategy_base
+from .trade_size_strategy_base import trade_size_strategy_base
 
 
 class percent_balance_trade_size(trade_size_strategy_base):
