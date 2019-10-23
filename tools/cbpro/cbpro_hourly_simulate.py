@@ -138,6 +138,7 @@ def simulate(config, logger, start_date, end_date):
         cur_ts += int(accnt.hours_to_ts(1))
 
     logger.info("\nTrade Symbol Profits:")
+    print(multitrader.accnt.get_account_balances())
     final_total = multitrader.accnt.get_account_total_value(currency=profit_mode)
 
     total_pprofit = 0

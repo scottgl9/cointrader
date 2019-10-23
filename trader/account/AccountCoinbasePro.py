@@ -38,9 +38,9 @@ class AccountCoinbasePro(AccountBase):
         self.currency_trade_pairs = ['ETH-BTC', 'BTC-USDC', 'ETH-USDC', 'BTC-USD', 'ETH-USD']
 
         # keep track of initial currency buy size, and subsequent trades against currency
-        #self._currency_buy_size = {}
-        #for currency in self.currencies:
-        #    self._currency_buy_size[currency] = 0
+        self._currency_buy_size = {}
+        for currency in self.currencies:
+            self._currency_buy_size[currency] = 0
 
         self._exchange_pairs = None
         self._tickers = {}
@@ -549,7 +549,12 @@ class AccountCoinbasePro(AccountBase):
                 continue
             symbol = self.make_ticker_id(asset, currency)
             price = float(self.get_ticker(symbol))
-            #print(asset, value, price)
+            if not price and currency == 'USD':
+                symbol = self.make_ticker_id(asset, 'USDC')
+                price = float(self.get_ticker(symbol))
+            elif not price and currency == 'USDC':
+                symbol = self.make_ticker_id(asset, 'USD')
+                price = float(self.get_ticker(symbol))
             if self.simulate and not price:
                 return 0.0
             elif not price:
@@ -557,27 +562,6 @@ class AccountCoinbasePro(AccountBase):
             total_balance += value * price
 
         return total_balance
-
-    def get_account_total_btc_value(self):
-        return self.get_account_total_value(currency='BTC')
-
-    def total_btc_available(self, tickers=None):
-        if not tickers:
-            tickers = self._tickers
-        for symbol, info in self.balances.items():
-            if symbol != 'BTC':
-                if symbol == 'USD' or symbol == 'USDC':
-                    continue
-                if not info or not info['balance']:
-                    continue
-                ticker_id = self.make_ticker_id(symbol, 'BTC')
-                if ticker_id not in tickers:
-                    print(ticker_id)
-                    return False
-        return True
-
-    def get_account_status(self):
-        return self.client.get_account_status()
 
     def update_asset_balance(self, name, balance, available):
         if self.simulate:
@@ -630,9 +614,6 @@ class AccountCoinbasePro(AccountBase):
             return 0.0, 0.0
         return balance, available
 
-    def get_deposit_history(self, asset=None):
-        return self.client.get_deposit_history(asset=asset)
-
     def get_all_ticker_symbols(self, currency=None):
         result = []
         products = self.pc.get_products()
@@ -655,9 +636,6 @@ class AccountCoinbasePro(AccountBase):
 
     def get_order(self, order_id, ticker_id):
         return self.client.get_order(order_id=order_id)
-
-    def get_orders(self, ticker_id=None):
-        return self.client.get_open_orders(symbol=ticker_id)
 
     def buy_market(self, size, price=0.0, ticker_id=None):
         if self.simulate:

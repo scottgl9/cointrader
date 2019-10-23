@@ -75,6 +75,10 @@ class basic_signal_market_strategy(StrategyBase):
         if self.accnt.simulate and self.accnt.initial_currency == 0:
             return False
 
+        # don't buy a currency pair
+        if self.accnt.is_currency_pair(self.ticker_id):
+            return False
+
         # buy signal disabled by filter
         if self.filter_buy_disabled:
             return False
