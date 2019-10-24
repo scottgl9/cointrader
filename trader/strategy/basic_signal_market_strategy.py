@@ -202,6 +202,95 @@ class basic_signal_market_strategy(StrategyBase):
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
 
+    def handle_msg_buy_complete(self, msg):
+        if not self.simulate:
+            self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
+                                                                           msg.price,
+                                                                           msg.size))
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+        if signal:
+            signal.buy_size = msg.size
+            signal.buy_price = msg.price
+            signal.buy_timestamp = self.timestamp
+            signal.last_buy_ts = self.timestamp
+        else:
+            self.logger.warning("BUY_COMPLETE failed, no signal for {}".format(msg.dst_id))
+
+        return True
+
+    def handle_msg_sell_complete(self, msg):
+        if not self.simulate:
+            self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
+                                                                                         msg.price,
+                                                                                         msg.buy_price,
+                                                                                         msg.size))
+
+        if self.min_trade_size_qty != 1.0:
+            self.min_trade_size_qty = 1.0
+
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+
+        if signal:
+            signal.last_sell_price = msg.price
+            signal.last_buy_price = msg.buy_price
+            signal.buy_price = 0.0
+            signal.buy_size = 0.0
+            signal.last_sell_price = msg.price
+            signal.buy_timestamp = 0
+            signal.prev_last_sell_ts = signal.last_sell_ts
+            signal.last_sell_ts = self.timestamp
+        else:
+            self.logger.warning("SELL_COMPLETE failed, no signal for {}".format(msg.dst_id))
+
+        # if buy price was loaded from trade.db, mark buy_loaded as fail since it was sold
+        self.buy_loaded = False
+        return True
+
+    def handle_msg_buy_failed(self, msg):
+        self.logger.info("BUY_FAILED for {} price={} size={} round_base={} round_quote={}".format(msg.dst_id,
+                                                                                                  msg.price,
+                                                                                                  msg.size,
+                                                                                                  self.round_base(
+                                                                                                  float(msg.size)),
+                                                                                                  self.round_quote(
+                                                                                                  float(msg.size))))
+        if self.min_trade_size_qty != 1.0:
+            self.min_trade_size_qty = 1.0
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+        if signal:
+            signal.buy_price = 0.0
+            signal.buy_size = 0.0
+            signal.buy_timestamp = 0
+            # for failed buy, disable buys for this symbol for 4 hours
+            signal.disabled = True
+            signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
+        else:
+            self.logger.warning("BUY_FAILED failed, no signal for {}".format(msg.dst_id))
+        msg.mark_read()
+        return False
+
+    def handle_msg_sell_failed(self, msg):
+        self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
+                                                                                   msg.price,
+                                                                                   msg.buy_price,
+                                                                                   msg.size))
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+        if signal:
+            signal.buy_price = signal.last_buy_price
+        else:
+            self.logger.warning("SELL_FAILED failed, no signal for {}".format(msg.dst_id))
+        msg.mark_read()
+        return False
+
+    def handle_msg_order_size_update(self, msg):
+        id = msg.sig_id
+        signal = self.signal_handler.get_handler(id=id)
+        self.logger.info("ORDER_SIZE_UPDATE for {} orig_size={} new_size={}".format(msg.dst_id,
+                                                                                    signal.buy_size,
+                                                                                    msg.size))
+        signal.buy_size = msg.size
+        return False
+
     def handle_incoming_messages(self):
         completed = False
 
@@ -212,87 +301,24 @@ class basic_signal_market_strategy(StrategyBase):
                 if msg.is_read():
                     continue
                 if msg.cmd == TraderMessage.MSG_BUY_COMPLETE:
-                    if not self.simulate:
-                        self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
-                                                                                       msg.price,
-                                                                                       msg.size))
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    if signal:
-                        signal.buy_size = msg.size
-                        signal.buy_price = msg.price
-                        signal.buy_timestamp = self.timestamp
-                        signal.last_buy_ts = self.timestamp
-                    else:
-                        self.logger.warning("BUY_COMPLETE failed, no signal for {}".format(msg.dst_id))
-
+                    if self.handle_msg_buy_complete(msg):
+                        completed = True
                     msg.mark_read()
-                    completed = True
                 elif msg.cmd == TraderMessage.MSG_SELL_COMPLETE:
-                    if not self.simulate:
-                        self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
-                                                                                                     msg.price,
-                                                                                                     msg.buy_price,
-                                                                                                     msg.size))
-
-                    if self.min_trade_size_qty != 1.0:
-                        self.min_trade_size_qty = 1.0
-
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-
-                    if signal:
-                        signal.last_sell_price = msg.price
-                        signal.last_buy_price = msg.buy_price
-                        signal.buy_price = 0.0
-                        signal.buy_size = 0.0
-                        signal.last_sell_price = msg.price
-                        signal.buy_timestamp = 0
-                        signal.prev_last_sell_ts = signal.last_sell_ts
-                        signal.last_sell_ts = self.timestamp
-                    else:
-                        self.logger.warning("SELL_COMPLETE failed, no signal for {}".format(msg.dst_id))
-
-                    # if buy price was loaded from trade.db, mark buy_loaded as fail since it was sold
-                    self.buy_loaded = False
-
+                    if self.handle_msg_sell_complete(msg):
+                        completed = True
                     msg.mark_read()
-                    completed = True
                 elif msg.cmd == TraderMessage.MSG_BUY_FAILED:
-                    self.logger.info("BUY_FAILED for {} price={} size={} round_base={} round_quote={}".format(msg.dst_id,
-                                                                                 msg.price,
-                                                                                 msg.size,
-                                                                                 self.round_base(float(msg.size)),
-                                                                                 self.round_quote(float(msg.size))))
-                    if self.min_trade_size_qty != 1.0:
-                        self.min_trade_size_qty = 1.0
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    if signal:
-                        signal.buy_price = 0.0
-                        signal.buy_size = 0.0
-                        signal.buy_timestamp = 0
-                        # for failed buy, disable buys for this symbol for 4 hours
-                        signal.disabled = True
-                        signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
-                    else:
-                        self.logger.warning("BUY_FAILED failed, no signal for {}".format(msg.dst_id))
+                    if self.handle_msg_buy_failed(msg):
+                        completed = True
                     msg.mark_read()
                 elif msg.cmd == TraderMessage.MSG_SELL_FAILED:
-                    self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
-                                                                                               msg.price,
-                                                                                               msg.buy_price,
-                                                                                               msg.size))
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    if signal:
-                        signal.buy_price = signal.last_buy_price
-                    else:
-                        self.logger.warning("SELL_FAILED failed, no signal for {}".format(msg.dst_id))
+                    if self.handle_msg_sell_failed(msg):
+                        completed = True
                     msg.mark_read()
                 elif msg.cmd == TraderMessage.MSG_ORDER_SIZE_UPDATE:
-                    id = msg.sig_id
-                    signal = self.signal_handler.get_handler(id=id)
-                    self.logger.info("ORDER_SIZE_UPDATE for {} orig_size={} new_size={}".format(msg.dst_id,
-                                                                                        signal.buy_size,
-                                                                                        msg.size))
-                    signal.buy_size = msg.size
+                    if self.handle_msg_order_size_update(msg):
+                        completed = True
                     msg.mark_read()
 
             for msg in self.msg_handler.get_messages(src_id=TraderMessage.ID_ROOT, dst_id=self.ticker_id):
