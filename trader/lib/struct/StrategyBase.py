@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 from trader.lib.TraderMessageHandler import TraderMessageHandler
 from trader.lib.SignalHandler import SignalHandler
+from .TraderMessage import TraderMessage
 from trader.KlinesDB import KlinesDB
 
 
@@ -235,6 +236,58 @@ class StrategyBase(object):
             return signal(accnt, symbol, asset_info, kdb=kdb)
 
         return None
+
+    def handle_msg_buy_complete(self, msg):
+        return False
+
+    def handle_msg_sell_complete(self, msg):
+        return False
+
+    def handle_msg_buy_failed(self, msg):
+        return False
+
+    def handle_msg_sell_failed(self, msg):
+        return False
+
+    def handle_msg_order_size_update(self, msg):
+        return False
+
+    # handle incoming messages from OrderHandler or MultiTrader
+    def handle_incoming_messages(self):
+        completed = False
+        if not self.msg_handler.empty():
+            for msg in self.msg_handler.get_messages(src_id=TraderMessage.ID_MULTI, dst_id=self.ticker_id):
+                if not msg:
+                    continue
+                if msg.is_read():
+                    continue
+                if msg.cmd == TraderMessage.MSG_BUY_COMPLETE:
+                    if self.handle_msg_buy_complete(msg):
+                        completed = True
+                    msg.mark_read()
+                elif msg.cmd == TraderMessage.MSG_SELL_COMPLETE:
+                    if self.handle_msg_sell_complete(msg):
+                        completed = True
+                    msg.mark_read()
+                elif msg.cmd == TraderMessage.MSG_BUY_FAILED:
+                    if self.handle_msg_buy_failed(msg):
+                        completed = True
+                    msg.mark_read()
+                elif msg.cmd == TraderMessage.MSG_SELL_FAILED:
+                    if self.handle_msg_sell_failed(msg):
+                        completed = True
+                    msg.mark_read()
+                elif msg.cmd == TraderMessage.MSG_ORDER_SIZE_UPDATE:
+                    if self.handle_msg_order_size_update(msg):
+                        completed = True
+                    msg.mark_read()
+
+            for msg in self.msg_handler.get_messages(src_id=TraderMessage.ID_ROOT, dst_id=self.ticker_id):
+                if msg and msg.cmd == TraderMessage.MSG_BUY_UPDATE:
+                    msg.mark_read()
+            self.msg_handler.clear_read()
+
+        return completed
 
     def get_ticker_id(self):
         return self.ticker_id

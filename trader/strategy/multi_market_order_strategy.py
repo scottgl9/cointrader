@@ -157,93 +157,77 @@ class multi_market_order_strategy(StrategyBase):
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
 
-    def handle_incoming_messages(self):
-        completed = False
+    def handle_msg_buy_complete(self, msg):
+        if not self.simulate:
+            self.logger.info("BUY_COMPLETE for {} price={} size={} sigid={} sigoid={}".format(msg.dst_id,
+                                                                                              msg.price,
+                                                                                              msg.size,
+                                                                                              msg.sig_id,
+                                                                                              msg.sig_oid))
+        sig_oid = msg.sig_oid
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+        signal.multi_order_tracker.update_price_by_sigoid(sig_oid, msg.price)
+        signal.multi_order_tracker.update_size_by_sigoid(sig_oid, msg.size)
+        signal.multi_order_tracker.mark_buy_completed(sig_oid)
+        signal.buy_timestamp = self.timestamp
+        signal.last_buy_ts = self.timestamp
+        return True
 
-        if not self.msg_handler.empty():
-            for msg in self.msg_handler.get_messages(src_id=TraderMessage.ID_MULTI, dst_id=self.ticker_id):
-                if not msg:
-                    continue
-                if msg.is_read():
-                    continue
-                if msg.cmd == TraderMessage.MSG_BUY_COMPLETE:
-                    if not self.simulate:
-                        self.logger.info("BUY_COMPLETE for {} price={} size={} sigid={} sigoid={}".format(msg.dst_id,
-                                                                                                          msg.price,
-                                                                                                          msg.size,
-                                                                                                          msg.sig_id,
-                                                                                                          msg.sig_oid))
-                    sig_oid = msg.sig_oid
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    signal.multi_order_tracker.update_price_by_sigoid(sig_oid, msg.price)
-                    signal.multi_order_tracker.update_size_by_sigoid(sig_oid, msg.size)
-                    signal.multi_order_tracker.mark_buy_completed(sig_oid)
-                    signal.buy_timestamp = self.timestamp
-                    signal.last_buy_ts = self.timestamp
-                    msg.mark_read()
-                    completed = True
-                elif msg.cmd == TraderMessage.MSG_SELL_COMPLETE:
-                    if not self.simulate:
-                        self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
-                                                                                                     msg.price,
-                                                                                                     msg.buy_price,
-                                                                                                     msg.size))
-                    sig_oid = msg.sig_oid
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    signal.last_sell_price = msg.price
-                    if self.min_trade_size_qty != 1.0:
-                        self.min_trade_size_qty = 1.0
+    def handle_msg_sell_complete(self, msg):
+        if not self.simulate:
+            self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
+                                                                                         msg.price,
+                                                                                         msg.buy_price,
+                                                                                         msg.size))
+        sig_oid = msg.sig_oid
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+        signal.last_sell_price = msg.price
+        if self.min_trade_size_qty != 1.0:
+            self.min_trade_size_qty = 1.0
 
-                    signal.last_buy_price = signal.multi_order_tracker.get_price_by_sigoid(sig_oid)
-                    signal.multi_order_tracker.remove_by_sigoid(sig_oid)
-                    signal.last_sell_price = msg.price
-                    signal.buy_timestamp = 0
-                    signal.last_sell_ts = self.timestamp
+        signal.last_buy_price = signal.multi_order_tracker.get_price_by_sigoid(sig_oid)
+        signal.multi_order_tracker.remove_by_sigoid(sig_oid)
+        signal.last_sell_price = msg.price
+        signal.buy_timestamp = 0
+        signal.last_sell_ts = self.timestamp
 
-                    # if buy price was loaded from trade.db, mark buy_loaded as fail since it was sold
-                    self.buy_loaded = False
+        # if buy price was loaded from trade.db, mark buy_loaded as fail since it was sold
+        self.buy_loaded = False
+        return True
 
-                    msg.mark_read()
-                    completed = True
-                elif msg.cmd == TraderMessage.MSG_BUY_FAILED:
-                    sig_oid = msg.sig_oid
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
-                                                                                 msg.price,
-                                                                                 msg.size))
-                    if self.min_trade_size_qty != 1.0:
-                        self.min_trade_size_qty = 1.0
-                    signal.multi_order_tracker.remove_by_sigoid(sig_oid)
-                    signal.buy_timestamp = 0
-                    # for failed buy, disable buys for this symbol for 4 hours
-                    signal.disabled = True
-                    signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
-                    msg.mark_read()
-                elif msg.cmd == TraderMessage.MSG_SELL_FAILED:
-                    oid = msg.sig_oid
-                    signal = self.signal_handler.get_handler(id=msg.sig_id)
-                    self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
-                                                                                               msg.price,
-                                                                                               msg.buy_price,
-                                                                                               msg.size))
-                    signal.buy_price = signal.last_buy_price
-                    msg.mark_read()
-                elif msg.cmd == TraderMessage.MSG_ORDER_SIZE_UPDATE:
-                    id = msg.sig_id
-                    signal = self.signal_handler.get_handler(id=id)
-                    self.logger.info("ORDER_SIZE_UPDATE for {} orig_size={} new_size={}".format(msg.dst_id,
-                                                                                        signal.buy_size,
-                                                                                        msg.size))
-                    signal.buy_size = msg.size
-                    msg.mark_read()
+    def handle_msg_buy_failed(self, msg):
+        sig_oid = msg.sig_oid
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+        self.logger.info("BUY_FAILED for {} price={} size={}".format(msg.dst_id,
+                                                                     msg.price,
+                                                                     msg.size))
+        if self.min_trade_size_qty != 1.0:
+            self.min_trade_size_qty = 1.0
+        signal.multi_order_tracker.remove_by_sigoid(sig_oid)
+        signal.buy_timestamp = 0
+        # for failed buy, disable buys for this symbol for 4 hours
+        signal.disabled = True
+        signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
+        return False
 
-            for msg in self.msg_handler.get_messages(src_id=TraderMessage.ID_ROOT, dst_id=self.ticker_id):
-                if msg and msg.cmd == TraderMessage.MSG_BUY_UPDATE:
-                    msg.mark_read()
-            self.msg_handler.clear_read()
+    def handle_msg_sell_failed(self, msg):
+        oid = msg.sig_oid
+        signal = self.signal_handler.get_handler(id=msg.sig_id)
+        self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
+                                                                                   msg.price,
+                                                                                   msg.buy_price,
+                                                                                   msg.size))
+        signal.buy_price = signal.last_buy_price
+        return False
 
-        return completed
-
+    def handle_msg_order_size_update(self, msg):
+        id = msg.sig_id
+        signal = self.signal_handler.get_handler(id=id)
+        self.logger.info("ORDER_SIZE_UPDATE for {} orig_size={} new_size={}".format(msg.dst_id,
+                                                                                    signal.buy_size,
+                                                                                    msg.size))
+        signal.buy_size = msg.size
+        return False
 
     def rt_load_hourly_klines(self, ts):
         if self.ticker_id not in self.rt_hourly_klines_handler.table_symbols:
