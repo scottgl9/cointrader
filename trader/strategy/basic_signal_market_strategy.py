@@ -202,6 +202,7 @@ class basic_signal_market_strategy(StrategyBase):
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
 
+    # handle received buy complete message from OrderHandler
     def handle_msg_buy_complete(self, msg):
         if not self.simulate:
             self.logger.info("BUY_COMPLETE for {} price={} size={}".format(msg.dst_id,
@@ -218,6 +219,7 @@ class basic_signal_market_strategy(StrategyBase):
 
         return True
 
+    # handle received sell complete message from OrderHandler
     def handle_msg_sell_complete(self, msg):
         if not self.simulate:
             self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
@@ -246,6 +248,7 @@ class basic_signal_market_strategy(StrategyBase):
         self.buy_loaded = False
         return True
 
+    # handle received buy failed message from OrderHandler
     def handle_msg_buy_failed(self, msg):
         self.logger.info("BUY_FAILED for {} price={} size={} round_base={} round_quote={}".format(msg.dst_id,
                                                                                                   msg.price,
@@ -269,6 +272,7 @@ class basic_signal_market_strategy(StrategyBase):
         msg.mark_read()
         return False
 
+    # handle received sell failed message from OrderHandler
     def handle_msg_sell_failed(self, msg):
         self.logger.info("SELL_FAILED for {} price={} buy_price={} size={}".format(msg.dst_id,
                                                                                    msg.price,
@@ -282,6 +286,7 @@ class basic_signal_market_strategy(StrategyBase):
         msg.mark_read()
         return False
 
+    # handle received order size update message from OrderHandler
     def handle_msg_order_size_update(self, msg):
         id = msg.sig_id
         signal = self.signal_handler.get_handler(id=id)

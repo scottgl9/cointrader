@@ -157,6 +157,7 @@ class multi_market_order_strategy(StrategyBase):
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
 
+    # handle received buy completed message from OrderHandler
     def handle_msg_buy_complete(self, msg):
         if not self.simulate:
             self.logger.info("BUY_COMPLETE for {} price={} size={} sigid={} sigoid={}".format(msg.dst_id,
@@ -173,6 +174,7 @@ class multi_market_order_strategy(StrategyBase):
         signal.last_buy_ts = self.timestamp
         return True
 
+    # handle received sell completed message from OrderHandler
     def handle_msg_sell_complete(self, msg):
         if not self.simulate:
             self.logger.info("SELL_COMPLETE for {} price={} buy_price={} size={}".format(msg.dst_id,
@@ -195,6 +197,7 @@ class multi_market_order_strategy(StrategyBase):
         self.buy_loaded = False
         return True
 
+    # handle received buy failed message from OrderHandler
     def handle_msg_buy_failed(self, msg):
         sig_oid = msg.sig_oid
         signal = self.signal_handler.get_handler(id=msg.sig_id)
@@ -210,6 +213,7 @@ class multi_market_order_strategy(StrategyBase):
         signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
         return False
 
+    # handle received sell failed message from OrderHandler
     def handle_msg_sell_failed(self, msg):
         oid = msg.sig_oid
         signal = self.signal_handler.get_handler(id=msg.sig_id)
@@ -220,6 +224,7 @@ class multi_market_order_strategy(StrategyBase):
         signal.buy_price = signal.last_buy_price
         return False
 
+    # handle received order size update message from OrderHandler
     def handle_msg_order_size_update(self, msg):
         id = msg.sig_id
         signal = self.signal_handler.get_handler(id=id)

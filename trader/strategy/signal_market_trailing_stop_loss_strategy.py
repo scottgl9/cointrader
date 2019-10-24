@@ -147,6 +147,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         self.logger.info("loading into {} price={} size={} sigid={}".format(self.ticker_id, buy_price, buy_size, sig_id))
 
 
+    # handle received buy completed message from OrderHandler
     def handle_msg_buy_complete(self, msg):
         if not self.simulate:
             msg_type = TraderMessage.get_msg_type_string(msg.order_type)
@@ -167,6 +168,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         #    self.set_sell_stop_loss(signal, self.stop_loss_price)
         return True
 
+    # handle received sell completed message from OrderHandler
     def handle_msg_sell_complete(self, msg):
         if not self.simulate:
             msg_type = TraderMessage.get_msg_type_string(msg.order_type)
@@ -198,6 +200,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         self.buy_loaded = False
         return True
 
+    # handle received buy failed message from OrderHandler
     def handle_msg_buy_failed(self, msg):
         signal = self.signal_handler.get_handler(id=msg.sig_id)
         msg_type = TraderMessage.get_msg_type_string(msg.order_type)
@@ -215,6 +218,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         signal.disabled_end_ts = signal.timestamp + self.accnt.hours_to_ts(4)
         return False
 
+    # handle received sell failed message from OrderHandler
     def handle_msg_sell_failed(self, msg):
         id = msg.sig_id
         signal = self.signal_handler.get_handler(id=id)
@@ -234,6 +238,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
             self.next_stop_loss_price = 0
         return False
 
+    # handle received order size update message from OrderHandler
     def handle_msg_order_size_update(self, msg):
         id = msg.sig_id
         signal = self.signal_handler.get_handler(id=id)
