@@ -53,14 +53,22 @@ def select_rt_hourly_signal(sname, kdb, accnt, symbol, asset_info, exit_fail=Tru
 # realtime hourly signals are used in conjunction with trade_mode = hourly
 def select_hourly_signal(sname, kdb, accnt, symbol, asset_info, exit_fail=True):
     signal = None
-    if sname == 'Hourly_MACD_Signal':
-        from trader.signal.hourly.Hourly_MACD_Signal import Hourly_MACD_Signal
-        signal = Hourly_MACD_Signal
-    elif sname == "None":
-        return None
-    elif exit_fail:
-        print("Unable to load hourly signal {}".format(sname))
-        sys.exit(-1)
+    try:
+        # load realtime hourly signal dynamically using importlib
+        mod = importlib.import_module("trader.signal.hourly.{}".format(sname))
+        signal = getattr(mod, sname)
+    except ImportError:
+        if exit_fail:
+            print("Unable to load hourly mode signal {}".format(sname))
+            sys.exit(-1)
+    # if sname == 'Hourly_MACD_Signal':
+    #     from trader.signal.hourly.Hourly_MACD_Signal import Hourly_MACD_Signal
+    #     signal = Hourly_MACD_Signal
+    # elif sname == "None":
+    #     return None
+    # elif exit_fail:
+    #     print("Unable to load hourly signal {}".format(sname))
+    #     sys.exit(-1)
 
     if not signal:
         return None
@@ -208,39 +216,47 @@ class StrategyBase(object):
         if signal:
             return signal
         # realtime signals
-        if name == "BTC_USDT_Signal":
-            from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
-            signal = BTC_USDT_Signal
-        elif name == "AEMA_Crossover_Test":
-            from trader.signal.AEMA_Crossover_Test import AEMA_Crossover_Test
-            signal = AEMA_Crossover_Test
-        elif name == "Currency_Long_EMA":
-            from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
-            signal = Currency_EMA_Long
-        elif name == "EMA_OBV_Crossover":
-            from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
-            signal = EMA_OBV_Crossover
-        elif name == "Hybrid_Crossover_Test2":
-            from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
-            signal = Hybrid_Crossover_Test2
-        elif name == "MACD_Crossover":
-            from trader.signal.MACD_Crossover import MACD_Crossover
-            signal = MACD_Crossover
-        elif name == "MTS_Crossover2_Signal":
-            from trader.signal.MTS_Crossover2_Signal import MTS_Crossover2_Signal
-            signal = MTS_Crossover2_Signal
-        elif name == "MTS_SMA_Signal":
-            from trader.signal.MTS_SMA_Signal import MTS_SMA_Signal
-            signal = MTS_SMA_Signal
-        elif name == "NULL_Signal":
-            from trader.signal.NULL_Signal import NULL_Signal
-            signal = NULL_Signal
-        elif name == "RTKline_MACD_Cross_Signal":
-            from trader.signal.RTKline_MACD_Cross_Signal import RTKline_MACD_Cross_Signal
-            signal = RTKline_MACD_Cross_Signal
-        else:
-            print("Unable to load signal {}".format(name))
-            sys.exit(-1)
+        try:
+            # load realtime signal dynamically using importlib
+            mod = importlib.import_module("trader.signal.{}".format(name))
+            signal = getattr(mod, name)
+        except ImportError:
+                print("Unable to load signal {}".format(name))
+                sys.exit(-1)
+
+        # if name == "BTC_USDT_Signal":
+        #     from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
+        #     signal = BTC_USDT_Signal
+        # elif name == "AEMA_Crossover_Test":
+        #     from trader.signal.AEMA_Crossover_Test import AEMA_Crossover_Test
+        #     signal = AEMA_Crossover_Test
+        # elif name == "Currency_Long_EMA":
+        #     from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
+        #     signal = Currency_EMA_Long
+        # elif name == "EMA_OBV_Crossover":
+        #     from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
+        #     signal = EMA_OBV_Crossover
+        # elif name == "Hybrid_Crossover_Test2":
+        #     from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
+        #     signal = Hybrid_Crossover_Test2
+        # elif name == "MACD_Crossover":
+        #     from trader.signal.MACD_Crossover import MACD_Crossover
+        #     signal = MACD_Crossover
+        # elif name == "MTS_Crossover2_Signal":
+        #     from trader.signal.MTS_Crossover2_Signal import MTS_Crossover2_Signal
+        #     signal = MTS_Crossover2_Signal
+        # elif name == "MTS_SMA_Signal":
+        #     from trader.signal.MTS_SMA_Signal import MTS_SMA_Signal
+        #     signal = MTS_SMA_Signal
+        # elif name == "NULL_Signal":
+        #     from trader.signal.NULL_Signal import NULL_Signal
+        #     signal = NULL_Signal
+        # elif name == "RTKline_MACD_Cross_Signal":
+        #     from trader.signal.RTKline_MACD_Cross_Signal import RTKline_MACD_Cross_Signal
+        #     signal = RTKline_MACD_Cross_Signal
+        # else:
+        #     print("Unable to load signal {}".format(name))
+        #     sys.exit(-1)
 
         if signal:
             return signal(accnt, symbol, asset_info, kdb=kdb)
