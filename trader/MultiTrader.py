@@ -1,6 +1,7 @@
 # handle running strategy for each base / currency pair we want to trade
 import os
 import sys
+import importlib
 from trader.account.AccountBinance import AccountBinance, AccountBase
 from trader.lib.struct.MarketMessage import MarketMessage
 from trader.lib.struct.Order import Order
@@ -15,18 +16,27 @@ import time
 def select_strategy(sname, client, base='BTC', currency='USD', account_handler=None, order_handler=None,
                     asset_info=None, config=None, logger=None):
     strategy = None
-    if sname == 'basic_signal_market_strategy':
-        from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
-        strategy = basic_signal_market_strategy
-    elif sname == 'multi_market_order_strategy':
-        from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
-        strategy = multi_market_order_strategy
-    elif sname == 'signal_market_trailing_stop_loss_strategy':
-        from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
-        strategy = signal_market_trailing_stop_loss_strategy
-    elif sname == 'null_strategy':
-        from trader.strategy.null_strategy import null_strategy
-        strategy = null_strategy
+    try:
+        # load strategy dynamically using importlib
+        mod = importlib.import_module("trader.strategy.{}".format(sname))
+        strategy = getattr(mod, sname)
+    except ImportError:
+            print("Unable to load strategy {}".format(sname))
+            sys.exit(-1)
+
+    # if sname == 'basic_signal_market_strategy':
+    #     from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
+    #     strategy = basic_signal_market_strategy
+    # elif sname == 'multi_market_order_strategy':
+    #     from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
+    #     strategy = multi_market_order_strategy
+    # elif sname == 'signal_market_trailing_stop_loss_strategy':
+    #     from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
+    #     strategy = signal_market_trailing_stop_loss_strategy
+    # elif sname == 'null_strategy':
+    #     from trader.strategy.null_strategy import null_strategy
+    #     strategy = null_strategy
+
     if not strategy:
         return None
 
