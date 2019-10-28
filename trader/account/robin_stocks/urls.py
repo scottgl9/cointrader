@@ -1,5 +1,5 @@
 """Contains all the url endpoints for interacting with Robinhood API."""
-from robin_stocks.helper import id_for_stock, id_for_chain
+from trader.account.robin_stocks.helper import id_for_stock, id_for_chain
 
 ### Login
 

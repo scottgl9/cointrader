@@ -7,7 +7,7 @@ Functions
     - request_post
     - update_session
 """
-from robin_stocks.globals import SESSION, LOGGED_IN
+from trader.account.robin_stocks.globals import SESSION, LOGGED_IN
 from functools import wraps
 import requests
 

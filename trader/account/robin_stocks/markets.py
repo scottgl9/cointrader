@@ -1,6 +1,6 @@
 """Contains functions for getting market level data."""
-import robin_stocks.helper as helper
-import robin_stocks.urls as urls
+import trader.account.robin_stocks.helper as helper
+import trader.account.robin_stocks.urls as urls
 
 def get_top_movers(direction,info=None):
     """Returns a list of the top movers up or down for the day.

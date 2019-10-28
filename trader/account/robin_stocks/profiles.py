@@ -1,6 +1,6 @@
 """Contains functions for getting all the information tied to a user account."""
-import robin_stocks.helper as helper
-import robin_stocks.urls as urls
+import trader.account.robin_stocks.helper as helper
+import trader.account.robin_stocks.urls as urls
 
 @helper.login_required
 def load_account_profile(info=None):

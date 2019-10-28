@@ -6,7 +6,7 @@ except ImportError:
     sys.path.append('.')
     import trader
 from trader.config import *
-from trader.account.Robinhood import Robinhood
+import trader.account.robin_stocks as r
 
-rh = Robinhood()
-rh.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS)
+login = r.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS)
+print(login)

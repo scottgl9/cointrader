@@ -1,9 +1,9 @@
 """Contains all functions for placing orders for stocks, options, and crypto."""
-import robin_stocks.helper as helper
-import robin_stocks.urls as urls
-import robin_stocks.stocks as stocks
-import robin_stocks.profiles as profiles
-import robin_stocks.crypto as crypto
+import trader.account.robin_stocks.helper as helper
+import trader.account.robin_stocks.urls as urls
+import trader.account.robin_stocks.stocks as stocks
+import trader.account.robin_stocks.profiles as profiles
+import trader.account.robin_stocks.crypto as crypto
 
 from uuid import uuid4
 

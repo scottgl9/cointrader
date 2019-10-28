@@ -1,8 +1,8 @@
 """Contains functions for getting information related to the user account."""
-import robin_stocks.helper as helper
-import robin_stocks.urls as urls
-import robin_stocks.stocks as stocks
-import robin_stocks.profiles as profiles
+import trader.account.robin_stocks.helper as helper
+import trader.account.robin_stocks.urls as urls
+import trader.account.robin_stocks.stocks as stocks
+import trader.account.robin_stocks.profiles as profiles
 import os
 
 @helper.login_required

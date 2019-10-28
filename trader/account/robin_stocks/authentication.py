@@ -1,6 +1,6 @@
 """Contains all functions for the purpose of logging in and out to Robinhood."""
-import robin_stocks.urls as urls
-import robin_stocks.helper as helper
+import trader.account.robin_stocks.urls as urls
+import trader.account.robin_stocks.helper as helper
 import random
 import pickle
 import os
