@@ -15,6 +15,7 @@ import getpass
 import requests
 import six
 import dateutil
+import uuid
 
 #Application-specific imports
 from . import exceptions as RH_exception
@@ -58,13 +59,17 @@ class Robinhood:
         self.session = requests.session()
         self.session.proxies = getproxies()
         self.headers = {
-            "Accept": "*/*",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "en;q=1, fr;q=0.9, de;q=0.8, ja;q=0.7, nl;q=0.6, it;q=0.5",
-            "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
-            "X-Robinhood-API-Version": "1.0.0",
+            #"Accept": "*/*",
+            #"Accept-Encoding": "gzip, deflate",
+            #"Accept-Language": "en;q=1, fr;q=0.9, de;q=0.8, ja;q=0.7, nl;q=0.6, it;q=0.5",
+            #"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+            "Content-Type": "application/json",
+            "Origin": "https://robinhood.com",
+            "Referer": "https://robinhood.com/login",
+            "X-Robinhood-API-Version": "1.280.0",
+            "Sec-Fetch-Mode": "cors",
             "Connection": "keep-alive",
-            "User-Agent": "Robinhood/823 (iPhone; iOS 7.1.2; Scale/2.00)"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36"
         }
         self.session.headers = self.headers
         self.auth_method = self.login_prompt
@@ -103,10 +108,13 @@ class Robinhood:
 
         self.username = username
         payload = {
-            'password': password,
-            'username': self.username,
             'grant_type': 'password',
-            'client_id': self.client_id
+            'scope': 'internal',
+            'client_id': self.client_id,
+            'expires_in': 86400,
+            'device_token': str(uuid.uuid4()),
+            'username': self.username,
+            'password': password
         }
 
         if mfa_code:
