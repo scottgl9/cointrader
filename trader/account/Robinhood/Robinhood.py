@@ -16,6 +16,7 @@ import requests
 import six
 import dateutil
 import uuid
+import json
 
 #Application-specific imports
 from . import exceptions as RH_exception
@@ -68,7 +69,7 @@ class Robinhood:
             "Referer": "https://robinhood.com/login",
             "X-Robinhood-API-Version": "1.280.0",
             "Sec-Fetch-Mode": "cors",
-            "Connection": "keep-alive",
+            #"Connection": "keep-alive",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36"
         }
         self.session.headers = self.headers
@@ -113,14 +114,18 @@ class Robinhood:
             'client_id': self.client_id,
             'expires_in': 86400,
             'device_token': str(uuid.uuid4()),
+            #"device_token": "90653968-9674-467a-aa7a-c8e0fe47f765",
             'username': self.username,
             'password': password
         }
 
+        data = json.dumps(payload)
+        print(data)
+
         if mfa_code:
             payload['mfa_code'] = mfa_code
         try:
-            res = self.session.post(endpoints.login(), data=payload, timeout=15)
+            res = self.session.post(endpoints.login(), data=data, timeout=15)
             res.raise_for_status()
             data = res.json()
         except requests.exceptions.HTTPError:
