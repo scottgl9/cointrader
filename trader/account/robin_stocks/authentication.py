@@ -46,7 +46,7 @@ def respond_to_challenge(challenge_id, sms_code):
     }
     return(helper.request_post(url,payload))
 
-def login(username,password,expiresIn=86400,scope='internal',by_sms=True,store_session=True):
+def login(username,password,expiresIn=86400,scope='internal',by_sms=True,mfa_code=None,store_session=True):
     """This function will effectivly log the user into robinhood by getting an
     authentication token and saving it to the session header. By default, it will store the authentication
     token in a pickle file and load that value on subsequent logins.
@@ -61,6 +61,8 @@ def login(username,password,expiresIn=86400,scope='internal',by_sms=True,store_s
     :type scope: Optional[str]
     :param by_sms: Specifies whether to send an email(False) or an sms(True)
     :type by_sms: Optional[boolean]
+    :param mfa_code: Specifies the mfa code
+    :type mfa_code: Optional[str]
     :param store_session: Specifies whether to save the log in authorization for future log ins.
     :type store_session: Optional[boolean]
     :returns:  A dictionary with log in information. The 'access_token' keyword contains the access token, and the 'detail' keyword \
@@ -70,8 +72,10 @@ def login(username,password,expiresIn=86400,scope='internal',by_sms=True,store_s
     device_token = generate_device_token()
     dir_path = os.path.dirname(os.path.realpath(__file__))
     pickle_path = os.path.join(dir_path,"data.pickle")
-    # Challenge type is used if not logging in with two-factor authentication.
-    if by_sms:
+    # Challenge type used
+    if mfa_code:
+        challenge_type = None
+    elif by_sms:
         challenge_type = "sms"
     else:
         challenge_type = "email"
@@ -84,9 +88,12 @@ def login(username,password,expiresIn=86400,scope='internal',by_sms=True,store_s
     'password': password,
     'scope': scope,
     'username': username,
-    'challenge_type': challenge_type,
     'device_token': device_token
     }
+
+    if challenge_type:
+        payload['challenge_type'] = challenge_type
+
     # If authentication has been stored in pickle file then load it. Stops login server from being pinged so much.
     if os.path.isfile(pickle_path):
         # If store_session has been set to false then delete the pickle file, otherwise try to load it.
@@ -121,8 +128,9 @@ def login(username,password,expiresIn=86400,scope='internal',by_sms=True,store_s
     data = helper.request_post(url,payload)
     # Handle case where mfa or challenge is required.
     if 'mfa_required' in data:
-        mfa_token = input("Please type in the MFA code: ")
-        payload['mfa_code'] = mfa_token
+        if not mfa_code:
+            mfa_code = input("Please type in the MFA code: ")
+        payload['mfa_code'] = mfa_code
         res = helper.request_post(url,payload,jsonify_data=False)
         while (res.status_code != 200):
             mfa_token = input("That MFA code was not correct. Please type in another MFA code: ")
