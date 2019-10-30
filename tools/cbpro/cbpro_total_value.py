@@ -16,6 +16,7 @@ if __name__ == '__main__':
     accnt = AccountCoinbasePro(client=client, simulation=False)
     #balances = accnt.get_account_balances()
     #print(balances)
+    print(client.get_fees())
     print("USD Total: {} USD".format(accnt.get_account_total_value()))
     print("BTC Total: {} BTC".format(accnt.get_account_total_value('BTC')))
     #ts = int(datetime.timestamp(datetime.now()))

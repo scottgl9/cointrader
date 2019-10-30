@@ -911,6 +911,19 @@ class AuthenticatedClient(PublicClient):
         """
         return self._send_message('get', '/coinbase-accounts')
 
+    def get_fees(self):
+        """ Get current fees
+
+        Returns:
+            dict: Fees and USD volume. Example::
+            {
+                "maker_fee_rate": "0.0015",
+                "taker_fee_rate": "0.0025",
+                "usd_volume": "25000.00"
+            }
+        """
+        return self._send_message('get', '/fees')
+
     def create_report(self, report_type, start_date, end_date, product_id=None,
                       account_id=None, report_format='pdf', email=None):
         """ Create report of historic information about your account.
