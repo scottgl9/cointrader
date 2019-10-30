@@ -578,7 +578,15 @@ class AccountCoinbasePro(AccountBase):
         if not self.simulate:
             self.balances = {}
             result = {}
-            for account in self.client.get_accounts():
+            accounts = self.client.get_accounts()
+            if 'message' in accounts:
+                if self.logger:
+                    self.logger.info("Error get_account_balances(): {}".format(accounts['message']))
+                else:
+                    print("Error get_account_balances(): {}".format(accounts['message']))
+                return self.balances
+
+            for account in accounts:
                 asset_name = account['currency']
                 balance = float(account['balance'])
                 available = float(account['available'])
