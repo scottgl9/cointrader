@@ -9,6 +9,7 @@ class AccountBase(object):
     EXCHANGE_BITTREX = 3
     EXCHANGE_KRAKEN = 4
     EXCHANGE_POLONIEX = 5
+    EXCHANGE_ROBINHOOD = 6
     # trader modes
     TRADER_MODE_NONE = 0
     TRADER_MODE_REALTIME = 1
