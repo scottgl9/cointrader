@@ -128,12 +128,10 @@ class AccountRobinhood(AccountBase):
             if not self.info_all_assets:
                 self.load_exchange_info()
             sid = self.get_ticker_id(symbol)
-            print(symbol, self.info_all_assets[symbol])
             result = self.client.get_crypto_quote_from_id(id=sid)
-            print(result)
             if result:
                 try:
-                    price = float(result['price'])
+                    price = float(result['mark_price'])
                 except KeyError:
                     price = 0.0
                 return price
@@ -601,8 +599,8 @@ class AccountRobinhood(AccountBase):
 
             for info in r.get_crypto_positions():
                 asset_name = info['currency']['code']
-                balance = info['quantity']
-                available = info['quantity_available']
+                balance = float(info['quantity'])
+                available = float(info['quantity_available'])
                 self.balances[asset_name] = {'balance': balance, 'available': available}
                 result[asset_name] = balance
             if detailed:
