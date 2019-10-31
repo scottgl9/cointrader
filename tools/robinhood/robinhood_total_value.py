@@ -19,6 +19,7 @@ if __name__ == '__main__':
     print(login)
     accnt = AccountRobinhood(client=client, simulation=False)
     accnt.get_ticker('BTC-USD')
+    print(accnt.get_account_balances())
     #balances = accnt.get_account_balances()
     #print(balances)
     #print("USD Total: {} USD".format(accnt.get_account_total_value()))

@@ -614,23 +614,21 @@ class AccountRobinhood(AccountBase):
         if not self.simulate:
             self.balances = {}
             result = {}
-            accounts = self.client.get_accounts()
-            if 'message' in accounts:
-                if self.logger:
-                    self.logger.info("Error get_account_balances(): {}".format(accounts['message']))
-                else:
-                    print("Error get_account_balances(): {}".format(accounts['message']))
-                return self.balances
+            account = self.client.load_account_profile()
+            balance_usd =  float(account['crypto_buying_power'])
+            self.balances['USD'] = {'balance': balance_usd, 'available': balance_usd}
+            #balance_usd = account['overnight_buying_power']
 
-            for account in accounts:
-                asset_name = account['currency']
-                balance = float(account['balance'])
-                available = float(account['available'])
-                hold = float(account['hold'])
-                self.balances[asset_name] = {'balance': balance, 'available': available, 'hold': hold}
+            for info in r.get_crypto_positions():
+                asset_name = info['currency']['code']
+                balance = info['quantity']
+                available = info['quantity_available']
+                self.balances[asset_name] = {'balance': balance, 'available': available}
                 result[asset_name] = balance
             if detailed:
                 return self.balances
+            for asset, info in self.balances.items():
+                result[asset] = info['balance']
         else:
             if detailed:
                 return self.balances
