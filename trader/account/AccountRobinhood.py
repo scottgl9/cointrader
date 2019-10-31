@@ -561,20 +561,6 @@ class AccountRobinhood(AccountBase):
             if asset == currency:
                 total_balance += value
                 continue
-            elif currency == 'USDC' and asset == 'USD':
-                total_balance += value
-                continue
-            elif currency == 'USD' and asset == 'USDC':
-                total_balance += value
-                continue
-            elif currency != 'USDC' and asset == 'USDC':
-                symbol = self.make_ticker_id(currency, asset)
-                price = float(self.get_ticker(symbol))
-                if price:
-                    total_balance += value / price
-                elif self.simulate:
-                    return 0.0
-                continue
             elif currency != 'USD' and asset == 'USD':
                 symbol = self.make_ticker_id(currency, asset)
                 price = float(self.get_ticker(symbol))
@@ -585,12 +571,6 @@ class AccountRobinhood(AccountBase):
                 continue
             symbol = self.make_ticker_id(asset, currency)
             price = float(self.get_ticker(symbol))
-            if not price and currency == 'USD':
-                symbol = self.make_ticker_id(asset, 'USDC')
-                price = float(self.get_ticker(symbol))
-            elif not price and currency == 'USDC':
-                symbol = self.make_ticker_id(asset, 'USD')
-                price = float(self.get_ticker(symbol))
             if self.simulate and not price:
                 return 0.0
             elif not price:
@@ -657,14 +637,9 @@ class AccountRobinhood(AccountBase):
         return balance, available
 
     def get_all_ticker_symbols(self, currency=None):
-        result = []
-        products = self.pc.get_products()
-        for product in products:
-            if currency and product['id'].endswith(currency):
-                result.append(product['id'])
-            else:
-                result.append(product['id'])
-        return result
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        return self._exchange_pairs
 
     def get_all_tickers(self):
         pass
@@ -726,7 +701,7 @@ class AccountRobinhood(AccountBase):
         return self.client.cancel_order(order_id=orderid)
 
     def cancel_all(self, ticker_id=None):
-        return self.client.cancel_all(product_id=ticker_id)
+        pass
 
     # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
     # The maximum amount of data returned is 300 candles
