@@ -26,10 +26,9 @@ class AccountRobinhood(AccountBase):
             self.client = client
         elif not self.simulate:
             self.client = r
-
-        totp = pyotp.TOTP(ROBINHOOD_2FA_KEY)
-        mfa_code = totp.now()
-        login = self.client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_code=mfa_code)
+            totp = pyotp.TOTP(ROBINHOOD_2FA_KEY)
+            mfa_code = totp.now()
+            login = self.client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_code=mfa_code)
 
         self.info_all_assets = {}
         self.details_all_assets = {}
@@ -117,18 +116,27 @@ class AccountRobinhood(AccountBase):
     def get_hourly_column_names(self):
         return self.hourly_cnames
 
+    def get_ticker_id(self, symbol):
+        try:
+            info = self.info_all_assets[symbol]
+            return info['id']
+        except KeyError:
+            return ''
+
     def get_ticker(self, symbol=None):
         if not self.simulate:
-            if symbol:
-                result = self.client.get_product_ticker(product_id=symbol)
-                if result:
-                    try:
-                        price = float(result['price'])
-                    except KeyError:
-                        price = 0.0
-                    return price
-            #elif not len(self._tickers):
-            #    self._tickers = self.get_all_tickers()
+            if not self.info_all_assets:
+                self.load_exchange_info()
+            sid = self.get_ticker_id(symbol)
+            print(symbol, self.info_all_assets[symbol])
+            result = self.client.get_crypto_quote_from_id(id=sid)
+            print(result)
+            if result:
+                try:
+                    price = float(result['price'])
+                except KeyError:
+                    price = 0.0
+                return price
         try:
             price = self._tickers[symbol]
         except KeyError:
@@ -333,47 +341,70 @@ class AccountRobinhood(AccountBase):
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
-        pair_info = self.pc.get_products()
-        asset_info = self.pc.get_currencies()
+        pair_info = self.client.get_crypto_currency_pairs()
+        asset_info = None
         return self.parse_exchange_info(pair_info, asset_info)
 
     def parse_exchange_info(self, pair_info, asset_info):
         exchange_info = {}
         pairs = {}
         assets = {}
-
-        for info in pair_info:
-            symbol = info['id']
-            min_qty = info['base_min_size']
-            min_price = info['min_market_funds']
-            base_step_size = info['base_increment']
-            currency_step_size = info['quote_increment']
-
-            pairs[symbol] = {'min_qty': min_qty,
-                             'min_price': min_price,
-                             'base_step_size': base_step_size,
-                             'currency_step_size': currency_step_size,
-                             #'minNotional': minNotional,
-                             #'commissionAsset': commissionAsset,
-                             #'baseAssetPrecision': baseAssetPrecision,
-                             #'quotePrecision': quotePrecision,
-                             #'orderTypes': orderTypes
-                            }
-        for info in asset_info:
-            name = info['id']
-            status = info['status']
-            if status == 'online':
-                assets[name] = {'disabled': False, 'delisted': False }
-            else:
-                assets[name] = {'disabled': True, 'delisted': False }
-
         self._exchange_pairs = []
 
-        for pair in pairs.keys():
-            # ignore trade pairs with GBP and EUR currency
-            if pair.endswith('GBP') or pair.endswith('EUR'):
+        for info in pair_info:
+            tradability = info['tradability']
+            if tradability != 'tradable':
                 continue
-            self._exchange_pairs.append(pair)
+            symbol = info['symbol']
+            asset_currency = info['asset_currency']
+            quote_currency = info['quote_currency']
+            # base info
+            #asset_id = asset_currency['id']
+            min_qty = info['min_order_size']
+            base_step_size = asset_currency['increment']
+            #currency_step_size = asset_currency['min_order_price_increment']
+            # quote info
+            #quote_id = quote_currency['id']
+            currency_step_size = quote_currency['increment']
+            self._exchange_pairs.append(symbol)
+            pairs[symbol] = {'id': info['id'],
+                             'min_qty': min_qty,
+                             'base_step_size': base_step_size,
+                             'currency_step_size': currency_step_size
+                            }
+
+        # for info in pair_info:
+        #     symbol = info['id']
+        #     min_qty = info['base_min_size']
+        #     min_price = info['min_market_funds']
+        #     base_step_size = info['base_increment']
+        #     currency_step_size = info['quote_increment']
+        #
+        #     pairs[symbol] = {'min_qty': min_qty,
+        #                      'min_price': min_price,
+        #                      'base_step_size': base_step_size,
+        #                      'currency_step_size': currency_step_size,
+        #                      #'minNotional': minNotional,
+        #                      #'commissionAsset': commissionAsset,
+        #                      #'baseAssetPrecision': baseAssetPrecision,
+        #                      #'quotePrecision': quotePrecision,
+        #                      #'orderTypes': orderTypes
+        #                     }
+        # for info in asset_info:
+        #     name = info['id']
+        #     status = info['status']
+        #     if status == 'online':
+        #         assets[name] = {'disabled': False, 'delisted': False }
+        #     else:
+        #         assets[name] = {'disabled': True, 'delisted': False }
+        #
+        # self._exchange_pairs = []
+        #
+        # for pair in pairs.keys():
+        #     # ignore trade pairs with GBP and EUR currency
+        #     if pair.endswith('GBP') or pair.endswith('EUR'):
+        #         continue
+        #     self._exchange_pairs.append(pair)
 
         exchange_info['pairs'] = pairs
         exchange_info['assets'] = assets
