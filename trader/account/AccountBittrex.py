@@ -29,6 +29,9 @@ class AccountBittrex(AccountBase):
         self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
 
+        self.currencies = ['BTC', 'ETH', 'USDT', 'USD']
+        self.currency_trade_pairs = ['BTC-ETH', 'USD-BTC', 'USD-ETH', 'USD-USDT', 'USDT-BTC', 'USDT-ETH']
+   
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
         for currency in self.currencies:
