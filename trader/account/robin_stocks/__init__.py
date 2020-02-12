@@ -5,6 +5,7 @@ from .account import get_all_positions,             \
                      get_current_positions,         \
                      get_dividends,                 \
                      get_total_dividends,           \
+                     get_dividends_by_instrument,   \
                      get_notifications,             \
                      get_latest_notification,       \
                      get_linked_bank_accounts,      \
@@ -103,6 +104,7 @@ from .stocks import get_quotes,                 \
                     get_latest_price,           \
                     get_name_by_symbol,         \
                     get_name_by_url,            \
+                    get_symbol_by_url,          \
                     get_ratings,                \
                     get_popularity,             \
                     get_events,                 \

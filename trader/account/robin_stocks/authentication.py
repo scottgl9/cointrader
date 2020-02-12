@@ -44,36 +44,44 @@ def respond_to_challenge(challenge_id, sms_code):
     payload = {
         'response': sms_code
     }
-    return(helper.request_post(url,payload))
+    return(helper.request_post(url, payload))
 
-def login(username,password,expiresIn=86400,scope='internal',by_sms=True,mfa_code=None,store_session=True):
+def login(username = None, password = None, expiresIn = 86400, scope = 'internal', by_sms = True, mfa_token = None, store_session = True):
     """This function will effectivly log the user into robinhood by getting an
-    authentication token and saving it to the session header. By default, it will store the authentication
-    token in a pickle file and load that value on subsequent logins.
+    authentication token and saving it to the session header. By default, it
+    will store the authentication token in a pickle file and load that value
+    on subsequent logins.
 
-    :param username: The username for your robinhood account. Usually your email.
-    :type username: str
-    :param password: The password for your robinhood account.
-    :type password: str
+    :param username: The username for your robinhood account, usually your email.
+        Not required if credentials are already cached and valid.
+    :type username: Optional[str]
+    :param password: The password for your robinhood account. Not required if
+        credentials are already cached and valid.
+    :type password: Optional[str]
     :param expiresIn: The time until your login session expires. This is in seconds.
     :type expiresIn: Optional[int]
     :param scope: Specifies the scope of the authentication.
     :type scope: Optional[str]
     :param by_sms: Specifies whether to send an email(False) or an sms(True)
     :type by_sms: Optional[boolean]
-    :param mfa_code: Specifies the mfa code
-    :type mfa_code: Optional[str]
-    :param store_session: Specifies whether to save the log in authorization for future log ins.
+    :param mfa_token: Specifies the mfa code
+    :type mfa_token: Optional[str]
+    :param store_session: Specifies whether to save the log in authorization
+        for future log ins.
     :type store_session: Optional[boolean]
     :returns:  A dictionary with log in information. The 'access_token' keyword contains the access token, and the 'detail' keyword \
     contains information on whether the access token was generated or loaded from pickle file.
 
     """
     device_token = generate_device_token()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    pickle_path = os.path.join(dir_path,"data.pickle")
+    home_dir = os.path.expanduser("~")
+    data_dir = os.path.join(home_dir, ".tokens")
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+    creds_file = "robinhood.pickle"
+    pickle_path = os.path.join(data_dir, creds_file)
     # Challenge type used
-    if mfa_code:
+    if mfa_token:
         challenge_type = None
     elif by_sms:
         challenge_type = "sms"
@@ -112,11 +120,11 @@ def login(username,password,expiresIn=86400,scope='internal',by_sms=True,mfa_cod
                     helper.set_login_state(True)
                     helper.update_session('Authorization','{0} {1}'.format(token_type, access_token))
                     # Try to load account profile to check that authorization token is still valid.
-                    res = helper.request_get(urls.portfolio_profile(),'regular',payload,jsonify_data=False)
+                    res = helper.request_get(urls.portfolio_profile(),'regular', payload, jsonify_data = False)
                     # Raises exception is response code is not 200.
                     res.raise_for_status()
                     return({'access_token': access_token,'token_type': token_type,
-                    'expires_in': expiresIn, 'scope': scope, 'detail': 'logged in using authentication in data.pickle',
+                    'expires_in': expiresIn, 'scope': scope, 'detail': 'logged in using authentication in {0}'.format(creds_file),
                     'backup_code': None, 'refresh_token': refresh_token})
             except:
                 print("ERROR: There was an issue loading pickle file. Authentication may be expired - logging in normally.")
@@ -125,17 +133,24 @@ def login(username,password,expiresIn=86400,scope='internal',by_sms=True,mfa_cod
         else:
             os.remove(pickle_path)
     # Try to log in normally.
+    if not username:
+        username = input("Robinhood username: ")
+        payload['username'] = username
+    if not password:
+        password = getpass.getpass("Robinhood password: ")
+        payload['password'] = password
+
     data = helper.request_post(url,payload)
     # Handle case where mfa or challenge is required.
     if 'mfa_required' in data:
-        if not mfa_code:
-            mfa_code = input("Please type in the MFA code: ")
-        payload['mfa_code'] = mfa_code
-        res = helper.request_post(url,payload,jsonify_data=False)
+        if not mfa_token:
+            mfa_token = input("Please type in the MFA code: ")
+        payload['mfa_code'] = mfa_token
+        res = helper.request_post(url, payload, jsonify_data = False)
         while (res.status_code != 200):
             mfa_token = input("That MFA code was not correct. Please type in another MFA code: ")
             payload['mfa_code'] = mfa_token
-            res = helper.request_post(url,payload,jsonify_data=False)
+            res = helper.request_post(url, payload, jsonify_data = False)
         data = res.json()
     elif 'challenge' in data:
         challenge_id = data['challenge']['id']
@@ -148,8 +163,8 @@ def login(username,password,expiresIn=86400,scope='internal',by_sms=True,mfa_cod
         data = helper.request_post(url,payload)
     # Update Session data with authorization or raise exception with the information present in data.
     if 'access_token' in data:
-        token = '{0} {1}'.format(data['token_type'],data['access_token'])
-        helper.update_session('Authorization',token)
+        token = '{0} {1}'.format(data['token_type'], data['access_token'])
+        helper.update_session('Authorization', token)
         helper.set_login_state(True)
         data['detail'] = "logged in with brand new authentication code."
         if store_session:
@@ -170,4 +185,4 @@ def logout():
 
     """
     helper.set_login_state(False)
-    helper.update_session('Authorization',None)
+    helper.update_session('Authorization', None)

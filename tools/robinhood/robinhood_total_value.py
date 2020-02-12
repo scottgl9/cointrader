@@ -15,7 +15,8 @@ from datetime import datetime
 if __name__ == '__main__':
     totp = pyotp.TOTP(ROBINHOOD_2FA_KEY)
     mfa_code = totp.now()
-    login = client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_code=mfa_code)
+    print("MFA: {}".format(mfa_code))
+    login = client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_token=mfa_code)
     print(login)
     accnt = AccountRobinhood(client=client, simulation=False)
     #accnt.get_ticker('BTC-USD')
