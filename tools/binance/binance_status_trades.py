@@ -9,8 +9,8 @@ except ImportError:
     sys.path.append('.')
 
 import argparse
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance import client
+from trader.account.binance.AccountBinance import AccountBinance
+from trader.account.binance.binance import client
 from trader.lib.TraderDB import TraderDB
 from trader.config import *
 

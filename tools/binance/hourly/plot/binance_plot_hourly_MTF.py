@@ -13,11 +13,8 @@ import os
 import numpy as np
 from datetime import datetime
 import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 from pyts.image import MarkovTransitionField
-from pyts.datasets import load_gunpoint
 import argparse
 from trader.KlinesDB import KlinesDB
 

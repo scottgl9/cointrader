@@ -6,8 +6,8 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.binance.websockets import BinanceSocketManager
-from trader.account.binance.client import Client
+from trader.account.binance.binance.websockets import BinanceSocketManager
+from trader.account.binance.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.TraderConfig import TraderConfig
 from trader.lib.struct.Kline import Kline

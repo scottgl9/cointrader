@@ -11,15 +11,11 @@ import sys
 import os
 from datetime import datetime
 import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
 import numpy as np
 import pylab as plt
-from numpy import fft
-import pandas as pd
 from trader.lib.FourierFilter import FourierFilter
 from trader.lib.FourierFit import FourierFit
 

@@ -7,24 +7,14 @@ except ImportError:
     sys.path.append('.')
 
 import os.path
-import time
-import sqlite3
-from datetime import datetime
-import sys
-from trader.account.binance.client import Client
-from trader.MultiTrader import MultiTrader
 
 #try:
 #    from trader.lib.native.Kline import Kline
 #except ImportError:
-from trader.lib.struct.Kline import Kline
 
-from trader.account.AccountBinance import AccountBinance
 from trader.TraderConfig import TraderConfig
-from trader.config import *
 import argparse
 import logging
-import json
 import re
 import csv
 

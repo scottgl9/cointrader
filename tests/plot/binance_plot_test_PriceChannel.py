@@ -12,10 +12,8 @@ import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV
 from trader.indicator.test.PriceChannel import PriceChannel
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance.client import Client
-from trader.account.binance.exceptions import BinanceAPIException
-import datetime as dt
+from trader.account.binance.AccountBinance import AccountBinance
+from trader.account.binance.binance.client import Client
 from trader.config import *
 
 # kline format: [ time, low, high, open, close, volume ]

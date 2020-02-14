@@ -6,18 +6,12 @@ try:
 except ImportError:
     sys.path.append('.')
     import trader
-import sqlite3
 import sys
 import os
 import math
-import time
-from trader.account.binance.client import Client
-from trader.config import *
-import matplotlib.pyplot as plt
 import argparse
-from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 import keras
 import tensorflow as tf
 from keras.models import Sequential

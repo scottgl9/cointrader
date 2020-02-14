@@ -11,16 +11,9 @@ import sys
 import os
 from datetime import datetime
 import time
-from trader.account.binance.client import Client
-from trader.config import *
-import io
 from PIL import Image, ImageDraw
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
 import argparse
 from trader.KlinesDB import KlinesDB
-from trader.indicator.OBV import OBV
-from trader.indicator.EMA import EMA
 
 
 def plot_candlestick(draw, im, o, h, l, c, index, count, x_total_size, y_total_size):

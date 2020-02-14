@@ -7,25 +7,11 @@ except ImportError:
     import trader
 
 import os.path
-import time
 import sqlite3
-from datetime import datetime, timedelta
-from pypika import Query, Table, Field, Order
-from trader.strategy import *
-from datetime import datetime, timedelta
-import threading
 import sys
-from trader.WebHandler import WebThread
-from trader.account.binance.client import Client
-from trader.MultiTrader import MultiTrader
-from trader.account.AccountBinance import AccountBinance
-from trader.config import *
-import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-import matplotlib
 from trader.indicator.EMA import EMA
-from trader.indicator.OBV import OBV
 from trader.indicator.MACD import MACD
 from trader.lib.Crossover import Crossover
 

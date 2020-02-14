@@ -10,10 +10,10 @@ import os.path
 import sqlite3
 from datetime import datetime
 import sys
-from trader.account.binance.client import Client
+from trader.account.binance.binance.client import Client
 from trader.MultiTrader import MultiTrader
 from trader.lib.struct.Kline import Kline
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 from trader.config import *
 import argparse
 import logging

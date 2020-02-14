@@ -11,12 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
 from trader.indicator.ZLEMA import ZLEMA
-from trader.indicator.SMMA import SMMA
-from trader.indicator.OBV import OBV
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance.client import Client
-from trader.account.binance.exceptions import BinanceAPIException
-import datetime as dt
+from trader.account.binance.AccountBinance import AccountBinance
+from trader.account.binance.binance.client import Client
 from trader.config import *
 
 

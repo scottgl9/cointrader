@@ -7,12 +7,8 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-from trader.account.binance.exceptions import BinanceAPIException
-from trader.account.binance.client import Client
-from trader.account.AccountBinance import AccountBinance
-import collections
-import matplotlib.pyplot as plt
-import sys
+from trader.account.binance.binance.exceptions import BinanceAPIException
+from trader.account.binance.binance.client import Client
 from trader.config import *
 
 def get_all_tickers(client):

@@ -9,8 +9,6 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.lib.LargestPriceChange import LargestPriceChange

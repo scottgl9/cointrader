@@ -8,7 +8,6 @@ except ImportError:
 
 from trader.account.bittrex.bittrex import Bittrex
 from trader.account.AccountBittrex import AccountBittrex, API_V2_0
-from trader.account.binance import client
 from trader.config import *
 
 if __name__ == '__main__':

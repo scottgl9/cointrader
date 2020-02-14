@@ -6,9 +6,9 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.binance.websockets import BinanceSocketManager
-from trader.account.binance.client import Client
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.binance.websockets import BinanceSocketManager
+from trader.account.binance.binance.client import Client
+from trader.account.binance.AccountBinance import AccountBinance
 from datetime import datetime
 import sqlite3
 import time

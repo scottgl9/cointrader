@@ -9,15 +9,12 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
 from trader.indicator.OBV import OBV
-from trader.indicator.EMA import EMA
 from trader.indicator.PSAR import PSAR
-from trader.indicator.LSMA import LSMA
+
 
 def simulate(kdb, symbol, start_ts, end_ts):
     msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)

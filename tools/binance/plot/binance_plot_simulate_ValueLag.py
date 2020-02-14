@@ -10,11 +10,8 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.ValueLag import ValueLag
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.ZLEMA import *
 

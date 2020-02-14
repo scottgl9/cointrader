@@ -11,7 +11,7 @@ from pymongo import MongoClient
 from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
-from trader.account.binance.client import Client
+from trader.account.binance.binance.client import Client
 
 from trader.config import *
 client = Client(MY_API_KEY, MY_API_SECRET)

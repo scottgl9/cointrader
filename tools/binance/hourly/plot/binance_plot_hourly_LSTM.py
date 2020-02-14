@@ -10,25 +10,21 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
 from trader.indicator.OBV import OBV
-from trader.indicator.EMA import EMA
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import numpy as np
 import pandas as pd
-from keras.layers.core import Dense, Activation, Dropout
+from keras.layers.core import Dense, Dropout
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential, load_model
 from sklearn.preprocessing import MinMaxScaler
 import talib
 from trader.indicator.RSI import RSI
-from trader.indicator.MACD import MACD
 from trader.indicator.LSMA import LSMA
 from trader.lib.Indicator import Indicator
 

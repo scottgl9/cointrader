@@ -10,14 +10,10 @@ except ImportError:
 import sqlite3
 import sys
 import os
-import numpy as np
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.EMA import EMA
 from trader.indicator.test.SlopeRatio import SlopeRatio
-from trader.indicator.ZLEMA import ZLEMA
 from trader.indicator.DTWMA import DTWMA
 
 def get_rows_as_msgs(c):

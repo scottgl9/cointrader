@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-import os
+
 try:
     import trader
 except ImportError:
@@ -11,13 +11,10 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV
 from trader.indicator.ZLEMA import *
-from trader.indicator.DTWMA import DTWMA
 from trader.lib.PeakValleyDetect import PeakValleyDetect
 from trader.lib.MAAvg import MAAvg
 

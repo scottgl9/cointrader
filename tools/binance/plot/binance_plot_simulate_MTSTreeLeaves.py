@@ -10,11 +10,8 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.PriceSegmentTree import PriceSegmentTree
 from trader.lib.MovingTimeSegment.MTSTreeLeaves import MTSTreeLeaves
 from trader.indicator.EMA import EMA
 from trader.indicator.OBV import OBV

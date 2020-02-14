@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-import os
+
 try:
     import trader
 except ImportError:
@@ -10,8 +10,6 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.indicator.OBV import OBV

@@ -7,17 +7,14 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import numpy as np
 import matplotlib.pyplot as plt
 from trader.indicator.EFI import EFI
 from trader.indicator.EMA import EMA
 from trader.indicator.MINMAX import MINMAX
 from trader.indicator.OBV import OBV
 from trader.indicator.test.PriceChannel import PriceChannel
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance.client import Client
-from trader.account.binance.exceptions import BinanceAPIException
-import datetime as dt
+from trader.account.binance.AccountBinance import AccountBinance
+from trader.account.binance.binance.client import Client
 from trader.config import *
 
 

@@ -11,16 +11,12 @@ import sys
 import os
 from datetime import datetime
 import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
 from trader.indicator.OBV import OBV
-from trader.indicator.EMA import EMA
 from trader.indicator.MACD import MACD
 from trader.lib.Crossover2 import Crossover2
-from trader.lib.Crossover import Crossover
 from trader.lib.FourierFilter import FourierFilter
 
 def simulate(kdb, symbol, start_ts, end_ts):

@@ -10,12 +10,9 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
-from trader.indicator.OBV import OBV
 from trader.indicator.ehler.FIR_Filter import FIR_Filter
 
 def simulate(kdb, symbol, start_ts, end_ts):

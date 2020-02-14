@@ -11,9 +11,6 @@ import sys
 import os
 from datetime import datetime
 import time
-import numpy as np
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB

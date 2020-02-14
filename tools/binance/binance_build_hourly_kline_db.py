@@ -6,16 +6,14 @@ try:
 except ImportError:
     sys.path.append('.')
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 import sqlite3
 import time
 import logging
 import os
-import threading
 import argparse
 from trader.config import *
-from trader.account.binance.client import Client
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.binance.client import Client
+from trader.account.binance.AccountBinance import AccountBinance
 
 
 def create_db_connection(db_file):

@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from trader.indicator.AEMA import AEMA
 from trader.indicator.OBV import OBV
 from trader.lib.CycleEstimator import CycleEstimator
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 import argparse
 
 

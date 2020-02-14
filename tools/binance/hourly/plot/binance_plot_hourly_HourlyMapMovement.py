@@ -14,14 +14,11 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.lib.hourly.HourlyMapMovement import HourlyMapMovement
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountBinance import AccountBinance
-from trader.indicator.EMA import EMA
+from trader.account.binance.AccountBinance import AccountBinance
 
 
 def simulate(kdb, symbol, start_ts, end_ts, test_hours=0):

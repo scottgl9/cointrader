@@ -14,13 +14,11 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 
 try:
     from trader.indicator.native.EMA import EMA

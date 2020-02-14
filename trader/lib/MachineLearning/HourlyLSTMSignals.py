@@ -1,20 +1,16 @@
-import time
-from trader.account.binance.client import Client
-from trader.config import *
 import os
 import pandas as pd
 import numpy as np
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
-from keras.layers.core import Dense, Activation, Dropout
+from keras.layers.core import Dense, Dropout
 from keras.layers.recurrent import LSTM
-from keras.models import Sequential, load_model, model_from_json
+from keras.models import Sequential
 from numpy import hstack
 from keras.preprocessing.sequence import TimeseriesGenerator
-from keras.utils import to_categorical
 from trader.indicator.EMA import EMA
 from trader.lib.Indicator import Indicator
 from trader.lib.Crossover import Crossover
-from trader.lib.Crossover2 import Crossover2
+
 
 class HourlyLSTMSignals(object):
     def __init__(self, kdb, symbol, start_ts=0, simulate_db_filename=None, batch_size=32):

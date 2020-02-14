@@ -17,7 +17,7 @@ from trader.lib.unused.Angle import Angle
 from trader.lib.MAAvg import MAAvg
 from trader.indicator.DTWMA import DTWMA
 from trader.indicator.EMA import EMA
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 
 
 def get_rows_as_msgs(c):

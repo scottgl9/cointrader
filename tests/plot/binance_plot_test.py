@@ -11,8 +11,8 @@ import numpy as np
 #from scipy import optimize
 import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance.client import Client
+from trader.account.binance.AccountBinance import AccountBinance
+from trader.account.binance.binance.client import Client
 from trader.config import *
 
 

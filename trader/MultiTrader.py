@@ -2,13 +2,11 @@
 import os
 import sys
 import importlib
-from trader.account.AccountBinance import AccountBinance, AccountBase
-from trader.lib.struct.MarketMessage import MarketMessage
+from trader.account.binance.AccountBinance import AccountBinance, AccountBase
 from trader.lib.struct.Order import Order
 from trader.OrderHandler import OrderHandler
 from trader.KlinesDB import KlinesDB
 from trader.lib.TraderMessageHandler import TraderMessage, TraderMessageHandler
-from trader.symbol_filter.SymbolFilterHandler import SymbolFilterHandler
 from datetime import datetime
 import time
 

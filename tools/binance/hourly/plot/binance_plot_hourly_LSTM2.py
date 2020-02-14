@@ -13,24 +13,16 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-import time
-from trader.account.binance.client import Client
-from trader.config import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
-from keras.layers.core import Dense, Activation, Dropout
+from keras.layers.core import Dense, Dropout
 from keras.layers.recurrent import LSTM
-from keras.models import Sequential, load_model, model_from_json
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.externals import joblib
-from trader.indicator.OBV import OBV
-from trader.indicator.RSI import RSI
-from trader.indicator.LSMA import LSMA
+from keras.models import Sequential, model_from_json
 from trader.lib.Indicator import Indicator
 from trader.indicator.EMA import EMA
 

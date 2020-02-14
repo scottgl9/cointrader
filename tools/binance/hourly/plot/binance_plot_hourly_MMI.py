@@ -11,12 +11,9 @@ import sys
 import os
 from datetime import datetime
 import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
-from trader.indicator.OBV import OBV
 from trader.indicator.MMI import MMI
 
 

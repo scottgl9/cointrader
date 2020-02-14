@@ -7,52 +7,27 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import sqlite3
 import sys
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-import time
 import numpy as np
 import pandas as pd
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
-from trader.lib.Crossover2 import Crossover2
 from trader.lib.Indicator import Indicator
-from trader.indicator.LSMA import LSMA
-from trader.indicator.ADL import ADL
-from trader.indicator.ATR import ATR
-from trader.indicator.EFI import EFI
 from trader.indicator.EMA import EMA
-from trader.indicator.KST import KST
 from trader.indicator.MACD import MACD
-from trader.indicator.McGinleyDynamic import McGinleyDynamic
-from trader.indicator.OBV import OBV
-from trader.indicator.PPO import PPO
-from trader.indicator.ROC import ROC
-from trader.indicator.RSI import RSI
-from trader.indicator.TSI import TSI
 
-from numpy import hstack
-from numpy import insert
-import keras
-import tensorflow as tf
-from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential, model_from_json
 from keras.layers import Dense
 from keras.layers import LSTM
-from keras.layers import Dropout
 from keras.layers import TimeDistributed, RepeatVector
-from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import StandardScaler
 
 
 def process_raw_klines(df, indicators=None):

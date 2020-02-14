@@ -6,19 +6,12 @@ try:
 except ImportError:
     sys.path.append('.')
     import trader
-import sqlite3
 import sys
-import os
 import math
-import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountBinance import AccountBinance
-import keras
+from trader.account.binance.AccountBinance import AccountBinance
 import tensorflow as tf
 from tensorflow.python.client import device_lib
 from trader.lib.MachineLearning.DQNAgent import DQNAgent
@@ -27,7 +20,6 @@ import os
 import numpy as np
 import random
 from collections import deque
-from keras.models import Sequential, Model
 from keras.layers import Dense, Input
 from keras.optimizers import Adam
 from keras.utils import to_categorical

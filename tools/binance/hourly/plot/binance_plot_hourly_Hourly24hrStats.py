@@ -12,11 +12,9 @@ import sys
 import os
 from datetime import datetime
 import time
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 from trader.KlinesDB import KlinesDB
 from trader.lib.hourly.Hourly24hrStats import Hourly24hrStats
 from trader.indicator.OBV import OBV

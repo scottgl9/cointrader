@@ -8,11 +8,8 @@ except ImportError:
     import trader
 
 import sqlite3
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.indicator.DTWMA import DTWMA
 from trader.indicator.ZLEMA import *
 from trader.lib.MovingTimeSegment.MTS_SupportResistance import MTS_SupportResistance, MTS_SRLine
 

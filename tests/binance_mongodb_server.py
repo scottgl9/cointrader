@@ -8,8 +8,8 @@ except ImportError:
     import trader
 
 from pymongo import MongoClient
-from trader.account.binance.client import Client
-from trader.account.binance.websockets import BinanceSocketManager
+from trader.account.binance.binance.client import Client
+from trader.account.binance.binance.websockets import BinanceSocketManager
 import time
 import sys
 

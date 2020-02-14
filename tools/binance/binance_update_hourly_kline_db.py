@@ -7,7 +7,6 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import sqlite3
 import time
 import logging
 import sys
@@ -15,8 +14,8 @@ import os
 import argparse
 from datetime import datetime
 from trader.config import *
-from trader.account.binance.client import Client
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.binance.client import Client
+from trader.account.binance.AccountBinance import AccountBinance
 from trader.KlinesDB import KlinesDB
 
 

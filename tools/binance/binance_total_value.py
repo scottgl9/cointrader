@@ -6,8 +6,8 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.AccountBinance import AccountBinance
-from trader.account.binance import client
+from trader.account.binance.AccountBinance import AccountBinance
+from trader.account.binance.binance import client
 from trader.config import *
 
 if __name__ == '__main__':

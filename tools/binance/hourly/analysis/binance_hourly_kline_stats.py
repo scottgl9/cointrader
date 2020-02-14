@@ -10,7 +10,7 @@ import sqlite3
 import sys
 import os
 import time
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 import argparse
 from trader.KlinesDB import KlinesDB
 from trader.lib.ValueLag import ValueLag

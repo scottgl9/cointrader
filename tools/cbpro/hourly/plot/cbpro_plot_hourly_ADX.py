@@ -10,16 +10,11 @@ except ImportError:
 import sqlite3
 import sys
 import os
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
 from trader.account.AccountCoinbasePro import AccountCoinbasePro
 from trader.indicator.OBV import OBV
-from trader.indicator.EMA import EMA
-from trader.indicator.LSMA import LSMA
-from trader.indicator.ATR import ATR
 from trader.indicator.ADX import ADX
 import numpy as np
 import talib

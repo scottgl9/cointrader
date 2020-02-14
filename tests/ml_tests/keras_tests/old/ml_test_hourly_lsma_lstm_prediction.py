@@ -7,36 +7,23 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import sqlite3
 import sys
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-import time
 import numpy as np
-from trader.account.binance.client import Client
-from trader.config import *
 import matplotlib.pyplot as plt
 import argparse
-from trader.lib.MachineLearning.HourlyLSTM import HourlyLSTM
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountBinance import AccountBinance
+from trader.account.binance.AccountBinance import AccountBinance
 from trader.lib.DataFrameMLHelper import DataFrameMLHelper
-from trader.lib.Crossover2 import Crossover2
-from trader.indicator.EMA import EMA
-from trader.indicator.MACD import MACD
 from trader.indicator.LSMA import LSMA
-from numpy import hstack
-from numpy import insert
 from keras.preprocessing.sequence import TimeseriesGenerator
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
-from keras.layers import Dropout
-from keras.utils import to_categorical
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import StandardScaler
 
 
 def simulate(kdb, symbol, train_start_ts, train_end_ts, test_start_ts, test_end_ts):
