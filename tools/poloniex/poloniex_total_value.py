@@ -7,7 +7,7 @@ except ImportError:
     sys.path.append('.')
 
 from trader.account.poloniex import Poloniex
-from trader.account.AccountPoloniex import AccountPoloniex
+from trader.account.poloniex.AccountPoloniex import AccountPoloniex
 from trader.config import *
 
 if __name__ == '__main__':
