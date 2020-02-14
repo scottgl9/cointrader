@@ -8,10 +8,10 @@ except ImportError:
     import trader
 
 #from pymongo import MongoClient
-from trader.account.cobinhood.ws import feed
-from trader.account.cobinhood.ws.response import Trade
-from trader.account.cobinhood.configuration import Config
-from trader.account.cobinhood.http import wallet
+from trader.account.cobinhood.cobinhood.ws import feed
+from trader.account.cobinhood.cobinhood.ws.response import Trade
+from trader.account.cobinhood.cobinhood.configuration import Config
+from trader.account.cobinhood.cobinhood.http import wallet
 
 from trader.config import *
 

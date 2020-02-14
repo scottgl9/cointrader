@@ -1,10 +1,8 @@
 from trader.account.AccountBase import AccountBase
-from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
-from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
-from trader.account.kraken.krakenex.api import API
-from trader.account.kraken.pykrakenapi.pykrakenapi import KrakenAPI, KrakenAPIError
+from trader.account.kraken.kraken.krakenex.api import API
+from trader.account.kraken.kraken.pykrakenapi import KrakenAPI
 from trader.config import *
 import json
 import os

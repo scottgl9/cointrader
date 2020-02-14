@@ -7,15 +7,14 @@ except ImportError:
     sys.path.append('.')
 
 from trader.account.kraken import API, KrakenAPI
-from trader.account.kraken import kraken_wsclient_py as wsclient
-from trader.account.AccountKraken import AccountKraken
+from trader.account.kraken.kraken import kraken_wsclient_py as wsclient
+from trader.account.kraken.AccountKraken import AccountKraken
 from datetime import datetime
 import sqlite3
 import time
 import logging
 import os
 import sys
-import aniso8601
 from trader.config import *
 
 # {u'c': u'0.00035038', u'E': 1521434160493, u'h': u'0.00037032', u'l': u'0.00033418', u'o': u'0.00033855', u'q': u'361.61821435', u's': u'BATETH', u'v': u'1044884.00000000', u'e': u'24hrMiniTicker'}

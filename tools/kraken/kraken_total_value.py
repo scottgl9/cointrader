@@ -6,8 +6,8 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.kraken.krakenex.api import API
-from trader.account.kraken.pykrakenapi.pykrakenapi import KrakenAPI, KrakenAPIError
+from trader.account.kraken.kraken.krakenex.api import API
+from trader.account.kraken.kraken.pykrakenapi import KrakenAPI
 from trader.config import *
 
 if __name__ == '__main__':
