@@ -1,8 +1,8 @@
 """Contains functions for getting information related to the user account."""
-import trader.account.robin_stocks.helper as helper
-import trader.account.robin_stocks.urls as urls
-import trader.account.robin_stocks.stocks as stocks
-import trader.account.robin_stocks.profiles as profiles
+import trader.account.robinhood.robin_stocks.helper as helper
+import trader.account.robinhood.robin_stocks.urls as urls
+import trader.account.robinhood.robin_stocks.stocks as stocks
+import trader.account.robinhood.robin_stocks.profiles as profiles
 import os
 
 @helper.login_required
@@ -448,7 +448,7 @@ def delete_symbols_from_watchlist(inputSymbols, name = 'Default'):
 
     """
     symbols = helper.inputs_to_set(inputSymbols)
-    symbols = stocks.get_fundamentals(symbols, info = 'instrument')
+    symbols = stocks.get_fundamentals(symbols, info ='instrument')
 
     watchlist = get_watchlist_by_name(name = name)
 

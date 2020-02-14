@@ -7,12 +7,8 @@ except ImportError:
     sys.path.append('.')
 
 #from pymongo import MongoClient
-import os.path
-import sys
-from trader import *
-from trader.account.gdax.public_client import PublicClient
 from trader.account.gdax.authenticated_client import AuthenticatedClient
-from trader.account.coinbase.wallet.client import Client
+from trader.account.cbpro.coinbase.wallet import Client
 
 from trader.config import *
 

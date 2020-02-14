@@ -9,31 +9,31 @@ import os
 import requests
 import six
 import warnings
-from trader.account.coinbase.wallet.auth import HMACAuth
-from trader.account.coinbase.wallet.auth import OAuth2Auth
-from trader.account.coinbase.wallet.compat import imap
-from trader.account.coinbase.wallet.compat import quote
-from trader.account.coinbase.wallet.compat import urljoin
-from trader.account.coinbase.wallet.error import build_api_error
-from trader.account.coinbase.wallet.model import APIObject
-from trader.account.coinbase.wallet.model import Account
-from trader.account.coinbase.wallet.model import Address
-from trader.account.coinbase.wallet.model import Buy
-from trader.account.coinbase.wallet.model import Checkout
-from trader.account.coinbase.wallet.model import CurrentUser
-from trader.account.coinbase.wallet.model import Deposit
-from trader.account.coinbase.wallet.model import Merchant
-from trader.account.coinbase.wallet.model import Notification
-from trader.account.coinbase.wallet.model import PaymentMethod
-from trader.account.coinbase.wallet.model import Order
-from trader.account.coinbase.wallet.model import Sell
-from trader.account.coinbase.wallet.model import Transaction
-from trader.account.coinbase.wallet.model import Report
-from trader.account.coinbase.wallet.model import User
-from trader.account.coinbase.wallet.model import Withdrawal
-from trader.account.coinbase.wallet.model import new_api_object
-from trader.account.coinbase.wallet.util import check_uri_security
-from trader.account.coinbase.wallet.util import encode_params
+from trader.account.cbpro.coinbase.wallet import HMACAuth
+from trader.account.cbpro.coinbase.wallet import OAuth2Auth
+from trader.account.cbpro.coinbase.wallet import imap
+from trader.account.cbpro.coinbase.wallet import quote
+from trader.account.cbpro.coinbase.wallet import urljoin
+from trader.account.cbpro.coinbase.wallet import build_api_error
+from trader.account.cbpro.coinbase.wallet import APIObject
+from trader.account.cbpro.coinbase.wallet import Account
+from trader.account.cbpro.coinbase.wallet import Address
+from trader.account.cbpro.coinbase.wallet import Buy
+from trader.account.cbpro.coinbase.wallet import Checkout
+from trader.account.cbpro.coinbase.wallet import CurrentUser
+from trader.account.cbpro.coinbase.wallet import Deposit
+from trader.account.cbpro.coinbase.wallet import Merchant
+from trader.account.cbpro.coinbase.wallet import Notification
+from trader.account.cbpro.coinbase.wallet import PaymentMethod
+from trader.account.cbpro.coinbase.wallet import Order
+from trader.account.cbpro.coinbase.wallet import Sell
+from trader.account.cbpro.coinbase.wallet import Transaction
+from trader.account.cbpro.coinbase.wallet import Report
+from trader.account.cbpro.coinbase.wallet import User
+from trader.account.cbpro.coinbase.wallet import Withdrawal
+from trader.account.cbpro.coinbase.wallet import new_api_object
+from trader.account.cbpro.coinbase.wallet import check_uri_security
+from trader.account.cbpro.coinbase.wallet import encode_params
 
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA

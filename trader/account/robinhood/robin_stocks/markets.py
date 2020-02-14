@@ -1,6 +1,6 @@
 """Contains functions for getting market level data."""
-import trader.account.robin_stocks.helper as helper
-import trader.account.robin_stocks.urls as urls
+import trader.account.robinhood.robin_stocks.helper as helper
+import trader.account.robinhood.robin_stocks.urls as urls
 
 def get_top_movers(direction,info=None):
     """Returns a list of the top movers up or down for the day.
@@ -25,9 +25,9 @@ def get_top_movers(direction,info=None):
 
     url = urls.movers()
     payload = { 'direction' : direction}
-    data = helper.request_get(url,'pagination',payload)
+    data = helper.request_get(url, 'pagination', payload)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_markets(info=None):
     """Returns a list of available markets.
@@ -39,8 +39,8 @@ def get_markets(info=None):
 
     """
     url = urls.markets()
-    data = helper.request_get(url,'pagination')
-    return(helper.filter(data,info))
+    data = helper.request_get(url, 'pagination')
+    return(helper.filter(data, info))
 
 def get_currency_pairs(info=None):
     """Returns currency pairs
@@ -53,5 +53,5 @@ def get_currency_pairs(info=None):
     """
 
     url = urls.currency()
-    data = helper.request_get(url,'results')
-    return(helper.filter(data,info))
+    data = helper.request_get(url, 'results')
+    return(helper.filter(data, info))

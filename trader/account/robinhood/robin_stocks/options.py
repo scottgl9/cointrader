@@ -1,6 +1,6 @@
 """Contains functions for getting information about options."""
-import trader.account.robin_stocks.helper as helper
-import trader.account.robin_stocks.urls as urls
+import trader.account.robinhood.robin_stocks.helper as helper
+import trader.account.robinhood.robin_stocks.urls as urls
 
 @helper.login_required
 def get_aggregate_positions(info=None):
@@ -13,8 +13,8 @@ def get_aggregate_positions(info=None):
 
     """
     url = urls.aggregate()
-    data = helper.request_get(url,'pagination')
-    return(helper.filter(data,info))
+    data = helper.request_get(url, 'pagination')
+    return(helper.filter(data, info))
 
 @helper.login_required
 def get_market_options(info=None):
@@ -27,9 +27,9 @@ def get_market_options(info=None):
 
     """
     url = urls.option_orders()
-    data = helper.request_get(url,'pagination')
+    data = helper.request_get(url, 'pagination')
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 @helper.login_required
 def get_all_option_positions(info=None):
@@ -42,8 +42,8 @@ def get_all_option_positions(info=None):
 
     """
     url = urls.option_positions()
-    data = helper.request_get(url,'pagination')
-    return(helper.filter(data,info))
+    data = helper.request_get(url, 'pagination')
+    return(helper.filter(data, info))
 
 @helper.login_required
 def get_open_option_positions(info=None):
@@ -57,9 +57,9 @@ def get_open_option_positions(info=None):
     """
     url = urls.option_positions()
     payload = { 'nonzero' : 'True' }
-    data = helper.request_get(url,'pagination',payload)
+    data = helper.request_get(url, 'pagination', payload)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_chains(symbol,info=None):
     """Returns the chain information of an option.
@@ -81,7 +81,7 @@ def get_chains(symbol,info=None):
     url = urls.chains(symbol)
     data = helper.request_get(url)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def find_tradable_options_for_stock(symbol,optionType='both',info=None):
     """Returns a list of all available options for a stock.
@@ -114,8 +114,8 @@ def find_tradable_options_for_stock(symbol,optionType='both',info=None):
                     'state' : 'active',
                     'tradability' : 'tradable'}
 
-    data = helper.request_get(url,'pagination',payload)
-    return(helper.filter(data,info))
+    data = helper.request_get(url, 'pagination', payload)
+    return(helper.filter(data, info))
 
 def find_options_for_stock_by_expiration(symbol,expirationDate,optionType='both',info=None):
     """Returns a list of all the option orders that match the seach parameters
@@ -147,7 +147,7 @@ def find_options_for_stock_by_expiration(symbol,expirationDate,optionType='both'
         marketData = get_option_market_data_by_id(item['id'])
         item.update(marketData)
 
-    return(helper.filter(filteredOptions,info))
+    return(helper.filter(filteredOptions, info))
 
 def find_options_for_stock_by_strike(symbol,strike,optionType='both',info=None):
     """Returns a list of all the option orders that match the seach parameters
@@ -179,7 +179,7 @@ def find_options_for_stock_by_strike(symbol,strike,optionType='both',info=None):
         marketData = get_option_market_data_by_id(item['id'])
         item.update(marketData)
 
-    return(helper.filter(filteredOptions,info))
+    return(helper.filter(filteredOptions, info))
 
 def find_options_for_stock_by_expiration_and_strike(symbol,expirationDate,strike,optionType='both',info=None):
     """Returns a list of all the option orders that match the seach parameters
@@ -213,7 +213,7 @@ def find_options_for_stock_by_expiration_and_strike(symbol,expirationDate,strike
         marketData = get_option_market_data_by_id(item['id'])
         item.update(marketData)
 
-    return(helper.filter(filteredOptions,info))
+    return(helper.filter(filteredOptions, info))
 
 def find_options_for_list_of_stocks_by_expiration_date(inputSymbols,expirationDate,optionType='both',info=None):
     """Returns a list of all the option orders that match the seach parameters
@@ -253,7 +253,7 @@ def find_options_for_list_of_stocks_by_expiration_date(inputSymbols,expirationDa
                         'state' : 'active',
                         'tradability' : 'tradable',
                         'rhs_tradability' : 'tradable'}
-        otherData = helper.request_get(url,'pagination',payload)
+        otherData = helper.request_get(url, 'pagination', payload)
         for item in otherData:
             if (item['expiration_date'] == expirationDate and item['tradability'] == 'tradable'):
                 data.append(item)
@@ -262,7 +262,7 @@ def find_options_for_list_of_stocks_by_expiration_date(inputSymbols,expirationDa
         marketData = get_option_market_data_by_id(item['id'])
         item.update(marketData)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_list_market_data(inputSymbols,expirationDate,info=None):
     """Returns a list of option market data for several stock tickers.
@@ -287,7 +287,7 @@ def get_list_market_data(inputSymbols,expirationDate,info=None):
                     'state' : 'active',
                     'tradability' : 'tradable',
                     'rhs_tradability' : 'tradable'}
-        otherData = helper.request_get(url,'pagination',payload)
+        otherData = helper.request_get(url, 'pagination', payload)
         for item in otherData:
             if (item['expiration_date'] == expirationDate and item['tradability'] == 'tradable'):
                 ids.append(item['id'])
@@ -297,7 +297,7 @@ def get_list_market_data(inputSymbols,expirationDate,info=None):
         otherData = helper.request_get(url)
         data.append(otherData)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_list_options_of_specific_profitability(inputSymbols,expirationDate,typeProfit="chance_of_profit_short",profitFloor=0.0, profitCeiling=1.0,info=None):
     """Returns a list of option market data for several stock tickers that match a range of profitability.
@@ -334,7 +334,7 @@ def get_list_options_of_specific_profitability(inputSymbols,expirationDate,typeP
                     'state' : 'active',
                     'tradability' : 'tradable',
                     'rhs_tradability' : 'tradable'}
-        otherData = helper.request_get(url,'pagination',payload)
+        otherData = helper.request_get(url, 'pagination', payload)
         for item in otherData:
             if (item['tradability'] == 'tradable'):
                 ids.append(item['id'])
@@ -352,7 +352,7 @@ def get_list_options_of_specific_profitability(inputSymbols,expirationDate,typeP
         except:
             pass
 
-    return(helper.filter(returnData,info))
+    return(helper.filter(returnData, info))
 
 def get_option_market_data_by_id(id,info=None):
     """Returns the option market data for a stock, including the greeks,
@@ -369,7 +369,7 @@ def get_option_market_data_by_id(id,info=None):
     url = urls.marketdata_options(id)
     data = helper.request_get(url)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_option_market_data(symbol,expirationDate,strike,optionType,info=None):
     """Returns the option market data for the stock option, including the greeks,
@@ -396,11 +396,11 @@ def get_option_market_data(symbol,expirationDate,strike,optionType,info=None):
         print(message)
         return [None]
 
-    optionID= helper.id_for_option(symbol,expirationDate,strike,optionType)
+    optionID= helper.id_for_option(symbol, expirationDate, strike, optionType)
     url = urls.marketdata_options(optionID)
     data = helper.request_get(url)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_option_instrument_data_by_id(id,info=None):
     """Returns the option instrument information.
@@ -415,7 +415,7 @@ def get_option_instrument_data_by_id(id,info=None):
     """
     url = urls.option_instruments(id)
     data = helper.request_get(url)
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_option_instrument_data(symbol,expirationDate,strike,optionType,info=None):
     """Returns the option instrument data for the stock option.
@@ -441,11 +441,11 @@ def get_option_instrument_data(symbol,expirationDate,strike,optionType,info=None
         print(message)
         return [None]
 
-    optionID= helper.id_for_option(symbol,expirationDate,strike,optionType)
+    optionID= helper.id_for_option(symbol, expirationDate, strike, optionType)
     url = urls.option_instruments(optionID)
     data = helper.request_get(url)
 
-    return(helper.filter(data,info))
+    return(helper.filter(data, info))
 
 def get_option_historicals(symbol,expirationDate,strike,optionType,span='week'):
     """Returns the data that is used to make the graphs.
@@ -485,11 +485,11 @@ def get_option_historicals(symbol,expirationDate,strike,optionType,span='week'):
     else:
         interval = 'week'
 
-    optionID = helper.id_for_option(symbol,expirationDate,strike,optionType)
+    optionID = helper.id_for_option(symbol, expirationDate, strike, optionType)
 
     url = urls.option_historicals(optionID)
     payload = { 'span' : span,
                 'interval' : interval}
-    data = helper.request_get(url,'regular',payload)
+    data = helper.request_get(url, 'regular', payload)
 
     return(data)

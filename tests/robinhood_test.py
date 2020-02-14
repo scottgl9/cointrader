@@ -7,7 +7,7 @@ except ImportError:
     import trader
 from trader.config import *
 import pyotp
-import trader.account.robin_stocks as r
+import trader.account.robinhood.robin_stocks as r
 
 totp = pyotp.TOTP(ROBINHOOD_2FA_KEY)
 mfa_code = totp.now()

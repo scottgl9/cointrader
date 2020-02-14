@@ -1,9 +1,9 @@
 """Contains all functions for placing orders for stocks, options, and crypto."""
-import trader.account.robin_stocks.helper as helper
-import trader.account.robin_stocks.urls as urls
-import trader.account.robin_stocks.stocks as stocks
-import trader.account.robin_stocks.profiles as profiles
-import trader.account.robin_stocks.crypto as crypto
+import trader.account.robinhood.robin_stocks.helper as helper
+import trader.account.robinhood.robin_stocks.urls as urls
+import trader.account.robinhood.robin_stocks.stocks as stocks
+import trader.account.robinhood.robin_stocks.profiles as profiles
+import trader.account.robinhood.robin_stocks.crypto as crypto
 
 from uuid import uuid4
 
@@ -763,7 +763,7 @@ def order_buy_option_limit(price, symbol, quantity, expirationDate, strike, opti
     'direction': 'debit',
     'time_in_force': timeInForce,
     'legs': [
-        {'position_effect': 'open', 'side' : 'buy', 'ratio_quantity': 1, 'option': urls.option_instruments(optionID) },
+        {'position_effect': 'open', 'side' : 'buy', 'ratio_quantity': 1, 'option': urls.option_instruments(optionID)},
     ],
     'type': 'limit',
     'trigger': 'immediate',
@@ -816,7 +816,7 @@ def order_sell_option_limit(price, symbol, quantity, expirationDate, strike, opt
     'direction': 'credit',
     'time_in_force': timeInForce,
     'legs': [
-        {'position_effect': 'close', 'side' : 'sell', 'ratio_quantity': 1, 'option': urls.option_instruments(optionID) },
+        {'position_effect': 'close', 'side' : 'sell', 'ratio_quantity': 1, 'option': urls.option_instruments(optionID)},
     ],
     'type': 'limit',
     'trigger': 'immediate',
@@ -878,7 +878,7 @@ def order_buy_crypto_by_price(symbol, amountInDollars, priceType='ask_price', ti
     }
 
     url = urls.order_crypto()
-    data = helper.request_post(url,payload,json=True)
+    data = helper.request_post(url, payload, json=True)
 
     return(data)
 

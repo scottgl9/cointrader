@@ -8,15 +8,12 @@ except ImportError:
 
 import os.path
 import time
-import sqlite3
 from datetime import datetime
 import sys
 from trader.MultiTrader import MultiTrader
-from trader.lib.struct.Kline import Kline
 from trader.lib.struct.MarketMessage import MarketMessage
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 from trader.TraderConfig import TraderConfig
-from trader.config import *
 import argparse
 import logging
 import json

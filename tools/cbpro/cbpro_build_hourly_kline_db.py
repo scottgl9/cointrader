@@ -6,17 +6,15 @@ try:
 except ImportError:
     sys.path.append('.')
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 import sqlite3
 import time
 import logging
 import os
 import sys
-import threading
 import argparse
 from trader.config import *
-from trader.account.cbpro import AuthenticatedClient, PublicClient
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.cbpro import AuthenticatedClient
+from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 
 
 def create_db_connection(db_file):

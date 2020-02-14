@@ -1,6 +1,6 @@
 """Contains all functions for the purpose of logging in and out to Robinhood."""
-import trader.account.robin_stocks.urls as urls
-import trader.account.robin_stocks.helper as helper
+import trader.account.robinhood.robin_stocks.urls as urls
+import trader.account.robinhood.robin_stocks.helper as helper
 import random
 import pickle
 import os
@@ -118,9 +118,9 @@ def login(username = None, password = None, expiresIn = 86400, scope = 'internal
                     payload['device_token'] = pickle_device_token
                     # Set login status to True in order to try and get account info.
                     helper.set_login_state(True)
-                    helper.update_session('Authorization','{0} {1}'.format(token_type, access_token))
+                    helper.update_session('Authorization', '{0} {1}'.format(token_type, access_token))
                     # Try to load account profile to check that authorization token is still valid.
-                    res = helper.request_get(urls.portfolio_profile(),'regular', payload, jsonify_data = False)
+                    res = helper.request_get(urls.portfolio_profile(), 'regular', payload, jsonify_data = False)
                     # Raises exception is response code is not 200.
                     res.raise_for_status()
                     return({'access_token': access_token,'token_type': token_type,
@@ -129,7 +129,7 @@ def login(username = None, password = None, expiresIn = 86400, scope = 'internal
             except:
                 print("ERROR: There was an issue loading pickle file. Authentication may be expired - logging in normally.")
                 helper.set_login_state(False)
-                helper.update_session('Authorization',None)
+                helper.update_session('Authorization', None)
         else:
             os.remove(pickle_path)
     # Try to log in normally.
@@ -140,7 +140,7 @@ def login(username = None, password = None, expiresIn = 86400, scope = 'internal
         password = getpass.getpass("Robinhood password: ")
         payload['password'] = password
 
-    data = helper.request_post(url,payload)
+    data = helper.request_post(url, payload)
     # Handle case where mfa or challenge is required.
     if 'mfa_required' in data:
         if not mfa_token:
@@ -160,7 +160,7 @@ def login(username = None, password = None, expiresIn = 86400, scope = 'internal
             sms_code = input('That code was not correct. {0} tries remaining. Please type in another code: '.format(res['challenge']['remaining_attempts']))
             res = respond_to_challenge(challenge_id, sms_code)
         helper.update_session('X-ROBINHOOD-CHALLENGE-RESPONSE-ID', challenge_id)
-        data = helper.request_post(url,payload)
+        data = helper.request_post(url, payload)
     # Update Session data with authorization or raise exception with the information present in data.
     if 'access_token' in data:
         token = '{0} {1}'.format(data['token_type'], data['access_token'])

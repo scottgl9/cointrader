@@ -13,7 +13,7 @@ import os
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 from trader.indicator.OBV import OBV
 from trader.indicator.ADX import ADX
 import numpy as np

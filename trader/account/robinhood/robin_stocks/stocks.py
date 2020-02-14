@@ -1,6 +1,6 @@
 """Contains information in regards to stocks."""
-import trader.account.robin_stocks.helper as helper
-import trader.account.robin_stocks.urls as urls
+import trader.account.robinhood.robin_stocks.helper as helper
+import trader.account.robinhood.robin_stocks.urls as urls
 
 def get_quotes(inputSymbols, info = None):
     """Takes any number of stock tickers and returns information pertaining to its price.
@@ -140,9 +140,9 @@ def get_name_by_symbol(symbol):
     if not data:
         return(None)
     # If stock doesn't have a simple name attribute then get the full name.
-    filter = helper.filter(data, info = 'simple_name')
+    filter = helper.filter(data, info ='simple_name')
     if not filter or filter == "":
-        filter = helper.filter(data, info = 'name')
+        filter = helper.filter(data, info ='name')
     return(filter)
 
 @helper.convert_none_to_string
@@ -159,9 +159,9 @@ def get_name_by_url(url):
     if not data:
         return(None)
     # If stock doesn't have a simple name attribute then get the full name.
-    filter = helper.filter(data, info = 'simple_name')
+    filter = helper.filter(data, info ='simple_name')
     if not filter or filter == "":
-        filter = helper.filter(data, info = 'name')
+        filter = helper.filter(data, info ='name')
     return(filter)
 
 @helper.convert_none_to_string

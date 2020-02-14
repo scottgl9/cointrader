@@ -6,8 +6,8 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.cbpro import WebsocketClient, AuthenticatedClient, PublicClient
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.cbpro import WebsocketClient, AuthenticatedClient
+from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 from datetime import datetime
 import sqlite3
 import time

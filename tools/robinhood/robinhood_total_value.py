@@ -7,10 +7,9 @@ try:
 except ImportError:
     sys.path.append('.')
 
-import trader.account.robin_stocks as client
-from trader.account.AccountRobinhood import AccountRobinhood
+import trader.account.robinhood.robin_stocks as client
+from trader.account.robinhood.AccountRobinhood import AccountRobinhood
 from trader.config import *
-from datetime import datetime
 
 if __name__ == '__main__':
     totp = pyotp.TOTP(ROBINHOOD_2FA_KEY)

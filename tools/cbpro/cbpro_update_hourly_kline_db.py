@@ -7,17 +7,15 @@ except ImportError:
     sys.path.append('.')
     import trader
 
-import sqlite3
 import time
 import logging
 import sys
 import os
 import argparse
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from trader.config import *
-from trader.account.cbpro import AuthenticatedClient, PublicClient
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.cbpro import AuthenticatedClient
+from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 from trader.KlinesDB import KlinesDB
 
 

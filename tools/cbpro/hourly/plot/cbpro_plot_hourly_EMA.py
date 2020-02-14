@@ -15,7 +15,7 @@ import time
 import matplotlib.pyplot as plt
 import argparse
 from trader.KlinesDB import KlinesDB
-from trader.account.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 from trader.indicator.OBV import OBV
 try:
     from trader.indicator.native.EMA import EMA

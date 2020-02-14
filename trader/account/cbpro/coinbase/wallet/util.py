@@ -8,7 +8,7 @@ import json
 import six
 import warnings
 
-from trader.account.coinbase.wallet.compat import urlparse
+from trader.account.cbpro.coinbase.wallet import urlparse
 
 
 def clean_params(params, drop_nones=True, recursive=True):
