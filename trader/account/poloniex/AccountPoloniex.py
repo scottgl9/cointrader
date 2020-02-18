@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 class AccountPoloniex(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
+        super(AccountPoloniex, self).__init__(client, simulation, logger, simulate_db_filename)
         self.exchange_type = AccountBase.EXCHANGE_POLONIEX
         self.exchange_name = 'poloniex'
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)

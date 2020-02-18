@@ -15,6 +15,12 @@ class AccountBase(object):
     TRADER_MODE_REALTIME = 1
     TRADER_MODE_HOURLY = 2
 
+    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
+        self.logger = logger
+        self.simulate_db_filename = simulate_db_filename
+        self.client = client
+        self.simulate = simulation
+
     def get_config_section_name(self):
         pass
 

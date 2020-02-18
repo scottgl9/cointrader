@@ -2,19 +2,19 @@
 
 class AccountBaseInfo(object):
     def load_exchange_info(self):
-        pass
+        raise NotImplementedError
 
     def get_exchange_info(self):
-        pass
+        raise NotImplementedError
 
     def parse_exchange_info(self, pair_info, asset_info):
-        pass
+        raise NotImplementedError
 
     def get_exchange_pairs(self):
-        pass
+        raise NotImplementedError
 
     def is_exchange_pair(self, symbol):
-        pass
+        raise NotImplementedError
 
     def is_asset_available(self, name):
-        pass
+        raise NotImplementedError

@@ -2,13 +2,13 @@
 
 class AccountBaseBalance(object):
     def get_account_total_value(self, currency, detailed=False):
-        pass
+        raise NotImplementedError
 
     def get_account_balances(self, detailed=False):
-        pass
+        raise NotImplementedError
 
     def get_asset_balance_tuple(self, asset):
-        return 0, 0
+        raise NotImplementedError
 
     def update_asset_balance(self, name, balance, available):
-        pass
+        raise NotImplementedError
