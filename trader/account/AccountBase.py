@@ -21,6 +21,11 @@ class AccountBase(object):
         self.client = client
         self.simulate = simulation
 
+        # account specific components
+        self.info = None
+        self.balance = None
+        self.trade = None
+
     def get_config_section_name(self):
         pass
 
@@ -81,6 +86,7 @@ class AccountBase(object):
     def get_symbol_currency(self, symbol):
         pass
 
+    # 'info' component functions
     def load_exchange_info(self):
         pass
 
@@ -99,6 +105,7 @@ class AccountBase(object):
     def is_asset_available(self, name):
         pass
 
+    # 'balance' component functions
     def get_account_total_value(self, currency, detailed=False):
         pass
 
@@ -111,6 +118,7 @@ class AccountBase(object):
     def update_asset_balance(self, name, balance, available):
         pass
 
+    # 'trade' component functions
     def buy_market(self, size, price=0.0, ticker_id=None):
         pass
 

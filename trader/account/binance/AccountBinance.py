@@ -1,5 +1,8 @@
 from trader.account.binance.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
+from trader.account.AccountBaseInfo import AccountBaseInfo
+from trader.account.AccountBaseBalance import AccountBaseBalance
+from trader.account.AccountBaseTrade import AccountBaseTrade
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
@@ -7,8 +10,71 @@ from trader.lib.struct.AssetInfo import AssetInfo
 import json
 import os
 
+class AccountBinanceInfo(AccountBaseInfo):
+    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
+        self.simulate_db_filename = simulate_db_filename
+        self.client = client
+        self.simulate = simulation
+        self.logger = logger
 
-#logger = logging.getLogger(__name__)
+    def load_exchange_info(self):
+        raise NotImplementedError
+
+    def get_exchange_info(self):
+        raise NotImplementedError
+
+    def parse_exchange_info(self, pair_info, asset_info):
+        raise NotImplementedError
+
+    def get_exchange_pairs(self):
+        raise NotImplementedError
+
+    def is_exchange_pair(self, symbol):
+        raise NotImplementedError
+
+    def is_asset_available(self, name):
+        raise NotImplementedError
+
+class AccountBinanceBalance(AccountBaseBalance):
+    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
+        self.simulate_db_filename = simulate_db_filename
+        self.client = client
+        self.simulate = simulation
+        self.logger = logger
+
+    def get_account_total_value(self, currency, detailed=False):
+        raise NotImplementedError
+
+    def get_account_balances(self, detailed=False):
+        raise NotImplementedError
+
+    def get_asset_balance_tuple(self, asset):
+        raise NotImplementedError
+
+    def update_asset_balance(self, name, balance, available):
+        raise NotImplementedError
+
+class AccountBinanceTrade(AccountBaseTrade):
+    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
+        self.simulate_db_filename = simulate_db_filename
+        self.client = client
+        self.simulate = simulation
+        self.logger = logger
+
+    def buy_market(self, size, price=0.0, ticker_id=None):
+        raise NotImplementedError
+
+    def sell_market(self, size, price=0.0, ticker_id=None):
+        raise NotImplementedError
+
+    def buy_limit(self, price, size, ticker_id=None):
+        raise NotImplementedError
+
+    def sell_limit(self, price, size, ticker_id=None):
+        raise NotImplementedError
+
+    def cancel_order(self, orderid, ticker_id=None):
+        raise NotImplementedError
 
 class AccountBinance(AccountBase):
     def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
