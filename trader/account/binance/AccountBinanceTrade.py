@@ -37,6 +37,24 @@ class AccountBinanceTrade(AccountBaseTrade):
         timeInForce = Client.TIME_IN_FORCE_GTC
         return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
+    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
+        return self.client.create_order(symbol=ticker_id,
+                                        timeInForce=Client.TIME_IN_FORCE_GTC,
+                                        side=Client.SIDE_BUY,
+                                        type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
+                                        quantity=size,
+                                        price=price,
+                                        stopPrice=stop_price)
+
+    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
+        return self.client.create_order(symbol=ticker_id,
+                                        timeInForce=Client.TIME_IN_FORCE_GTC,
+                                        side=Client.SIDE_SELL,
+                                        type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
+                                        quantity=size,
+                                        price=price,
+                                        stopPrice=stop_price)
+
     def get_order(self, order_id, ticker_id):
         return self.client.get_order(orderId=order_id, symbol=ticker_id)
 

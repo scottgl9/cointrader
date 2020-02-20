@@ -167,6 +167,18 @@ class AccountBase(object):
         else:
             return self.trade.sell_limit(size, price, ticker_id)
 
+    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
+        if self.simulate:
+            return self.buy_limit_stop_simulate(price, size, stop_price, ticker_id)
+        else:
+            return self.trade.buy_limit_stop(price, size, stop_price, ticker_id)
+
+    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
+        if self.simulate:
+            return self.sell_limit_stop_simulate(price, size, stop_price, ticker_id)
+        else:
+            return self.trade.sell_limit_stop(price, size, stop_price, ticker_id)
+
     # simulate buy market order
     def buy_market_simulate(self, size, price=0.0, ticker_id=None):
         size = self.round_base_symbol(ticker_id, size)

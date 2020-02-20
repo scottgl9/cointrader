@@ -3,7 +3,10 @@ from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
-from trader.account.cbpro import AuthenticatedClient, PublicClient
+from .AccountCoinbaseInfo import AccountCoinbaseInfo
+from .AccountCoinbaseBalance import AccountCoinbaseBalance
+from .AccountCoinbaseTrade import AccountCoinbaseTrade
+from .cbpro import AuthenticatedClient, PublicClient
 from trader.config import *
 import json
 import os
@@ -31,6 +34,11 @@ class AccountCoinbasePro(AccountBase):
         self.details_all_assets = {}
         self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
+
+        # sub module implementations
+        self.info = AccountCoinbaseInfo(client, simulation, logger, self.exchange_info_file)
+        self.balance = AccountCoinbaseBalance(client, simulation, logger)
+        self.trade = AccountCoinbaseTrade(client, simulation, logger)
 
         # hourly db column names
         self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
@@ -280,19 +288,19 @@ class AccountCoinbasePro(AccountBase):
         else:
             return "{:.8f}".format(float(value))
 
-    def make_ticker_id(self, base, currency):
-        return '%s-%s' % (base, currency)
-
-    def split_ticker_id(self, symbol):
-        base_name = None
-        currency_name = None
-
-        parts = symbol.split('-')
-        if len(parts) == 2:
-            base_name = parts[0]
-            currency_name = parts[1]
-
-        return base_name, currency_name
+    # def make_ticker_id(self, base, currency):
+    #     return '%s-%s' % (base, currency)
+    #
+    # def split_ticker_id(self, symbol):
+    #     base_name = None
+    #     currency_name = None
+    #
+    #     parts = symbol.split('-')
+    #     if len(parts) == 2:
+    #         base_name = parts[0]
+    #         currency_name = parts[1]
+    #
+    #     return base_name, currency_name
 
     def split_symbol(self, symbol):
         return self.split_ticker_id(symbol)
@@ -309,72 +317,72 @@ class AccountCoinbasePro(AccountBase):
             return result[1]
         return None
 
-    # For simulation: load exchange info from file, or call get_exchange_info() and save to file
-    def load_exchange_info(self):
-        if not self.simulate and os.path.exists(self.exchange_info_file):
-            info = self.get_exchange_info()
-            self.info_all_assets = info['pairs']
-            self.details_all_assets = info['assets']
-            return
-
-        print(self.exchange_info_file)
-        if not os.path.exists(self.exchange_info_file):
-            info = self.get_exchange_info()
-            with open(self.exchange_info_file, 'w') as f:
-                json.dump(info, f, indent=4)
-        else:
-            info = json.loads(open(self.exchange_info_file).read())
-        self.info_all_assets = info['pairs']
-        self.details_all_assets = info['assets']
-
-    # get exchange info from exchange via API
-    def get_exchange_info(self):
-        pair_info = self.pc.get_products()
-        asset_info = self.pc.get_currencies()
-        return self.parse_exchange_info(pair_info, asset_info)
-
-    def parse_exchange_info(self, pair_info, asset_info):
-        exchange_info = {}
-        pairs = {}
-        assets = {}
-
-        for info in pair_info:
-            symbol = info['id']
-            min_qty = info['base_min_size']
-            min_price = info['min_market_funds']
-            base_step_size = info['base_increment']
-            currency_step_size = info['quote_increment']
-
-            pairs[symbol] = {'min_qty': min_qty,
-                             'min_price': min_price,
-                             'base_step_size': base_step_size,
-                             'currency_step_size': currency_step_size,
-                             #'minNotional': minNotional,
-                             #'commissionAsset': commissionAsset,
-                             #'baseAssetPrecision': baseAssetPrecision,
-                             #'quotePrecision': quotePrecision,
-                             #'orderTypes': orderTypes
-                            }
-        for info in asset_info:
-            name = info['id']
-            status = info['status']
-            if status == 'online':
-                assets[name] = {'disabled': False, 'delisted': False }
-            else:
-                assets[name] = {'disabled': True, 'delisted': False }
-
-        self._exchange_pairs = []
-
-        for pair in pairs.keys():
-            # ignore trade pairs with GBP and EUR currency
-            if pair.endswith('GBP') or pair.endswith('EUR'):
-                continue
-            self._exchange_pairs.append(pair)
-
-        exchange_info['pairs'] = pairs
-        exchange_info['assets'] = assets
-
-        return exchange_info
+    # # For simulation: load exchange info from file, or call get_exchange_info() and save to file
+    # def load_exchange_info(self):
+    #     if not self.simulate and os.path.exists(self.exchange_info_file):
+    #         info = self.get_exchange_info()
+    #         self.info_all_assets = info['pairs']
+    #         self.details_all_assets = info['assets']
+    #         return
+    #
+    #     print(self.exchange_info_file)
+    #     if not os.path.exists(self.exchange_info_file):
+    #         info = self.get_exchange_info()
+    #         with open(self.exchange_info_file, 'w') as f:
+    #             json.dump(info, f, indent=4)
+    #     else:
+    #         info = json.loads(open(self.exchange_info_file).read())
+    #     self.info_all_assets = info['pairs']
+    #     self.details_all_assets = info['assets']
+    #
+    # # get exchange info from exchange via API
+    # def get_exchange_info(self):
+    #     pair_info = self.pc.get_products()
+    #     asset_info = self.pc.get_currencies()
+    #     return self.parse_exchange_info(pair_info, asset_info)
+    #
+    # def parse_exchange_info(self, pair_info, asset_info):
+    #     exchange_info = {}
+    #     pairs = {}
+    #     assets = {}
+    #
+    #     for info in pair_info:
+    #         symbol = info['id']
+    #         min_qty = info['base_min_size']
+    #         min_price = info['min_market_funds']
+    #         base_step_size = info['base_increment']
+    #         currency_step_size = info['quote_increment']
+    #
+    #         pairs[symbol] = {'min_qty': min_qty,
+    #                          'min_price': min_price,
+    #                          'base_step_size': base_step_size,
+    #                          'currency_step_size': currency_step_size,
+    #                          #'minNotional': minNotional,
+    #                          #'commissionAsset': commissionAsset,
+    #                          #'baseAssetPrecision': baseAssetPrecision,
+    #                          #'quotePrecision': quotePrecision,
+    #                          #'orderTypes': orderTypes
+    #                         }
+    #     for info in asset_info:
+    #         name = info['id']
+    #         status = info['status']
+    #         if status == 'online':
+    #             assets[name] = {'disabled': False, 'delisted': False }
+    #         else:
+    #             assets[name] = {'disabled': True, 'delisted': False }
+    #
+    #     self._exchange_pairs = []
+    #
+    #     for pair in pairs.keys():
+    #         # ignore trade pairs with GBP and EUR currency
+    #         if pair.endswith('GBP') or pair.endswith('EUR'):
+    #             continue
+    #         self._exchange_pairs.append(pair)
+    #
+    #     exchange_info['pairs'] = pairs
+    #     exchange_info['assets'] = assets
+    #
+    #     return exchange_info
 
     # get list of exchange pairs (trade symbols)
     def get_exchange_pairs(self):
@@ -670,7 +678,6 @@ class AccountCoinbasePro(AccountBase):
             return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
-
         if self.simulate:
             return self.sell_limit_stop_simulate(price, size, stop_price, ticker_id)
         else:

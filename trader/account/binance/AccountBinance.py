@@ -494,34 +494,6 @@ class AccountBinance(AccountBase):
         return result
 
 
-    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            return self.buy_limit_stop_simulate(price, size, stop_price, ticker_id)
-        else:
-            self.logger.info("buy_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
-
-
-    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            return self.sell_limit_stop_simulate(price, size, stop_price, ticker_id)
-        else:
-            self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_STOP_LOSS_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
-
-
     def buy_limit_profit(self, price, size, stop_price, ticker_id=None):
         if self.simulate:
             base, currency = self.split_ticker_id(ticker_id)
