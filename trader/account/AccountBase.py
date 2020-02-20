@@ -88,22 +88,22 @@ class AccountBase(object):
 
     # 'info' component functions
     def load_exchange_info(self):
-        pass
+        return self.info.load_exchange_info()
 
     def get_exchange_info(self):
-        pass
+        return self.info.get_exchange_info()
 
     def parse_exchange_info(self, pair_info, asset_info):
-        pass
+        return self.info.parse_exchange_info(pair_info, asset_info)
 
     def get_exchange_pairs(self):
-        pass
+        return self.info.get_exchange_pairs()
 
     def is_exchange_pair(self, symbol):
-        pass
+        return self.info.is_exchange_pair(symbol)
 
     def is_asset_available(self, name):
-        pass
+        return self.info.is_asset_available(name)
 
     # 'balance' component functions
     def get_account_total_value(self, currency, detailed=False):
@@ -120,16 +120,28 @@ class AccountBase(object):
 
     # 'trade' component functions
     def buy_market(self, size, price=0.0, ticker_id=None):
-        pass
+        if self.simulate:
+            return self.buy_market_simulate(size, price, ticker_id)
+        else:
+            return self.trade.buy_market(size, price, ticker_id)
 
     def sell_market(self, size, price=0.0, ticker_id=None):
-        pass
+        if self.simulate:
+            return self.sell_market_simulate(size, price, ticker_id)
+        else:
+            return self.trade.sell_market(size, price, ticker_id)
 
     def buy_limit(self, price, size, ticker_id=None):
-        pass
+        if self.simulate:
+            return self.buy_limit_simulate(price, size, ticker_id)
+        else:
+            return self.trade.buy_limit(size, price, ticker_id)
 
     def sell_limit(self, price, size, ticker_id=None):
-        pass
+        if self.simulate:
+            return self.sell_limit_simulate(size, price, ticker_id)
+        else:
+            return self.trade.sell_limit(size, price, ticker_id)
 
     # simulate buy market order
     def buy_market_simulate(self, size, price=0.0, ticker_id=None):
@@ -242,7 +254,8 @@ class AccountBase(object):
         self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
 
     def cancel_order(self, orderid, ticker_id=None):
-        pass
+        if not self.simulate:
+            return self.trade.cancel_order(orderid, ticker_id)
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
         pass

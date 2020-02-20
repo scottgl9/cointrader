@@ -180,11 +180,11 @@ class AccountBinanceInfo(AccountBaseInfo):
 
 
 class AccountBinanceBalance(AccountBaseBalance):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        self.simulate_db_filename = simulate_db_filename
+    def __init__(self, client, simulation=False, logger=None):
         self.client = client
         self.simulate = simulation
         self.logger = logger
+        self.balances = {}
 
     def get_account_total_value(self, currency, detailed=False):
         raise NotImplementedError
@@ -192,33 +192,71 @@ class AccountBinanceBalance(AccountBaseBalance):
     def get_account_balances(self, detailed=False):
         raise NotImplementedError
 
+    def get_asset_balance(self, asset):
+        try:
+            result = self.balances[asset]
+        except KeyError:
+            result = {'balance': 0.0, 'available': 0.0}
+        return result
+
     def get_asset_balance_tuple(self, asset):
-        raise NotImplementedError
+        result = self.get_asset_balance(asset)
+        try:
+            balance = float(result['balance'])
+            available = float(result['available'])
+        except KeyError:
+            balance = 0.0
+            available = 0.0
+        if 'balance' not in result or 'available' not in result:
+            return 0.0, 0.0
+        return balance, available
 
     def update_asset_balance(self, name, balance, available):
-        raise NotImplementedError
+        if self.simulate:
+            if name in self.balances.keys() and balance == 0.0 and available == 0.0:
+                del self.balances[name]
+                return
+            if name not in self.balances.keys():
+                self.balances[name] = {}
+            self.balances[name]['balance'] = balance
+            self.balances[name]['available'] = available
+
 
 class AccountBinanceTrade(AccountBaseTrade):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        self.simulate_db_filename = simulate_db_filename
+    def __init__(self, client, simulation=False, logger=None):
         self.client = client
         self.simulate = simulation
         self.logger = logger
 
     def buy_market(self, size, price=0.0, ticker_id=None):
-        raise NotImplementedError
+        self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
+        try:
+            result = self.client.order_market_buy(symbol=ticker_id, quantity=size)
+        except BinanceAPIException as e:
+            self.logger.info(e)
+            result = None
+        return result
 
     def sell_market(self, size, price=0.0, ticker_id=None):
-        raise NotImplementedError
+        self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
+        try:
+            result = self.client.order_market_sell(symbol=ticker_id, quantity=size)
+        except BinanceAPIException as e:
+            self.logger.info(e)
+            result = None
+        return result
 
     def buy_limit(self, price, size, ticker_id=None):
-        raise NotImplementedError
+        timeInForce = Client.TIME_IN_FORCE_GTC
+        return self.client.order_limit_buy(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
     def sell_limit(self, price, size, ticker_id=None):
-        raise NotImplementedError
+        timeInForce = Client.TIME_IN_FORCE_GTC
+        return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
     def cancel_order(self, orderid, ticker_id=None):
-        raise NotImplementedError
+        return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
+
 
 class AccountBinance(AccountBase):
     def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
@@ -234,6 +272,11 @@ class AccountBinance(AccountBase):
         self.details_all_assets = {}
         self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
+
+        # sub module implementations
+        self.info = AccountBinanceInfo(client, simulation, logger, self.exchange_info_file)
+        self.balance = AccountBinanceBalance(client, simulation, logger)
+        self.trade = AccountBinanceTrade(client, simulation, logger)
 
         # hourly db column names
         self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'volume']
@@ -1087,32 +1130,6 @@ class AccountBinance(AccountBase):
         return result
 
 
-    def buy_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.buy_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
-            try:
-                result = self.client.order_market_buy(symbol=ticker_id, quantity=size)
-            except BinanceAPIException as e:
-                self.logger.info(e)
-                result = None
-            return result
-
-
-    def sell_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.sell_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
-            try:
-                result = self.client.order_market_sell(symbol=ticker_id, quantity=size)
-            except BinanceAPIException as e:
-                self.logger.info(e)
-                result = None
-            return result
-
-
     def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
         if self.simulate:
             return self.buy_limit_stop_simulate(price, size, stop_price, ticker_id)
@@ -1261,27 +1278,11 @@ class AccountBinance(AccountBase):
                                      stopPrice=stop_price)
 
 
-    def buy_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.buy_limit_simulate(price, size, ticker_id)
-        else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_buy(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
+    #def cancel_order(self, orderid, ticker_id=None):
+    #    return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
 
-
-    def sell_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.sell_limit_simulate(price, size, ticker_id)
-        else:
-            timeInForce = Client.TIME_IN_FORCE_GTC
-            return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
-
-
-    def cancel_order(self, orderid, ticker_id=None):
-        return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
-
-    def cancel_all(self):
-        pass
+    #def cancel_all(self):
+    #    pass
 
     def get_klines(self, days=0, hours=1, ticker_id=None):
         timestr = ''

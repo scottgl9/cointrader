@@ -18,3 +18,6 @@ class AccountBaseInfo(object):
 
     def is_asset_available(self, name):
         raise NotImplementedError
+
+    def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
+        raise NotImplementedError
