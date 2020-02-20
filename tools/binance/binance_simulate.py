@@ -119,7 +119,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                               logger=logger,
                               config=config)
 
-    initial_balances = multitrader.accnt.balances
+    initial_balances = multitrader.accnt.get_balances()
     print(initial_balances)
 
     found = False

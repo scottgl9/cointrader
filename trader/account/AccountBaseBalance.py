@@ -7,6 +7,9 @@ class AccountBaseBalance(object):
     def get_account_balances(self, detailed=False):
         raise NotImplementedError
 
+    def get_balances(self):
+        raise NotImplementedError
+
     def get_asset_balance(self, asset):
         raise NotImplementedError
 

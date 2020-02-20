@@ -113,16 +113,22 @@ class AccountBase(object):
 
     # 'balance' component functions
     def get_account_total_value(self, currency, detailed=False):
-        pass
+        return self.balance.get_account_total_value(currency, detailed)
 
     def get_account_balances(self, detailed=False):
-        pass
+        return self.balance.get_account_balances(detailed)
+
+    def get_balances(self):
+        return self.balance.get_balances()
+
+    def get_asset_balance(self, asset):
+        return self.balance.get_asset_balance(asset)
 
     def get_asset_balance_tuple(self, asset):
-        return 0, 0
+        return self.balance.get_asset_balance_tuple(asset)
 
     def update_asset_balance(self, name, balance, available):
-        pass
+        return self.balance.update_asset_balance(name, balance, available)
 
     # 'trade' component functions
     def buy_market(self, size, price=0.0, ticker_id=None):

@@ -1,57 +1,14 @@
 from trader.account.binance.binance.client import Client, BinanceAPIException
 from trader.account.AccountBase import AccountBase
 from .AccountBinanceInfo import AccountBinanceInfo
+from .AccountBinanceBalance import AccountBinanceBalance
 from .AccountBinanceTrade import AccountBinanceTrade
-from trader.account.AccountBaseBalance import AccountBaseBalance
-from trader.account.AccountBaseTrade import AccountBaseTrade
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
 import json
 import os
-
-class AccountBinanceBalance(AccountBaseBalance):
-    def __init__(self, client, simulation=False, logger=None):
-        self.client = client
-        self.simulate = simulation
-        self.logger = logger
-        self.balances = {}
-
-    def get_account_total_value(self, currency, detailed=False):
-        raise NotImplementedError
-
-    def get_account_balances(self, detailed=False):
-        raise NotImplementedError
-
-    def get_asset_balance(self, asset):
-        try:
-            result = self.balances[asset]
-        except KeyError:
-            result = {'balance': 0.0, 'available': 0.0}
-        return result
-
-    def get_asset_balance_tuple(self, asset):
-        result = self.get_asset_balance(asset)
-        try:
-            balance = float(result['balance'])
-            available = float(result['available'])
-        except KeyError:
-            balance = 0.0
-            available = 0.0
-        if 'balance' not in result or 'available' not in result:
-            return 0.0, 0.0
-        return balance, available
-
-    def update_asset_balance(self, name, balance, available):
-        if self.simulate:
-            if name in self.balances.keys() and balance == 0.0 and available == 0.0:
-                del self.balances[name]
-                return
-            if name not in self.balances.keys():
-                self.balances[name] = {}
-            self.balances[name]['balance'] = balance
-            self.balances[name]['available'] = available
 
 
 class AccountBinance(AccountBase):
@@ -64,7 +21,7 @@ class AccountBinance(AccountBase):
         self.simulate_db_filename = simulate_db_filename
         self.client = client
         self.simulate = simulation
-        self.balances = {}
+        #self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
 
         # sub module implementations
@@ -503,54 +460,54 @@ class AccountBinance(AccountBase):
 
         return currency_price * price
 
-    def update_asset_balance(self, name, balance, available):
-        if self.simulate:
-            if name in self.balances.keys() and balance == 0.0 and available == 0.0:
-                del self.balances[name]
-                return
-            if name not in self.balances.keys():
-                self.balances[name] = {}
-            self.balances[name]['balance'] = balance
-            self.balances[name]['available'] = available
-
-    def get_account_balances(self, detailed=False):
-        result = {}
-        if not self.simulate:
-            self.balances = {}
-            for funds in self.client.get_account()['balances']:
-                funds_free = float(funds['free'])
-                funds_locked = float(funds['locked'])
-                if funds_free == 0.0 and funds_locked == 0.0: continue
-                asset_name = funds['asset']
-                self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
-                result[asset_name] = funds_free + funds_locked
-            if detailed:
-                return self.balances
-        else:
-            if detailed:
-                return self.balances
-            for asset, info in self.balances.items():
-                result[asset] = info['balance']
-        return result
-
-    def get_asset_balance(self, asset):
-        try:
-            result = self.balances[asset]
-        except KeyError:
-            result = {'balance': 0.0, 'available': 0.0}
-        return result
-
-    def get_asset_balance_tuple(self, asset):
-        result = self.get_asset_balance(asset)
-        try:
-            balance = float(result['balance'])
-            available = float(result['available'])
-        except KeyError:
-            balance = 0.0
-            available = 0.0
-        if 'balance' not in result or 'available' not in result:
-            return 0.0, 0.0
-        return balance, available
+    # def update_asset_balance(self, name, balance, available):
+    #     if self.simulate:
+    #         if name in self.balances.keys() and balance == 0.0 and available == 0.0:
+    #             del self.balances[name]
+    #             return
+    #         if name not in self.balances.keys():
+    #             self.balances[name] = {}
+    #         self.balances[name]['balance'] = balance
+    #         self.balances[name]['available'] = available
+    #
+    # def get_account_balances(self, detailed=False):
+    #     result = {}
+    #     if not self.simulate:
+    #         self.balances = {}
+    #         for funds in self.client.get_account()['balances']:
+    #             funds_free = float(funds['free'])
+    #             funds_locked = float(funds['locked'])
+    #             if funds_free == 0.0 and funds_locked == 0.0: continue
+    #             asset_name = funds['asset']
+    #             self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
+    #             result[asset_name] = funds_free + funds_locked
+    #         if detailed:
+    #             return self.balances
+    #     else:
+    #         if detailed:
+    #             return self.balances
+    #         for asset, info in self.balances.items():
+    #             result[asset] = info['balance']
+    #     return result
+    #
+    # def get_asset_balance(self, asset):
+    #     try:
+    #         result = self.balances[asset]
+    #     except KeyError:
+    #         result = {'balance': 0.0, 'available': 0.0}
+    #     return result
+    #
+    # def get_asset_balance_tuple(self, asset):
+    #     result = self.get_asset_balance(asset)
+    #     try:
+    #         balance = float(result['balance'])
+    #         available = float(result['available'])
+    #     except KeyError:
+    #         balance = 0.0
+    #         available = 0.0
+    #     if 'balance' not in result or 'available' not in result:
+    #         return 0.0, 0.0
+    #     return balance, available
 
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
