@@ -37,6 +37,12 @@ class AccountBinanceTrade(AccountBaseTrade):
         timeInForce = Client.TIME_IN_FORCE_GTC
         return self.client.order_limit_sell(timeInForce=timeInForce, symbol=ticker_id, quantity=size, price=price)
 
+    def get_order(self, order_id, ticker_id):
+        return self.client.get_order(orderId=order_id, symbol=ticker_id)
+
+    def get_orders(self, ticker_id=None):
+        return self.client.get_open_orders(symbol=ticker_id)
+
     def cancel_order(self, orderid, ticker_id=None):
         return self.client.cancel_order(symbol=ticker_id, orderId=orderid)
 

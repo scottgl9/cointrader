@@ -71,22 +71,34 @@ class AccountBase(object):
     def round_quote_symbol(self, symbol, price):
         return 0
 
-    def make_ticker_id(self, base, currency):
-        pass
-
-    def split_ticker_id(self, symbol):
-        return None, None
-
     def split_symbol(self, symbol):
-        return None, None
+        return self.split_ticker_id(symbol)
 
     def get_symbol_base(self, symbol):
-        pass
+        result = self.split_ticker_id(symbol)
+        if result:
+            return result[0]
+        return None
 
     def get_symbol_currency(self, symbol):
-        pass
+        result = self.split_ticker_id(symbol)
+        if result:
+            return result[1]
+        return None
 
     # 'info' component functions
+    def make_ticker_id(self, base, currency):
+        return self.info.make_ticker_id(base, currency)
+
+    def split_ticker_id(self, symbol):
+        return self.info.split_ticker_id(symbol)
+
+    def get_info_all_assets(self):
+        return self.info.get_info_all_assets()
+
+    def get_details_all_assets(self):
+        return self.info.get_info_all_assets()
+
     def load_exchange_info(self):
         return self.info.load_exchange_info()
 
@@ -264,6 +276,14 @@ class AccountBase(object):
         base, currency = self.split_ticker_id(ticker_id)
         bbalance, bavailable = self.get_asset_balance_tuple(base)
         self.update_asset_balance(base, float(bbalance), float(bavailable) + float(size))
+
+    def get_order(self, order_id, ticker_id):
+        if not self.simulate:
+            return self.trade.get_order(order_id, ticker_id)
+
+    def get_orders(self, ticker_id=None):
+        if not self.simulate:
+            return self.trade.get_orders(ticker_id)
 
     def cancel_order(self, orderid, ticker_id=None):
         if not self.simulate:

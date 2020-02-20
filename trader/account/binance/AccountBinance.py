@@ -331,34 +331,6 @@ class AccountBinance(AccountBase):
         else:
             return "{:.8f}".format(float(value))
 
-    def make_ticker_id(self, base, currency):
-        return '%s%s' % (base, currency)
-
-    def split_ticker_id(self, symbol):
-        base_name = None
-        currency_name = None
-
-        for currency in self.currencies:
-            if symbol.endswith(currency):
-                currency_name = currency
-                base_name = symbol.replace(currency, '')
-        return base_name, currency_name
-
-    def split_symbol(self, symbol):
-        return self.split_ticker_id(symbol)
-
-    def get_symbol_base(self, symbol):
-        result = self.split_ticker_id(symbol)
-        if result:
-            return result[0]
-        return None
-
-    def get_symbol_currency(self, symbol):
-        result = self.split_ticker_id(symbol)
-        if result:
-            return result[1]
-        return None
-
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
@@ -460,55 +432,6 @@ class AccountBinance(AccountBase):
 
         return currency_price * price
 
-    # def update_asset_balance(self, name, balance, available):
-    #     if self.simulate:
-    #         if name in self.balances.keys() and balance == 0.0 and available == 0.0:
-    #             del self.balances[name]
-    #             return
-    #         if name not in self.balances.keys():
-    #             self.balances[name] = {}
-    #         self.balances[name]['balance'] = balance
-    #         self.balances[name]['available'] = available
-    #
-    # def get_account_balances(self, detailed=False):
-    #     result = {}
-    #     if not self.simulate:
-    #         self.balances = {}
-    #         for funds in self.client.get_account()['balances']:
-    #             funds_free = float(funds['free'])
-    #             funds_locked = float(funds['locked'])
-    #             if funds_free == 0.0 and funds_locked == 0.0: continue
-    #             asset_name = funds['asset']
-    #             self.balances[asset_name] = {'balance': (funds_free + funds_locked), 'available': funds_free}
-    #             result[asset_name] = funds_free + funds_locked
-    #         if detailed:
-    #             return self.balances
-    #     else:
-    #         if detailed:
-    #             return self.balances
-    #         for asset, info in self.balances.items():
-    #             result[asset] = info['balance']
-    #     return result
-    #
-    # def get_asset_balance(self, asset):
-    #     try:
-    #         result = self.balances[asset]
-    #     except KeyError:
-    #         result = {'balance': 0.0, 'available': 0.0}
-    #     return result
-    #
-    # def get_asset_balance_tuple(self, asset):
-    #     result = self.get_asset_balance(asset)
-    #     try:
-    #         balance = float(result['balance'])
-    #         available = float(result['available'])
-    #     except KeyError:
-    #         balance = 0.0
-    #         available = 0.0
-    #     if 'balance' not in result or 'available' not in result:
-    #         return 0.0, 0.0
-    #     return balance, available
-
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
 
@@ -521,7 +444,7 @@ class AccountBinance(AccountBase):
                 elif not currency:
                     result.append(ticker['symbol'])
         else:
-            result = self.info_all_assets.keys()
+            result = self.get_info_all_assets().keys()
         return result
 
     def get_all_tickers(self):
@@ -532,12 +455,6 @@ class AccountBinance(AccountBase):
         else:
             result = self._tickers
         return result
-
-    def get_order(self, order_id, ticker_id):
-        return self.client.get_order(orderId=order_id, symbol=ticker_id)
-
-    def get_orders(self, ticker_id=None):
-        return self.client.get_open_orders(symbol=ticker_id)
 
     def get_account_history(self):
         pass

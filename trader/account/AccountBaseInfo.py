@@ -1,6 +1,18 @@
 # base account class for handling account information
 
 class AccountBaseInfo(object):
+    def make_ticker_id(self, base, currency):
+        raise NotImplementedError
+
+    def split_ticker_id(self, symbol):
+        raise NotImplementedError
+
+    def get_info_all_assets(self):
+        raise NotImplementedError
+
+    def get_details_all_assets(self):
+        raise NotImplementedError
+
     def load_exchange_info(self):
         raise NotImplementedError
 

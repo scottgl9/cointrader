@@ -13,6 +13,12 @@ class AccountBaseTrade(object):
     def sell_limit(self, price, size, ticker_id=None):
         raise NotImplementedError
 
+    def get_order(self, order_id, ticker_id):
+        raise NotImplementedError
+
+    def get_orders(self, ticker_id=None):
+        raise NotImplementedError
+
     def cancel_order(self, orderid, ticker_id=None):
         raise NotImplementedError
 

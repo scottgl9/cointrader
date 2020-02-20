@@ -12,9 +12,27 @@ class AccountBinanceInfo(AccountBaseInfo):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self._exchange_pairs = None
+        self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
+        self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
 
     def make_ticker_id(self, base, currency):
         return '%s%s' % (base, currency)
+
+    def split_ticker_id(self, symbol):
+        base_name = None
+        currency_name = None
+
+        for currency in self.currencies:
+            if symbol.endswith(currency):
+                currency_name = currency
+                base_name = symbol.replace(currency, '')
+        return base_name, currency_name
+
+    def get_info_all_assets(self):
+        return self.info_all_assets
+
+    def get_details_all_assets(self):
+        return self.details_all_assets
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
