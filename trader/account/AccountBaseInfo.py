@@ -16,6 +16,9 @@ class AccountBaseInfo(object):
     def is_exchange_pair(self, symbol):
         raise NotImplementedError
 
+    def get_asset_status(self, name=None):
+        raise NotImplementedError
+
     def is_asset_available(self, name):
         raise NotImplementedError
 

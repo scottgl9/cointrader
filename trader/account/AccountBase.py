@@ -102,6 +102,12 @@ class AccountBase(object):
     def is_exchange_pair(self, symbol):
         return self.info.is_exchange_pair(symbol)
 
+    def get_asset_status(self, name=None):
+        return self.info.get_asset_status(name)
+
+    def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
+        return self.info.get_asset_info_dict(symbol, base, currency, field)
+
     def is_asset_available(self, name):
         return self.info.is_asset_available(name)
 
@@ -256,6 +262,13 @@ class AccountBase(object):
     def cancel_order(self, orderid, ticker_id=None):
         if not self.simulate:
             return self.trade.cancel_order(orderid, ticker_id)
+
+    def parse_order_update(self, result):
+        return self.trade.parse_order_update(result)
+
+    # parse json response to order, then use to create Order object
+    def parse_order_result(self, result, symbol=None, sigid=0):
+        return self.trade.parse_order_result(result, symbol, sigid)
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
         pass

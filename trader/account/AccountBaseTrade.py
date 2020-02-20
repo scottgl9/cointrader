@@ -15,3 +15,10 @@ class AccountBaseTrade(object):
 
     def cancel_order(self, orderid, ticker_id=None):
         raise NotImplementedError
+
+    def parse_order_update(self, result):
+        raise NotImplementedError
+
+    # parse json response to order, then use to create Order object
+    def parse_order_result(self, result, symbol=None, sigid=0):
+        raise NotImplementedError
