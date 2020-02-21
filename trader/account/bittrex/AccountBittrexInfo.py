@@ -34,26 +34,83 @@ class AccountBittrexInfo(AccountBaseInfo):
     def get_details_all_assets(self):
         return self.details_all_assets
 
+    # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
-        raise NotImplementedError
+        if not self.simulate and os.path.exists(self.exchange_info_file):
+            info = self.get_exchange_info()
+            self.info_all_assets = info['pairs']
+            self.details_all_assets = info['assets']
+            return
 
+        if not os.path.exists(self.exchange_info_file):
+            info = self.get_exchange_info()
+            with open(self.exchange_info_file, 'w') as f:
+                json.dump(info, f, indent=4)
+        else:
+            info = json.loads(open(self.exchange_info_file).read())
+        self.info_all_assets = info['pairs']
+        self.details_all_assets = info['assets']
+
+    # get exchange info from exchange via API
     def get_exchange_info(self):
-        raise NotImplementedError
+        pair_info = self.client.get_exchange_info()
+        asset_info = self.client.get_asset_details()
+        return self.parse_exchange_info(pair_info, asset_info)
 
     def parse_exchange_info(self, pair_info, asset_info):
         raise NotImplementedError
 
+    # get list of exchange pairs (trade symbols)
     def get_exchange_pairs(self):
-        raise NotImplementedError
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        return self._exchange_pairs
 
+    # is a valid exchange pair
     def is_exchange_pair(self, symbol):
-        raise NotImplementedError
+        if not self._exchange_pairs:
+            self.load_exchange_info()
+        if symbol in self._exchange_pairs:
+            return True
+        return False
+
+    # determine if asset is available (not disabled or delisted)
+    def is_asset_available(self, name):
+        if name not in self.details_all_assets.keys():
+            return False
+        status = self.get_asset_status(name)
+        try:
+            if status['disabled']:
+                return False
+            if status['delisted']:
+                return False
+        except KeyError:
+            return False
+        return True
 
     def get_asset_status(self, name=None):
-        raise NotImplementedError
-
-    def is_asset_available(self, name):
-        raise NotImplementedError
+        result = None
+        if not self.details_all_assets:
+            self.load_exchange_info()
+        try:
+            result = self.details_all_assets[name]
+        except KeyError:
+            pass
+        return result
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
-        raise NotImplementedError
+        if not self.info_all_assets:
+            self.load_exchange_info()
+
+        if not symbol:
+            symbol = self.make_ticker_id(base, currency)
+
+        if not self.info_all_assets or symbol not in self.info_all_assets.keys():
+            self.logger.warning("symbol {} not found in assets".format(symbol))
+            return None
+        if field:
+            if field not in self.info_all_assets[symbol]:
+                self.logger.warning("field {} not found in assets for symbol {}".format(field, symbol))
+                return None
+            return self.info_all_assets[symbol][field]
+        return self.info_all_assets[symbol]

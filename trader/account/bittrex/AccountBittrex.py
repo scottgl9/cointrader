@@ -268,20 +268,6 @@ class AccountBittrex(AccountBase):
         else:
             return "{:.8f}".format(float(value))
 
-    def make_ticker_id(self, base, currency):
-        return '%s-%s' % (currency, base)
-
-    def split_ticker_id(self, symbol):
-        base_name = None
-        currency_name = None
-
-        parts = symbol.split('-')
-        if len(parts) == 2:
-            currency_name = parts[0]
-            base_name = parts[1]
-
-        return base_name, currency_name
-
     def split_symbol(self, symbol):
         return self.split_ticker_id(symbol)
 
@@ -463,29 +449,6 @@ class AccountBittrex(AccountBase):
         return result
 
 
-    def parse_order_update(self, result):
-        # order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type, exec_type,
-        #                            side, ts, order_id, orig_id, order_status, reject_reason, msg_type, msg_status)
-        #
-        # return order_update
-        pass
-
-
-    # parse json response to API order, then use to create Order object
-    def parse_order_result(self, result, symbol=None, sigid=0):
-        # order = Order(symbol=symbol,
-        #               price=price,
-        #               size=origqty,
-        #               type=type,
-        #               orderid=orderid,
-        #               quote_size=quoteqty,
-        #               commission=commission,
-        #               sig_id=sigid)
-        #
-        # return order
-        pass
-
-
     # determine if asset is available (not disabled or delisted)
     # if not, don't trade
     def is_asset_available(self, name):
@@ -609,58 +572,6 @@ class AccountBittrex(AccountBase):
 
         return currency_price * price
 
-    def update_asset_balance(self, name, balance, available):
-        if self.simulate:
-            if name in self.balances.keys() and balance == 0.0 and available == 0.0:
-                del self.balances[name]
-                return
-            if name not in self.balances.keys():
-                self.balances[name] = {}
-            self.balances[name]['balance'] = balance
-            self.balances[name]['available'] = available
-
-    def get_account_balances(self):
-        self.balances = {}
-        result = {}
-
-        info_balances = self.client.get_balances()
-        if not info_balances['success']:
-            return self.balances
-        for info in info_balances['result']:
-            cinfo = info['Currency']
-            if not cinfo['IsActive'] or cinfo['IsDeleted'] or cinfo['IsRestricted']:
-                continue
-            if 'Balance' not in info:
-                continue
-            binfo = info['Balance']
-            print(binfo)
-            asset_name = binfo['Currency']
-            balance = binfo['Balance']
-            available = binfo['Available']
-            pending = binfo['Pending']
-            self.balances[asset_name] = {'balance': balance,
-                                         'available': available }
-            result[asset_name] = balance
-        return result
-
-    def get_asset_balance(self, asset):
-        try:
-            result = self.balances[asset]
-        except KeyError:
-            result = {'balance': 0.0, 'available': 0.0}
-        return result
-
-    def get_asset_balance_tuple(self, asset):
-        result = self.get_asset_balance(asset)
-        try:
-            balance = float(result['balance'])
-            available = float(result['available'])
-        except KeyError:
-            balance = 0.0
-            available = 0.0
-        if 'balance' not in result or 'available' not in result:
-            return 0.0, 0.0
-        return balance, available
 
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
@@ -692,65 +603,6 @@ class AccountBittrex(AccountBase):
         else:
             result = self._tickers
         return result
-
-    def get_order(self, order_id, ticker_id):
-        return self.client.get_order(orderId=order_id, symbol=ticker_id)
-
-    def get_orders(self, ticker_id=None):
-        return self.client.get_open_orders(symbol=ticker_id)
-
-    def order_market_buy(self, symbol, quantity):
-        return self.client.trade_buy(market=symbol, order_type='MARKET', quantity=quantity)
-
-    def order_market_sell(self, symbol, quantity):
-        return self.client.trade_sell(market=symbol, order_type='MARKET', quantity=quantity)
-
-    def buy_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.buy_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
-            result = self.client.trade_buy(market=ticker_id, order_type='MARKET', quantity=size)
-            return result
-
-    def sell_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.sell_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
-            result = self.client.trade_sell(market=ticker_id, order_type='MARKET', quantity=size)
-            return result
-
-    def buy_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.buy_limit_simulate(price, size, ticker_id)
-        else:
-            result = self.client.trade_buy(market=ticker_id,
-                                           order_type='LIMIT',
-                                           quantity=size,
-                                           time_in_effect='GOOD_TIL_CANCELLED',
-                                           condition_type='LESS_THAN',
-                                           target=price)
-            return result
-
-
-    def sell_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.sell_limit_simulate(price, size, ticker_id)
-        else:
-            result = self.client.trade_sell(market=ticker_id,
-                                           order_type='LIMIT',
-                                           quantity=size,
-                                           time_in_effect='GOOD_TIL_CANCELLED',
-                                           condition_type='GREATER_THAN',
-                                           target=price)
-            return result
-
-    def cancel_order(self, orderid, ticker_id=None):
-        return self.client.cancel(uuid=orderid)
-
-    def cancel_all(self):
-        pass
 
     def get_klines(self, days=0, hours=1, ticker_id=None):
         timestr = ''
