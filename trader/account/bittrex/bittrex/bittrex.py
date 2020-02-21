@@ -120,7 +120,7 @@ class Bittrex(object):
 
             self.last_call = time.time()
 
-    def _api_query(self, protection=None, path_dict=None, options=None):
+    def _api_query(self, protection=None, path_dict=None, options=None, api_version=None):
         """
         Queries Bittrex
 
@@ -133,11 +133,14 @@ class Bittrex(object):
         if not options:
             options = {}
 
-        if self.api_version not in path_dict:
-            raise Exception('method call not available under API version {}'.format(self.api_version))
+        if not api_version:
+            api_version = self.api_version
 
-        request_url = BASE_URL_V2_0 if self.api_version == API_V2_0 else BASE_URL_V1_1
-        request_url = request_url.format(path=path_dict[self.api_version])
+        if api_version not in path_dict:
+            raise Exception('method call not available under API version {}'.format(api_version))
+
+        request_url = BASE_URL_V2_0 if api_version == API_V2_0 else BASE_URL_V1_1
+        request_url = request_url.format(path=path_dict[api_version])
 
         nonce = str(int(time.time() * 1000))
 
@@ -201,7 +204,7 @@ class Bittrex(object):
         """
         return self._api_query(path_dict={
             API_V1_1: '/public/getmarkets',
-        }, protection=PROTECTION_PUB)
+        }, protection=PROTECTION_PUB, api_version=API_V1_1)
 
     def get_currencies(self):
         """

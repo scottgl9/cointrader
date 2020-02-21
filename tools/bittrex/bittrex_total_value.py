@@ -17,7 +17,8 @@ if __name__ == '__main__':
     print(balances)
     tickers = accnt.get_all_tickers()
     print(tickers)
-    #accnt_assets = accnt_info['assets']
+    print(accnt.get_exchange_info())
+     #accnt_assets = accnt_info['assets']
     #assets = sorted(accnt_assets, key=lambda x: (accnt_assets[x]['usd']), reverse=True)
     #for asset in assets:
     #    print("{: >5}: {: >15} {: >10} USD\t{: >20} BTC".format(asset, accnt_assets[asset]['amount'], round(accnt_assets[asset]['usd'], 2), accnt_assets[asset]['btc']))

@@ -53,12 +53,35 @@ class AccountBittrexInfo(AccountBaseInfo):
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
-        pair_info = self.client.get_exchange_info()
-        asset_info = self.client.get_asset_details()
-        return self.parse_exchange_info(pair_info, asset_info)
+        pair_info = self.client.get_markets()
+        return self.parse_exchange_info(pair_info, None)
 
     def parse_exchange_info(self, pair_info, asset_info):
-        raise NotImplementedError
+        exchange_info = {}
+        pairs = {}
+        assets = {}
+
+        try:
+            if not pair_info['success']:
+                return None
+        except KeyError:
+            return None
+
+        pair_list = pair_info['result']
+        for pair in pair_list:
+            symbol = pair['MarketName']
+            if pair['IsActive']:
+                assets[symbol] = {'disabled': False, 'delisted': False }
+            else:
+                assets[symbol] = {'disabled': True, 'delisted': False }
+
+            min_trade_size = pair['MinTradeSize']
+            assets[symbol] = {'min_trade_size': min_trade_size }
+
+        exchange_info['pairs'] = pairs
+        exchange_info['assets'] = assets
+
+        return exchange_info
 
     # get list of exchange pairs (trade symbols)
     def get_exchange_pairs(self):
