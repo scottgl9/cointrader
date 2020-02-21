@@ -1,5 +1,8 @@
 from trader.account.bittrex.bittrex import Bittrex, API_V2_0
 from trader.account.AccountBase import AccountBase
+from .AccountBittrexInfo import AccountBittrexInfo
+from .AccountBittrexBalance import AccountBittrexBalance
+from .AccountBittrexTrade import AccountBittrexTrade
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
@@ -29,6 +32,11 @@ class AccountBittrex(AccountBase):
         self.details_all_assets = {}
         self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
+
+        # sub module implementations
+        self.info = AccountBittrexInfo(client, simulation, logger, self.exchange_info_file)
+        self.balance = AccountBittrexBalance(client, simulation, logger)
+        self.trade = AccountBittrexTrade(client, simulation, logger)
 
         self.currencies = ['BTC', 'ETH', 'USDT', 'USD']
         self.currency_trade_pairs = ['BTC-ETH', 'USD-BTC', 'USD-ETH', 'USD-USDT', 'USDT-BTC', 'USDT-ETH']

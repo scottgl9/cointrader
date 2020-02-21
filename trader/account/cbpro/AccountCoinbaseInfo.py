@@ -32,10 +32,10 @@ class AccountCoinbaseInfo(AccountBaseInfo):
         return base_name, currency_name
 
     def get_info_all_assets(self):
-        raise NotImplementedError
+        return self.info_all_assets
 
     def get_details_all_assets(self):
-        raise NotImplementedError
+        return self.details_all_assets
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
