@@ -30,9 +30,6 @@ class AccountCoinbasePro(AccountBase):
         elif not self.simulate:
             self.client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
         self.pc = PublicClient()
-        self.info_all_assets = {}
-        self.details_all_assets = {}
-        self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
 
         # sub module implementations
@@ -309,33 +306,6 @@ class AccountCoinbasePro(AccountBase):
             return True
         return False
 
-    def get_asset_status(self, name=None):
-        result = None
-        if not self.details_all_assets:
-            self.load_exchange_info()
-        try:
-            result = self.details_all_assets[name]
-        except KeyError:
-            pass
-        return result
-
-    def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
-        if not self.info_all_assets:
-            self.load_exchange_info()
-
-        if not symbol:
-            symbol = self.make_ticker_id(base, currency)
-
-        if not self.info_all_assets or symbol not in self.info_all_assets.keys():
-            self.logger.warning("symbol {} not found in assets".format(symbol))
-            return None
-        if field:
-            if field not in self.info_all_assets[symbol]:
-                self.logger.warning("field {} not found in assets for symbol {}".format(field, symbol))
-                return None
-            return self.info_all_assets[symbol][field]
-        return self.info_all_assets[symbol]
-
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
@@ -482,65 +452,6 @@ class AccountCoinbasePro(AccountBase):
 
         return total_balance
 
-    def update_asset_balance(self, name, balance, available):
-        if self.simulate:
-            if name in self.balances.keys() and balance == 0.0 and available == 0.0:
-                del self.balances[name]
-                return
-            if name not in self.balances.keys():
-                self.balances[name] = {}
-            self.balances[name]['balance'] = balance
-            self.balances[name]['available'] = available
-
-    # implemented for CoinBase Pro
-    def get_account_balances(self, detailed=False):
-        if not self.simulate:
-            self.balances = {}
-            result = {}
-            accounts = self.client.get_accounts()
-            if 'message' in accounts:
-                if self.logger:
-                    self.logger.info("Error get_account_balances(): {}".format(accounts['message']))
-                else:
-                    print("Error get_account_balances(): {}".format(accounts['message']))
-                return self.balances
-
-            for account in accounts:
-                asset_name = account['currency']
-                balance = float(account['balance'])
-                available = float(account['available'])
-                hold = float(account['hold'])
-                self.balances[asset_name] = {'balance': balance, 'available': available, 'hold': hold}
-                result[asset_name] = balance
-            if detailed:
-                return self.balances
-        else:
-            if detailed:
-                return self.balances
-            result = {}
-            for asset, info in self.balances.items():
-                result[asset] = info['balance']
-        return result
-
-    def get_asset_balance(self, asset):
-        try:
-            result = self.balances[asset]
-        except KeyError:
-            result = {'balance': 0.0, 'available': 0.0}
-        return result
-
-    def get_asset_balance_tuple(self, asset):
-        result = self.get_asset_balance(asset)
-        try:
-            balance = float(result['balance'])
-            available = float(result['available'])
-        except KeyError:
-            balance = 0.0
-            available = 0.0
-        if 'balance' not in result or 'available' not in result:
-            return 0.0, 0.0
-        return balance, available
-
     def get_all_ticker_symbols(self, currency=None):
         result = []
         products = self.pc.get_products()
@@ -560,54 +471,6 @@ class AccountCoinbasePro(AccountBase):
     #    else:
     #        result = self._tickers
     #    return result
-
-    def get_order(self, order_id, ticker_id):
-        return self.client.get_order(order_id=order_id)
-
-    def buy_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.buy_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
-            result = self.client.place_market_order(product_id=ticker_id, side='buy', size=size)
-            return result
-
-    def sell_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.sell_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
-            result = self.client.place_market_order(product_id=ticker_id, side='sell', size=size)
-            return result
-
-    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            return self.buy_limit_stop_simulate(price, size, stop_price, ticker_id)
-        else:
-            self.logger.info("buy_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
-
-    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            return self.sell_limit_stop_simulate(price, size, stop_price, ticker_id)
-        else:
-            self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='sell', price=price, size=size)
-
-    def buy_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.buy_limit_simulate(price, size, ticker_id)
-        else:
-            return self.client.place_limit_order(product_id=ticker_id, side='buy', price=price, size=size)
-
-    def sell_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.sell_limit_simulate(price, size, ticker_id)
-        else:
-            return self.client.place_limit_order(product_id=ticker_id, side='sell', price=price, size=size)
-
-    def cancel_order(self, orderid, ticker_id=None):
-        return self.client.cancel_order(order_id=orderid)
 
     def cancel_all(self, ticker_id=None):
         return self.client.cancel_all(product_id=ticker_id)

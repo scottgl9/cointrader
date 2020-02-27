@@ -139,4 +139,18 @@ class AccountCoinbaseInfo(AccountBaseInfo):
         raise NotImplementedError
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
-        raise NotImplementedError
+        if not self.info_all_assets:
+            self.load_exchange_info()
+
+        if not symbol:
+            symbol = self.make_ticker_id(base, currency)
+
+        if not self.info_all_assets or symbol not in self.info_all_assets.keys():
+            self.logger.warning("symbol {} not found in assets".format(symbol))
+            return None
+        if field:
+            if field not in self.info_all_assets[symbol]:
+                self.logger.warning("field {} not found in assets for symbol {}".format(field, symbol))
+                return None
+            return self.info_all_assets[symbol][field]
+        return self.info_all_assets[symbol]

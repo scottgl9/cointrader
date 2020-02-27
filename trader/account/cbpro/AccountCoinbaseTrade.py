@@ -12,31 +12,31 @@ class AccountCoinbaseTrade(AccountBaseTrade):
         self.logger = logger
 
     def buy_market(self, size, price=0.0, ticker_id=None):
-        raise NotImplementedError
+        return self.client.place_market_order(product_id=ticker_id, side='buy', size=size)
 
     def sell_market(self, size, price=0.0, ticker_id=None):
-        raise NotImplementedError
+        return self.client.place_market_order(product_id=ticker_id, side='sell', size=size)
 
     def buy_limit(self, price, size, ticker_id=None):
-        raise NotImplementedError
+        return self.client.place_limit_order(product_id=ticker_id, side='buy', price=price, size=size)
 
     def sell_limit(self, price, size, ticker_id=None):
-        raise NotImplementedError
+        return self.client.place_limit_order(product_id=ticker_id, side='sell', price=price, size=size)
 
     def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
-        raise NotImplementedError
+        return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
-        raise NotImplementedError
+        return self.client.place_stop_order(product_id=ticker_id, side='sell', price=price, size=size)
 
     def get_order(self, order_id, ticker_id):
-        raise NotImplementedError
+        return self.client.get_order(order_id=order_id)
 
     def get_orders(self, ticker_id=None):
         raise NotImplementedError
 
     def cancel_order(self, orderid, ticker_id=None):
-        raise NotImplementedError
+        return self.client.cancel_order(order_id=orderid)
 
     def parse_order_update(self, result):
         raise NotImplementedError
