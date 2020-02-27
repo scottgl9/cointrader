@@ -38,12 +38,9 @@ class AccountBittrex(AccountBase):
         self.balance = AccountBittrexBalance(client, simulation, logger)
         self.trade = AccountBittrexTrade(client, simulation, logger)
 
-        self.currencies = ['BTC', 'ETH', 'USDT', 'USD']
-        self.currency_trade_pairs = ['BTC-ETH', 'USD-BTC', 'USD-ETH', 'USD-USDT', 'USDT-BTC', 'USDT-ETH']
-   
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
-        for currency in self.currencies:
+        for currency in self.info.get_currencies():
             self._currency_buy_size[currency] = 0
 
         self.client = client
@@ -152,7 +149,7 @@ class AccountBittrex(AccountBase):
         return self._max_tickers
 
     def set_trader_profit_mode(self, mode):
-        if mode in self.currencies:
+        if mode in self.info.get_currencies():
             self._trader_profit_mode = mode
         else:
             self.logger.info("set_trader_profit_mode({}) FAILED".format(mode))
@@ -166,14 +163,8 @@ class AccountBittrex(AccountBase):
     def get_total_percent_profit(self):
         return self._tpprofit
 
-    def get_currencies(self):
-        return self.currencies
-
-    def get_currency_trade_pairs(self):
-        return self.currency_trade_pairs
-
     def is_currency(self, name):
-        if name in self.currencies:
+        if name in self.info.get_currencies():
             return True
         return False
 
@@ -182,9 +173,9 @@ class AccountBittrex(AccountBase):
             base, currency = self.split_ticker_id(symbol)
         if not base or not currency:
             return False
-        if base not in self.currencies:
+        if base not in self.info.get_currencies():
             return False
-        if currency not in self.currencies:
+        if currency not in self.info.get_currencies():
             return False
         return True
 

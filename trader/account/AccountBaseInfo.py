@@ -7,6 +7,12 @@ class AccountBaseInfo(object):
     def split_ticker_id(self, symbol):
         raise NotImplementedError
 
+    def get_currencies(self):
+        raise NotImplementedError
+
+    def get_currency_trade_pairs(self):
+        raise NotImplementedError
+
     def get_info_all_assets(self):
         raise NotImplementedError
 

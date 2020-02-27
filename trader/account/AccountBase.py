@@ -93,6 +93,9 @@ class AccountBase(object):
     def split_ticker_id(self, symbol):
         return self.info.split_ticker_id(symbol)
 
+    def get_currencies(self):
+        return self.info.get_currencies()
+
     def get_info_all_assets(self):
         return self.info.get_info_all_assets()
 

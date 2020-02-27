@@ -6,7 +6,7 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.cbpro import AuthenticatedClient
+from trader.account.cbpro.cbpro import AuthenticatedClient
 from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 from trader.config import *
 

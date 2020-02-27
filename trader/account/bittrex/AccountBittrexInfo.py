@@ -28,6 +28,12 @@ class AccountBittrexInfo(AccountBaseInfo):
 
         return base_name, currency_name
 
+    def get_currencies(self):
+        return self.currencies
+
+    def get_currency_trade_pairs(self):
+        return self.currency_trade_pairs
+
     def get_info_all_assets(self):
         return self.info_all_assets
 

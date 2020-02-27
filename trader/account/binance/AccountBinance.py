@@ -36,12 +36,9 @@ class AccountBinance(AccountBase):
         # hourly db column names short list
         #self.hourly_scnames = ['ts', 'open', 'high', 'low', 'close', 'base_volume', 'quote_volume']
 
-        self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
-        self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
-
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
-        for currency in self.currencies:
+        for currency in self.info.get_currencies():
             self._currency_buy_size[currency] = 0
 
         self._tickers = {}
@@ -159,7 +156,7 @@ class AccountBinance(AccountBase):
         return self._max_tickers
 
     def set_trader_profit_mode(self, mode):
-        if mode in self.currencies:
+        if mode in self.info.get_currencies():
             self._trader_profit_mode = mode
         else:
             self.logger.info("set_trader_profit_mode({}) FAILED".format(mode))
@@ -229,14 +226,8 @@ class AccountBinance(AccountBase):
     def test_stop_loss(self):
         return self._test_stop_loss
 
-    def get_currencies(self):
-        return self.currencies
-
-    def get_currency_trade_pairs(self):
-        return self.currency_trade_pairs
-
     def is_currency(self, name):
-        if name in self.currencies:
+        if name in self.info.get_currencies():
             return True
         return False
 
@@ -245,9 +236,9 @@ class AccountBinance(AccountBase):
             base, currency = self.split_ticker_id(symbol)
         if not base or not currency:
             return False
-        if base not in self.currencies:
+        if base not in self.info.get_currencies():
             return False
-        if currency not in self.currencies:
+        if currency not in self.info.get_currencies():
             return False
         return True
 
