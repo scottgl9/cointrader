@@ -1,6 +1,8 @@
 import os
 import json
 from trader.account.AccountBaseInfo import AccountBaseInfo
+from trader.lib.struct.Order import Order
+from trader.lib.struct.AssetInfo import AssetInfo
 
 class AccountRobinhoodInfo(AccountBaseInfo):
     def __init__(self, client, simulation=False, logger=None, exchange_info_file=None):
@@ -171,6 +173,54 @@ class AccountRobinhoodInfo(AccountBaseInfo):
         except KeyError:
             return False
         return True
+
+    # return asset info in AssetInfo class object
+    def get_asset_info(self, symbol=None, base=None, currency=None):
+        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
+        if not info:
+            return None
+
+        min_qty=info['min_qty']
+
+        try:
+            min_notional=info['minNotional']
+        except KeyError:
+            min_notional = min_qty
+
+        if float(min_qty) < float(min_notional):
+            min_qty = min_notional
+        min_price=info['min_price']
+        base_step_size=info['base_step_size']
+        currency_step_size=info['currency_step_size']
+        is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
+
+        try:
+            baseAssetPrecision = info['baseAssetPrecision']
+            quotePrecision = info['quotePrecision']
+        except KeyError:
+            baseAssetPrecision = 8
+            quotePrecision = 8
+
+        orderTypes = []
+
+        try:
+            for order_type in info['orderTypes']:
+                orderTypes.append(Order.get_order_msg_type(order_type))
+        except KeyError:
+            pass
+
+        result = AssetInfo(base=base,
+                           currency=currency,
+                           min_qty=min_qty,
+                           min_price=min_price,
+                           base_step_size=base_step_size,
+                           currency_step_size=currency_step_size,
+                           is_currency_pair=is_currency_pair,
+                           baseAssetPrecision=baseAssetPrecision,
+                           quotePrecision=quotePrecision,
+                           orderTypes=orderTypes
+                           )
+        return result
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         if not self.info_all_assets:

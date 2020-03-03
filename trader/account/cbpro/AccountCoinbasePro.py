@@ -45,7 +45,6 @@ class AccountCoinbasePro(AccountBase):
         for currency in self.info.get_currencies():
             self._currency_buy_size[currency] = 0
 
-        self._exchange_pairs = None
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
@@ -260,21 +259,6 @@ class AccountCoinbasePro(AccountBase):
         else:
             return "{:.8f}".format(float(value))
 
-    # get list of exchange pairs (trade symbols)
-    def get_exchange_pairs(self):
-        if not self._exchange_pairs:
-            self.load_exchange_info()
-
-        return sorted(self._exchange_pairs)
-
-    # is a valid exchange pair
-    def is_exchange_pair(self, symbol):
-        if not self._exchange_pairs:
-            self.load_exchange_info()
-        if symbol in self._exchange_pairs:
-            return True
-        return False
-
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
@@ -286,77 +270,6 @@ class AccountCoinbasePro(AccountBase):
         if not info:
             return 0
         return info['currency_step_size']
-
-    # return asset info in AssetInfo class object
-    def get_asset_info(self, symbol=None, base=None, currency=None):
-        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
-        if not info:
-            return None
-
-        min_qty=info['min_qty']
-
-        try:
-            min_notional=info['minNotional']
-        except KeyError:
-            min_notional = min_qty
-
-        if float(min_qty) < float(min_notional):
-            min_qty = min_notional
-        min_price=info['min_price']
-        base_step_size=info['base_step_size']
-        currency_step_size=info['currency_step_size']
-        is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
-
-        try:
-            baseAssetPrecision = info['baseAssetPrecision']
-            quotePrecision = info['quotePrecision']
-        except KeyError:
-            baseAssetPrecision = 8
-            quotePrecision = 8
-
-        orderTypes = []
-
-        try:
-            for order_type in info['orderTypes']:
-                orderTypes.append(Order.get_order_msg_type(order_type))
-        except KeyError:
-            pass
-
-        result = AssetInfo(base=base,
-                           currency=currency,
-                           min_qty=min_qty,
-                           min_price=min_price,
-                           base_step_size=base_step_size,
-                           currency_step_size=currency_step_size,
-                           is_currency_pair=is_currency_pair,
-                           baseAssetPrecision=baseAssetPrecision,
-                           quotePrecision=quotePrecision,
-                           orderTypes=orderTypes
-                           )
-        return result
-
-
-    def parse_order_update(self, result):
-        # order_update = OrderUpdate(symbol, order_price, stop_price, order_size, order_type, exec_type,
-        #                            side, ts, order_id, orig_id, order_status, reject_reason, msg_type, msg_status)
-        #
-        # return order_update
-        pass
-
-
-    # parse json response to API order, then use to create Order object
-    def parse_order_result(self, result, symbol=None, sigid=0):
-        # order = Order(symbol=symbol,
-        #               price=price,
-        #               size=origqty,
-        #               type=type,
-        #               orderid=orderid,
-        #               quote_size=quoteqty,
-        #               commission=commission,
-        #               sig_id=sigid)
-        #
-        # return order
-        pass
 
     # determine if asset is available (not disabled or delisted)
     # if not, don't trade

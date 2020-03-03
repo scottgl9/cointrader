@@ -255,39 +255,6 @@ class AccountBittrex(AccountBase):
             return 0
         return info['tickSize']
 
-    # return asset info in AssetInfo class object
-    def get_asset_info(self, symbol=None, base=None, currency=None):
-        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
-        if not info:
-            return None
-
-        min_qty=info['minQty']
-        min_notional=info['minNotional']
-        if float(min_qty) < float(min_notional):
-            min_qty = min_notional
-        min_price=info['minPrice']
-        base_step_size=info['stepSize']
-        currency_step_size=info['tickSize']
-        is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
-        baseAssetPrecision = info['baseAssetPrecision']
-        quotePrecision = info['quotePrecision']
-        orderTypes = []
-        for order_type in info['orderTypes']:
-            orderTypes.append(Order.get_order_msg_type(order_type))
-
-        result = AssetInfo(base=base,
-                           currency=currency,
-                           min_qty=min_qty,
-                           min_price=min_price,
-                           base_step_size=base_step_size,
-                           currency_step_size=currency_step_size,
-                           is_currency_pair=is_currency_pair,
-                           baseAssetPrecision=baseAssetPrecision,
-                           quotePrecision=quotePrecision,
-                           orderTypes=orderTypes
-                           )
-        return result
-
     def get_account_status(self):
         return self.client.get_account_status()
 

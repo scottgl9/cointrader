@@ -38,6 +38,21 @@ class AccountBaseInfo(object):
     def is_exchange_pair(self, symbol):
         raise NotImplementedError
 
+    def is_currency_pair(self, symbol=None, base=None, currency=None):
+        if not base or not currency:
+            base, currency = self.split_ticker_id(symbol)
+        if not base or not currency:
+            return False
+        if base not in self.get_currencies():
+            return False
+        if currency not in self.get_currencies():
+            return False
+        return True
+
+    # return asset info in AssetInfo class object
+    def get_asset_info(self, symbol=None, base=None, currency=None):
+        raise NotImplementedError
+
     def get_asset_status(self, name=None):
         raise NotImplementedError
 
