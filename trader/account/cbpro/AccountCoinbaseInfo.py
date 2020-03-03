@@ -16,6 +16,7 @@ class AccountCoinbaseInfo(AccountBaseInfo):
         self.pc = PublicClient()
         self.currencies = ['BTC', 'ETH', 'USDC', 'USD']
         self.currency_trade_pairs = ['ETH-BTC', 'BTC-USDC', 'ETH-USDC', 'BTC-USD', 'ETH-USD']
+        self.trade_fee = 0.5 / 100.0
 
     def make_ticker_id(self, base, currency):
         return '%s-%s' % (base, currency)
@@ -30,6 +31,9 @@ class AccountCoinbaseInfo(AccountBaseInfo):
             currency_name = parts[1]
 
         return base_name, currency_name
+
+    def get_trade_fee(self):
+        return self.trade_fee
 
     def get_currencies(self):
         return self.currencies

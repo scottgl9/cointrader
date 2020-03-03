@@ -7,6 +7,10 @@ class AccountBaseInfo(object):
     def split_ticker_id(self, symbol):
         raise NotImplementedError
 
+    # fractional trade fee
+    def get_trade_fee(self):
+        raise NotImplementedError
+
     def get_currencies(self):
         raise NotImplementedError
 

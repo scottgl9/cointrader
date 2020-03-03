@@ -288,20 +288,6 @@ class AccountBittrex(AccountBase):
                            )
         return result
 
-
-    # determine if asset is available (not disabled or delisted)
-    # if not, don't trade
-    def is_asset_available(self, name):
-        status = self.get_asset_status(name)
-        try:
-            if status['disabled']:
-                return False
-            if status['delisted']:
-                return False
-        except KeyError:
-            return False
-        return True
-
     def get_account_status(self):
         return self.client.get_account_status()
 

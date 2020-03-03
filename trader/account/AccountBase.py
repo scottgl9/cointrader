@@ -109,6 +109,10 @@ class AccountBase(object):
     def split_ticker_id(self, symbol):
         return self.info.split_ticker_id(symbol)
 
+    # fractional trade fee
+    def get_trade_fee(self):
+        return self.info.get_trade_fee()
+
     def get_currencies(self):
         return self.info.get_currencies()
 

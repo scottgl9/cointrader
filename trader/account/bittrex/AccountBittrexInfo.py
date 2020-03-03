@@ -13,6 +13,7 @@ class AccountBittrexInfo(AccountBaseInfo):
         self._exchange_pairs = None
         self.currencies = ['BTC', 'ETH', 'USDT', 'USD']
         self.currency_trade_pairs = ['BTC-ETH', 'USD-BTC', 'USD-ETH', 'USD-USDT', 'USDT-BTC', 'USDT-ETH']
+        self.trade_fee = 0.25 / 100.0
 
     def make_ticker_id(self, base, currency):
         return '%s-%s' % (currency, base)
@@ -27,6 +28,9 @@ class AccountBittrexInfo(AccountBaseInfo):
             base_name = parts[1]
 
         return base_name, currency_name
+
+    def get_trade_fee(self):
+        return self.trade_fee
 
     def get_currencies(self):
         return self.currencies

@@ -14,6 +14,7 @@ class AccountBinanceInfo(AccountBaseInfo):
         self._exchange_pairs = None
         self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
         self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
+        self.trade_fee = 0.1 / 100.0
 
     def make_ticker_id(self, base, currency):
         return '%s%s' % (base, currency)
@@ -27,6 +28,9 @@ class AccountBinanceInfo(AccountBaseInfo):
                 currency_name = currency
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
+
+    def get_trade_fee(self):
+        return self.trade_fee
 
     def get_currencies(self):
         return self.currencies
