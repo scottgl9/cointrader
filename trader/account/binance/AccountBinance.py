@@ -226,22 +226,6 @@ class AccountBinance(AccountBase):
     def test_stop_loss(self):
         return self._test_stop_loss
 
-    def is_currency(self, name):
-        if name in self.info.get_currencies():
-            return True
-        return False
-
-    def is_currency_pair(self, symbol=None, base=None, currency=None):
-        if not base or not currency:
-            base, currency = self.split_ticker_id(symbol)
-        if not base or not currency:
-            return False
-        if base not in self.info.get_currencies():
-            return False
-        if currency not in self.info.get_currencies():
-            return False
-        return True
-
     def get_currency_buy_size(self, name):
         if not self.is_currency(name):
             return 0

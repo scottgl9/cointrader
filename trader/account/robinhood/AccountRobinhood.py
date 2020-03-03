@@ -193,22 +193,6 @@ class AccountRobinhood(AccountBase):
     def get_currency_trade_pairs(self):
         return self.currency_trade_pairs
 
-    def is_currency(self, name):
-        if name in self.currencies:
-            return True
-        return False
-
-    def is_currency_pair(self, symbol=None, base=None, currency=None):
-        if not base or not currency:
-            base, currency = self.split_ticker_id(symbol)
-        if not base or not currency:
-            return False
-        if base not in self.currencies:
-            return False
-        if currency not in self.currencies:
-            return False
-        return True
-
     def get_currency_buy_size(self, name):
         if not self.is_currency(name):
             return 0
@@ -289,21 +273,6 @@ class AccountRobinhood(AccountBase):
         else:
             return "{:.8f}".format(float(value))
 
-    def split_symbol(self, symbol):
-        return self.split_ticker_id(symbol)
-
-    def get_symbol_base(self, symbol):
-        result = self.split_ticker_id(symbol)
-        if result:
-            return result[0]
-        return None
-
-    def get_symbol_currency(self, symbol):
-        result = self.split_ticker_id(symbol)
-        if result:
-            return result[1]
-        return None
-
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
@@ -364,19 +333,6 @@ class AccountRobinhood(AccountBase):
                            )
         return result
 
-
-    # determine if asset is available (not disabled or delisted)
-    # if not, don't trade
-    def is_asset_available(self, name):
-        status = self.get_asset_status(name)
-        try:
-            if status['disabled']:
-                return False
-            if status['delisted']:
-                return False
-        except KeyError:
-            return False
-        return True
 
     def get_account_total_value(self, currency='USD', detailed=False):
         result = dict()

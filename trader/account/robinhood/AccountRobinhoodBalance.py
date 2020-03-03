@@ -19,7 +19,7 @@ class AccountRobinhoodBalance(AccountBaseBalance):
             self.balances['USD'] = {'balance': balance_usd, 'available': balance_usd}
             #balance_usd = account['overnight_buying_power']
 
-            for info in r.get_crypto_positions():
+            for info in self.client.get_crypto_positions():
                 asset_name = info['currency']['code']
                 balance = float(info['quantity'])
                 available = float(info['quantity_available'])

@@ -163,22 +163,6 @@ class AccountBittrex(AccountBase):
     def get_total_percent_profit(self):
         return self._tpprofit
 
-    def is_currency(self, name):
-        if name in self.info.get_currencies():
-            return True
-        return False
-
-    def is_currency_pair(self, symbol=None, base=None, currency=None):
-        if not base or not currency:
-            base, currency = self.split_ticker_id(symbol)
-        if not base or not currency:
-            return False
-        if base not in self.info.get_currencies():
-            return False
-        if currency not in self.info.get_currencies():
-            return False
-        return True
-
     def get_currency_buy_size(self, name):
         if not self.is_currency(name):
             return 0
@@ -258,21 +242,6 @@ class AccountBittrex(AccountBase):
             return "{}".format(float(value))
         else:
             return "{:.8f}".format(float(value))
-
-    def split_symbol(self, symbol):
-        return self.split_ticker_id(symbol)
-
-    def get_symbol_base(self, symbol):
-        result = self.split_ticker_id(symbol)
-        if result:
-            return result[0]
-        return None
-
-    def get_symbol_currency(self, symbol):
-        result = self.split_ticker_id(symbol)
-        if result:
-            return result[1]
-        return None
 
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)

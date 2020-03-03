@@ -86,6 +86,22 @@ class AccountBase(object):
             return result[1]
         return None
 
+    def is_currency(self, name):
+        if name in self.info.get_currencies():
+            return True
+        return False
+
+    def is_currency_pair(self, symbol=None, base=None, currency=None):
+        if not base or not currency:
+            base, currency = self.split_ticker_id(symbol)
+        if not base or not currency:
+            return False
+        if base not in self.info.get_currencies():
+            return False
+        if currency not in self.info.get_currencies():
+            return False
+        return True
+
     # 'info' component functions
     def make_ticker_id(self, base, currency):
         return self.info.make_ticker_id(base, currency)
