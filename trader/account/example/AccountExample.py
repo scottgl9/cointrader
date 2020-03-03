@@ -17,17 +17,35 @@ class AccountExample(AccountBase):
         self.client = client
         self.simulate = simulation
 
-        self.info = AccountExampleInfo(client, simulation, logger, simulate_db_filename)
-        self.balance = AccountExampleBalance(client, simulation, logger, simulate_db_filename)
-        self.trade = AccountExampleTrade(client, simulation, logger, simulate_db_filename)
+        self.info = AccountExampleInfo(client, simulation, logger, self.exchange_info_file)
+        self.balance = AccountExampleBalance(client, simulation, logger)
+        self.trade = AccountExampleTrade(client, simulation, logger)
 
 
 class AccountExampleInfo(AccountBaseInfo):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        self.simulate_db_filename = simulate_db_filename
+    def __init__(self, client, simulation=False, logger=None, exchange_info_file=None):
+        self.exchange_info_file = exchange_info_file
         self.client = client
         self.simulate = simulation
         self.logger = logger
+
+    def make_ticker_id(self, base, currency):
+        raise NotImplementedError
+
+    def split_ticker_id(self, symbol):
+        raise NotImplementedError
+
+    def get_currencies(self):
+        raise NotImplementedError
+
+    def get_currency_trade_pairs(self):
+        raise NotImplementedError
+
+    def get_info_all_assets(self):
+        raise NotImplementedError
+
+    def get_details_all_assets(self):
+        raise NotImplementedError
 
     def load_exchange_info(self):
         raise NotImplementedError
@@ -44,13 +62,18 @@ class AccountExampleInfo(AccountBaseInfo):
     def is_exchange_pair(self, symbol):
         raise NotImplementedError
 
+    def get_asset_status(self, name=None):
+        raise NotImplementedError
+
     def is_asset_available(self, name):
+        raise NotImplementedError
+
+    def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
         raise NotImplementedError
 
 
 class AccountExampleBalance(AccountBaseBalance):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        self.simulate_db_filename = simulate_db_filename
+    def __init__(self, client, simulation=False, logger=None):
         self.client = client
         self.simulate = simulation
         self.logger = logger
@@ -61,6 +84,12 @@ class AccountExampleBalance(AccountBaseBalance):
     def get_account_balances(self, detailed=False):
         raise NotImplementedError
 
+    def get_balances(self):
+        raise NotImplementedError
+
+    def get_asset_balance(self, asset):
+        raise NotImplementedError
+
     def get_asset_balance_tuple(self, asset):
         raise NotImplementedError
 
@@ -69,8 +98,7 @@ class AccountExampleBalance(AccountBaseBalance):
 
 
 class AccountExampleTrade(AccountBaseTrade):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        self.simulate_db_filename = simulate_db_filename
+    def __init__(self, client, simulation=False, logger=None):
         self.client = client
         self.simulate = simulation
         self.logger = logger
@@ -87,5 +115,24 @@ class AccountExampleTrade(AccountBaseTrade):
     def sell_limit(self, price, size, ticker_id=None):
         raise NotImplementedError
 
+    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
+        raise NotImplementedError
+
+    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
+        raise NotImplementedError
+
+    def get_order(self, order_id, ticker_id):
+        raise NotImplementedError
+
+    def get_orders(self, ticker_id=None):
+        raise NotImplementedError
+
     def cancel_order(self, orderid, ticker_id=None):
+        raise NotImplementedError
+
+    def parse_order_update(self, result):
+        raise NotImplementedError
+
+    # parse json response to order, then use to create Order object
+    def parse_order_result(self, result, symbol=None, sigid=0):
         raise NotImplementedError
