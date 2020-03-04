@@ -4,6 +4,7 @@ from trader.account.AccountBase import AccountBase
 from trader.account.AccountBaseInfo import AccountBaseInfo
 from trader.account.AccountBaseBalance import AccountBaseBalance
 from trader.account.AccountBaseTrade import AccountBaseTrade
+from trader.account.AccountBaseMarket import AccountBaseMarket
 
 
 class AccountExample(AccountBase):
@@ -20,6 +21,7 @@ class AccountExample(AccountBase):
         self.info = AccountExampleInfo(client, simulation, logger, self.exchange_info_file)
         self.balance = AccountExampleBalance(client, simulation, logger)
         self.trade = AccountExampleTrade(client, simulation, logger)
+        self.market = AccountExampleMarket(client, self.info, simulation, logger)
 
 
 class AccountExampleInfo(AccountBaseInfo):
@@ -63,6 +65,9 @@ class AccountExampleInfo(AccountBaseInfo):
         raise NotImplementedError
 
     def is_exchange_pair(self, symbol):
+        raise NotImplementedError
+
+    def get_asset_info(self, symbol=None, base=None, currency=None):
         raise NotImplementedError
 
     def get_asset_status(self, name=None):
@@ -138,4 +143,38 @@ class AccountExampleTrade(AccountBaseTrade):
 
     # parse json response to order, then use to create Order object
     def parse_order_result(self, result, symbol=None, sigid=0):
+        raise NotImplementedError
+
+class AccountExampleMarket(AccountBaseMarket):
+    def __init__(self, client, info, simulation=False, logger=None):
+        self.client = client
+        self.info = info
+        self.simulate = simulation
+        self.logger = logger
+
+    def get_ticker(self, symbol):
+        raise NotImplementedError
+
+    def get_tickers(self):
+        raise NotImplementedError
+
+    def get_ticker_symbols(self, currency=None):
+        raise NotImplementedError
+
+    def get_min_tickers(self):
+        raise NotImplementedError
+
+    def get_max_tickers(self):
+        raise NotImplementedError
+
+    def update_ticker(self, symbol, price, ts):
+        raise NotImplementedError
+
+    def update_tickers(self, tickers):
+        raise NotImplementedError
+
+    def get_klines(self, days=0, hours=1, ticker_id=None):
+        raise NotImplementedError
+
+    def get_hourly_klines(self, symbol, start_ts, end_ts):
         raise NotImplementedError

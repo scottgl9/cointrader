@@ -3,6 +3,7 @@ from trader.account.AccountBase import AccountBase
 from .AccountBinanceInfo import AccountBinanceInfo
 from .AccountBinanceBalance import AccountBinanceBalance
 from .AccountBinanceTrade import AccountBinanceTrade
+from .AccountBinanceMarket import AccountBinanceMarket
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
@@ -28,6 +29,7 @@ class AccountBinance(AccountBase):
         self.info = AccountBinanceInfo(client, simulation, logger, self.exchange_info_file)
         self.balance = AccountBinanceBalance(client, simulation, logger)
         self.trade = AccountBinanceTrade(client, simulation, logger)
+        self.market = AccountBinanceMarket(client, self.info, simulation, logger)
 
         # hourly db column names
         self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'volume']
