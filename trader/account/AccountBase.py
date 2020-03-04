@@ -25,6 +25,7 @@ class AccountBase(object):
         self.info = None
         self.balance = None
         self.trade = None
+        self.market = None
 
     def get_config_section_name(self):
         pass
@@ -326,5 +327,30 @@ class AccountBase(object):
     def parse_order_result(self, result, symbol=None, sigid=0):
         return self.trade.parse_order_result(result, symbol, sigid)
 
+    # 'market' component functions
+    def get_ticker(self, symbol):
+        return self.market.get_ticker(symbol)
+
+    def get_tickers(self):
+        return self.market.get_tickers()
+
+    def get_ticker_symbols(self, currency=None):
+        return self.market.get_ticker_symbols(currency)
+
+    def get_min_tickers(self):
+        return self.market.get_min_tickers()
+
+    def get_max_tickers(self):
+        return self.market.get_max_tickers()
+
+    def update_ticker(self, symbol, price, ts):
+        return self.market.update_ticker(symbol, price, ts)
+
+    def update_tickers(self, tickers):
+        return self.market.update_tickers(tickers)
+
+    def get_klines(self, days=0, hours=1, ticker_id=None):
+        return self.market.get_klines(days, hours, ticker_id)
+
     def get_hourly_klines(self, symbol, start_ts, end_ts):
-        pass
+        return self.market.get_hourly_klines(symbol, start_ts, end_ts)
