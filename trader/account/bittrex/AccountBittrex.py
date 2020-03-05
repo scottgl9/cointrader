@@ -3,6 +3,7 @@ from trader.account.AccountBase import AccountBase
 from .AccountBittrexInfo import AccountBittrexInfo
 from .AccountBittrexBalance import AccountBittrexBalance
 from .AccountBittrexTrade import AccountBittrexTrade
+from .AccountBittrexMarket import AccountBittrexMarket
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
@@ -37,6 +38,7 @@ class AccountBittrex(AccountBase):
         self.info = AccountBittrexInfo(client, simulation, logger, self.exchange_info_file)
         self.balance = AccountBittrexBalance(client, simulation, logger)
         self.trade = AccountBittrexTrade(client, simulation, logger)
+        self.market = AccountBittrexMarket(client, self.info, simulation, logger)
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
@@ -45,9 +47,6 @@ class AccountBittrex(AccountBase):
 
         self.client = client
 
-        self._tickers = {}
-        self._min_tickers = {}
-        self._max_tickers = {}
         self._trader_profit_mode = 'BTC'
         self._tpprofit = 0
         self.initial_currency = 0
@@ -106,47 +105,6 @@ class AccountBittrex(AccountBase):
     # ex. table name 'BTC_USD', return symbol 'BTC-USD'
     def get_symbol_hourly_table(self, table_name):
         return table_name
-
-    def get_ticker(self, symbol):
-        if not self.simulate and len(self._tickers) == 0:
-            self._tickers = self.get_all_tickers()
-        try:
-            price = self._tickers[symbol]
-        except KeyError:
-            price = 0.0
-        return price
-
-    def update_ticker(self, symbol, price, ts):
-        if self.simulate:
-            last_price = 0
-            try:
-                last_price = self._tickers[symbol]
-            except KeyError:
-                pass
-
-            if not last_price:
-                self._min_tickers[symbol] = [price, ts]
-                self._max_tickers[symbol] = [price, ts]
-            else:
-                if price < self._min_tickers[symbol][0]:
-                    self._min_tickers[symbol] = [price, ts]
-                elif price > self._max_tickers[symbol][0]:
-                    self._max_tickers[symbol] = [price, ts]
-
-        self._tickers[symbol] = price
-
-    def update_tickers(self, tickers):
-        for symbol, price in tickers.items():
-            self._tickers[symbol] = float(price)
-
-    def get_tickers(self):
-        return self._tickers
-
-    def get_min_tickers(self):
-        return self._min_tickers
-
-    def get_max_tickers(self):
-        return self._max_tickers
 
     def set_trader_profit_mode(self, mode):
         if mode in self.info.get_currencies():
@@ -278,75 +236,5 @@ class AccountBittrex(AccountBase):
 
         return currency_price * price
 
-
     def get_deposit_history(self, asset=None):
         return self.client.get_deposit_history(asset=asset)
-
-    def get_all_ticker_symbols(self, currency=None):
-        result = []
-        if not self.simulate:
-            for ticker in self.client.get_all_tickers():
-                if currency and ticker['symbol'].endswith(currency):
-                    result.append(ticker['symbol'])
-                elif not currency:
-                    result.append(ticker['symbol'])
-        else:
-            result = self.info_all_assets.keys()
-        return result
-
-    def get_all_tickers(self):
-        result = {}
-        if not self.simulate:
-            info_tickers = self.client.get_market_summaries()
-            if not info_tickers['success']:
-                return result
-            for info in info_tickers['result']:
-                #market_info = info['Market']
-                market_summary = info['Summary']
-                ticker_id = market_summary['MarketName']
-                price = market_summary['Last']
-                result[ticker_id] = price
-        else:
-            result = self._tickers
-        return result
-
-    def get_klines(self, days=0, hours=1, ticker_id=None):
-        timestr = ''
-        if days == 1:
-            timestr = "1 day ago"
-        elif days > 1:
-            timestr = "{} days ago".format(days)
-        if days == 0:
-            if hours == 1:
-                timestr = "1 hour ago"
-            elif hours > 1:
-                timestr = "{} hours ago".format(hours)
-        else:
-            if hours == 1:
-                timestr = "and 1 hour ago"
-            elif hours > 1:
-                timestr = "and {} hours ago".format(hours)
-        timestr += " UTC"
-
-        klines_data = self.client.get_historical_klines(ticker_id, Client.KLINE_INTERVAL_1MINUTE, timestr)
-
-        # reorganize kline format to same as GDAX for consistency:
-        # GDAX kline format: [ timestamp, low, high, open, close, volume ]
-        # binance format: [opentime, open, high, low, close, volume, closetime quotevolume, tradecount,
-        # taker_buy_base_volume, taker_buy_currency_volume, ignore]
-        klines = []
-        for k in klines_data:
-            ts = k[0] / 1000
-            klines.append([ts, k[3], k[2], k[1], k[4], k[5]])
-
-        return klines
-
-    def get_hourly_klines(self, symbol, start_ts, end_ts):
-        klines = self.client.get_historical_klines_generator(
-            symbol=symbol,
-            interval=Client.KLINE_INTERVAL_1HOUR,
-            start_str=start_ts,
-            end_str=end_ts,
-        )
-
-        return klines

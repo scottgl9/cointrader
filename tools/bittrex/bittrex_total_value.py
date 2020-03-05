@@ -15,7 +15,7 @@ if __name__ == '__main__':
     accnt = AccountBittrex(client=client)
     balances = accnt.get_account_balances()
     print(balances)
-    tickers = accnt.get_all_tickers()
+    tickers = accnt.get_tickers()
     print(tickers)
     print(accnt.get_exchange_info())
      #accnt_assets = accnt_info['assets']
