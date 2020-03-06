@@ -7,31 +7,31 @@ class AccountRobinhoodTrade(AccountBaseTrade):
         self.logger = logger
 
     def buy_market(self, size, price=0.0, ticker_id=None):
-        raise NotImplementedError
+        return self.client.order_buy_market(ticker_id, size)
 
     def sell_market(self, size, price=0.0, ticker_id=None):
-        raise NotImplementedError
+        return self.client.order_sell_market(ticker_id, size)
 
     def buy_limit(self, price, size, ticker_id=None):
-        raise NotImplementedError
+        return self.client.order_buy_limit(ticker_id, size, price)
 
     def sell_limit(self, price, size, ticker_id=None):
-        raise NotImplementedError
+        return self.client.order_sell_limit(ticker_id, size, price)
 
     def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
-        raise NotImplementedError
+        return self.client.order_buy_stop_limit(ticker_id, size, price, stop_price)
 
     def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
-        raise NotImplementedError
+         return self.client.order_sell_stop_limit(ticker_id, size, price, stop_price)
 
     def get_order(self, order_id, ticker_id):
-        raise NotImplementedError
+        return self.client.get_order_info(order_id)
 
     def get_orders(self, ticker_id=None):
-        raise NotImplementedError
+        return self.client.get_all_orders()
 
     def cancel_order(self, orderid, ticker_id=None):
-        raise NotImplementedError
+        self.client.cancel_order(orderid)
 
     def parse_order_update(self, result):
         raise NotImplementedError

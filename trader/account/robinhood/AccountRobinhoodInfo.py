@@ -38,7 +38,7 @@ class AccountRobinhoodInfo(AccountBaseInfo):
         return self.currencies
 
     def get_currency_trade_pairs(self):
-        raise self.currency_trade_pairs
+        return self.currency_trade_pairs
 
     def get_info_all_assets(self):
         return self.info_all_assets
