@@ -7,7 +7,10 @@ try:
 except ImportError:
     sys.path.append('.')
 
-import trader.account.robinhood.robin_stocks as client
+try:
+    import trader.account.robinhood.robin_stocks as client
+except ImportError:
+    import robin_stocks as client
 from trader.account.robinhood.AccountRobinhood import AccountRobinhood
 from trader.config import *
 

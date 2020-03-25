@@ -1,7 +1,10 @@
 from trader.account.AccountBase import AccountBase
 from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
-import trader.account.robinhood.robin_stocks as r
+try:
+    import trader.account.robinhood.robin_stocks as r
+except ImportError:
+    import robin_stocks as r
 from .AccountRobinhoodInfo import AccountRobinhoodInfo
 from .AccountRobinhoodBalance import AccountRobinhoodBalance
 from .AccountRobinhoodTrade import AccountRobinhoodTrade
