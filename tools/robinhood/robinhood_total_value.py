@@ -22,7 +22,7 @@ if __name__ == '__main__':
     print(login)
     accnt = AccountRobinhood(client=client, simulation=False)
     accnt.load_exchange_info()
-    print(accnt.get_all_tickers())
+    print(accnt.get_tickers())
     #accnt.get_ticker('BTC-USD')
     print(accnt.get_account_balances())
     #balances = accnt.get_account_balances()

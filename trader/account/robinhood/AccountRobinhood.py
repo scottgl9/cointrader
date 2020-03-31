@@ -8,6 +8,7 @@ except ImportError:
 from .AccountRobinhoodInfo import AccountRobinhoodInfo
 from .AccountRobinhoodBalance import AccountRobinhoodBalance
 from .AccountRobinhoodTrade import AccountRobinhoodTrade
+from .AccountRobinhoodMarket import AccountRobinhoodMarket
 from trader.config import *
 import json
 import os
@@ -39,12 +40,13 @@ class AccountRobinhood(AccountBase):
         # hourly db column names
         self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
 
-        self.currencies = ['BTC', 'ETH', 'USDC', 'USD']
-        self.currency_trade_pairs = ['ETH-BTC', 'BTC-USDC', 'ETH-USDC', 'BTC-USD', 'ETH-USD']
+        self.currencies = ['USD']
+        self.currency_trade_pairs = []
 
         self.info = AccountRobinhoodInfo(client, simulation, logger, self.exchange_info_file)
         self.balance = AccountRobinhoodBalance(client, simulation, logger)
         self.trade = AccountRobinhoodTrade(client, simulation, logger)
+        self.market = AccountRobinhoodMarket(client, self.info, simulation, logger)
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
@@ -127,56 +129,6 @@ class AccountRobinhood(AccountBase):
             return info['id']
         except KeyError:
             return ''
-
-    def get_ticker(self, symbol=None):
-        if not self.simulate:
-            if not self.get_info_all_assets():
-                self.load_exchange_info()
-            sid = self.get_ticker_id(symbol)
-            result = self.client.get_crypto_quote_from_id(id=sid)
-            if result:
-                try:
-                    price = float(result['mark_price'])
-                except KeyError:
-                    price = 0.0
-                return price
-        try:
-            price = self._tickers[symbol]
-        except KeyError:
-            price = 0.0
-        return price
-
-    def update_ticker(self, symbol, price, ts):
-        if self.simulate:
-            last_price = 0
-            try:
-                last_price = self._tickers[symbol]
-            except KeyError:
-                pass
-
-            if not last_price:
-                self._min_tickers[symbol] = [price, ts]
-                self._max_tickers[symbol] = [price, ts]
-            else:
-                if price < self._min_tickers[symbol][0]:
-                    self._min_tickers[symbol] = [price, ts]
-                elif price > self._max_tickers[symbol][0]:
-                    self._max_tickers[symbol] = [price, ts]
-
-        self._tickers[symbol] = price
-
-    def update_tickers(self, tickers):
-        for symbol, price in tickers.items():
-            self._tickers[symbol] = float(price)
-
-    def get_tickers(self):
-        return self._tickers
-
-    def get_min_tickers(self):
-        return self._min_tickers
-
-    def get_max_tickers(self):
-        return self._max_tickers
 
     def set_trader_profit_mode(self, mode):
         if mode in self.currencies:
@@ -317,148 +269,3 @@ class AccountRobinhood(AccountBase):
             total_balance += value * price
 
         return total_balance
-
-    def get_all_ticker_symbols(self, currency=None):
-        if not self._exchange_pairs:
-            self.load_exchange_info()
-        return self._exchange_pairs
-
-    def get_all_tickers(self):
-        pass
-    #    result = {}
-    #    if not self.simulate:
-    #        for ticker in self.client.get_product_ticker()
-    #            result[ticker['symbol']] = ticker['price']
-    #    else:
-    #        result = self._tickers
-    #    return result
-
-    def get_order(self, order_id, ticker_id):
-        return self.client.get_order(order_id=order_id)
-
-    def buy_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.buy_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("buy_market({}, {}, {})".format(size, price, ticker_id))
-            result = self.client.place_market_order(product_id=ticker_id, side='buy', size=size)
-            return result
-
-    def sell_market(self, size, price=0.0, ticker_id=None):
-        if self.simulate:
-            return self.sell_market_simulate(size, price, ticker_id)
-        else:
-            self.logger.info("sell_market({}, {}, {})".format(size, price, ticker_id))
-            result = self.client.place_market_order(product_id=ticker_id, side='sell', size=size)
-            return result
-
-    def buy_limit_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            return self.buy_limit_stop_simulate(price, size, stop_price, ticker_id)
-        else:
-            self.logger.info("buy_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='buy', price=price, size=size)
-
-    def sell_limit_stop(self, price, size, stop_price, ticker_id=None):
-
-        if self.simulate:
-            return self.sell_limit_stop_simulate(price, size, stop_price, ticker_id)
-        else:
-            self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.place_stop_order(product_id=ticker_id, side='sell', price=price, size=size)
-
-    def buy_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.buy_limit_simulate(price, size, ticker_id)
-        else:
-            return self.client.place_limit_order(product_id=ticker_id, side='buy', price=price, size=size)
-
-    def sell_limit(self, price, size, ticker_id=None):
-        if self.simulate:
-            return self.sell_limit_simulate(price, size, ticker_id)
-        else:
-            return self.client.place_limit_order(product_id=ticker_id, side='sell', price=price, size=size)
-
-    def cancel_order(self, orderid, ticker_id=None):
-        return self.client.cancel_order(order_id=orderid)
-
-    def cancel_all(self, ticker_id=None):
-        pass
-
-    # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
-    # The maximum amount of data returned is 300 candles
-    # kline format: [ timestamp, low, high, open, close, volume ]
-    def get_klines(self, days=0, hours=1, ticker_id=None):
-        end = datetime.utcnow()
-        start = (end - timedelta(days=days, hours=hours))
-        granularity = 900
-        if days == 0 and hours < 6:
-            granularity = 60
-        elif (days== 0 and hours <= 24) or (days == 1 and hours == 0):
-            granularity = 300
-
-        rates = self.pc.get_product_historic_rates(ticker_id,
-                                                   start.isoformat(),
-                                                   end.isoformat(),
-                                                   granularity=granularity)
-        return rates[::-1]
-
-
-    def get_hourly_klines(self, symbol, start_ts, end_ts, reverse=False):
-        result = []
-        if not reverse:
-            ts1 = start_ts
-            ts2 = end_ts
-            while ts1 <= end_ts:
-                ts2 = end_ts
-                if (ts2 - ts1) > 3600 * 250:
-                    ts2 = ts1 + 3600 * 250
-                start = self.ts_to_iso8601(ts1)
-                end = self.ts_to_iso8601(ts2)
-
-                klines = self.pc.get_product_historic_rates(product_id=symbol,
-                                                            start=start,
-                                                            end=end,
-                                                            granularity=3600)
-                ts1 = ts2 + 3600
-                if isinstance(klines, list):
-                    try:
-                        if len(klines):
-                            result += reversed(klines)
-                    except TypeError:
-                        print(klines, type(klines))
-                        pass
-                    time.sleep(1)
-                else:
-                    if klines['message'] == 'NotFound':
-                        time.sleep(1)
-                        continue
-                    print("ERROR get_hourly_klines(): {}".format(klines['message']))
-                    return result
-        # else:
-        #     ts1 = start_ts
-        #     ts2 = end_ts
-        #     while ts1 >= start_ts:
-        #         ts1 = start_ts
-        #         if (ts2 - ts1) > 3600 * 250:
-        #             ts1 = ts2 - 3600 * 250
-        #         start = self.ts_to_iso8601(ts1)
-        #         end = self.ts_to_iso8601(ts2)
-        #         klines = self.pc.get_product_historic_rates(product_id=symbol,
-        #                                                     start=start,
-        #                                                     end=end,
-        #                                                     granularity=3600)
-        #         ts1 = ts2 - 3600
-        #         if isinstance(klines, list):
-        #             try:
-        #                 result = reversed(klines) + result
-        #             except TypeError:
-        #                 pass
-        #             time.sleep(1)
-        #         else:
-        #             if klines['message'] == 'NotFound':
-        #                 break
-        #             print("ERROR get_hourly_klines(): {}".format(klines['message']))
-        #             return result
-
-        return result

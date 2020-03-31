@@ -13,8 +13,8 @@ class AccountRobinhoodInfo(AccountBaseInfo):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self._exchange_pairs = None
-        self.currencies = ['BTC', 'ETH', 'USDC', 'USD']
-        self.currency_trade_pairs = ['ETH-BTC', 'BTC-USDC', 'ETH-USDC', 'BTC-USD', 'ETH-USD']
+        self.currencies = ['USD']
+        self.currency_trade_pairs = []
         self.trade_fee = 0.0
 
     def make_ticker_id(self, base, currency):
@@ -30,6 +30,13 @@ class AccountRobinhoodInfo(AccountBaseInfo):
             currency_name = parts[1]
 
         return base_name, currency_name
+
+    def get_ticker_id(self, symbol):
+        try:
+            info = self.get_info_all_assets()[symbol]
+            return info['id']
+        except KeyError:
+            return ''
 
     def get_trade_fee(self):
         return self.trade_fee
