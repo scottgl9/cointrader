@@ -33,14 +33,20 @@ class AccountRobinhoodMarket(AccountBaseMarket):
         if not self.simulate:
             if not self.info.get_info_all_assets():
                 self.info.load_exchange_info()
-            tickers = self.info.get_info_all_assets().keys()
-            return tickers
+            for ticker in self.info.get_info_all_assets().keys():
+                result[ticker] = self.get_ticker(ticker)
+            return result
         else:
             result = self._tickers
         return result
 
     def get_ticker_symbols(self, currency=None):
-        raise NotImplementedError
+        result = []
+        if not self.info.get_info_all_assets():
+            self.info.load_exchange_info()
+        for ticker in self.info.get_info_all_assets().keys():
+            result.append(ticker)
+        return result
 
     def get_min_tickers(self):
         return self._min_tickers
