@@ -8,6 +8,7 @@ except ImportError:
 
 from trader.account.binance.binance.websockets import BinanceSocketManager
 from trader.account.binance.binance.client import Client
+from trader.account.AccountBase import AccountBase
 from trader.MultiTrader import MultiTrader
 from trader.TraderConfig import TraderConfig
 from trader.lib.struct.Kline import Kline
@@ -113,9 +114,11 @@ class BinanceTrader:
                                    close=float(msg['c']),
                                    low=float(msg['l']),
                                    high=float(msg['h']),
-                                   volume_base=float(msg['v']),
-                                   volume_quote=float(msg['q']),
-                                   ts=int(msg['E']))
+                                   #volume_base=float(msg['v']),
+                                   #volume_quote=float(msg['q']),
+                                   volume=float(msg['q']),
+                                   ts=int(msg['E']),
+                                   exchange_type=AccountBase.EXCHANGE_BINANCE)
             else:
                 self.kline.symbol = msg['s']
                 self.kline.open = float(msg['o'])
@@ -138,9 +141,11 @@ class BinanceTrader:
                                        close=float(part['c']),
                                        low=float(part['l']),
                                        high=float(part['h']),
-                                       volume_base=float(part['v']),
-                                       volume_quote=float(part['q']),
-                                       ts=int(part['E']))
+                                       #volume_base=float(part['v']),
+                                       #volume_quote=float(part['q']),
+                                       volume=float(part['q'])
+                                       ts=int(part['E']),
+                                       exchange_type=AccountBase.EXCHANGE_BINANCE)
                 else:
                     self.kline.symbol = part['s']
                     self.kline.open = float(part['o'])

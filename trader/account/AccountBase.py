@@ -20,6 +20,7 @@ class AccountBase(object):
         self.simulate_db_filename = simulate_db_filename
         self.client = client
         self.simulate = simulation
+        self.exchange_type = AccountBase.EXCHANGE_UNKNOWN
 
         # account specific components
         self.info = None
