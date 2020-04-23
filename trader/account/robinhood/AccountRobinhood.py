@@ -1,6 +1,7 @@
 from trader.account.AccountBase import AccountBase
 from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
+from trader.lib.struct.Exchange import Exchange
 try:
     import trader.account.robinhood.robin_stocks as r
 except ImportError:
@@ -21,8 +22,8 @@ import stix.utils.dates
 class AccountRobinhood(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
         super(AccountRobinhood, self).__init__(client, simulation, logger, simulate_db_filename)
-        self.exchange_type = AccountBase.EXCHANGE_ROBINHOOD
-        self.exchange_name = 'robinhood'
+        self.exchange_type = Exchange.EXCHANGE_ROBINHOOD
+        self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate = simulation

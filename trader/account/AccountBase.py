@@ -1,15 +1,9 @@
 #from abc import ABCMeta, abstractmethod
 from trader.lib.struct.Order import Order
+from trader.lib.struct.Exchange import Exchange
 
 
 class AccountBase(object):
-    EXCHANGE_UNKNOWN = 0
-    EXCHANGE_BINANCE = 1
-    EXCHANGE_CBPRO = 2
-    EXCHANGE_BITTREX = 3
-    EXCHANGE_KRAKEN = 4
-    EXCHANGE_POLONIEX = 5
-    EXCHANGE_ROBINHOOD = 6
     # trader modes
     TRADER_MODE_NONE = 0
     TRADER_MODE_REALTIME = 1
@@ -20,7 +14,7 @@ class AccountBase(object):
         self.simulate_db_filename = simulate_db_filename
         self.client = client
         self.simulate = simulation
-        self.exchange_type = AccountBase.EXCHANGE_UNKNOWN
+        self.exchange_type = Exchange.EXCHANGE_UNKNOWN
 
         # account specific components
         self.info = None

@@ -20,6 +20,7 @@ from trader.MultiTrader import MultiTrader
 #except ImportError:
 from trader.lib.struct.Kline import Kline
 from trader.lib.struct.MarketMessage import MarketMessage
+from trader.lib.struct.Exchange import Exchange
 from trader.account.binance.AccountBinance import AccountBinance
 from trader.TraderConfig import TraderConfig
 from trader.config import *
@@ -164,7 +165,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                           #volume_base=float(msg['v']),
                           #volume_quote=float(msg['q']),
                           volume=float(msg['q']),
-                          ts=int(msg['E']))
+                          ts=int(msg['E']),
+                          exchange_type=Exchange.EXCHANGE_BINANCE)
             mmsg = MarketMessage(kline.symbol, msg_type=MarketMessage.TYPE_WS_MSG, kline=kline)
         else:
             kline.symbol = msg['s']

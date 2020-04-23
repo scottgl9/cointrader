@@ -3,6 +3,7 @@ from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
+from trader.lib.struct.Exchange import Exchange
 from .AccountCoinbaseInfo import AccountCoinbaseInfo
 from .AccountCoinbaseBalance import AccountCoinbaseBalance
 from .AccountCoinbaseTrade import AccountCoinbaseTrade
@@ -20,8 +21,8 @@ import stix.utils.dates
 class AccountCoinbasePro(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
         super(AccountCoinbasePro, self).__init__(client, simulation, logger, simulate_db_filename)
-        self.exchange_type = AccountBase.EXCHANGE_CBPRO
-        self.exchange_name = 'cbpro'
+        self.exchange_type = Exchange.EXCHANGE_CBPRO
+        self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate = simulation

@@ -4,6 +4,7 @@ import sys
 import importlib
 from trader.account.binance.AccountBinance import AccountBinance, AccountBase
 from trader.lib.struct.Order import Order
+from trader.lib.struct.Exchange import Exchange
 from trader.OrderHandler import OrderHandler
 from trader.KlinesDB import KlinesDB
 from trader.lib.TraderMessageHandler import TraderMessage, TraderMessageHandler
@@ -142,7 +143,7 @@ class MultiTrader(object):
                 self.logger.info("Failed to setup hourly updates for {}".format(self.kdb_path))
 
         # config options for AccountBinance
-        # if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
         #     btc_only = self.config.get('btc_only')
         #     eth_only = self.config.get('eth_only')
         #     bnb_only = self.config.get('bnb_only')
@@ -168,7 +169,7 @@ class MultiTrader(object):
         self.global_en = global_en
         self.symbol_filter = None
 
-        # if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
         #     self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, kdb=self.kdb, logger=self.logger)
         #     for filter_name in self.symbol_filter_names:
         #         self.symbol_filter.add_filter(filter_name)
@@ -212,7 +213,7 @@ class MultiTrader(object):
 
         if not base_name or not currency_name: return None
 
-        # if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
         #     if self.accnt.btc_only() and currency_name != 'BTC':
         #         return None
         #     elif self.accnt.eth_only() and currency_name != 'ETH':
@@ -237,7 +238,7 @@ class MultiTrader(object):
 
         base_min_size = 0
 
-        # if self.accnt.exchange_type == AccountBase.EXCHANGE_BINANCE:
+        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
         #     try:
         #         base_min_size = float(asset_info['base_step_size'])
         #         min_notional = float(asset_info['minNotional'])

@@ -8,6 +8,7 @@ from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
 from trader.lib.struct.AssetInfo import AssetInfo
+from trader.lib.struct.Exchange import Exchange
 import json
 import os
 
@@ -15,8 +16,8 @@ import os
 class AccountBinance(AccountBase):
     def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
         super(AccountBinance, self).__init__(client, simulation, logger, simulate_db_filename)
-        self.exchange_type = AccountBase.EXCHANGE_BINANCE
-        self.exchange_name = 'binance'
+        self.exchange_type = Exchange.EXCHANGE_BINANCE
+        self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename

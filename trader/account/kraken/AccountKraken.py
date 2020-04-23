@@ -1,6 +1,7 @@
 from trader.account.AccountBase import AccountBase
 from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
+from trader.lib.struct.Exchange import Exchange
 from trader.account.kraken.kraken.krakenex.api import API
 from trader.account.kraken.kraken.pykrakenapi import KrakenAPI
 from trader.config import *
@@ -12,8 +13,8 @@ from datetime import datetime, timedelta
 class AccountKraken(AccountBase):
     def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
         super(AccountKraken, self).__init__(client, simulation, logger, simulate_db_filename)
-        self.exchange_type = AccountBase.EXCHANGE_KRAKEN
-        self.exchange_name = 'kraken'
+        self.exchange_type = Exchange.EXCHANGE_KRAKEN
+        self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate = simulation

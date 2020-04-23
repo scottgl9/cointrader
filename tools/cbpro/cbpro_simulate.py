@@ -14,6 +14,7 @@ import sys
 from trader.MultiTrader import MultiTrader
 from trader.lib.struct.Kline import Kline
 from trader.lib.struct.MarketMessage import MarketMessage
+from trader.lib.struct.Exchange import Exchange
 from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
 from trader.TraderConfig import TraderConfig
 import argparse
@@ -146,7 +147,8 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                           low=float(msg['bid']),
                           high=float(msg['ask']),
                           volume=float(msg['q']),
-                          ts=int(msg['ts']))
+                          ts=int(msg['ts']),
+                          exchange_type=Exchange.EXCHANGE_CBPRO))
             mmsg = MarketMessage(kline.symbol, msg_type=MarketMessage.TYPE_WS_MSG, kline=kline)
         else:
             kline.symbol = msg['s']
