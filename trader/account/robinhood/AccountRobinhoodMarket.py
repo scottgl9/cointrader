@@ -77,8 +77,20 @@ class AccountRobinhoodMarket(AccountBaseMarket):
         for symbol, price in tickers.items():
             self._tickers[symbol] = float(price)
 
+    # {'begins_at': '2020-04-24T13:40:00Z', 'open_price': '7498.020000', 'close_price': '7503.780000', 'high_price': '7522.225000', 'low_price': '7488.440000', 'volume': 0, 'session': 'reg', 'interpolated': False}
     def get_klines(self, days=0, hours=1, ticker_id=None):
-        raise NotImplementedError
+        klines = []
+        id = self.info.get_ticker_id(ticker_id)
+        result = self.client.get_crypto_historical_from_id(id, interval="hour", span="month", bound="regular")
+        for d in result['data_points']:
+            ts = d['begins_at']
+            l = d['low_price']
+            h = d['high_price']
+            o = d['open_price']
+            c = d['close_price']
+            v = d['volume']
+            klines.append([ts, l, h, o, c, v])
+        return klines
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
         raise NotImplementedError

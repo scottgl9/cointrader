@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 
 import sys
+import pyotp
 try:
     import trader
 except ImportError:
     sys.path.append('.')
-    import trader
 
 import numpy as np
 import matplotlib.pyplot as plt
 from trader.indicator.EMA import EMA
 from trader.indicator.MINMAX import MINMAX
 from trader.indicator.OBV import OBV
-from trader.indicator.test.PriceChannel import PriceChannel
-from trader.account.binance.AccountBinance import AccountBinance
-from trader.account.binance.binance.client import Client
+from trader.account.robinhood.AccountRobinhood import AccountRobinhood
+import robin_stocks as client
 from trader.config import *
 
 
@@ -26,8 +25,6 @@ def plot_emas_product(plt, klines, product, hours=0):
     high_prices = []
     timestamps = []
     minmax = MINMAX(50)
-    pc = PriceChannel()
-    pc_values = []
     ema_volume = EMA(12)
     ema_volume_values = []
     price_x_values = []
@@ -49,7 +46,7 @@ def plot_emas_product(plt, klines, product, hours=0):
     max_values = []
 
     for i in range(1, len(klines) - 1):
-        ts = float(klines[i][0])
+        ts = 0 #float(klines[i][0])
         low = float(klines[i][1])
         high = float(klines[i][2])
         open_price = float(klines[i][3])
@@ -90,26 +87,22 @@ def plot_emas_product(plt, klines, product, hours=0):
     #fig3, = plt.plot(obv_values, label="OBP")
     plt.legend(handles=[fig1, fig2, fig3])
 
-def abs_average(values):
-    total = 0.0
-    for value in values:
-        total += abs(value)
-    total = total / float(len(values))
-    return total
-
 if __name__ == '__main__':
-    client = Client(MY_API_KEY, MY_API_SECRET)
-    #print(client.get_user_trades())
     base = 'BTC'
-    currency='USDT'
+    currency='USD'
     if len(sys.argv) == 3:
         base=sys.argv[1]
         currency = sys.argv[2]
-    accnt = AccountBinance(client, base, currency)
-    #balances = accnt.get_account_balances()
-    #print(balances)
+    totp = pyotp.TOTP(ROBINHOOD_2FA_KEY)
+    mfa_code = totp.now()
+    print("MFA: {}".format(mfa_code))
+    login = client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_token=mfa_code)
+    print(login)
+    accnt = AccountRobinhood(client=client, simulation=False)
+    accnt.load_exchange_info()
     plt.figure(1)
     plt.subplot(211)
-    klines = accnt.get_klines(hours=128)
-    diff_values = plot_emas_product(plt, klines, accnt.ticker_id, hours=128)
+    ticker_id = accnt.make_ticker_id(base, currency)
+    klines = accnt.get_klines(hours=24, ticker_id=ticker_id)
+    diff_values = plot_emas_product(plt, klines, ticker_id, hours=24)
     plt.show()
