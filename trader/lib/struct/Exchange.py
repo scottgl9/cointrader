@@ -10,33 +10,33 @@ class Exchange(object):
     EXCHANGE_ROBINHOOD = 6
 
     def name(id):
-        if id == EXCHANGE_BINANCE:
+        if id == Exchange.EXCHANGE_BINANCE:
             return "binance"
-        elif id == EXCHANGE_CBPRO:
+        elif id == Exchange.EXCHANGE_CBPRO:
             return "cbpro"
-        elif id == EXCHANGE_BITTREX:
+        elif id == Exchange.EXCHANGE_BITTREX:
             return "bittrex"
-        elif id == EXCHANGE_KRAKEN:
+        elif id == Exchange.EXCHANGE_KRAKEN:
             return "kraken"
-        elif id == EXCHANGE_POLONIEX:
+        elif id == Exchange.EXCHANGE_POLONIEX:
             return "poloniex"
-        elif id == EXCHANGE_ROBINHOOD:
+        elif id == Exchange.EXCHANGE_ROBINHOOD:
             return "robinhood"
         else:
             return "unknown"
 
     def id(name):
         if name == "binance":
-            return EXCHANGE_BINANCE
+            return Exchange.EXCHANGE_BINANCE
         elif name == "cbpro":
-            return EXCHANGE_CBPRO
+            return Exchange.EXCHANGE_CBPRO
         elif name == "bittrex":
-            return EXCHANGE_BITTREX
+            return Exchange.EXCHANGE_BITTREX
         elif name == "kraken":
-            return EXCHANGE_KRAKEN
+            return Exchange.EXCHANGE_KRAKEN
         elif name == "poloniex":
-            return EXCHANGE_POLONIEX
+            return Exchange.EXCHANGE_POLONIEX
         elif name == "robinhood":
-            return EXCHANGE_ROBINHOOD
+            return Exchange.EXCHANGE_ROBINHOOD
         else:
-            return EXCHANGE_UNKNOWN
+            return Exchange.EXCHANGE_UNKNOWN
