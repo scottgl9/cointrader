@@ -73,7 +73,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     client = Client(MY_API_KEY, MY_API_SECRET)
-    accnt = AccountBinance(client, logger=logger, simulation=False)
+    accnt = AccountBinance(client, logger=logger, simulate=False)
     accnt.load_exchange_info()
 
     symbol_table_list = []

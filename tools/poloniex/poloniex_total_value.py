@@ -12,7 +12,7 @@ from trader.config import *
 
 if __name__ == '__main__':
     client = Poloniex(key=POLONIEX_API_KEY, secret=POLONIEX_SECRET_KEY, coach=False)
-    accnt = AccountPoloniex(client=client, simulation=False)
+    accnt = AccountPoloniex(client=client, simulate=False)
     accnt.load_exchange_info()
     #print(client.returnBalances())
     #print(client.returnCompleteBalances())

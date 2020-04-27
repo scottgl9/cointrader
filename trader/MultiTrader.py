@@ -81,7 +81,7 @@ class MultiTrader(object):
             self.accnt = accnt
         else:
             self.accnt = AccountBinance(self.client,
-                                        simulation=simulate,
+                                        simulate=simulate,
                                         logger=logger)
 
         # set trader mode to realtime or hourly

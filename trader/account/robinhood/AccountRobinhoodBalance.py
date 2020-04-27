@@ -1,9 +1,9 @@
 from trader.account.AccountBaseBalance import AccountBaseBalance
 
 class AccountRobinhoodBalance(AccountBaseBalance):
-    def __init__(self, client, simulation=False, logger=None):
+    def __init__(self, client, simulate=False, logger=None):
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
         self.balances = {}
 

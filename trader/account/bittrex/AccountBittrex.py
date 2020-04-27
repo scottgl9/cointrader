@@ -18,8 +18,8 @@ import os
 #logger = logging.getLogger(__name__)
 
 class AccountBittrex(AccountBase):
-    def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
-        super(AccountBittrex, self).__init__(client, simulation, logger, simulate_db_filename)
+    def __init__(self, client=None, simulate=False, live=False, logger=None, simulate_db_filename=None):
+        super(AccountBittrex, self).__init__(client, simulate, live, logger, simulate_db_filename)
         self.exchange_type = Exchange.EXCHANGE_BITTREX
         self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
@@ -29,17 +29,18 @@ class AccountBittrex(AccountBase):
             self.client = client
         else:
             self.client = Bittrex(api_key=BITTREX_API_KEY, api_secret=BITTREX_API_SECRET, api_version=API_V2_0)
-        self.simulate = simulation
+        self.simulate = simulate
+        self.live = live
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
 
         # sub module implementations
-        self.info = AccountBittrexInfo(client, simulation, logger, self.exchange_info_file)
-        self.balance = AccountBittrexBalance(client, simulation, logger)
-        self.trade = AccountBittrexTrade(client, simulation, logger)
-        self.market = AccountBittrexMarket(client, self.info, simulation, logger)
+        self.info = AccountBittrexInfo(client, simulate, logger, self.exchange_info_file)
+        self.balance = AccountBittrexBalance(client, simulate, logger)
+        self.trade = AccountBittrexTrade(client, simulate, logger)
+        self.market = AccountBittrexMarket(client, self.info, simulate, logger)
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}

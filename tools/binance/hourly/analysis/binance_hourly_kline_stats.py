@@ -189,7 +189,7 @@ if __name__ == '__main__':
         print("file {} doesn't exist, exiting...".format(results.filename))
         sys.exit(-1)
 
-    accnt = AccountBinance(None, simulation=True)
+    accnt = AccountBinance(None, simulate=True)
 
     kdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))

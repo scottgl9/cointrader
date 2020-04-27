@@ -67,7 +67,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client, logger=logger, simulation=False)
+    accnt = AccountCoinbasePro(client=client, logger=logger, simulate=False)
     accnt.load_exchange_info()
     kdb = KlinesDB(accnt=accnt, filename=filename, logger=logger)
 

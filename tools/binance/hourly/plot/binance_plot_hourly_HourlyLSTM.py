@@ -115,7 +115,7 @@ if __name__ == '__main__':
     start_ts = 0
     end_ts = 0
 
-    accnt = AccountBinance(None, simulation=True, simulate_db_filename=results.filename)
+    accnt = AccountBinance(None, simulate=True, simulate_db_filename=results.filename)
 
     if results.filename:
         if not os.path.exists(results.filename):

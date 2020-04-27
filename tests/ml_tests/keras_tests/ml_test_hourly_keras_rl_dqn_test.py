@@ -320,7 +320,7 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(0)
 
-    accnt = AccountBinance(None, simulation=True)
+    accnt = AccountBinance(None, simulate=True)
 
     if not os.path.exists(results.hourly_filename):
         print("file {} doesn't exist, exiting...".format(results.filename))

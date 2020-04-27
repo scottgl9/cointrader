@@ -20,13 +20,14 @@ import stix.utils.dates
 
 
 class AccountRobinhood(AccountBase):
-    def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
-        super(AccountRobinhood, self).__init__(client, simulation, logger, simulate_db_filename)
+    def __init__(self, client=None, simulate=False, live=False, logger=None, simulate_db_filename=None):
+        super(AccountRobinhood, self).__init__(client, simulate, live, logger, simulate_db_filename)
         self.exchange_type = Exchange.EXCHANGE_ROBINHOOD
         self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
-        self.simulate = simulation
+        self.simulate = simulate
+        self.live = live
         self.simulate_db_filename = simulate_db_filename
         if client:
             self.client = client
@@ -44,10 +45,10 @@ class AccountRobinhood(AccountBase):
         self.currencies = ['USD']
         self.currency_trade_pairs = []
 
-        self.info = AccountRobinhoodInfo(client, simulation, logger, self.exchange_info_file)
-        self.balance = AccountRobinhoodBalance(client, simulation, logger)
-        self.trade = AccountRobinhoodTrade(client, simulation, logger)
-        self.market = AccountRobinhoodMarket(client, self.info, simulation, logger)
+        self.info = AccountRobinhoodInfo(client, simulate, logger, self.exchange_info_file)
+        self.balance = AccountRobinhoodBalance(client, simulate, logger)
+        self.trade = AccountRobinhoodTrade(client, simulate, logger)
+        self.market = AccountRobinhoodMarket(client, self.info, simulate, logger)
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}

@@ -64,7 +64,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     client = Poloniex(key=POLONIEX_API_KEY, secret=POLONIEX_SECRET_KEY, coach=False)
-    accnt = AccountPoloniex(client=client, logger=logger, simulation=False)
+    accnt = AccountPoloniex(client=client, logger=logger, simulate=False)
     accnt.load_exchange_info()
 
     symbol_table_list = []

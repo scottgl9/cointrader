@@ -6,10 +6,10 @@ import aniso8601
 import stix.utils.dates
 
 class AccountCoinbaseMarket(AccountBaseMarket):
-    def __init__(self, client, info, simulation=False, logger=None):
+    def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
         self._tickers = {}
         self._min_tickers = {}

@@ -55,7 +55,7 @@ def simulate(config, logger, start_date, end_date):
 
     client = None
     accnt = AccountBinance(client,
-                           simulation=True,
+                           simulate=True,
                            logger=logger)
     accnt.load_exchange_info()
 

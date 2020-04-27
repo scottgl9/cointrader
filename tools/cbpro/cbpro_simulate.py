@@ -90,7 +90,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
 
     client = None
     accnt = AccountCoinbasePro(client,
-                               simulation=True,
+                               simulate=True,
                                logger=logger,
                                simulate_db_filename=simulate_db_filename)
     accnt.load_exchange_info()

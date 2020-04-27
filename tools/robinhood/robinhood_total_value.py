@@ -20,7 +20,7 @@ if __name__ == '__main__':
     print("MFA: {}".format(mfa_code))
     login = client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_token=mfa_code)
     print(login)
-    accnt = AccountRobinhood(client=client, simulation=False)
+    accnt = AccountRobinhood(client=client, simulate=False)
     accnt.load_exchange_info()
     print(accnt.get_tickers())
     #accnt.get_ticker('BTC-USD')

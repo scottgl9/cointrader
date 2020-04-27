@@ -12,7 +12,7 @@ from trader.config import *
 
 if __name__ == '__main__':
     client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client, simulation=False)
+    accnt = AccountCoinbasePro(client=client, simulate=False)
     #balances = accnt.get_account_balances()
     #print(balances)
     print(client.get_fees())

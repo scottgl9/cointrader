@@ -1,9 +1,9 @@
 from trader.account.AccountBaseTrade import AccountBaseTrade
 
 class AccountRobinhoodTrade(AccountBaseTrade):
-    def __init__(self, client, simulation=False, logger=None):
+    def __init__(self, client, simulate=False, logger=None):
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
 
     def buy_market(self, size, price=0.0, ticker_id=None):

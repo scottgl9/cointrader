@@ -40,7 +40,7 @@ def simulate_trade_cache(conn, strategy, signal_name, trade_cache, logger):
         client = None
 
     #balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
-    accnt = AccountBinance(client, simulation=True)
+    accnt = AccountBinance(client, simulate=True)
     accnt.update_asset_balance('BTC', 0.06, 0.06)
     #accnt.update_asset_balance('ETH', 4.0, 4.0)
     #accnt.update_asset_balance('BNB', 15.0, 15.0)

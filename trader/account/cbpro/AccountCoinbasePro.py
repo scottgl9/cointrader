@@ -19,13 +19,14 @@ import stix.utils.dates
 
 
 class AccountCoinbasePro(AccountBase):
-    def __init__(self, client=None, simulation=False, logger=None, simulate_db_filename=None):
-        super(AccountCoinbasePro, self).__init__(client, simulation, logger, simulate_db_filename)
+    def __init__(self, client=None, simulate=False, live=False, logger=None, simulate_db_filename=None):
+        super(AccountCoinbasePro, self).__init__(client, simulate, live, logger, simulate_db_filename)
         self.exchange_type = Exchange.EXCHANGE_CBPRO
         self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
-        self.simulate = simulation
+        self.simulate = simulate
+        self.live = live
         self.simulate_db_filename = simulate_db_filename
         if client:
             self.client = client
@@ -35,10 +36,10 @@ class AccountCoinbasePro(AccountBase):
         self._trader_mode = AccountBase.TRADER_MODE_NONE
 
         # sub module implementations
-        self.info = AccountCoinbaseInfo(client, simulation, logger, self.exchange_info_file)
-        self.balance = AccountCoinbaseBalance(client, simulation, logger)
-        self.trade = AccountCoinbaseTrade(client, simulation, logger)
-        self.market = AccountCoinbaseMarket(client, self.info, simulation, logger)
+        self.info = AccountCoinbaseInfo(client, simulate, logger, self.exchange_info_file)
+        self.balance = AccountCoinbaseBalance(client, simulate, logger)
+        self.trade = AccountCoinbaseTrade(client, simulate, logger)
+        self.market = AccountCoinbaseMarket(client, self.info, simulate, logger)
 
         # hourly db column names
         self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']

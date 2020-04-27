@@ -64,7 +64,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client, logger=logger, simulation=False)
+    accnt = AccountCoinbasePro(client=client, logger=logger, simulate=False)
     accnt.load_exchange_info()
 
     symbol_table_list = []

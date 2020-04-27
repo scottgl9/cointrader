@@ -8,27 +8,28 @@ from trader.account.AccountBaseMarket import AccountBaseMarket
 
 
 class AccountExample(AccountBase):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        super(AccountExample, self).__init__(client, simulation, logger, simulate_db_filename)
+    def __init__(self, client, simulate=False, live=False, logger=None, simulate_db_filename=None):
+        super(AccountExample, self).__init__(client, simulate, live, simulate_db_filename)
         #self.exchange_type = AccountBase.EXCHANGE_EXAMPLE
         self.exchange_name = 'example'
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
+        self.live = live
 
-        self.info = AccountExampleInfo(client, simulation, logger, self.exchange_info_file)
-        self.balance = AccountExampleBalance(client, simulation, logger)
-        self.trade = AccountExampleTrade(client, simulation, logger)
-        self.market = AccountExampleMarket(client, self.info, simulation, logger)
+        self.info = AccountExampleInfo(client, simulate, logger, self.exchange_info_file)
+        self.balance = AccountExampleBalance(client, simulate, logger)
+        self.trade = AccountExampleTrade(client, simulate, logger)
+        self.market = AccountExampleMarket(client, self.info, simulate, logger)
 
 
 class AccountExampleInfo(AccountBaseInfo):
-    def __init__(self, client, simulation=False, logger=None, exchange_info_file=None):
+    def __init__(self, client, simulate=False, logger=None, exchange_info_file=None):
         self.exchange_info_file = exchange_info_file
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
 
     def make_ticker_id(self, base, currency):
@@ -81,9 +82,9 @@ class AccountExampleInfo(AccountBaseInfo):
 
 
 class AccountExampleBalance(AccountBaseBalance):
-    def __init__(self, client, simulation=False, logger=None):
+    def __init__(self, client, simulate=False, logger=None):
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
 
     def get_account_total_value(self, currency, detailed=False):
@@ -106,9 +107,9 @@ class AccountExampleBalance(AccountBaseBalance):
 
 
 class AccountExampleTrade(AccountBaseTrade):
-    def __init__(self, client, simulation=False, logger=None):
+    def __init__(self, client, simulate=False, logger=None):
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
 
     def buy_market(self, size, price=0.0, ticker_id=None):
@@ -146,10 +147,10 @@ class AccountExampleTrade(AccountBaseTrade):
         raise NotImplementedError
 
 class AccountExampleMarket(AccountBaseMarket):
-    def __init__(self, client, info, simulation=False, logger=None):
+    def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
 
     def get_ticker(self, symbol):

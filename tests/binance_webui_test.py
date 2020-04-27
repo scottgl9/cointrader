@@ -29,7 +29,7 @@ class BinanceTrader:
         self.tickers = {}
         #self.symbols = symbols #sget_all_tickers(client)
         #print("loading symbols {}".format(self.symbols))
-        #accnt = AccountBinance(client, simulation=True)
+        #accnt = AccountBinance(client, simulate=True)
         self.multitrader = MultiTrader(client, 'null_strategy', assets_info=assets_info, volumes=volumes)
         # start Web API
         thread = threading.Thread(target=WebThread, args=(None, self.multitrader,))

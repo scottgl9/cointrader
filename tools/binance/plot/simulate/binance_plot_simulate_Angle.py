@@ -35,7 +35,7 @@ def simulate(conn, client, base, currency, filename, type="channel"):
     #c.execute("SELECT * FROM miniticker WHERE s='{}' ORDER BY E ASC".format(ticker_id))
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
 
-    accnt = AccountBinance(client, simulation=True, simulate_db_filename=filename)
+    accnt = AccountBinance(client, simulate=True, simulate_db_filename=filename)
 
     info =  accnt.get_asset_info(ticker_id)
     print(info)

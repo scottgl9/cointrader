@@ -26,7 +26,7 @@ except ImportError:
 def simulate(kdb, symbol, start_ts, end_ts):
     msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
 
-    accnt = AccountBinance(None, simulation=True)
+    accnt = AccountBinance(None, simulate=True)
 
     hourly_24hr_stats = Hourly24hrStats(symbol, accnt, kdb)
     if start_ts != 0:

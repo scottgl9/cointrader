@@ -5,9 +5,9 @@ from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
 
 class AccountBinanceInfo(AccountBaseInfo):
-    def __init__(self, client, simulation=False, logger=None, exchange_info_file=None):
+    def __init__(self, client, simulate=False, logger=None, exchange_info_file=None):
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
         self.logger = logger
         self.exchange_info_file = exchange_info_file
         self.info_all_assets = {}

@@ -14,23 +14,24 @@ import os
 
 
 class AccountBinance(AccountBase):
-    def __init__(self, client, simulation=False, logger=None, simulate_db_filename=None):
-        super(AccountBinance, self).__init__(client, simulation, logger, simulate_db_filename)
+    def __init__(self, client, simulate=False, live=False, logger=None, simulate_db_filename=None):
+        super(AccountBinance, self).__init__(client, simulate, live, logger, simulate_db_filename)
         self.exchange_type = Exchange.EXCHANGE_BINANCE
         self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
         self.client = client
-        self.simulate = simulation
+        self.simulate = simulate
+        self.live = live
         #self.balances = {}
         self._trader_mode = AccountBase.TRADER_MODE_NONE
 
         # sub module implementations
-        self.info = AccountBinanceInfo(client, simulation, logger, self.exchange_info_file)
-        self.balance = AccountBinanceBalance(client, simulation, logger)
-        self.trade = AccountBinanceTrade(client, simulation, logger)
-        self.market = AccountBinanceMarket(client, self.info, simulation, logger)
+        self.info = AccountBinanceInfo(client, simulate, logger, self.exchange_info_file)
+        self.balance = AccountBinanceBalance(client, simulate, logger)
+        self.trade = AccountBinanceTrade(client, simulate, logger)
+        self.market = AccountBinanceMarket(client, self.info, simulate, logger)
 
         # hourly db column names
         self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'volume']

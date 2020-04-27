@@ -31,7 +31,7 @@ class MyWSClient(gdax.WebsocketClient):
         #self.auth_client = gdax.AuthenticatedClient(GDAX_KEY_SB, GDAX_SECRET_SB, GDAX_PASS_SB,
         #                                       api_url="https://api-public.sandbox.gdax.com")
         self.auth_client = AuthenticatedClient(GDAX_KEY, GDAX_SECRET, GDAX_PASS)
-        self.accnt = AccountGDAX(self.auth_client, 'BTC', 'USD', simulation=True)
+        self.accnt = AccountGDAX(self.auth_client, 'BTC', 'USD', simulate=True)
         print(self.accnt.get_account_balance())
 
         self.trader = StrategyHandler('trailing_prices_strategy', self.auth_client, 'BTC', 'USD',
