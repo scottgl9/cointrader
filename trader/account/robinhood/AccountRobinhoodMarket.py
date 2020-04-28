@@ -117,7 +117,10 @@ class AccountRobinhoodMarket(AccountBaseMarket):
             interval = 'week'
             span = '5year'
         else:
-            self.logger.info("get_klines(): Invalid mode {}".format(mode))
+            if self.logger:
+                self.logger.info("get_klines(): Invalid mode {}".format(mode))
+            else:
+                print("get_klines(): Invalid mode {}".format(mode))
             return klines
 
         id = self.info.get_ticker_id(ticker_id)

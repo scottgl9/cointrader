@@ -174,7 +174,7 @@ class AccountExampleMarket(AccountBaseMarket):
     def update_tickers(self, tickers):
         raise NotImplementedError
 
-    def get_klines(self, days=0, hours=1, ticker_id=None):
+    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None):
         raise NotImplementedError
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):

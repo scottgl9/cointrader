@@ -63,29 +63,30 @@ def plot_emas_product(plt, klines, product, hours=0):
         min_values.append(minimum)
         max_values.append(maximum)
 
-        obv_value = obv.update(close=close_price, volume=volume)
-        obv_values.append(obv_value)
+        #obv_value = obv.update(close=close_price, volume=volume)
+        #obv_values.append(obv_value)
 
-        ema26_obv_values.append(ema26_obv.update(obv_value))
-        ema50_obv_values.append(ema50_obv.update(obv_value))
+        #ema26_obv_values.append(ema26_obv.update(obv_value))
+        #ema50_obv_values.append(ema50_obv.update(obv_value))
 
         ema12_price = ema12.update(close_price)
         ema12_prices.append(ema12_price)
         ema26_prices.append(ema26.update(close_price))
         ema50_prices.append(ema50.update(close_price))
-
+    plt.figure(1)
+    #plt.subplot(211)
     xvalues = np.linspace(0, hours, num=len(close_prices))
     symprice, = plt.plot(xvalues, close_prices, label=product) #, color='black')
     ema4, = plt.plot(xvalues, ema12_prices, label='EMA12')
     ema5, = plt.plot(xvalues, ema26_prices, label='EMA26')
 
     #plt.legend(handles=[symprice, ema4, ema5, ema6])
-    plt.subplot(212)
-    fig1, = plt.plot(xvalues, obv_values, label="OBV")
-    fig2, = plt.plot(xvalues, ema26_obv_values, label="OBVEMA26")
-    fig3, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
+    #plt.subplot(212)
+    #fig1, = plt.plot(xvalues, obv_values, label="OBV")
+    #fig2, = plt.plot(xvalues, ema26_obv_values, label="OBVEMA26")
+    #fig3, = plt.plot(xvalues, ema50_obv_values, label="OBVEMA50")
     #fig3, = plt.plot(obv_values, label="OBP")
-    plt.legend(handles=[fig1, fig2, fig3])
+    #plt.legend(handles=[fig1, fig2, fig3])
 
 if __name__ == '__main__':
     base = 'BTC'
@@ -100,9 +101,8 @@ if __name__ == '__main__':
     print(login)
     accnt = AccountRobinhood(client=client, simulate=False)
     accnt.load_exchange_info()
-    plt.figure(1)
-    plt.subplot(211)
     ticker_id = accnt.make_ticker_id(base, currency)
-    klines = accnt.get_klines(hours=24, ticker_id=ticker_id)
+    klines = accnt.get_klines(mode='1D', ticker_id=ticker_id)
+    print(len(klines))
     diff_values = plot_emas_product(plt, klines, ticker_id, hours=24)
     plt.show()

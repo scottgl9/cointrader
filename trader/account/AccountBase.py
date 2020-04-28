@@ -344,8 +344,8 @@ class AccountBase(object):
     def update_tickers(self, tickers):
         return self.market.update_tickers(tickers)
 
-    def get_klines(self, days=0, hours=1, ticker_id=None):
-        return self.market.get_klines(days, hours, ticker_id)
+    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None):
+        return self.market.get_klines(days, hours, mode, ticker_id)
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):
         return self.market.get_hourly_klines(symbol, start_ts, end_ts)

@@ -70,7 +70,7 @@ class AccountBinanceMarket(AccountBaseMarket):
         for symbol, price in tickers.items():
             self._tickers[symbol] = float(price)
 
-    def get_klines(self, days=0, hours=1, ticker_id=None):
+    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None):
         timestr = ''
         if days == 1:
             timestr = "1 day ago"
