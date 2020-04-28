@@ -1,6 +1,6 @@
 configparser
 autobahn
-python-crontab
+#python-crontab
 Flask
 Twisted
 pytz
@@ -22,7 +22,8 @@ sortedcontainers
 textblob
 pymongo
 aniso8601
-pycrypto
+#pycrypto
+pycryptodome
 pyOpenSSL
 Cython
 #bintrees
