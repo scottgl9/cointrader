@@ -77,11 +77,51 @@ class AccountRobinhoodMarket(AccountBaseMarket):
         for symbol, price in tickers.items():
             self._tickers[symbol] = float(price)
 
+    # 'LIVE' tab selected:
+    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=15second&span=hour
+    # '1D' tab selected:
+    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=5minute&span=day
+    # '1W' tab selected:
+    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=hour&span=week
+    # '1M' tab selected:
+    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=hour&span=month
+    # '3M' tab selected:
+    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=day&span=3month
+    # '1Y' tab selected:
+    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=day&span=year
+    # '5Y' tab selected:
+    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=week&span=5year
     # {'begins_at': '2020-04-24T13:40:00Z', 'open_price': '7498.020000', 'close_price': '7503.780000', 'high_price': '7522.225000', 'low_price': '7488.440000', 'volume': 0, 'session': 'reg', 'interpolated': False}
-    def get_klines(self, days=0, hours=1, ticker_id=None):
+    def get_klines(self, days=0, hours=1, mode='1D', ticker_id=None):
         klines = []
+
+        if mode == 'LIVE':
+            interval = '15second'
+            span = 'hour'
+        elif mode == '1D':
+            interval = '5minute'
+            span = 'day'
+        elif mode == '1W':
+            interval = 'hour'
+            span = 'week'
+        elif mode == '1M':
+            interval = 'hour'
+            span = 'month'
+        elif mode == '3M':
+            interval = 'day'
+            span = '3month'
+        elif mode == '1Y':
+            interval = 'day'
+            span = 'year'
+        elif mode == '5Y':
+            interval = 'week'
+            span = '5year'
+        else:
+            self.logger.info("get_klines(): Invalid mode {}".format(mode))
+            return klines
+
         id = self.info.get_ticker_id(ticker_id)
-        result = self.client.get_crypto_historical_from_id(id, interval="hour", span="month", bound="regular")
+        result = self.client.get_crypto_historical_from_id(id, interval=interval, span=span, bound="24_7")
         for d in result['data_points']:
             ts = d['begins_at']
             l = d['low_price']
