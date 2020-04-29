@@ -25,7 +25,7 @@ class AccountBinance(AccountBase):
         self.simulate = simulate
         self.live = live
         #self.balances = {}
-        self._trader_mode = AccountBase.TRADER_MODE_NONE
+        self._trader_mode = Exchange.TRADER_MODE_NONE
 
         # sub module implementations
         self.info = AccountBinanceInfo(client, simulate, logger, self.exchange_info_file)
@@ -73,10 +73,10 @@ class AccountBinance(AccountBase):
         self._trader_mode = trader_mode
 
     def trade_mode_hourly(self):
-        return self._trader_mode == AccountBase.TRADER_MODE_HOURLY
+        return self._trader_mode == Exchange.TRADER_MODE_HOURLY
 
     def trade_mode_realtime(self):
-        return self._trader_mode == AccountBase.TRADER_MODE_REALTIME
+        return self._trader_mode == Exchange.TRADER_MODE_REALTIME
 
     def format_ts(self, ts):
         return int(ts)

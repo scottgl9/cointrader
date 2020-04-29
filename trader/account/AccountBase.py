@@ -3,11 +3,6 @@ from trader.lib.struct.Exchange import Exchange
 
 
 class AccountBase(object):
-    # trader modes
-    TRADER_MODE_NONE = 0
-    TRADER_MODE_REALTIME = 1
-    TRADER_MODE_HOURLY = 2
-
     def __init__(self, client, simulate=False, live=False, logger=None, simulate_db_filename=None):
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename
@@ -29,6 +24,12 @@ class AccountBase(object):
         pass
 
     def set_trader_mode(self, trader_mode):
+        pass
+
+    def get_account_mode(self):
+        return Exchange.ACCOUNT_MODE_CRYPTO
+
+    def set_account_mode(self, account_mode):
         pass
 
     def trade_mode_hourly(self):

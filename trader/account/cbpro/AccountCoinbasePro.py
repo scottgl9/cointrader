@@ -33,7 +33,7 @@ class AccountCoinbasePro(AccountBase):
         elif not self.simulate:
             self.client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
         self.pc = PublicClient()
-        self._trader_mode = AccountBase.TRADER_MODE_NONE
+        self._trader_mode = Exchange.TRADER_MODE_NONE
 
         # sub module implementations
         self.info = AccountCoinbaseInfo(client, simulate, logger, self.exchange_info_file)
@@ -69,10 +69,10 @@ class AccountCoinbasePro(AccountBase):
         self._trader_mode = trader_mode
 
     def trade_mode_hourly(self):
-        return self._trader_mode == AccountBase.TRADER_MODE_HOURLY
+        return self._trader_mode == Exchange.TRADER_MODE_HOURLY
 
     def trade_mode_realtime(self):
-        return self._trader_mode == AccountBase.TRADER_MODE_REALTIME
+        return self._trader_mode == Exchange.TRADER_MODE_REALTIME
 
     def format_ts(self, ts):
         return int(ts)

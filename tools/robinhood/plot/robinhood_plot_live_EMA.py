@@ -28,20 +28,13 @@ def plot_emas_product(plt, klines, product, hours=0):
     ema_volume = EMA(12)
     ema_volume_values = []
     price_x_values = []
-    ema12 = EMA(12, scale=24)
+    ema12 = EMA(12, scale=1)
     ema12_prices = []
-    ema26 = EMA(26, scale=24)
+    ema26 = EMA(26, scale=1)
     ema26_prices = []
-    ema50 = EMA(50, scale=24)
+    ema50 = EMA(50, scale=1)
     ema50_prices = []
 
-    ema26_obv = EMA(26, scale=24)
-    ema26_obv_values = []
-    ema50_obv = EMA(50, scale=24)
-    ema50_obv_values = []
-
-    obv = OBV()
-    obv_values = []
     min_values = []
     max_values = []
 

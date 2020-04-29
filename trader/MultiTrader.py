@@ -87,9 +87,9 @@ class MultiTrader(object):
         # set trader mode to realtime or hourly
         trader_mode = self.config.get('trader_mode')
         if trader_mode == 'realtime':
-            self.accnt.set_trader_mode(AccountBase.TRADER_MODE_REALTIME)
+            self.accnt.set_trader_mode(Exchange.TRADER_MODE_REALTIME)
         elif trader_mode == 'hourly':
-            self.accnt.set_trader_mode(AccountBase.TRADER_MODE_HOURLY)
+            self.accnt.set_trader_mode(Exchange.TRADER_MODE_HOURLY)
         else:
             print("Unknown trader mode {}".format(trader_mode))
             sys.exit(-1)

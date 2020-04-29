@@ -1,6 +1,8 @@
-# Supported exchanges
+# Supported exchanges and modes
+
 
 class Exchange(object):
+    # exchange type
     EXCHANGE_UNKNOWN = 0
     EXCHANGE_BINANCE = 1
     EXCHANGE_CBPRO = 2
@@ -8,6 +10,13 @@ class Exchange(object):
     EXCHANGE_KRAKEN = 4
     EXCHANGE_POLONIEX = 5
     EXCHANGE_ROBINHOOD = 6
+    # account mode
+    ACCOUNT_MODE_CRYPTO = 1
+    ACCOUNT_MODE_STOCKS = 2
+    # trader mode
+    TRADER_MODE_NONE = 0
+    TRADER_MODE_REALTIME = 1
+    TRADER_MODE_HOURLY = 2
 
     def name(id):
         if id == Exchange.EXCHANGE_BINANCE:
