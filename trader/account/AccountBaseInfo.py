@@ -1,10 +1,24 @@
 # base account class for handling account information
+from trader.lib.struct.Exchange import Exchange
+
 
 class AccountBaseInfo(object):
     def make_ticker_id(self, base, currency):
         raise NotImplementedError
 
     def split_ticker_id(self, symbol):
+        raise NotImplementedError
+
+    def get_trader_mode(self):
+        raise NotImplementedError
+
+    def set_trader_mode(self, trader_mode):
+        raise NotImplementedError
+
+    def get_account_mode(self):
+        raise NotImplementedError
+
+    def set_account_mode(self, account_mode):
         raise NotImplementedError
 
     # fractional trade fee

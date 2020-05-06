@@ -3,6 +3,7 @@ import json
 from trader.account.AccountBaseInfo import AccountBaseInfo
 from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
+from trader.lib.struct.Exchange import Exchange
 
 class AccountBittrexInfo(AccountBaseInfo):
     def __init__(self, client, simulate=False, logger=None, exchange_info_file=None):
@@ -16,6 +17,8 @@ class AccountBittrexInfo(AccountBaseInfo):
         self.currencies = ['BTC', 'ETH', 'USDT', 'USD']
         self.currency_trade_pairs = ['BTC-ETH', 'USD-BTC', 'USD-ETH', 'USD-USDT', 'USDT-BTC', 'USDT-ETH']
         self.trade_fee = 0.25 / 100.0
+        self._trader_mode = Exchange.TRADER_MODE_NONE
+        self._account_mode = Exchange.ACCOUNT_MODE_CRYPTO
 
     def make_ticker_id(self, base, currency):
         return '%s-%s' % (currency, base)
@@ -30,6 +33,18 @@ class AccountBittrexInfo(AccountBaseInfo):
             base_name = parts[1]
 
         return base_name, currency_name
+
+    def get_trader_mode(self):
+        return self._trader_mode
+
+    def set_trader_mode(self, trader_mode):
+        self._trader_mode = trader_mode
+
+    def get_account_mode(self):
+        return self._account_mode
+
+    def set_account_mode(self, account_mode):
+        self._account_mode = account_mode
 
     def get_trade_fee(self):
         return self.trade_fee

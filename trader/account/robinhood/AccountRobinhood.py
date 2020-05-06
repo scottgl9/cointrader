@@ -37,9 +37,6 @@ class AccountRobinhood(AccountBase):
             mfa_code = totp.now()
             login = self.client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_code=mfa_code)
 
-        self._trader_mode = Exchange.TRADER_MODE_NONE
-        self._account_mode = Exchange.ACCOUNT_MODE_CRYPTO
-
         # hourly db column names
         self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
 
@@ -73,23 +70,11 @@ class AccountRobinhood(AccountBase):
             name = "{}.live".format(self.exchange_name)
         return name
 
-    def get_trader_mode(self):
-        return self._trader_mode
-
-    def set_trader_mode(self, trader_mode):
-        self._trader_mode = trader_mode
-
     def trade_mode_hourly(self):
-        return self._trader_mode == Exchange.TRADER_MODE_HOURLY
+        return self.info.get_trader_mode() == Exchange.TRADER_MODE_HOURLY
 
     def trade_mode_realtime(self):
-        return self._trader_mode == Exchange.TRADER_MODE_REALTIME
-
-    def get_account_mode(self):
-        return self._account_mode
-
-    def set_account_mode(self, account_mode):
-        self._account_mode = account_mode
+        return self.info.get_trader_mode() == Exchange.TRADER_MODE_REALTIME
 
     def ts_to_iso8601(self, ts):
         dt = datetime.fromtimestamp(ts)

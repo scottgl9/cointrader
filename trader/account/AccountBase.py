@@ -20,18 +20,6 @@ class AccountBase(object):
     def get_config_section_name(self):
         pass
 
-    def get_trader_mode(self):
-        pass
-
-    def set_trader_mode(self, trader_mode):
-        pass
-
-    def get_account_mode(self):
-        return Exchange.ACCOUNT_MODE_CRYPTO
-
-    def set_account_mode(self, account_mode):
-        pass
-
     def trade_mode_hourly(self):
         pass
 
@@ -97,6 +85,18 @@ class AccountBase(object):
 
     def split_ticker_id(self, symbol):
         return self.info.split_ticker_id(symbol)
+
+    def get_trader_mode(self):
+        return self.info.get_trader_mode()
+
+    def set_trader_mode(self, trader_mode):
+        return self.info.set_trader_mode(trader_mode)
+
+    def get_account_mode(self):
+        return self.info.get_account_mode()
+
+    def set_account_mode(self, account_mode):
+        return self.info.set_account_mode(account_mode)
 
     # fractional trade fee
     def get_trade_fee(self):

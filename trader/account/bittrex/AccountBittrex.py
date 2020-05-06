@@ -34,7 +34,6 @@ class AccountBittrex(AccountBase):
         self.info_all_assets = {}
         self.details_all_assets = {}
         self.balances = {}
-        self._trader_mode = Exchange.TRADER_MODE_NONE
 
         # sub module implementations
         self.info = AccountBittrexInfo(client, simulate, logger, self.exchange_info_file)
@@ -63,17 +62,11 @@ class AccountBittrex(AccountBase):
             name = "{}.live".format(self.exchange_name)
         return name
 
-    def get_trader_mode(self):
-        return self._trader_mode
-
-    def set_trader_mode(self, trader_mode):
-        self._trader_mode = trader_mode
-
     def trade_mode_hourly(self):
-        return self._trader_mode == Exchange.TRADER_MODE_HOURLY
+        return self.info.get_trader_mode() == Exchange.TRADER_MODE_HOURLY
 
     def trade_mode_realtime(self):
-        return self._trader_mode == Exchange.TRADER_MODE_REALTIME
+        return self.info.get_trader_mode() == Exchange.TRADER_MODE_REALTIME
 
     def format_ts(self, ts):
         return int(ts)
