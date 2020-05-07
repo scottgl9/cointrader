@@ -2,8 +2,9 @@ from trader.account.AccountBaseBalance import AccountBaseBalance
 
 
 class AccountCoinbaseBalance(AccountBaseBalance):
-    def __init__(self, client, simulate=False, logger=None):
+    def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
+        self.info = info
         self.simulate = simulate
         self.logger = logger
         self.balances = {}

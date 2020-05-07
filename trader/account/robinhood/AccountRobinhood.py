@@ -44,8 +44,8 @@ class AccountRobinhood(AccountBase):
         self.currency_trade_pairs = []
 
         self.info = AccountRobinhoodInfo(client, simulate, logger, self.exchange_info_file)
-        self.balance = AccountRobinhoodBalance(client, simulate, logger)
-        self.trade = AccountRobinhoodTrade(client, simulate, logger)
+        self.balance = AccountRobinhoodBalance(client, self.info, simulate, logger)
+        self.trade = AccountRobinhoodTrade(client, self.info, simulate, logger)
         self.market = AccountRobinhoodMarket(client, self.info, simulate, logger)
 
         # keep track of initial currency buy size, and subsequent trades against currency

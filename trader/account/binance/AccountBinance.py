@@ -28,8 +28,8 @@ class AccountBinance(AccountBase):
 
         # sub module implementations
         self.info = AccountBinanceInfo(client, simulate, logger, self.exchange_info_file)
-        self.balance = AccountBinanceBalance(client, simulate, logger)
-        self.trade = AccountBinanceTrade(client, simulate, logger)
+        self.balance = AccountBinanceBalance(client, self.info, simulate, logger)
+        self.trade = AccountBinanceTrade(client, self.info, simulate, logger)
         self.market = AccountBinanceMarket(client, self.info, simulate, logger)
 
         # hourly db column names

@@ -37,8 +37,8 @@ class AccountBittrex(AccountBase):
 
         # sub module implementations
         self.info = AccountBittrexInfo(client, simulate, logger, self.exchange_info_file)
-        self.balance = AccountBittrexBalance(client, simulate, logger)
-        self.trade = AccountBittrexTrade(client, simulate, logger)
+        self.balance = AccountBittrexBalance(client, self.info, simulate, logger)
+        self.trade = AccountBittrexTrade(client, self.info, simulate, logger)
         self.market = AccountBittrexMarket(client, self.info, simulate, logger)
 
         # keep track of initial currency buy size, and subsequent trades against currency

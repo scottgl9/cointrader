@@ -36,8 +36,8 @@ class AccountCoinbasePro(AccountBase):
 
         # sub module implementations
         self.info = AccountCoinbaseInfo(client, simulate, logger, self.exchange_info_file)
-        self.balance = AccountCoinbaseBalance(client, simulate, logger)
-        self.trade = AccountCoinbaseTrade(client, simulate, logger)
+        self.balance = AccountCoinbaseBalance(client, self.info, simulate, logger)
+        self.trade = AccountCoinbaseTrade(client, self.info, simulate, logger)
         self.market = AccountCoinbaseMarket(client, self.info, simulate, logger)
 
         # hourly db column names
