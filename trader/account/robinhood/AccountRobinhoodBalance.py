@@ -1,4 +1,6 @@
 from trader.account.AccountBaseBalance import AccountBaseBalance
+from trader.lib.struct.Exchange import Exchange
+
 
 class AccountRobinhoodBalance(AccountBaseBalance):
     def __init__(self, client, info, simulate=False, logger=None):
@@ -16,20 +18,27 @@ class AccountRobinhoodBalance(AccountBaseBalance):
             self.balances = {}
             result = {}
             account = self.client.load_account_profile()
-            balance_usd =  float(account['crypto_buying_power'])
-            self.balances['USD'] = {'balance': balance_usd, 'available': balance_usd}
-            #balance_usd = account['overnight_buying_power']
+            mode = self.info.get_account_mode()
+            if mode == Exchange.ACCOUNT_MODE_CRYPTO:
+                balance_usd =  float(account['crypto_buying_power'])
+                self.balances['USD'] = {'balance': balance_usd, 'available': balance_usd}
 
-            for info in self.client.get_crypto_positions():
-                asset_name = info['currency']['code']
-                balance = float(info['quantity'])
-                available = float(info['quantity_available'])
-                self.balances[asset_name] = {'balance': balance, 'available': available}
-                result[asset_name] = balance
-            if detailed:
-                return self.balances
-            for asset, info in self.balances.items():
-                result[asset] = info['balance']
+                for info in self.client.get_crypto_positions():
+                    asset_name = info['currency']['code']
+                    balance = float(info['quantity'])
+                    available = float(info['quantity_available'])
+                    self.balances[asset_name] = {'balance': balance, 'available': available}
+                    result[asset_name] = balance
+                if detailed:
+                    return self.balances
+                for asset, info in self.balances.items():
+                    result[asset] = info['balance']
+            elif mode == Exchange.ACCOUNT_MODE_STOCKS:
+                balance_usd =  float(account['portfolio_cash'])
+                self.balances['USD'] = {'balance': balance_usd, 'available': balance_usd}
+
+                for info in self.client.get_current_positions():
+                    print(info)
         else:
             if detailed:
                 return self.balances

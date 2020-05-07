@@ -1,4 +1,5 @@
 from trader.account.AccountBaseMarket import AccountBaseMarket
+from trader.lib.struct.Exchange import Exchange
 
 class AccountRobinhoodMarket(AccountBaseMarket):
     def __init__(self, client, info, simulate=False, logger=None):
@@ -42,10 +43,21 @@ class AccountRobinhoodMarket(AccountBaseMarket):
 
     def get_ticker_symbols(self, currency=None):
         result = []
-        if not self.info.get_info_all_assets():
-            self.info.load_exchange_info()
-        for ticker in self.info.get_info_all_assets().keys():
-            result.append(ticker)
+        mode = self.info.get_account_mode()
+        if mode == Exchange.ACCOUNT_MODE_CRYPTO:
+            if not self.info.get_info_all_assets():
+                self.info.load_exchange_info()
+            for ticker in self.info.get_info_all_assets().keys():
+                result.append(ticker)
+        elif mode == Exchange.ACCOUNT_MODE_STOCKS:
+            # get list of watched stock symbols
+            watchlists = []
+            for r in self.client.get_all_watchlists():
+                watchlists.append(r['name'])
+            for wl in watchlists:
+                r = self.client.get_watchlist_by_name(name=wl)
+                for e in r:
+                    result.append(self.client.get_symbol_by_url(e['instrument']))
         return result
 
     def get_min_tickers(self):
@@ -77,21 +89,6 @@ class AccountRobinhoodMarket(AccountBaseMarket):
         for symbol, price in tickers.items():
             self._tickers[symbol] = float(price)
 
-    # 'LIVE' tab selected:
-    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=15second&span=hour
-    # '1D' tab selected:
-    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=5minute&span=day
-    # '1W' tab selected:
-    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=hour&span=week
-    # '1M' tab selected:
-    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=hour&span=month
-    # '3M' tab selected:
-    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=day&span=3month
-    # '1Y' tab selected:
-    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=day&span=year
-    # '5Y' tab selected:
-    # https://api.robinhood.com/marketdata/forex/historicals/3d961844-d360-45fc-989b-f6fca761d511/?bounds=24_7&interval=week&span=5year
-    # {'begins_at': '2020-04-24T13:40:00Z', 'open_price': '7498.020000', 'close_price': '7503.780000', 'high_price': '7522.225000', 'low_price': '7488.440000', 'volume': 0, 'session': 'reg', 'interpolated': False}
     def get_klines(self, days=0, hours=1, mode='1D', ticker_id=None):
         klines = []
 
