@@ -11,8 +11,10 @@ class Exchange(object):
     EXCHANGE_POLONIEX = 5
     EXCHANGE_ROBINHOOD = 6
     # account mode
+    ACCOUNT_MODE_UNKNOWN = 0
     ACCOUNT_MODE_CRYPTO = 1
     ACCOUNT_MODE_STOCKS = 2
+    ACCOUNT_MODE_OPTIONS = 3
     # trader mode
     TRADER_MODE_NONE = 0
     TRADER_MODE_REALTIME = 1
@@ -49,3 +51,13 @@ class Exchange(object):
             return Exchange.EXCHANGE_ROBINHOOD
         else:
             return Exchange.EXCHANGE_UNKNOWN
+
+    def account_mode(id):
+        if id == Exchange.ACCOUNT_MODE_CRYPTO:
+            return "crypto"
+        elif id == Exchange.ACCOUNT_MODE_STOCKS:
+            return "stocks"
+        elif id == Exchange.ACCOUNT_MODE_OPTIONS:
+            return "options"
+        else:
+            return "unknown"

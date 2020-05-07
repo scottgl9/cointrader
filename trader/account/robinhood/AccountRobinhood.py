@@ -57,7 +57,7 @@ class AccountRobinhood(AccountBase):
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
-        self._trader_profit_mode = 'BTC'
+        self._trader_profit_mode = 'USD'
         self._tpprofit = 0
         self.initial_currency = 0
         self.loaded_model_count = 0
