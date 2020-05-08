@@ -43,7 +43,7 @@ class AccountRobinhood(AccountBase):
         self.currencies = ['USD']
         self.currency_trade_pairs = []
 
-        self.info = AccountRobinhoodInfo(client, simulate, logger, self.exchange_info_file)
+        self.info = AccountRobinhoodInfo(client, simulate, logger)
         self.balance = AccountRobinhoodBalance(client, self.info, simulate, logger)
         self.trade = AccountRobinhoodTrade(client, self.info, simulate, logger)
         self.market = AccountRobinhoodMarket(client, self.info, simulate, logger)

@@ -19,7 +19,7 @@ class AccountExample(AccountBase):
         self.simulate = simulate
         self.live = live
 
-        self.info = AccountExampleInfo(client, simulate, logger, self.exchange_info_file)
+        self.info = AccountExampleInfo(client, simulate, logger)
         self.balance = AccountExampleBalance(client, self.info, simulate, logger)
         self.trade = AccountExampleTrade(client, self.info, simulate, logger)
         self.market = AccountExampleMarket(client, self.info, simulate, logger)
@@ -31,6 +31,9 @@ class AccountExampleInfo(AccountBaseInfo):
         self.client = client
         self.simulate = simulate
         self.logger = logger
+        #self.exchange_type = AccountBase.EXCHANGE_EXAMPLE
+        self.exchange_name = 'example'
+        self.exchange_info_file = "{}_info.json".format(self.exchange_name)
 
     def make_ticker_id(self, base, currency):
         raise NotImplementedError

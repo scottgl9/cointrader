@@ -27,7 +27,7 @@ class AccountBinance(AccountBase):
         #self.balances = {}
 
         # sub module implementations
-        self.info = AccountBinanceInfo(client, simulate, logger, self.exchange_info_file)
+        self.info = AccountBinanceInfo(client, simulate, logger)
         self.balance = AccountBinanceBalance(client, self.info, simulate, logger)
         self.trade = AccountBinanceTrade(client, self.info, simulate, logger)
         self.market = AccountBinanceMarket(client, self.info, simulate, logger)

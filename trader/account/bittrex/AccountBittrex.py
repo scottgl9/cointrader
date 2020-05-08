@@ -36,7 +36,7 @@ class AccountBittrex(AccountBase):
         self.balances = {}
 
         # sub module implementations
-        self.info = AccountBittrexInfo(client, simulate, logger, self.exchange_info_file)
+        self.info = AccountBittrexInfo(client, simulate, logger)
         self.balance = AccountBittrexBalance(client, self.info, simulate, logger)
         self.trade = AccountBittrexTrade(client, self.info, simulate, logger)
         self.market = AccountBittrexMarket(client, self.info, simulate, logger)

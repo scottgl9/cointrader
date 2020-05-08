@@ -6,11 +6,13 @@ from trader.lib.struct.AssetInfo import AssetInfo
 from trader.lib.struct.Exchange import Exchange
 
 class AccountRobinhoodInfo(AccountBaseInfo):
-    def __init__(self, client, simulate=False, logger=None, exchange_info_file=None):
-        self.exchange_info_file = exchange_info_file
+    def __init__(self, client, simulate=False, logger=None):
         self.client = client
         self.simulate = simulate
         self.logger = logger
+        self.exchange_type = Exchange.EXCHANGE_ROBINHOOD
+        self.exchange_name = Exchange.name(self.exchange_type)
+        self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.info_all_assets = {}
         self.details_all_assets = {}
         self._exchange_pairs = None
@@ -68,6 +70,44 @@ class AccountRobinhoodInfo(AccountBaseInfo):
     def get_details_all_assets(self):
         return self.details_all_assets
 
+    # get list of watched stock urls
+    def get_watched_stock_urls(self, all_watched=False):
+        watchlists = []
+        result = []
+        if all_watched:
+            for r in self.client.get_all_watchlists():
+                watchlists.append(r['name'])
+        else:
+            watchlists.append('Default')
+        for wl in watchlists:
+            r = self.client.get_watchlist_by_name(name=wl)
+            for e in r:
+                result.append(e['instrument'])
+        return result
+
+    # get list of watched stock ids
+    def get_watched_stock_ids(self, all_watched=False):
+        watchlists = []
+        result = []
+        if all_watched:
+            for r in self.client.get_all_watchlists():
+                watchlists.append(r['name'])
+        else:
+            watchlists.append('Default')
+        for wl in watchlists:
+            r = self.client.get_watchlist_by_name(name=wl)
+            for e in r:
+                result.append(e['instrument'].split('/')[-2])
+        return result
+
+    # get list of watched stock symbols
+    def get_watched_stock_symbols(self, all_watched=False):
+        result = []
+        urls = self.get_watched_stock_urls(all_watched)
+        for e in urls:
+            result.append(self.client.get_symbol_by_url(e))
+        return result
+
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
         if not self.simulate and os.path.exists(self.exchange_info_file):
@@ -119,39 +159,6 @@ class AccountRobinhoodInfo(AccountBaseInfo):
                              'base_step_size': base_step_size,
                              'currency_step_size': currency_step_size
                             }
-
-        # for info in pair_info:
-        #     symbol = info['id']
-        #     min_qty = info['base_min_size']
-        #     min_price = info['min_market_funds']
-        #     base_step_size = info['base_increment']
-        #     currency_step_size = info['quote_increment']
-        #
-        #     pairs[symbol] = {'min_qty': min_qty,
-        #                      'min_price': min_price,
-        #                      'base_step_size': base_step_size,
-        #                      'currency_step_size': currency_step_size,
-        #                      #'minNotional': minNotional,
-        #                      #'commissionAsset': commissionAsset,
-        #                      #'baseAssetPrecision': baseAssetPrecision,
-        #                      #'quotePrecision': quotePrecision,
-        #                      #'orderTypes': orderTypes
-        #                     }
-        # for info in asset_info:
-        #     name = info['id']
-        #     status = info['status']
-        #     if status == 'online':
-        #         assets[name] = {'disabled': False, 'delisted': False }
-        #     else:
-        #         assets[name] = {'disabled': True, 'delisted': False }
-        #
-        # self._exchange_pairs = []
-        #
-        # for pair in pairs.keys():
-        #     # ignore trade pairs with GBP and EUR currency
-        #     if pair.endswith('GBP') or pair.endswith('EUR'):
-        #         continue
-        #     self._exchange_pairs.append(pair)
 
         exchange_info['pairs'] = pairs
         exchange_info['assets'] = assets

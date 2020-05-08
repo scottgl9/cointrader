@@ -6,11 +6,13 @@ from trader.lib.struct.AssetInfo import AssetInfo
 from trader.lib.struct.Exchange import Exchange
 
 class AccountBinanceInfo(AccountBaseInfo):
-    def __init__(self, client, simulate=False, logger=None, exchange_info_file=None):
+    def __init__(self, client, simulate=False, logger=None):
         self.client = client
         self.simulate = simulate
         self.logger = logger
-        self.exchange_info_file = exchange_info_file
+        self.exchange_type = Exchange.EXCHANGE_BINANCE
+        self.exchange_name = Exchange.name(self.exchange_type)
+        self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.info_all_assets = {}
         self.details_all_assets = {}
         self._exchange_pairs = None
