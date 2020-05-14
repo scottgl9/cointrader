@@ -86,24 +86,19 @@ class AccountRobinhoodInfo(AccountBaseInfo):
         return result
 
     # get list of watched stock ids
-    def get_watched_stock_ids(self, all_watched=False):
-        watchlists = []
+    def get_watched_stock_ids(self, all_watched=False, urls=None):
         result = []
-        if all_watched:
-            for r in self.client.get_all_watchlists():
-                watchlists.append(r['name'])
-        else:
-            watchlists.append('Default')
-        for wl in watchlists:
-            r = self.client.get_watchlist_by_name(name=wl)
-            for e in r:
-                result.append(e['instrument'].split('/')[-2])
+        if not urls:
+            urls = self.get_watched_stock_urls(all_watched)
+        for url in urls:
+            result.append(url.split('/')[-2])
         return result
 
     # get list of watched stock symbols
-    def get_watched_stock_symbols(self, all_watched=False):
+    def get_watched_stock_symbols(self, all_watched=False, urls=None):
         result = []
-        urls = self.get_watched_stock_urls(all_watched)
+        if not urls:
+            urls = self.get_watched_stock_urls(all_watched)
         for e in urls:
             result.append(self.client.get_symbol_by_url(e))
         return result
