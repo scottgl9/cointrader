@@ -51,7 +51,7 @@ class AccountRobinhoodMarket(AccountBaseMarket):
                 result.append(ticker)
         elif mode == Exchange.ACCOUNT_MODE_STOCKS:
             # get list of watched stock symbols
-            result = self.info.get_watched_stock_symbols()
+            result = self.info.get_watched_symbols()
         return result
 
     def get_min_tickers(self):

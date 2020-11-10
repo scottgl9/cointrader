@@ -30,7 +30,7 @@ if __name__ == '__main__':
     totp = pyotp.TOTP(ROBINHOOD_2FA_KEY)
     mfa_code = totp.now()
     print("MFA: {}".format(mfa_code))
-    login = client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_token=mfa_code)
+    login = client.login(username=ROBINHOOD_USER, password=ROBINHOOD_PASS, mfa_code=mfa_code)
     print(login)
     accnt = AccountRobinhood(client=client, simulate=False)
     accnt.set_account_mode(Exchange.ACCOUNT_MODE_STOCKS)

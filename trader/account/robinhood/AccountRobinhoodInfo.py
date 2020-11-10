@@ -70,37 +70,33 @@ class AccountRobinhoodInfo(AccountBaseInfo):
     def get_details_all_assets(self):
         return self.details_all_assets
 
-    # get list of watched stock urls
-    def get_watched_stock_urls(self, all_watched=False):
-        watchlists = []
+    def get_watchlist_names(self):
         result = []
-        if all_watched:
-            for r in self.client.get_all_watchlists():
-                watchlists.append(r['name'])
-        else:
-            watchlists.append('Default')
-        for wl in watchlists:
-            r = self.client.get_watchlist_by_name(name=wl)
-            for e in r:
-                result.append(e['instrument'])
+        w = self.client.get_all_watchlists()
+        for r in w['results']:
+            result.append(r['display_name'])
         return result
 
-    # get list of watched stock ids
-    def get_watched_stock_ids(self, all_watched=False, urls=None):
+    # get list of watchlist stock symbols
+    def get_watched_symbols(self, names=None):
         result = []
-        if not urls:
-            urls = self.get_watched_stock_urls(all_watched)
-        for url in urls:
-            result.append(url.split('/')[-2])
-        return result
 
-    # get list of watched stock symbols
-    def get_watched_stock_symbols(self, all_watched=False, urls=None):
-        result = []
-        if not urls:
-            urls = self.get_watched_stock_urls(all_watched)
-        for e in urls:
-            result.append(self.client.get_symbol_by_url(e))
+        if not names:
+            names = self.get_watchlist_names()
+
+        mode = self.get_account_mode()
+
+        for name in names:
+            wl = self.client.get_watchlist_by_name(name=name)
+            for w in wl['results']:
+                if mode == Exchange.ACCOUNT_MODE_CRYPTO:
+                    if w['object_type'] != 'currency_pair':
+                        continue
+                elif mode == Exchange.ACCOUNT_MODE_STOCKS:
+                    if w['object_type'] != 'instrument':
+                        continue
+                if w['symbol'] not in result:
+                    result.append(w['symbol'])
         return result
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
