@@ -38,7 +38,7 @@ if __name__ == '__main__':
     print(accnt.get_ticker_symbols())
     #print(accnt.get_tickers())
     #accnt.get_ticker('BTC-USD')
-    #print(accnt.get_account_balances())
+    print(accnt.get_account_balances())
     #print("USD Total: {} USD".format(accnt.get_account_total_value()))
     #ts = int(datetime.timestamp(datetime.now()))
     #print(ts)

@@ -77,6 +77,10 @@ class AccountRobinhoodInfo(AccountBaseInfo):
             result.append(r['display_name'])
         return result
 
+    def get_symbol_from_url(self, url):
+        r = self.client.get_instrument_by_url(url)
+        return r['symbol']
+
     # get list of watchlist stock symbols
     def get_watched_symbols(self, names=None):
         result = []

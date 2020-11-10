@@ -36,9 +36,15 @@ class AccountRobinhoodBalance(AccountBaseBalance):
             elif mode == Exchange.ACCOUNT_MODE_STOCKS:
                 balance_usd =  float(account['portfolio_cash'])
                 self.balances['USD'] = {'balance': balance_usd, 'available': balance_usd}
+                result['USD'] = balance_usd
 
-                for info in self.client.get_current_positions():
-                    print(info)
+                for info in self.client.get_open_stock_positions():
+                    asset_name = self.info.get_symbol_from_url(info['instrument'])
+                    price = float(info['average_buy_price'])
+                    qty = float(info['quantity'])
+                    balance = price * qty
+                    self.balances[asset_name] = {'balance': balance, 'available': balance}
+                    result[asset_name] = balance
         else:
             if detailed:
                 return self.balances
