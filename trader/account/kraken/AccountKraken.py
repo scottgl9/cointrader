@@ -306,8 +306,8 @@ class AccountKraken(AccountBase):
                               'stepSize': stepSize,
                               #'minNotional': minNotional,
                               #'commissionAsset': commissionAsset,
-                              #'baseAssetPrecision': baseAssetPrecision,
-                              #'quotePrecision': quotePrecision,
+                              #'base_precision': base_precision,
+                              #'currency_precision': currency_precision,
                               #'orderTypes': orderTypes
                               }
 
@@ -398,8 +398,8 @@ class AccountKraken(AccountBase):
         base_step_size=info['stepSize']
         currency_step_size=info['tickSize']
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
-        baseAssetPrecision = info['baseAssetPrecision']
-        quotePrecision = info['quotePrecision']
+        base_precision = info['base_precision']
+        currency_precision = info['currency_precision']
         orderTypes = []
         for order_type in info['orderTypes']:
             orderTypes.append(Order.get_order_msg_type(order_type))
@@ -411,8 +411,8 @@ class AccountKraken(AccountBase):
                            base_step_size=base_step_size,
                            currency_step_size=currency_step_size,
                            is_currency_pair=is_currency_pair,
-                           baseAssetPrecision=baseAssetPrecision,
-                           quotePrecision=quotePrecision,
+                           base_precision=base_precision,
+                           currency_precision=currency_precision,
                            orderTypes=orderTypes
                            )
         return result

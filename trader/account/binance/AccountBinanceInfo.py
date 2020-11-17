@@ -103,14 +103,14 @@ class AccountBinanceInfo(AccountBaseInfo):
                 currency_step_size = ''
                 base_step_size = ''
                 commissionAsset = ''
-                baseAssetPrecision = 8
-                quotePrecision = 8
+                base_precision = 8
+                currency_precision = 8
                 orderTypes = ''
 
                 if 'baseAssetPrecision' in pair:
-                    baseAssetPrecision = pair['baseAssetPrecision']
+                    base_precision = pair['baseAssetPrecision']
                 if 'quotePrecision' in pair:
-                    quotePrecision = pair['quotePrecision']
+                    currency_precision = pair['quotePrecision']
 
                 for filter in pair['filters']:
                     # skip MARKET_LOT_SIZE
@@ -139,8 +139,8 @@ class AccountBinanceInfo(AccountBaseInfo):
                                            'base_step_size': base_step_size,
                                            'minNotional': minNotional,
                                            'commissionAsset': commissionAsset,
-                                           'baseAssetPrecision': baseAssetPrecision,
-                                           'quotePrecision': quotePrecision,
+                                           'base_precision': base_precision,
+                                           'currency_precision': currency_precision,
                                            'orderTypes': orderTypes
                                            }
 
@@ -213,8 +213,8 @@ class AccountBinanceInfo(AccountBaseInfo):
         base_step_size=info['base_step_size']
         currency_step_size=info['currency_step_size']
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
-        baseAssetPrecision = info['baseAssetPrecision']
-        quotePrecision = info['quotePrecision']
+        base_precision = info['base_precision']
+        currency_precision = info['currency_precision']
         orderTypes = []
         for order_type in info['orderTypes']:
             orderTypes.append(Order.get_order_msg_type(order_type))
@@ -226,8 +226,8 @@ class AccountBinanceInfo(AccountBaseInfo):
                            base_step_size=base_step_size,
                            currency_step_size=currency_step_size,
                            is_currency_pair=is_currency_pair,
-                           baseAssetPrecision=baseAssetPrecision,
-                           quotePrecision=quotePrecision,
+                           base_precision=base_precision,
+                           currency_precision=currency_precision,
                            orderTypes=orderTypes
                            )
         return result

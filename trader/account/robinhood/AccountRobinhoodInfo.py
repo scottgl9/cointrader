@@ -219,11 +219,11 @@ class AccountRobinhoodInfo(AccountBaseInfo):
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
 
         try:
-            baseAssetPrecision = info['baseAssetPrecision']
-            quotePrecision = info['quotePrecision']
+            base_precision = info['base_precision']
+            currency_precision = info['currency_precision']
         except KeyError:
-            baseAssetPrecision = 8
-            quotePrecision = 8
+            base_precision = 8
+            currency_precision = 8
 
         orderTypes = []
 
@@ -240,8 +240,8 @@ class AccountRobinhoodInfo(AccountBaseInfo):
                            base_step_size=base_step_size,
                            currency_step_size=currency_step_size,
                            is_currency_pair=is_currency_pair,
-                           baseAssetPrecision=baseAssetPrecision,
-                           quotePrecision=quotePrecision,
+                           base_precision=base_precision,
+                           currency_precision=currency_precision,
                            orderTypes=orderTypes
                            )
         return result

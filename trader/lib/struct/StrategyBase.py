@@ -112,8 +112,8 @@ class StrategyBase(object):
         self.filter_buy_disabled = False
 
         if self.asset_info:
-            self.base_precision = self.asset_info.baseAssetPrecision
-            self.quote_precision = self.asset_info.quotePrecision
+            self.base_precision = self.asset_info.base_precision
+            self.quote_precision = self.asset_info.currency_precision
             self.min_qty = float(self.asset_info.min_qty)
             self.base_min_size = float(self.asset_info.base_step_size)
             self.quote_increment = float(self.asset_info.currency_step_size)
