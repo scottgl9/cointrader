@@ -140,65 +140,6 @@ class AccountCoinbasePro(AccountBase):
             self._currency_buy_size[name] += asset_sell_size
         return self._currency_buy_size[name]
 
-    def round_base(self, price, base_increment=0):
-        if base_increment:
-            try:
-                precision = '{:.8f}'.format(float(base_increment)).index('1')
-                if float(base_increment) < 1.0:
-                    precision -= 1
-            except ValueError:
-                self.logger.warning("round_base(): index not found in {}, price={}".format(base_increment, price))
-                return price
-
-            return round(float(price), precision)
-        return price
-
-    def round_quote(self, price, quote_increment=0):
-        if quote_increment:
-            try:
-                precision = '{:.8f}'.format(float(quote_increment)).index('1')
-                if float(quote_increment) < 1.0:
-                    precision -= 1
-            except ValueError:
-                self.logger.warning("round_quote(): index not found in {}, price={}".format(quote_increment, price))
-                return price
-            return round(float(price), precision)
-        return price
-
-    def round_quantity(self, size, min_qty=0):
-        if min_qty:
-            try:
-                precision = '{:.8f}'.format(float(min_qty)).index('1')
-                if float(min_qty) < 1.0:
-                    precision -= 1
-            except ValueError:
-                self.logger.warning("round_quantity(): index not found in {}, size={}".format(min_qty, size))
-                return size
-            return round(float(size), precision)
-        return size
-
-    def round_base_symbol(self, symbol, price):
-        base_increment = self.get_asset_info_dict(symbol=symbol, field='base_step_size')
-        return self.round_base(price, base_increment)
-
-    def round_quantity_symbol(self, symbol, size):
-        min_qty = self.get_asset_info_dict(symbol=symbol, field='min_qty')
-        return self.round_quantity(size, min_qty)
-
-    def round_quote_symbol(self, symbol, price):
-        quote_increment = self.get_asset_info_dict(symbol=symbol, field='currency_step_size')
-        return self.round_quote(price, quote_increment)
-
-    def round_quote_pair(self, base, currency, price):
-        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='currency_step_size')
-        return self.round_quote(price, quote_increment)
-
-    def my_float(self, value):
-        if float(value) >= 0.1:
-            return "{}".format(float(value))
-        else:
-            return "{:.8f}".format(float(value))
-
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
@@ -223,56 +164,6 @@ class AccountCoinbasePro(AccountBase):
         except KeyError:
             return False
         return True
-
-    def get_account_total_value(self, currency='USD', detailed=False):
-        result = dict()
-        result['assets'] = {}
-
-        total_balance = 0.0
-
-        for asset, value in self.get_account_balances(detailed=False).items():
-            if float(value) == 0:
-                continue
-            if asset == currency:
-                total_balance += value
-                continue
-            elif currency == 'USDC' and asset == 'USD':
-                total_balance += value
-                continue
-            elif currency == 'USD' and asset == 'USDC':
-                total_balance += value
-                continue
-            elif currency != 'USDC' and asset == 'USDC':
-                symbol = self.make_ticker_id(currency, asset)
-                price = float(self.get_ticker(symbol))
-                if price:
-                    total_balance += value / price
-                elif self.simulate:
-                    return 0.0
-                continue
-            elif currency != 'USD' and asset == 'USD':
-                symbol = self.make_ticker_id(currency, asset)
-                price = float(self.get_ticker(symbol))
-                if price:
-                    total_balance += value / price
-                elif self.simulate:
-                    return 0.0
-                continue
-            symbol = self.make_ticker_id(asset, currency)
-            price = float(self.get_ticker(symbol))
-            if not price and currency == 'USD':
-                symbol = self.make_ticker_id(asset, 'USDC')
-                price = float(self.get_ticker(symbol))
-            elif not price and currency == 'USDC':
-                symbol = self.make_ticker_id(asset, 'USD')
-                price = float(self.get_ticker(symbol))
-            if self.simulate and not price:
-                return 0.0
-            elif not price:
-                continue
-            total_balance += value * price
-
-        return total_balance
 
     def cancel_all(self, ticker_id=None):
         return self.client.cancel_all(product_id=ticker_id)

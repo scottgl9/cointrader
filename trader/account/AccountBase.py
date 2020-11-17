@@ -50,11 +50,64 @@ class AccountBase(object):
     def get_hourly_column_names(self):
         pass
 
+    def round_base(self, price, base_increment=0):
+        if base_increment:
+            try:
+                precision = '{:.8f}'.format(float(base_increment)).index('1')
+                if float(base_increment) < 1.0:
+                    precision -= 1
+            except ValueError:
+                self.logger.warning("round_base(): index not found in {}, price={}".format(base_increment, price))
+                return price
+
+            return round(float(price), precision)
+        return price
+
+    def round_quote(self, price, quote_increment=0):
+        if quote_increment:
+            try:
+                precision = '{:.8f}'.format(float(quote_increment)).index('1')
+                if float(quote_increment) < 1.0:
+                    precision -= 1
+            except ValueError:
+                self.logger.warning("round_quote(): index not found in {}, price={}".format(quote_increment, price))
+                return price
+            return round(float(price), precision)
+        return price
+
+    def round_quantity(self, size, min_qty=0):
+        if min_qty:
+            try:
+                precision = '{:.8f}'.format(float(min_qty)).index('1')
+                if float(min_qty) < 1.0:
+                    precision -= 1
+            except ValueError:
+                self.logger.warning("round_quantity(): index not found in {}, size={}".format(min_qty, size))
+                return size
+            return round(float(size), precision)
+        return size
+
     def round_base_symbol(self, symbol, price):
-        return 0
+        base_increment = self.get_asset_info_dict(symbol=symbol, field='base_step_size')
+        return self.round_base(price, base_increment)
+
+    def round_quantity_symbol(self, symbol, size):
+        min_qty = self.get_asset_info_dict(symbol=symbol, field='min_qty')
+        return self.round_quantity(size, min_qty)
 
     def round_quote_symbol(self, symbol, price):
-        return 0
+        quote_increment = self.get_asset_info_dict(symbol=symbol, field='currency_step_size')
+        return self.round_quote(price, quote_increment)
+
+    def round_quote_pair(self, base, currency, price):
+        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='currency_step_size')
+        return self.round_quote(price, quote_increment)
+
+    def my_float(self, value):
+        if float(value) >= 0.1:
+            return "{}".format(float(value))
+        else:
+            return "{:.8f}".format(float(value))
 
     def split_symbol(self, symbol):
         return self.split_ticker_id(symbol)

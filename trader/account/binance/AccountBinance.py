@@ -200,65 +200,6 @@ class AccountBinance(AccountBase):
             self._currency_buy_size[name] += asset_sell_size
         return self._currency_buy_size[name]
 
-    def round_base(self, price, base_increment=0):
-        if base_increment:
-            try:
-                precision = '{:.8f}'.format(float(base_increment)).index('1')
-                if float(base_increment) < 1.0:
-                    precision -= 1
-            except ValueError:
-                self.logger.warning("round_base(): index not found in {}, price={}".format(base_increment, price))
-                return price
-
-            return round(float(price), precision)
-        return price
-
-    def round_quote(self, price, quote_increment=0):
-        if quote_increment:
-            try:
-                precision = '{:.8f}'.format(float(quote_increment)).index('1')
-                if float(quote_increment) < 1.0:
-                    precision -= 1
-            except ValueError:
-                self.logger.warning("round_quote(): index not found in {}, price={}".format(quote_increment, price))
-                return price
-            return round(float(price), precision)
-        return price
-
-    def round_quantity(self, size, min_qty=0):
-        if min_qty:
-            try:
-                precision = '{:.8f}'.format(float(min_qty)).index('1')
-                if float(min_qty) < 1.0:
-                    precision -= 1
-            except ValueError:
-                self.logger.warning("round_quantity(): index not found in {}, size={}".format(min_qty, size))
-                return size
-            return round(float(size), precision)
-        return size
-
-    def round_base_symbol(self, symbol, price):
-        base_increment = self.get_asset_info_dict(symbol=symbol, field='base_step_size')
-        return self.round_base(price, base_increment)
-
-    def round_quantity_symbol(self, symbol, size):
-        min_qty = self.get_asset_info_dict(symbol=symbol, field='min_qty')
-        return self.round_quantity(size, min_qty)
-
-    def round_quote_symbol(self, symbol, price):
-        quote_increment = self.get_asset_info_dict(symbol=symbol, field='currency_step_size')
-        return self.round_quote(price, quote_increment)
-
-    def round_quote_pair(self, base, currency, price):
-        quote_increment = self.get_asset_info_dict(base=base, currency=currency, field='currency_step_size')
-        return self.round_quote(price, quote_increment)
-
-    def my_float(self, value):
-        if float(value) >= 0.1:
-            return "{}".format(float(value))
-        else:
-            return "{:.8f}".format(float(value))
-
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
@@ -335,121 +276,121 @@ class AccountBinance(AccountBase):
         return result
 
 
-    def buy_limit_profit(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            base, currency = self.split_ticker_id(ticker_id)
-            cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size)  # self.round_quote(price * size)
-
-            if usd_value > cavailable: return False
-
-            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
-            return True
-        else:
-            self.logger.info("buy_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
-
-
-    def sell_limit_profit(self, price, size, stop_price, ticker_id=None):
-
-        if self.simulate:
-            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            base, currency = self.split_ticker_id(ticker_id)
-            bbalance, bavailable = self.get_asset_balance_tuple(base)
-
-            if float(size) > bavailable: return False
-
-            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
-            return True
-        else:
-            self.logger.info("sell_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     timeInForce=Client.TIME_IN_FORCE_GTC,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
-                                     quantity=size,
-                                     price=price,
-                                     stopPrice=stop_price)
-
-
-    def buy_market_profit(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            base, currency = self.split_ticker_id(ticker_id)
-            cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size)  # self.round_quote(price * size)
-
-            if usd_value > cavailable: return False
-
-            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
-            return True
-        else:
-            self.logger.info("buy_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT,
-                                     quantity=size,
-                                     stopPrice=stop_price)
-
-
-    def sell_market_profit(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            base, currency = self.split_ticker_id(ticker_id)
-            bbalance, bavailable = self.get_asset_balance_tuple(base)
-
-            if float(size) > bavailable: return False
-
-            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
-            return True
-        else:
-            self.logger.info("sell_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_TAKE_PROFIT,
-                                     quantity=size,
-                                     stopPrice=stop_price)
-
-
-    def buy_market_stop(self, price, size, stop_price, ticker_id=None):
-        if self.simulate:
-            base, currency = self.split_ticker_id(ticker_id)
-            cbalance, cavailable = self.get_asset_balance_tuple(currency)
-            usd_value = float(price) * float(size)  # self.round_quote(price * size)
-
-            if usd_value > cavailable: return False
-
-            self.update_asset_balance(currency, cbalance, cavailable - usd_value)
-            return True
-        else:
-            self.logger.info("buy_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_BUY,
-                                     type=Client.ORDER_TYPE_STOP_LOSS,
-                                     quantity=size,
-                                     stopPrice=stop_price)
-
-
-    def sell_market_stop(self, price, size, stop_price, ticker_id=None):
-
-        if self.simulate:
-            #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            base, currency = self.split_ticker_id(ticker_id)
-            bbalance, bavailable = self.get_asset_balance_tuple(base)
-
-            if float(size) > bavailable: return False
-
-            self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
-            return True
-        else:
-            self.logger.info("sell_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
-            return self.client.create_order(symbol=ticker_id,
-                                     side=Client.SIDE_SELL,
-                                     type=Client.ORDER_TYPE_STOP_LOSS,
-                                     quantity=size,
-                                     stopPrice=stop_price)
+    # def buy_limit_profit(self, price, size, stop_price, ticker_id=None):
+    #     if self.simulate:
+    #         base, currency = self.split_ticker_id(ticker_id)
+    #         cbalance, cavailable = self.get_asset_balance_tuple(currency)
+    #         usd_value = float(price) * float(size)  # self.round_quote(price * size)
+    #
+    #         if usd_value > cavailable: return False
+    #
+    #         self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+    #         return True
+    #     else:
+    #         self.logger.info("buy_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         return self.client.create_order(symbol=ticker_id,
+    #                                  timeInForce=Client.TIME_IN_FORCE_GTC,
+    #                                  side=Client.SIDE_BUY,
+    #                                  type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
+    #                                  quantity=size,
+    #                                  price=price,
+    #                                  stopPrice=stop_price)
+    #
+    #
+    # def sell_limit_profit(self, price, size, stop_price, ticker_id=None):
+    #
+    #     if self.simulate:
+    #         #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         base, currency = self.split_ticker_id(ticker_id)
+    #         bbalance, bavailable = self.get_asset_balance_tuple(base)
+    #
+    #         if float(size) > bavailable: return False
+    #
+    #         self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+    #         return True
+    #     else:
+    #         self.logger.info("sell_limit_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         return self.client.create_order(symbol=ticker_id,
+    #                                  timeInForce=Client.TIME_IN_FORCE_GTC,
+    #                                  side=Client.SIDE_SELL,
+    #                                  type=Client.ORDER_TYPE_TAKE_PROFIT_LIMIT,
+    #                                  quantity=size,
+    #                                  price=price,
+    #                                  stopPrice=stop_price)
+    #
+    #
+    # def buy_market_profit(self, price, size, stop_price, ticker_id=None):
+    #     if self.simulate:
+    #         base, currency = self.split_ticker_id(ticker_id)
+    #         cbalance, cavailable = self.get_asset_balance_tuple(currency)
+    #         usd_value = float(price) * float(size)  # self.round_quote(price * size)
+    #
+    #         if usd_value > cavailable: return False
+    #
+    #         self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+    #         return True
+    #     else:
+    #         self.logger.info("buy_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         return self.client.create_order(symbol=ticker_id,
+    #                                  side=Client.SIDE_BUY,
+    #                                  type=Client.ORDER_TYPE_TAKE_PROFIT,
+    #                                  quantity=size,
+    #                                  stopPrice=stop_price)
+    #
+    #
+    # def sell_market_profit(self, price, size, stop_price, ticker_id=None):
+    #     if self.simulate:
+    #         #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         base, currency = self.split_ticker_id(ticker_id)
+    #         bbalance, bavailable = self.get_asset_balance_tuple(base)
+    #
+    #         if float(size) > bavailable: return False
+    #
+    #         self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+    #         return True
+    #     else:
+    #         self.logger.info("sell_market_profit({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         return self.client.create_order(symbol=ticker_id,
+    #                                  side=Client.SIDE_SELL,
+    #                                  type=Client.ORDER_TYPE_TAKE_PROFIT,
+    #                                  quantity=size,
+    #                                  stopPrice=stop_price)
+    #
+    #
+    # def buy_market_stop(self, price, size, stop_price, ticker_id=None):
+    #     if self.simulate:
+    #         base, currency = self.split_ticker_id(ticker_id)
+    #         cbalance, cavailable = self.get_asset_balance_tuple(currency)
+    #         usd_value = float(price) * float(size)  # self.round_quote(price * size)
+    #
+    #         if usd_value > cavailable: return False
+    #
+    #         self.update_asset_balance(currency, cbalance, cavailable - usd_value)
+    #         return True
+    #     else:
+    #         self.logger.info("buy_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         return self.client.create_order(symbol=ticker_id,
+    #                                  side=Client.SIDE_BUY,
+    #                                  type=Client.ORDER_TYPE_STOP_LOSS,
+    #                                  quantity=size,
+    #                                  stopPrice=stop_price)
+    #
+    #
+    # def sell_market_stop(self, price, size, stop_price, ticker_id=None):
+    #
+    #     if self.simulate:
+    #         #self.logger.info("sell_limit_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         base, currency = self.split_ticker_id(ticker_id)
+    #         bbalance, bavailable = self.get_asset_balance_tuple(base)
+    #
+    #         if float(size) > bavailable: return False
+    #
+    #         self.update_asset_balance(base, float(bbalance), float(bavailable) - float(size))
+    #         return True
+    #     else:
+    #         self.logger.info("sell_market_stop({}, {}, {}, {}".format(price, size, stop_price, ticker_id))
+    #         return self.client.create_order(symbol=ticker_id,
+    #                                  side=Client.SIDE_SELL,
+    #                                  type=Client.ORDER_TYPE_STOP_LOSS,
+    #                                  quantity=size,
+    #                                  stopPrice=stop_price)
