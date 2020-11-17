@@ -3,15 +3,43 @@ from trader.lib.struct.Exchange import Exchange
 
 
 class AccountRobinhoodBalance(AccountBaseBalance):
-    def __init__(self, client, info, simulate=False, logger=None):
+    def __init__(self, client, info, market, simulate=False, logger=None):
         self.client = client
         self.info = info
+        self.market = market
         self.simulate = simulate
         self.logger = logger
         self.balances = {}
 
-    def get_account_total_value(self, currency, detailed=False):
-        raise NotImplementedError
+    def get_account_total_value(self, currency='USD', detailed=False):
+        result = dict()
+        result['assets'] = {}
+
+        total_balance = 0.0
+
+        for asset, value in self.get_account_balances(detailed=False).items():
+            if float(value) == 0:
+                continue
+            if asset == currency:
+                total_balance += value
+                continue
+            elif currency != 'USD' and asset == 'USD':
+                symbol = self.info.make_ticker_id(currency, asset)
+                price = float(self.market.get_ticker(symbol))
+                if price:
+                    total_balance += value / price
+                elif self.simulate:
+                    return 0.0
+                continue
+            symbol = self.info.make_ticker_id(asset, currency)
+            price = float(self.market.get_ticker(symbol))
+            if self.simulate and not price:
+                return 0.0
+            elif not price:
+                continue
+            total_balance += value * price
+
+        return total_balance
 
     def get_account_balances(self, detailed=False):
         if not self.simulate:

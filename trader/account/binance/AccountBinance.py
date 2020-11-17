@@ -28,9 +28,9 @@ class AccountBinance(AccountBase):
 
         # sub module implementations
         self.info = AccountBinanceInfo(client, simulate, logger)
-        self.balance = AccountBinanceBalance(client, self.info, simulate, logger)
         self.trade = AccountBinanceTrade(client, self.info, simulate, logger)
         self.market = AccountBinanceMarket(client, self.info, simulate, logger)
+        self.balance = AccountBinanceBalance(client, self.info, self.market, simulate, logger)
 
         # hourly db column names
         self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'volume']
@@ -270,38 +270,6 @@ class AccountBinance(AccountBase):
         if not info:
             return 0
         return info['currency_step_size']
-
-    def get_account_total_value(self, currency='USD', detailed=False):
-        result = dict()
-        result['assets'] = {}
-
-        total_balance = 0.0
-
-        for asset, value in self.get_account_balances(detailed=False).items():
-            if float(value) == 0:
-                continue
-            if asset == currency:
-                total_balance += value
-                continue
-            elif currency != 'USDT' and asset == 'USDT':
-                symbol = self.make_ticker_id(currency, asset)
-                price = float(self.get_ticker(symbol))
-                if price:
-                    total_balance += value / price
-                elif self.simulate:
-                    return 0.0
-                continue
-            symbol = self.make_ticker_id(asset, currency)
-            price = float(self.get_ticker(symbol))
-            #print(asset, value, price)
-            if self.simulate and not price:
-                return 0.0
-            elif not price:
-                continue
-            total_balance += value * price
-
-        return total_balance
-
 
     def get_account_status(self):
         return self.client.get_account_status()

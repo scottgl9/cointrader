@@ -1,6 +1,7 @@
 from trader.account.AccountBaseMarket import AccountBaseMarket
 from trader.account.binance.binance.client import Client
 
+
 class AccountBinanceMarket(AccountBaseMarket):
     def __init__(self, client, info, simulate=False, logger=None):
         self.client = client

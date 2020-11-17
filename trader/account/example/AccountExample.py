@@ -20,10 +20,9 @@ class AccountExample(AccountBase):
         self.live = live
 
         self.info = AccountExampleInfo(client, simulate, logger)
-        self.balance = AccountExampleBalance(client, self.info, simulate, logger)
         self.trade = AccountExampleTrade(client, self.info, simulate, logger)
         self.market = AccountExampleMarket(client, self.info, simulate, logger)
-
+        self.balance = AccountExampleBalance(client, self.info, self.market, simulate, logger)
 
 class AccountExampleInfo(AccountBaseInfo):
     def __init__(self, client, simulate=False, logger=None, exchange_info_file=None):
@@ -85,9 +84,10 @@ class AccountExampleInfo(AccountBaseInfo):
 
 
 class AccountExampleBalance(AccountBaseBalance):
-    def __init__(self, client, info, simulate=False, logger=None):
+    def __init__(self, client, info, market, simulate=False, logger=None):
         self.client = client
         self.info = info
+        self.market = market
         self.simulate = simulate
         self.logger = logger
 

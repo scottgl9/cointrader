@@ -44,9 +44,9 @@ class AccountRobinhood(AccountBase):
         self.currency_trade_pairs = []
 
         self.info = AccountRobinhoodInfo(client, simulate, logger)
-        self.balance = AccountRobinhoodBalance(client, self.info, simulate, logger)
         self.trade = AccountRobinhoodTrade(client, self.info, simulate, logger)
         self.market = AccountRobinhoodMarket(client, self.info, simulate, logger)
+        self.balance = AccountRobinhoodBalance(client, self.info, self.market, simulate, logger)
 
         # keep track of initial currency buy size, and subsequent trades against currency
         self._currency_buy_size = {}
@@ -233,33 +233,3 @@ class AccountRobinhood(AccountBase):
         if not info:
             return 0
         return info['currency_step_size']
-
-    def get_account_total_value(self, currency='USD', detailed=False):
-        result = dict()
-        result['assets'] = {}
-
-        total_balance = 0.0
-
-        for asset, value in self.get_account_balances(detailed=False).items():
-            if float(value) == 0:
-                continue
-            if asset == currency:
-                total_balance += value
-                continue
-            elif currency != 'USD' and asset == 'USD':
-                symbol = self.make_ticker_id(currency, asset)
-                price = float(self.get_ticker(symbol))
-                if price:
-                    total_balance += value / price
-                elif self.simulate:
-                    return 0.0
-                continue
-            symbol = self.make_ticker_id(asset, currency)
-            price = float(self.get_ticker(symbol))
-            if self.simulate and not price:
-                return 0.0
-            elif not price:
-                continue
-            total_balance += value * price
-
-        return total_balance

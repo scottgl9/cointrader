@@ -2,9 +2,10 @@ from trader.account.AccountBaseBalance import AccountBaseBalance
 
 
 class AccountBinanceBalance(AccountBaseBalance):
-    def __init__(self, client, info, simulate=False, logger=None):
+    def __init__(self, client, info, market, simulate=False, logger=None):
         self.client = client
         self.info = info
+        self.market = market
         self.simulate = simulate
         self.logger = logger
         self.balances = {}
@@ -22,15 +23,15 @@ class AccountBinanceBalance(AccountBaseBalance):
                 total_balance += value
                 continue
             elif currency != 'USDT' and asset == 'USDT':
-                symbol = self.make_ticker_id(currency, asset)
-                price = float(self.get_ticker(symbol))
+                symbol = self.info.make_ticker_id(currency, asset)
+                price = float(self.market.get_ticker(symbol))
                 if price:
                     total_balance += value / price
                 elif self.simulate:
                     return 0.0
                 continue
-            symbol = self.make_ticker_id(asset, currency)
-            price = float(self.get_ticker(symbol))
+            symbol = self.info.make_ticker_id(asset, currency)
+            price = float(self.market.get_ticker(symbol))
             #print(asset, value, price)
             if self.simulate and not price:
                 return 0.0
