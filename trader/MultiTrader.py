@@ -109,7 +109,7 @@ class MultiTrader(object):
 
         #hourly_symbols_only = False
 
-        if self.use_hourly_klines or self.accnt.trade_mode_hourly():
+        if self.use_hourly_klines or self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY:
             try:
                 self.kdb = KlinesDB(self.accnt, self.kdb_path, self.logger)
                 self.logger.info("hourly_klines_handler: loaded {}".format(self.kdb_path))
@@ -187,12 +187,12 @@ class MultiTrader(object):
             self.accnt.load_exchange_info()
             self.purge_trade_db()
 
-        if self.accnt.trade_mode_realtime():
+        if self.accnt.get_trader_mode() == Exchange.TRADER_MODE_REALTIME:
             self.logger.info("Running MultiTrade {} strategy: {} signal(s): {} hourly signal: {}".format(run_type,
                                                                                                        self.strategy_name,
                                                                                                        sigstr,
                                                                                                        self.hourly_signal_name))
-        elif self.accnt.trade_mode_hourly():
+        elif self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY:
             self.logger.info("Running MultiTrade {} strategy: {} hourly_mode_signal: {}".format(run_type,
                                                                                                 self.strategy_name,
                                                                                                 self.hourly_mode_signal))

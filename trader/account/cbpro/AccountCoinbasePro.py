@@ -61,12 +61,6 @@ class AccountCoinbasePro(AccountBase):
             name = "{}.live".format(self.exchange_name)
         return name
 
-    def trade_mode_hourly(self):
-        return self.info.get_trader_mode() == Exchange.TRADER_MODE_HOURLY
-
-    def trade_mode_realtime(self):
-        return self.info.get_trader_mode() == Exchange.TRADER_MODE_REALTIME
-
     def format_ts(self, ts):
         return int(ts)
 

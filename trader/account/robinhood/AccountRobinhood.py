@@ -70,12 +70,6 @@ class AccountRobinhood(AccountBase):
             name = "{}.live".format(self.exchange_name)
         return name
 
-    def trade_mode_hourly(self):
-        return self.info.get_trader_mode() == Exchange.TRADER_MODE_HOURLY
-
-    def trade_mode_realtime(self):
-        return self.info.get_trader_mode() == Exchange.TRADER_MODE_REALTIME
-
     def ts_to_iso8601(self, ts):
         dt = datetime.fromtimestamp(ts)
         return stix.utils.dates.serialize_value(dt)

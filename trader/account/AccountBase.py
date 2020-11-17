@@ -20,12 +20,6 @@ class AccountBase(object):
     def get_config_section_name(self):
         pass
 
-    def trade_mode_hourly(self):
-        pass
-
-    def trade_mode_realtime(self):
-        pass
-
     def ts_to_seconds(self, ts):
         pass
 

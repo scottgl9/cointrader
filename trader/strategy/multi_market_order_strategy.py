@@ -61,7 +61,7 @@ class multi_market_order_strategy(StrategyBase):
             signal.multi_order_tracker.clear()
 
     def close(self):
-        if self.accnt.trade_mode_realtime() and self.rt_hourly_klines_signal:
+        if self.trader_mode_realtime and self.rt_hourly_klines_signal:
             self.rt_hourly_klines_signal.close()
 
     def buy_signal(self, signal, price):

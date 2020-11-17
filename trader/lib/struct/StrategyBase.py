@@ -2,6 +2,7 @@
 import sys
 import importlib
 from datetime import datetime
+from trader.lib.struct.Exchange import Exchange
 from trader.lib.TraderMessageHandler import TraderMessageHandler
 from trader.lib.SignalHandler import SignalHandler
 from .TraderMessage import TraderMessage
@@ -151,10 +152,10 @@ class StrategyBase(object):
         self.rt_max_hourly_model_count = 0
         self.rt_hourly_preload_hours = 0
 
-        self.trader_mode_realtime = self.accnt.trade_mode_realtime()
-        self.trader_mode_hourly = self.accnt.trade_mode_hourly()
+        self.trader_mode_realtime = (self.accnt.get_trader_mode() == Exchange.TRADER_MODE_REALTIME)
+        self.trader_mode_hourly = (self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY)
 
-        if self.accnt.trade_mode_realtime():
+        if self.trader_mode_realtime:
             self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
             self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
             self.rt_hourly_preload_hours = int(self.config.get('rt_hourly_preload_hours'))
