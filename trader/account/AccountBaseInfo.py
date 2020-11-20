@@ -9,6 +9,10 @@ class AccountBaseInfo(object):
     def split_ticker_id(self, symbol):
         raise NotImplementedError
 
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        raise NotImplementedError
+
     def get_trader_mode(self):
         raise NotImplementedError
 

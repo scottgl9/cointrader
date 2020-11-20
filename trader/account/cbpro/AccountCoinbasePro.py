@@ -21,9 +21,6 @@ import stix.utils.dates
 class AccountCoinbasePro(AccountBase):
     def __init__(self, client=None, simulate=False, live=False, logger=None, simulate_db_filename=None):
         super(AccountCoinbasePro, self).__init__(client, simulate, live, logger, simulate_db_filename)
-        self.exchange_type = Exchange.EXCHANGE_CBPRO
-        self.exchange_name = Exchange.name(self.exchange_type)
-        self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.logger = logger
         self.simulate = simulate
         self.live = live
@@ -52,37 +49,6 @@ class AccountCoinbasePro(AccountBase):
         self._tpprofit = 0
         self.initial_currency = 0
         self.loaded_model_count = 0
-
-    # get config section name from trader.ini
-    def get_config_section_name(self):
-        if self.simulate:
-            name = "{}.simulate".format(self.exchange_name)
-        else:
-            name = "{}.live".format(self.exchange_name)
-        return name
-
-    # def format_ts(self, ts):
-    #     return int(ts)
-    #
-    # def ts_to_seconds(self, ts):
-    #     return float(ts)
-    #
-    # # returns true if this ts is an hourly ts
-    # def is_hourly_ts(self, ts):
-    #     hourly_ts = self.get_hourly_ts(ts)
-    #     return int(ts) == hourly_ts
-    #
-    # # set minutes and seconds components of timestamp to zero
-    # def get_hourly_ts(self, ts):
-    #     #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
-    #     #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
-    #     return int(self.ts_to_seconds(ts) / 3600.0) * 3600
-    #
-    # def seconds_to_ts(self, seconds):
-    #     return float(seconds)
-    #
-    # def hours_to_ts(self, hours):
-    #     return float(hours * 3600)
 
     # if hourly table name doesn't match symbol name
     # ex. symbol 'BTC-USD', db table name 'BTC_USD'

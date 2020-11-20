@@ -18,6 +18,8 @@ class AccountCoinbaseInfo(AccountBaseInfo):
         self.info_all_assets = {}
         self._exchange_pairs = None
         self.pc = PublicClient()
+        # hourly db column names
+        self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
         self.currencies = ['BTC', 'ETH', 'USDC', 'USD']
         self.currency_trade_pairs = ['ETH-BTC', 'BTC-USDC', 'ETH-USDC', 'BTC-USD', 'ETH-USD']
         self.trade_fee = 0.5 / 100.0
@@ -37,6 +39,14 @@ class AccountCoinbaseInfo(AccountBaseInfo):
             currency_name = parts[1]
 
         return base_name, currency_name
+
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        if self.simulate:
+            name = "{}.simulate".format(self.exchange_name)
+        else:
+            name = "{}.live".format(self.exchange_name)
+        return name
 
     def get_trader_mode(self):
         return self._trader_mode

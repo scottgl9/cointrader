@@ -16,6 +16,8 @@ class AccountBinanceInfo(AccountBaseInfo):
         self.info_all_pairs = {}
         self.info_all_assets = {}
         self._exchange_pairs = None
+        # hourly db column names
+        self.hourly_cnames = ['ts', 'open', 'high', 'low', 'close', 'volume']
         self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
         self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
         self.trade_fee = 0.1 / 100.0
@@ -34,6 +36,14 @@ class AccountBinanceInfo(AccountBaseInfo):
                 currency_name = currency
                 base_name = symbol.replace(currency, '')
         return base_name, currency_name
+
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        if self.simulate:
+            name = "{}.simulate".format(self.exchange_name)
+        else:
+            name = "{}.live".format(self.exchange_name)
+        return name
 
     def get_trader_mode(self):
         return self._trader_mode

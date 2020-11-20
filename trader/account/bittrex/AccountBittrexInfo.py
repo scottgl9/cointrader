@@ -36,6 +36,14 @@ class AccountBittrexInfo(AccountBaseInfo):
 
         return base_name, currency_name
 
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        if self.simulate:
+            name = "{}.simulate".format(self.exchange_name)
+        else:
+            name = "{}.live".format(self.exchange_name)
+        return name
+
     def get_trader_mode(self):
         return self._trader_mode
 

@@ -145,6 +145,9 @@ class AccountBase(object):
     def split_ticker_id(self, symbol):
         return self.info.split_ticker_id(symbol)
 
+    def get_config_section_name(self):
+        return self.info.get_config_section_name()
+
     def get_trader_mode(self):
         return self.info.get_trader_mode()
 

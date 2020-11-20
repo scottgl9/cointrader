@@ -16,6 +16,8 @@ class AccountRobinhoodInfo(AccountBaseInfo):
         self.info_all_pairs = {}
         self.info_all_assets = {}
         self._exchange_pairs = None
+        # hourly db column names
+        self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
         self.currencies = ['USD']
         self.currency_trade_pairs = []
         self.trade_fee = 0.0
@@ -35,6 +37,14 @@ class AccountRobinhoodInfo(AccountBaseInfo):
             currency_name = parts[1]
 
         return base_name, currency_name
+
+    # get config section name from trader.ini
+    def get_config_section_name(self):
+        if self.simulate:
+            name = "{}.simulate".format(self.exchange_name)
+        else:
+            name = "{}.live".format(self.exchange_name)
+        return name
 
     def get_trader_mode(self):
         return self._trader_mode
