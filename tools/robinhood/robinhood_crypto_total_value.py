@@ -27,7 +27,7 @@ if __name__ == '__main__':
     print(accnt.get_account_balances())
     #balances = accnt.get_account_balances()
     #print(balances)
-    print("USD Total: {} USD".format(accnt.get_account_total_value()))
+    print("USD Total: {} USD".format(accnt.get_account_total_value('USD')))
     print("BTC Total: {} BTC".format(accnt.get_account_total_value('BTC')))
     #ts = int(datetime.timestamp(datetime.now()))
     #print(ts)
