@@ -33,7 +33,7 @@ def simulate(conn, client, base=None, currency=None, ticker_id=None):
     c.execute("SELECT E,c,h,l,o,q,s,v FROM miniticker WHERE s='{}'".format(ticker_id)) # ORDER BY E ASC")")
     accnt = AccountBinance(None, True)
     accnt.load_detail_all_assets()
-    accnt.load_info_all_assets()
+    accnt.load_info_all_pairs()
     cycle_estimator = CycleEstimator()
     close_prices = []
     open_prices = []

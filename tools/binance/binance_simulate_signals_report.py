@@ -103,7 +103,7 @@ def simulate(conn, config, logger, simulate_db_filename=None):
                            simulate=True,
                            logger=logger,
                            simulate_db_filename=simulate_db_filename)
-    accnt.load_info_all_assets()
+    accnt.load_info_all_pairs()
     accnt.load_detail_all_assets()
 
     if not config.section_exists('binance.simulate'):
@@ -236,7 +236,7 @@ def get_detail_all_assets(client):
     return client.get_asset_details()
 
 
-def get_info_all_assets(client):
+def get_info_all_pairs(client):
     assets = {}
     for key, value in client.get_exchange_info().items():
         if key != 'symbols':

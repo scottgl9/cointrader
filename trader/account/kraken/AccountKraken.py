@@ -25,8 +25,8 @@ class AccountKraken(AccountBase):
         elif not self.simulate:
             api = API(key=KRAKEN_API_KEY, secret=KRAKEN_SECRET_KEY)
             self.client = KrakenAPI(api=api)
+        self.info_all_pairs = {}
         self.info_all_assets = {}
-        self.details_all_assets = {}
         self.balances = {}
         self._trader_mode = Exchange.TRADER_MODE_NONE
 
@@ -288,13 +288,13 @@ class AccountKraken(AccountBase):
     def get_detail_all_assets(self):
         return self.client.get_asset_details()
 
-    def get_info_all_assets(self, info_all_assets=None):
+    def get_info_all_pairs(self, info_all_pairs=None):
         assets = {}
 
-        if not info_all_assets:
-            info_all_assets = self.pc.get_products()
+        if not info_all_pairs:
+            info_all_pairs = self.pc.get_products()
 
-        for info in info_all_assets:
+        for info in info_all_pairs:
             symbol = info['id']
             minQty = info['base_min_size']
             minPrice = info['min_market_funds']
@@ -314,11 +314,11 @@ class AccountKraken(AccountBase):
         return assets
 
 
-    # use get_info_all_assets to load asset info into self.info_all_assets
-    def load_info_all_assets(self):
+    # use get_info_all_pairs to load asset info into self.info_all_pairs
+    def load_info_all_pairs(self):
         filename = "cbpro_asset_info.json"
         if not self.simulate:
-            self.info_all_assets = self.get_info_all_assets()
+            self.info_all_pairs = self.get_info_all_pairs()
             return
 
         if not os.path.exists(filename):
@@ -327,50 +327,50 @@ class AccountKraken(AccountBase):
                 json.dump(assets_info, f, indent=4)
         else:
             assets_info = json.loads(open(filename).read())
-        self.info_all_assets = self.get_info_all_assets(assets_info)
+        self.info_all_pairs = self.get_info_all_pairs(assets_info)
 
 
-    # use get_info_all_assets to load asset info into self.info_all_assets
+    # use get_info_all_pairs to load asset info into self.info_all_pairs
     def load_detail_all_assets(self):
         if not self.simulate:
-            self.details_all_assets = self.get_detail_all_assets()
+            self.info_all_assets = self.get_detail_all_assets()
             return
 
         if not os.path.exists("asset_detail.json"):
-            self.details_all_assets = self.get_detail_all_assets()
+            self.info_all_assets = self.get_detail_all_assets()
             with open('asset_detail.json', 'w') as f:
-                json.dump(self.details_all_assets, f, indent=4)
+                json.dump(self.info_all_assets, f, indent=4)
         else:
-            self.details_all_assets = json.loads(open('asset_detail.json').read())
+            self.info_all_assets = json.loads(open('asset_detail.json').read())
 
 
     def get_asset_status(self, name=None):
         result = None
-        if not self.details_all_assets:
+        if not self.info_all_assets:
             self.load_exchange_info()
         try:
-            result = self.details_all_assets[name]
+            result = self.info_all_assets[name]
         except KeyError:
             pass
         return result
 
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
-        if not self.info_all_assets:
-            self.load_info_all_assets()
+        if not self.info_all_pairs:
+            self.load_info_all_pairs()
 
         if not symbol:
             symbol = self.make_ticker_id(base, currency)
 
-        if not self.info_all_assets or symbol not in self.info_all_assets.keys():
+        if not self.info_all_pairs or symbol not in self.info_all_pairs.keys():
             self.logger.warning("symbol {} not found in assets".format(symbol))
             return None
         if field:
-            if field not in self.info_all_assets[symbol]:
+            if field not in self.info_all_pairs[symbol]:
                 self.logger.warning("field {} not found in assets for symbol {}".format(field, symbol))
                 return None
-            return self.info_all_assets[symbol][field]
-        return self.info_all_assets[symbol]
+            return self.info_all_pairs[symbol][field]
+        return self.info_all_pairs[symbol]
 
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)

@@ -31,8 +31,8 @@ class AccountBittrex(AccountBase):
             self.client = Bittrex(api_key=BITTREX_API_KEY, api_secret=BITTREX_API_SECRET, api_version=API_V2_0)
         self.simulate = simulate
         self.live = live
+        self.info_all_pairs = {}
         self.info_all_assets = {}
-        self.details_all_assets = {}
         self.balances = {}
 
         # sub module implementations

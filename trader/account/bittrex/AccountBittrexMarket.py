@@ -44,7 +44,7 @@ class AccountBittrexMarket(AccountBaseMarket):
                 elif not currency:
                     result.append(ticker['symbol'])
         else:
-            result = self.info.get_info_all_assets().keys()
+            result = self.info.get_info_all_pairs().keys()
         return result
 
     def get_min_tickers(self):

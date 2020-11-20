@@ -20,7 +20,7 @@ def get_all_tickers(client):
             result.append(asset['symbol'])
     return result
 
-def get_info_all_assets(client):
+def get_info_all_pairs(client):
     assets = {}
     for key, value in client.get_exchange_info().items():
         if key != 'symbols':
@@ -83,7 +83,7 @@ def my_float(value):
 if __name__ == '__main__':
     #print(get_products_by_volume(client))
     client = Client(MY_API_KEY, MY_API_SECRET)
-    assets_info = get_info_all_assets(client)
+    assets_info = get_info_all_pairs(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
 
     for name, value in balances.items():

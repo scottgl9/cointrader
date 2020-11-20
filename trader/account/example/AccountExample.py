@@ -49,10 +49,10 @@ class AccountExampleInfo(AccountBaseInfo):
     def get_currency_trade_pairs(self):
         raise NotImplementedError
 
-    def get_info_all_assets(self):
+    def get_info_all_pairs(self):
         raise NotImplementedError
 
-    def get_details_all_assets(self):
+    def get_info_all_assets(self):
         raise NotImplementedError
 
     def load_exchange_info(self):

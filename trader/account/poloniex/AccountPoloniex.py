@@ -25,8 +25,8 @@ class AccountPoloniex(AccountBase):
             self.client = client
         elif not self.simulate:
             self.client = Poloniex(key=POLONIEX_API_KEY, secret=POLONIEX_SECRET_KEY)
+        self.info_all_pairs = {}
         self.info_all_assets = {}
-        self.details_all_assets = {}
         self.balances = {}
         self._trader_mode = Exchange.TRADER_MODE_NONE
 
@@ -298,8 +298,8 @@ class AccountPoloniex(AccountBase):
     def load_exchange_info(self):
         if not self.simulate and os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
-            self.info_all_assets = info['pairs']
-            self.details_all_assets = info['assets']
+            self.info_all_pairs = info['pairs']
+            self.info_all_assets = info['assets']
             return
 
         print(self.exchange_info_file)
@@ -310,8 +310,8 @@ class AccountPoloniex(AccountBase):
                 json.dump(info, f, indent=4)
         else:
             info = json.loads(open(self.exchange_info_file).read())
-        self.info_all_assets = info['pairs']
-        self.details_all_assets = info['assets']
+        self.info_all_pairs = info['pairs']
+        self.info_all_assets = info['assets']
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
@@ -376,30 +376,30 @@ class AccountPoloniex(AccountBase):
 
     def get_asset_status(self, name=None):
         result = None
-        if not self.details_all_assets:
+        if not self.info_all_assets:
             self.load_exchange_info()
         try:
-            result = self.details_all_assets[name]
+            result = self.info_all_assets[name]
         except KeyError:
             pass
         return result
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
-        if not self.info_all_assets:
+        if not self.info_all_pairs:
             self.load_exchange_info()
 
         if not symbol:
             symbol = self.make_ticker_id(base, currency)
 
-        if not self.info_all_assets or symbol not in self.info_all_assets.keys():
+        if not self.info_all_pairs or symbol not in self.info_all_pairs.keys():
             self.logger.warning("symbol {} not found in assets".format(symbol))
             return None
         if field:
-            if field not in self.info_all_assets[symbol]:
+            if field not in self.info_all_pairs[symbol]:
                 self.logger.warning("field {} not found in assets for symbol {}".format(field, symbol))
                 return None
-            return self.info_all_assets[symbol][field]
-        return self.info_all_assets[symbol]
+            return self.info_all_pairs[symbol][field]
+        return self.info_all_pairs[symbol]
 
     def get_base_step_size(self, symbol=None, base=None, currency=None):
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)

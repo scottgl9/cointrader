@@ -13,8 +13,8 @@ class AccountBinanceInfo(AccountBaseInfo):
         self.exchange_type = Exchange.EXCHANGE_BINANCE
         self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
+        self.info_all_pairs = {}
         self.info_all_assets = {}
-        self.details_all_assets = {}
         self._exchange_pairs = None
         self.currencies = ['BTC', 'ETH', 'BNB', 'USDT']
         self.currency_trade_pairs = ['ETHBTC', 'BNBBTC', 'BNBETH', 'ETHUSDT', 'BTCUSDT', 'BNBUSDT']
@@ -56,18 +56,18 @@ class AccountBinanceInfo(AccountBaseInfo):
     def get_currency_trade_pairs(self):
         return self.currency_trade_pairs
 
+    def get_info_all_pairs(self):
+        return self.info_all_pairs
+
     def get_info_all_assets(self):
         return self.info_all_assets
-
-    def get_details_all_assets(self):
-        return self.details_all_assets
 
     # For simulation: load exchange info from file, or call get_exchange_info() and save to file
     def load_exchange_info(self):
         if not self.simulate and os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
-            self.info_all_assets = info['pairs']
-            self.details_all_assets = info['assets']
+            self.info_all_pairs = info['pairs']
+            self.info_all_assets = info['assets']
             return
 
         if not os.path.exists(self.exchange_info_file):
@@ -76,8 +76,8 @@ class AccountBinanceInfo(AccountBaseInfo):
                 json.dump(info, f, indent=4)
         else:
             info = json.loads(open(self.exchange_info_file).read())
-        self.info_all_assets = info['pairs']
-        self.details_all_assets = info['assets']
+        self.info_all_pairs = info['pairs']
+        self.info_all_assets = info['assets']
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
@@ -177,7 +177,7 @@ class AccountBinanceInfo(AccountBaseInfo):
 
     # determine if asset is available (not disabled or delisted)
     def is_asset_available(self, name):
-        if name not in self.details_all_assets.keys():
+        if name not in self.info_all_assets.keys():
             return False
         status = self.get_asset_status(name)
         try:
@@ -191,10 +191,10 @@ class AccountBinanceInfo(AccountBaseInfo):
 
     def get_asset_status(self, name=None):
         result = None
-        if not self.details_all_assets:
+        if not self.info_all_assets:
             self.load_exchange_info()
         try:
-            result = self.details_all_assets[name]
+            result = self.info_all_assets[name]
         except KeyError:
             pass
         return result
@@ -233,18 +233,18 @@ class AccountBinanceInfo(AccountBaseInfo):
         return result
 
     def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
-        if not self.info_all_assets:
+        if not self.info_all_pairs:
             self.load_exchange_info()
 
         if not symbol:
             symbol = self.make_ticker_id(base, currency)
 
-        if not self.info_all_assets or symbol not in self.info_all_assets.keys():
+        if not self.info_all_pairs or symbol not in self.info_all_pairs.keys():
             self.logger.warning("symbol {} not found in assets".format(symbol))
             return None
         if field:
-            if field not in self.info_all_assets[symbol]:
+            if field not in self.info_all_pairs[symbol]:
                 self.logger.warning("field {} not found in assets for symbol {}".format(field, symbol))
                 return None
-            return self.info_all_assets[symbol][field]
-        return self.info_all_assets[symbol]
+            return self.info_all_pairs[symbol][field]
+        return self.info_all_pairs[symbol]

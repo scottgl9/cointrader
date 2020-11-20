@@ -13,7 +13,7 @@ class AccountRobinhoodMarket(AccountBaseMarket):
 
     def get_ticker(self, symbol=None):
         if not self.simulate:
-            if not self.info.get_info_all_assets():
+            if not self.info.get_info_all_pairs():
                 self.info.load_exchange_info()
             sid = self.info.get_ticker_id(symbol)
             result = self.client.get_crypto_quote_from_id(id=sid)
@@ -32,9 +32,9 @@ class AccountRobinhoodMarket(AccountBaseMarket):
     def get_tickers(self):
         result = {}
         if not self.simulate:
-            if not self.info.get_info_all_assets():
+            if not self.info.get_info_all_pairs():
                 self.info.load_exchange_info()
-            for ticker in self.info.get_info_all_assets().keys():
+            for ticker in self.info.get_info_all_pairs().keys():
                 result[ticker] = self.get_ticker(ticker)
             return result
         else:
@@ -45,9 +45,9 @@ class AccountRobinhoodMarket(AccountBaseMarket):
         result = []
         mode = self.info.get_account_mode()
         if mode == Exchange.ACCOUNT_MODE_CRYPTO:
-            if not self.info.get_info_all_assets():
+            if not self.info.get_info_all_pairs():
                 self.info.load_exchange_info()
-            for ticker in self.info.get_info_all_assets().keys():
+            for ticker in self.info.get_info_all_pairs().keys():
                 result.append(ticker)
         elif mode == Exchange.ACCOUNT_MODE_STOCKS:
             # get list of watched stock symbols

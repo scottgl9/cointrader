@@ -113,7 +113,7 @@ class AccountRobinhood(AccountBase):
 
     def get_ticker_id(self, symbol):
         try:
-            info = self.get_info_all_assets()[symbol]
+            info = self.get_info_all_pairs()[symbol]
             return info['id']
         except KeyError:
             return ''

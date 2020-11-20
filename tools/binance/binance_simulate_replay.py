@@ -149,7 +149,7 @@ def get_detail_all_assets(client):
     return client.get_asset_details()
 
 
-def get_info_all_assets(client):
+def get_info_all_pairs(client):
     assets = {}
     for key, value in client.get_exchange_info().items():
         if key != 'symbols':

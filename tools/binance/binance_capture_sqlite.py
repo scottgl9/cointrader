@@ -120,7 +120,7 @@ def get_all_tickers(client):
     return result
 
 
-def get_info_all_assets(client):
+def get_info_all_pairs(client):
     assets = {}
     for key, value in client.get_exchange_info().items():
         if key != 'symbols':
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     client = Client(MY_API_KEY, MY_API_SECRET)
-    assets_info = get_info_all_assets(client)
+    assets_info = get_info_all_pairs(client)
     balances = filter_assets_by_minqty(assets_info, get_asset_balances(client))
     print(assets_info)
     print(balances)

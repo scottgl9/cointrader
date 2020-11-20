@@ -152,11 +152,11 @@ class AccountBase(object):
     def get_currencies(self):
         return self.info.get_currencies()
 
-    def get_info_all_assets(self):
-        return self.info.get_info_all_assets()
+    def get_info_all_pairs(self):
+        return self.info.get_info_all_pairs()
 
-    def get_details_all_assets(self):
-        return self.info.get_info_all_assets()
+    def get_info_all_assets(self):
+        return self.info.get_info_all_pairs()
 
     def load_exchange_info(self):
         return self.info.load_exchange_info()

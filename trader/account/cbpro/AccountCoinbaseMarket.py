@@ -51,7 +51,7 @@ class AccountCoinbaseMarket(AccountBaseMarket):
                 else:
                     result.append(product['id'])
         else:
-            result = self.info.get_info_all_assets().keys()
+            result = self.info.get_info_all_pairs().keys()
         return result
 
     def get_min_tickers(self):
