@@ -62,28 +62,28 @@ class AccountBittrex(AccountBase):
             name = "{}.live".format(self.exchange_name)
         return name
 
-    def format_ts(self, ts):
-        return int(ts)
-
-    def ts_to_seconds(self, ts):
-        return float(ts / 1000.0)
-
-    # returns true if this ts is an hourly ts
-    def is_hourly_ts(self, ts):
-        hourly_ts = self.get_hourly_ts(ts)
-        return int(ts) == hourly_ts
-
-    # set minutes and seconds components of timestamp to zero
-    def get_hourly_ts(self, ts):
-        #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
-        #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
-        return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
-
-    def seconds_to_ts(self, seconds):
-        return float(seconds * 1000)
-
-    def hours_to_ts(self, hours):
-        return float(hours * 3600 * 1000)
+    # def format_ts(self, ts):
+    #     return int(ts)
+    #
+    # def ts_to_seconds(self, ts):
+    #     return float(ts / 1000.0)
+    #
+    # # returns true if this ts is an hourly ts
+    # def is_hourly_ts(self, ts):
+    #     hourly_ts = self.get_hourly_ts(ts)
+    #     return int(ts) == hourly_ts
+    #
+    # # set minutes and seconds components of timestamp to zero
+    # def get_hourly_ts(self, ts):
+    #     #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
+    #     #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
+    #     return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
+    #
+    # def seconds_to_ts(self, seconds):
+    #     return float(seconds * 1000)
+    #
+    # def hours_to_ts(self, hours):
+    #     return float(hours * 3600 * 1000)
 
     # if hourly table name doesn't match symbol name
     # ex. symbol 'BTC-USD', table name 'BTC_USD'
@@ -130,18 +130,6 @@ class AccountBittrex(AccountBase):
         if asset_sell_size:
             self._currency_buy_size[name] += asset_sell_size
         return self._currency_buy_size[name]
-
-    def get_base_step_size(self, symbol=None, base=None, currency=None):
-        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
-        if not info:
-            return 0
-        return info['stepSize']
-
-    def get_currency_step_size(self, symbol=None, base=None, currency=None):
-        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
-        if not info:
-            return 0
-        return info['tickSize']
 
     def get_account_status(self):
         return self.client.get_account_status()

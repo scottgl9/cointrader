@@ -103,6 +103,18 @@ class AccountBase(object):
         else:
             return "{:.8f}".format(float(value))
 
+    def get_base_step_size(self, symbol=None, base=None, currency=None):
+        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
+        if not info:
+            return 0
+        return info['base_step_size']
+
+    def get_currency_step_size(self, symbol=None, base=None, currency=None):
+        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
+        if not info:
+            return 0
+        return info['currency_step_size']
+
     def split_symbol(self, symbol):
         return self.split_ticker_id(symbol)
 
@@ -156,7 +168,25 @@ class AccountBase(object):
         return self.info.get_info_all_pairs()
 
     def get_info_all_assets(self):
-        return self.info.get_info_all_pairs()
+        return self.info.get_info_all_assets()
+
+    def format_ts(self, ts):
+        return self.info.format_ts(ts)
+
+    def ts_to_seconds(self, ts):
+        return self.info.ts_to_seconds(ts)
+
+    def is_hourly_ts(self, ts):
+        return self.info.is_hourly_ts(ts)
+
+    def get_hourly_ts(self, ts):
+        return self.info.get_hourly_ts(ts)
+
+    def seconds_to_ts(self, seconds):
+        return self.info.seconds_to_ts(seconds)
+
+    def hours_to_ts(self, hours):
+        return self.info.hours_to_ts(hours)
 
     def load_exchange_info(self):
         return self.info.load_exchange_info()

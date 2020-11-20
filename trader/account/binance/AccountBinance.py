@@ -65,28 +65,28 @@ class AccountBinance(AccountBase):
             name = "{}.live".format(self.exchange_name)
         return name
 
-    def format_ts(self, ts):
-        return int(ts)
-
-    def ts_to_seconds(self, ts):
-        return float(ts / 1000.0)
-
-    # returns true if this ts is an hourly ts
-    def is_hourly_ts(self, ts):
-        hourly_ts = self.get_hourly_ts(ts)
-        return int(ts) == hourly_ts
-
-    # set minutes and seconds components of timestamp to zero
-    def get_hourly_ts(self, ts):
-        #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
-        #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
-        return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
-
-    def seconds_to_ts(self, seconds):
-        return float(seconds * 1000)
-
-    def hours_to_ts(self, hours):
-        return float(hours * 3600 * 1000)
+    # def format_ts(self, ts):
+    #     return int(ts)
+    #
+    # def ts_to_seconds(self, ts):
+    #     return float(ts / 1000.0)
+    #
+    # # returns true if this ts is an hourly ts
+    # def is_hourly_ts(self, ts):
+    #     hourly_ts = self.get_hourly_ts(ts)
+    #     return int(ts) == hourly_ts
+    #
+    # # set minutes and seconds components of timestamp to zero
+    # def get_hourly_ts(self, ts):
+    #     #dt = datetime.utcfromtimestamp(self.ts_to_seconds(ts)).replace(minute=0, second=0)
+    #     #return int(self.seconds_to_ts(time.mktime(dt.timetuple())))
+    #     return int(self.ts_to_seconds(ts) / 3600.0) * 3600 * 1000
+    #
+    # def seconds_to_ts(self, seconds):
+    #     return float(seconds * 1000)
+    #
+    # def hours_to_ts(self, hours):
+    #     return float(hours * 3600 * 1000)
 
     # if hourly table name doesn't match symbol name
     # ex. symbol 'BTC-USD', table name 'BTC_USD'
@@ -194,18 +194,6 @@ class AccountBinance(AccountBase):
             self._currency_buy_size[name] += asset_sell_size
         return self._currency_buy_size[name]
 
-    def get_base_step_size(self, symbol=None, base=None, currency=None):
-        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
-        if not info:
-            return 0
-        return info['base_step_size']
-
-    def get_currency_step_size(self, symbol=None, base=None, currency=None):
-        info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
-        if not info:
-            return 0
-        return info['currency_step_size']
-
     def get_account_status(self):
         return self.client.get_account_status()
 
@@ -229,45 +217,45 @@ class AccountBinance(AccountBase):
 
         return currency_price * price
 
-    def get_deposit_history(self, asset=None):
-        return self.client.get_deposit_history(asset=asset)
+    # def get_deposit_history(self, asset=None):
+    #     return self.client.get_deposit_history(asset=asset)
 
-    def get_account_history(self):
-        pass
+    # def get_account_history(self):
+    #     pass
 
-    def get_my_trades(self, base, currency, limit=500):
-        balances = self.get_account_balances()
-        result = []
-
-        symbol = self.make_ticker_id(base, currency)
-
-        amount = 0.0
-        if base in balances.keys():
-            amount = balances[base]
-        actual_fills = {}
-        current_amount = 0.0
-        orders = self.client.get_my_trades(symbol=symbol, limit=limit)
-        for order in orders:
-            actual_fills[order['time']] = order
-
-        skip_size = 0.0
-        for (k, v) in sorted(actual_fills.items(), reverse=True):
-            if v['isBuyer'] == False:
-                skip_size += float(v['qty'])
-                continue
-
-            if float(v['qty']) <= skip_size:
-                skip_size -= float(v['qty'])
-                continue
-
-            #if symbol not in result.keys():
-            #    result[symbol] = []
-
-            result.append(v)
-            current_amount += float(v['qty'])
-            if current_amount >= float(amount):
-                break
-        return result
+    # def get_my_trades(self, base, currency, limit=500):
+    #     balances = self.get_account_balances()
+    #     result = []
+    #
+    #     symbol = self.make_ticker_id(base, currency)
+    #
+    #     amount = 0.0
+    #     if base in balances.keys():
+    #         amount = balances[base]
+    #     actual_fills = {}
+    #     current_amount = 0.0
+    #     orders = self.client.get_my_trades(symbol=symbol, limit=limit)
+    #     for order in orders:
+    #         actual_fills[order['time']] = order
+    #
+    #     skip_size = 0.0
+    #     for (k, v) in sorted(actual_fills.items(), reverse=True):
+    #         if v['isBuyer'] == False:
+    #             skip_size += float(v['qty'])
+    #             continue
+    #
+    #         if float(v['qty']) <= skip_size:
+    #             skip_size -= float(v['qty'])
+    #             continue
+    #
+    #         #if symbol not in result.keys():
+    #         #    result[symbol] = []
+    #
+    #         result.append(v)
+    #         current_amount += float(v['qty'])
+    #         if current_amount >= float(amount):
+    #             break
+    #     return result
 
 
     # def buy_limit_profit(self, price, size, stop_price, ticker_id=None):

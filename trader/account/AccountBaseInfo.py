@@ -37,6 +37,26 @@ class AccountBaseInfo(object):
     def get_info_all_assets(self):
         raise NotImplementedError
 
+    def format_ts(self, ts):
+        raise NotImplementedError
+
+    def ts_to_seconds(self, ts):
+        raise NotImplementedError
+
+    # returns true if this ts is an hourly ts
+    def is_hourly_ts(self, ts):
+        raise NotImplementedError
+
+    # set minutes and seconds components of timestamp to zero
+    def get_hourly_ts(self, ts):
+        raise NotImplementedError
+
+    def seconds_to_ts(self, seconds):
+        raise NotImplementedError
+
+    def hours_to_ts(self, hours):
+        raise NotImplementedError
+
     def load_exchange_info(self):
         raise NotImplementedError
 

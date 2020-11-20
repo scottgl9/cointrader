@@ -55,6 +55,24 @@ class AccountExampleInfo(AccountBaseInfo):
     def get_info_all_assets(self):
         raise NotImplementedError
 
+    def format_ts(self, ts):
+        raise NotImplementedError
+
+    def ts_to_seconds(self, ts):
+        raise NotImplementedError
+
+    def is_hourly_ts(self, ts):
+        raise NotImplementedError
+
+    def get_hourly_ts(self, ts):
+        raise NotImplementedError
+
+    def seconds_to_ts(self, seconds):
+        raise NotImplementedError
+
+    def hours_to_ts(self, hours):
+        raise NotImplementedError
+
     def load_exchange_info(self):
         raise NotImplementedError
 
