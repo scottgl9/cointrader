@@ -23,19 +23,6 @@ def select_strategy(sname, client, base='BTC', currency='USD', account_handler=N
             print("Unable to load strategy {}".format(sname))
             sys.exit(-1)
 
-    # if sname == 'basic_signal_market_strategy':
-    #     from trader.strategy.basic_signal_market_strategy import basic_signal_market_strategy
-    #     strategy = basic_signal_market_strategy
-    # elif sname == 'multi_market_order_strategy':
-    #     from trader.strategy.multi_market_order_strategy import multi_market_order_strategy
-    #     strategy = multi_market_order_strategy
-    # elif sname == 'signal_market_trailing_stop_loss_strategy':
-    #     from trader.strategy.signal_market_trailing_stop_loss_strategy import signal_market_trailing_stop_loss_strategy
-    #     strategy = signal_market_trailing_stop_loss_strategy
-    # elif sname == 'null_strategy':
-    #     from trader.strategy.null_strategy import null_strategy
-    #     strategy = null_strategy
-
     if not strategy:
         return None
 
@@ -142,21 +129,6 @@ class MultiTrader(object):
             else:
                 self.logger.info("Failed to setup hourly updates for {}".format(self.kdb_path))
 
-        # config options for AccountBinance
-        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
-        #     btc_only = self.config.get('btc_only')
-        #     eth_only = self.config.get('eth_only')
-        #     bnb_only = self.config.get('bnb_only')
-        #
-        #     try:
-        #         if btc_only: self.accnt.set_btc_only(btc_only)
-        #         elif eth_only: self.accnt.set_eth_only(eth_only)
-        #         elif bnb_only: self.accnt.set_bnb_only(bnb_only)
-        #         elif self.use_hourly_klines and hourly_symbols_only:
-        #             self.accnt.set_hourly_symbols_only(hourly_symbols_only)
-        #     except AttributeError:
-        #         pass
-
         self.notify = None
         self.current_ts = 0
         self.last_ts = 0
@@ -213,16 +185,6 @@ class MultiTrader(object):
 
         if not base_name or not currency_name: return None
 
-        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
-        #     if self.accnt.btc_only() and currency_name != 'BTC':
-        #         return None
-        #     elif self.accnt.eth_only() and currency_name != 'ETH':
-        #         return None
-        #     elif self.accnt.bnb_only() and currency_name != 'BNB':
-        #         return None
-        #     elif self.accnt.hourly_symbols_only() and symbol not in self.kdb_table_symbols:
-        #         return None
-
         # can determine if asset is disabled from hourly klines, so for now don't check if asset is disabled
         if not self.simulate and not self.use_hourly_klines:
             if not self.accnt.is_asset_available(base_name):
@@ -237,18 +199,6 @@ class MultiTrader(object):
             return None
 
         base_min_size = 0
-
-        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
-        #     try:
-        #         base_min_size = float(asset_info['base_step_size'])
-        #         min_notional = float(asset_info['minNotional'])
-        #     except (KeyError, TypeError):
-        #         if not self.simulate:
-        #             self.logger.info("symbol {} attributes not in asset info".format(symbol))
-        #         return None
-        #
-        #     if min_notional > base_min_size:
-        #         base_min_size = min_notional
 
         trade_pair = select_strategy(self.strategy_name,
                                      self.client,
