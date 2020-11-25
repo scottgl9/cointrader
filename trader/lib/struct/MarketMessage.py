@@ -5,12 +5,13 @@ from .Kline import Kline
 class MarketMessage(object):
     TYPE_EMPTY_MSG = 0
     TYPE_WS_MSG = 1
-    TYPE_RT_KLINE_MSG = 2
-    TYPE_DB_KLINE_MSG = 3
+    TYPE_KLINE_MSG = 2
 
-    def __init__(self, symbol, msg_type, data=None, kline=None):
+    def __init__(self, symbol, msg_type, refresh_secs=0, feed_no=1, data=None, kline=None):
         self.msg_type = msg_type
         self.symbol = symbol
+        self.refresh_secs = refresh_secs
+        self.feed_no = feed_no
 
         if msg_type == MarketMessage.TYPE_EMPTY_MSG:
             return
@@ -21,8 +22,7 @@ class MarketMessage(object):
             self.bid = float(data.get('bid', 0))
             self.price = float(data.get('price', 0))
             self.size = float(data.get('size', 0))
-        elif not kline:
-            if msg_type == MarketMessage.TYPE_RT_KLINE_MSG or msg_type == MarketMessage.TYPE_DB_KLINE_MSG:
+        elif data and msg_type == MarketMessage.TYPE_KLINE_MSG:
                 self.kline = Kline()
                 self.kline.symbol = symbol
                 self.kline.ts = int(data.get('ts', 0))
@@ -47,8 +47,7 @@ class MarketMessage(object):
             self.bid = float(data.get('bid', 0))
             self.price = float(data.get('price', 0))
             self.size = float(data.get('size', 0))
-        elif data and self.kline:
-            if self.msg_type == MarketMessage.TYPE_RT_KLINE_MSG or self.msg_type == MarketMessage.TYPE_DB_KLINE_MSG:
+        elif data and self.msg_type == MarketMessage.TYPE_KLINE_MSG:
                 self.kline.ts = int(data.get('ts', 0))
                 self.kline.open = float(data.get('open', 0))
                 self.kline.close = float(data.get('close', 0))

@@ -126,7 +126,7 @@ def simulate(config, logger, start_date, end_date):
                 continue
             if not mmsg:
                 kline.symbol = symbol
-                mmsg = MarketMessage(symbol, msg_type=MarketMessage.TYPE_DB_KLINE_MSG, kline=kline)
+                mmsg = MarketMessage(symbol, msg_type=MarketMessage.TYPE_KLINE_MSG, kline=kline)
             else:
                 kline.symbol = symbol
                 mmsg.update(kline=kline)
