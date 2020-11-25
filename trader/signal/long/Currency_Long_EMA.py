@@ -17,7 +17,11 @@ class Currency_EMA_Long(SignalBase):
         self.obv_ema50 = EMA(50, scale=24, lag_window=5)
         self.set_flag(SignalBase.FLAG_SELL_ALL)
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, kline):
+        close = kline.close
+        volume = kline.volume
+        ts = kline.ts
+
         symbol = self.get_symbol()
         if symbol != "ETHBTC" and symbol != "BNBBTC":
             return
@@ -25,7 +29,7 @@ class Currency_EMA_Long(SignalBase):
         self.ema2.update(float(close))
         self.cross_long.update(self.ema1.result, self.ema2.result)
 
-    def post_update(self, close, volume):
+    def post_update(kline):
         pass
 
     def buy_signal(self):

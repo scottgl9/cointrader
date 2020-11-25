@@ -47,12 +47,12 @@ class SignalHandler(object):
         for handler in self.handlers:
             handler.hourly_update(hourly_ts)
 
-    def pre_update(self, close, volume, ts=0):
+    def pre_update(self, kline):
         if self.empty():
             return
 
         for handler in self.handlers:
-            handler.pre_update(close=close, volume=volume, ts=ts)
+            handler.pre_update(kline=kline)
 
     def post_update(self, close, volume):
         if self.empty():

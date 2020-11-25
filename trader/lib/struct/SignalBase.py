@@ -86,11 +86,11 @@ class SignalBase(object):
         self.symbol = symbol
 
     # realtime pre update
-    def pre_update(self, close, volume, ts):
+    def pre_update(kline):
         pass
 
     # realtime post update
-    def post_update(self, close, volume):
+    def post_update(kline):
         pass
 
     # realtime sell long signal

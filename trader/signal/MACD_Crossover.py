@@ -36,7 +36,11 @@ class MACD_Crossover(SignalBase):
         self.max_price = 0
         self.ts = 0
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, kline):
+        close = kline.close
+        volume = kline.volume
+        ts = kline.ts
+
         if self.min_price == 0 or close < self.min_price:
             self.min_price = close
 
@@ -60,7 +64,7 @@ class MACD_Crossover(SignalBase):
         self.macd_cross.update(self.macd.result, self.macd.signal.result)
         self.macd_zero_cross.update(self.macd.result, 0)
 
-    def post_update(self, close, volume):
+    def post_update(kline):
         pass
 
     def buy_signal(self):

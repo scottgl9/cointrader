@@ -6,7 +6,7 @@ class NULL_Signal(SignalBase):
         super(NULL_Signal, self).__init__(accnt, symbol, asset_info, kdb)
         self.signal_name = "NULL_Signal"
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, kline):
         pass
 
     def buy_signal(self):

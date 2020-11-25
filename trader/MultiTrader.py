@@ -63,13 +63,14 @@ class MultiTrader(object):
 
         # sets what currency to use when calculating trade profits
         self.trader_profit_mode = self.config.get('trader_profit_mode')
+        self.accnt = accnt
 
-        if accnt:
-            self.accnt = accnt
-        else:
-            self.accnt = AccountBinance(self.client,
-                                        simulate=simulate,
-                                        logger=logger)
+        # if accnt:
+        #     self.accnt = accnt
+        # else:
+        #     self.accnt = AccountBinance(self.client,
+        #                                 simulate=simulate,
+        #                                 logger=logger)
 
         # set trader mode to realtime or hourly
         trader_mode = self.config.get('trader_mode')
@@ -158,11 +159,11 @@ class MultiTrader(object):
             self.accnt.load_exchange_info()
             self.purge_trade_db()
 
-        if self.accnt.get_trader_mode() == Exchange.TRADER_MODE_REALTIME:
-            self.logger.info("Running MultiTrade {} strategy: {} signal(s): {} hourly signal: {}".format(run_type,
-                                                                                                       self.strategy_name,
-                                                                                                       sigstr,
-                                                                                                       self.hourly_signal_name))
+        #if self.accnt.get_trader_mode() == Exchange.TRADER_MODE_REALTIME:
+        self.logger.info("Running MultiTrade {} strategy: {} signal(s): {} hourly signal: {}".format(run_type,
+                                                                                                     self.strategy_name,
+                                                                                                     sigstr,
+                                                                                                     self.hourly_signal_name))
         # elif self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY:
         #     self.logger.info("Running MultiTrade {} strategy: {} hourly_mode_signal: {}".format(run_type,
         #                                                                                         self.strategy_name,
@@ -275,13 +276,13 @@ class MultiTrader(object):
                     self.purge_trade_db()
 
         # if apply_filters() returns True, then disable buys for this trader
-        if self.symbol_filter:
-            if self.symbol_filter.apply_filters(kline):
-                symbol_trader.filter_buy_disabled = True
-            elif symbol_trader.filter_buy_disabled:
-                symbol_trader.filter_buy_disabled = False
+        # if self.symbol_filter:
+        #     if self.symbol_filter.apply_filters(kline):
+        #         symbol_trader.filter_buy_disabled = True
+        #     elif symbol_trader.filter_buy_disabled:
+        #         symbol_trader.filter_buy_disabled = False
 
-        symbol_trader.run_update(kline)
+        symbol_trader.run_update(msg)
 
         self.order_handler.stored_trades_update(kline)
         self.order_handler.process_limit_order(kline)

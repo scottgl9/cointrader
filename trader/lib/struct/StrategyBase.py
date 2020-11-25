@@ -141,41 +141,41 @@ class StrategyBase(object):
         self.first_hourly_update_ts = 0
         self.last_hourly_update_ts = 0
 
-        self.rt_hourly_klines = None
-        self.rt_hourly_klines_signal = None
-        self.rt_hourly_klines_handler = None
-        self.rt_hourly_klines_processed = False
-        self.rt_hourly_klines_loaded = False
-        self.rt_hourly_klines_disabled = False
-        self.rt_use_hourly_klines = False
+        # self.rt_hourly_klines = None
+        # self.rt_hourly_klines_signal = None
+        # self.rt_hourly_klines_handler = None
+        # self.rt_hourly_klines_processed = False
+        # self.rt_hourly_klines_loaded = False
+        # self.rt_hourly_klines_disabled = False
+        # self.rt_use_hourly_klines = False
 
-        self.rt_max_hourly_model_count = 0
-        self.rt_hourly_preload_hours = 0
+        # self.rt_max_hourly_model_count = 0
+        # self.rt_hourly_preload_hours = 0
 
-        self.trader_mode_realtime = (self.accnt.get_trader_mode() == Exchange.TRADER_MODE_REALTIME)
-        self.trader_mode_hourly = (self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY)
+        # self.trader_mode_realtime = (self.accnt.get_trader_mode() == Exchange.TRADER_MODE_REALTIME)
+        # self.trader_mode_hourly = (self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY)
 
-        if self.trader_mode_realtime:
-            self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
-            self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
-            self.rt_hourly_preload_hours = int(self.config.get('rt_hourly_preload_hours'))
+        # if self.trader_mode_realtime:
+        #     self.rt_use_hourly_klines = self.config.get('rt_use_hourly_klines')
+        #     self.rt_max_hourly_model_count = int(self.config.get('rt_max_hourly_model_count'))
+        #     self.rt_hourly_preload_hours = int(self.config.get('rt_hourly_preload_hours'))
 
-            if self.rt_use_hourly_klines:
-                root_path = self.config.get('path')
-                db_path = self.config.get('db_path')
-                hourly_klines_db_file = self.config.get('hourly_kline_db_file')
-                kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
-                try:
-                    self.rt_hourly_klines_handler = KlinesDB(self.accnt,
-                                                             kdb_path,
-                                                             symbol=self.ticker_id,
-                                                             logger=self.logger)
-                    if not self.rt_hourly_klines_handler.symbol_in_table_list(self.ticker_id):
-                        self.rt_hourly_klines_handler.close()
-                        self.rt_hourly_klines_handler = None
-                except IOError:
-                    self.logger.warning("hourly_klines_handler: Failed to load {}".format(kdb_path))
-                    self.rt_hourly_klines_handler = None
+        #     if self.rt_use_hourly_klines:
+        #         root_path = self.config.get('path')
+        #         db_path = self.config.get('db_path')
+        #         hourly_klines_db_file = self.config.get('hourly_kline_db_file')
+        #         kdb_path = "{}/{}/{}".format(root_path, db_path, hourly_klines_db_file)
+        #         try:
+        #             self.rt_hourly_klines_handler = KlinesDB(self.accnt,
+        #                                                      kdb_path,
+        #                                                      symbol=self.ticker_id,
+        #                                                      logger=self.logger)
+        #             if not self.rt_hourly_klines_handler.symbol_in_table_list(self.ticker_id):
+        #                 self.rt_hourly_klines_handler.close()
+        #                 self.rt_hourly_klines_handler = None
+        #         except IOError:
+        #             self.logger.warning("hourly_klines_handler: Failed to load {}".format(kdb_path))
+        #             self.rt_hourly_klines_handler = None
 
         self.tpprofit = 0
         self.last_tpprofit = 0
@@ -224,40 +224,6 @@ class StrategyBase(object):
         except ImportError:
                 print("Unable to load signal {}".format(name))
                 sys.exit(-1)
-
-        # if name == "BTC_USDT_Signal":
-        #     from trader.signal.global_signal.BTC_USDT_Signal import BTC_USDT_Signal
-        #     signal = BTC_USDT_Signal
-        # elif name == "AEMA_Crossover_Test":
-        #     from trader.signal.AEMA_Crossover_Test import AEMA_Crossover_Test
-        #     signal = AEMA_Crossover_Test
-        # elif name == "Currency_Long_EMA":
-        #     from trader.signal.long.Currency_Long_EMA import Currency_EMA_Long
-        #     signal = Currency_EMA_Long
-        # elif name == "EMA_OBV_Crossover":
-        #     from trader.signal.EMA_OBV_Crossover import EMA_OBV_Crossover
-        #     signal = EMA_OBV_Crossover
-        # elif name == "Hybrid_Crossover_Test2":
-        #     from trader.signal.Hybrid_Crossover_Test2 import Hybrid_Crossover_Test2
-        #     signal = Hybrid_Crossover_Test2
-        # elif name == "MACD_Crossover":
-        #     from trader.signal.MACD_Crossover import MACD_Crossover
-        #     signal = MACD_Crossover
-        # elif name == "MTS_Crossover2_Signal":
-        #     from trader.signal.MTS_Crossover2_Signal import MTS_Crossover2_Signal
-        #     signal = MTS_Crossover2_Signal
-        # elif name == "MTS_SMA_Signal":
-        #     from trader.signal.MTS_SMA_Signal import MTS_SMA_Signal
-        #     signal = MTS_SMA_Signal
-        # elif name == "NULL_Signal":
-        #     from trader.signal.NULL_Signal import NULL_Signal
-        #     signal = NULL_Signal
-        # elif name == "RTKline_MACD_Cross_Signal":
-        #     from trader.signal.RTKline_MACD_Cross_Signal import RTKline_MACD_Cross_Signal
-        #     signal = RTKline_MACD_Cross_Signal
-        # else:
-        #     print("Unable to load signal {}".format(name))
-        #     sys.exit(-1)
 
         if signal:
             return signal(accnt, symbol, asset_info, kdb=kdb)

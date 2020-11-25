@@ -33,7 +33,11 @@ class EMA_OBV_Crossover(SignalBase):
         self.min_price = 0
         self.max_price = 0
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, kline):
+        close = kline.close
+        volume = kline.volume
+        ts = kline.ts
+
         if self.min_price == 0 or close < self.min_price:
             self.min_price = close
 

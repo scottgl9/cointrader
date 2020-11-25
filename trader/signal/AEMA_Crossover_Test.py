@@ -31,7 +31,11 @@ class AEMA_Crossover_Test(SignalBase):
         self.aema_cross_12_200 = MACross(cross_timeout=ctimeout)
         self.aema_cross_50_200 = MACross(cross_timeout=ctimeout)
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, kline):
+        close = kline.close
+        volume = kline.volume
+        ts = kline.ts
+
         if self.timestamp == 0:
             self.timestamp = ts
             if self.is_currency_pair:

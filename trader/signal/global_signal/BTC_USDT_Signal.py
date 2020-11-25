@@ -18,7 +18,11 @@ class BTC_USDT_Signal(SignalBase):
         self.enable_buy = False
         self.enable_sell = False
 
-    def pre_update(self, close, volume, ts):
+    def pre_update(self, kline):
+        close = kline.close
+        volume = kline.volume
+        ts = kline.ts
+
         self.timestamp = ts
         self.tst.update(close=close, ts=ts)
         state = self.tst.get_trend_state()
