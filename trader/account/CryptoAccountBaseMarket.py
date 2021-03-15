@@ -1,6 +1,6 @@
 # base account class for handling account market information
 
-class AccountBaseMarket(object):
+class CryptoAccountBaseMarket(object):
     def get_ticker(self, symbol):
         raise NotImplementedError
 

@@ -2,7 +2,7 @@
 from trader.lib.struct.Exchange import Exchange
 
 
-class AccountBaseInfo(object):
+class CryptoAccountBaseInfo(object):
     def make_ticker_id(self, base, currency):
         raise NotImplementedError
 

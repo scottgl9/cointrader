@@ -1,6 +1,6 @@
 # base account class for handling account executed trades
 
-class AccountBaseTrade(object):
+class CryptoAccountBaseTrade(object):
     def buy_market(self, size, price=0.0, ticker_id=None):
         raise NotImplementedError
 

@@ -1,13 +1,13 @@
 # Just an example on how to write an account plugin
 
-from trader.account.AccountBase import AccountBase
-from trader.account.AccountBaseInfo import AccountBaseInfo
-from trader.account.AccountBaseBalance import AccountBaseBalance
-from trader.account.AccountBaseTrade import AccountBaseTrade
-from trader.account.AccountBaseMarket import AccountBaseMarket
+from trader.account.CryptoAccountBase import CryptoAccountBase
+from trader.account.CryptoAccountBaseInfo import CryptoAccountBaseInfo
+from trader.account.CryptoAccountBaseBalance import CryptoAccountBaseBalance
+from trader.account.CryptoAccountBaseTrade import CryptoAccountBaseTrade
+from trader.account.CryptoAccountBaseMarket import CryptoAccountBaseMarket
 
 
-class AccountExample(AccountBase):
+class AccountExample(CryptoAccountBase):
     def __init__(self, client, simulate=False, live=False, logger=None, simulate_db_filename=None):
         super(AccountExample, self).__init__(client, simulate, live, simulate_db_filename)
         #self.exchange_type = AccountBase.EXCHANGE_EXAMPLE
@@ -24,7 +24,7 @@ class AccountExample(AccountBase):
         self.market = AccountExampleMarket(client, self.info, simulate, logger)
         self.balance = AccountExampleBalance(client, self.info, self.market, simulate, logger)
 
-class AccountExampleInfo(AccountBaseInfo):
+class AccountExampleInfo(CryptoAccountBaseInfo):
     def __init__(self, client, simulate=False, logger=None, exchange_info_file=None):
         self.exchange_info_file = exchange_info_file
         self.client = client
@@ -101,7 +101,7 @@ class AccountExampleInfo(AccountBaseInfo):
         raise NotImplementedError
 
 
-class AccountExampleBalance(AccountBaseBalance):
+class AccountExampleBalance(CryptoAccountBaseBalance):
     def __init__(self, client, info, market, simulate=False, logger=None):
         self.client = client
         self.info = info
@@ -128,7 +128,7 @@ class AccountExampleBalance(AccountBaseBalance):
         raise NotImplementedError
 
 
-class AccountExampleTrade(AccountBaseTrade):
+class AccountExampleTrade(CryptoAccountBaseTrade):
     def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info
@@ -169,7 +169,7 @@ class AccountExampleTrade(AccountBaseTrade):
     def parse_order_result(self, result, symbol=None, sigid=0):
         raise NotImplementedError
 
-class AccountExampleMarket(AccountBaseMarket):
+class AccountExampleMarket(CryptoAccountBaseMarket):
     def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info

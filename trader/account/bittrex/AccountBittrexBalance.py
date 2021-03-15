@@ -1,6 +1,6 @@
-from trader.account.AccountBaseBalance import AccountBaseBalance
+from trader.account.CryptoAccountBaseBalance import CryptoAccountBaseBalance
 
-class AccountBittrexBalance(AccountBaseBalance):
+class AccountBittrexBalance(CryptoAccountBaseBalance):
     def __init__(self, client, info, market, simulate=False, logger=None):
         self.client = client
         self.info = info

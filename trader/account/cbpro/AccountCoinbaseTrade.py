@@ -1,4 +1,4 @@
-from trader.account.AccountBaseTrade import AccountBaseTrade
+from trader.account.CryptoAccountBaseTrade import CryptoAccountBaseTrade
 from trader.account.binance.binance.client import Client, BinanceAPIException
 from trader.lib.struct.TraderMessage import TraderMessage
 from trader.lib.struct.Order import Order

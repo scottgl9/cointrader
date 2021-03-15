@@ -2,7 +2,7 @@
 import os
 import sys
 import importlib
-from trader.account.binance.AccountBinance import AccountBinance, AccountBase
+from trader.account.binance.AccountBinance import AccountBinance
 from trader.lib.struct.Order import Order
 from trader.lib.struct.Exchange import Exchange
 from trader.OrderHandler import OrderHandler

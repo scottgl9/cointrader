@@ -1,7 +1,7 @@
 import os
 import json
 from .cbpro import AuthenticatedClient, PublicClient
-from trader.account.AccountBaseInfo import AccountBaseInfo
+from trader.account.CryptoAccountBaseInfo import CryptoAccountBaseInfo
 from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
 from trader.lib.struct.Exchange import Exchange

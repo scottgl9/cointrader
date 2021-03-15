@@ -1,5 +1,5 @@
 from trader.account.binance.binance.client import Client, BinanceAPIException
-from trader.account.AccountBase import AccountBase
+from trader.account.CryptoAccountBase import CryptoAccountBase
 from .AccountBinanceInfo import AccountBinanceInfo
 from .AccountBinanceBalance import AccountBinanceBalance
 from .AccountBinanceTrade import AccountBinanceTrade
@@ -13,7 +13,7 @@ import json
 import os
 
 
-class AccountBinance(AccountBase):
+class AccountBinance(CryptoAccountBase):
     def __init__(self, client, simulate=False, live=False, logger=None, simulate_db_filename=None):
         super(AccountBinance, self).__init__(client, simulate, live, logger, simulate_db_filename)
         self.logger = logger

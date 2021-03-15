@@ -1,7 +1,7 @@
-from trader.account.AccountBaseTrade import AccountBaseTrade
+from trader.account.CryptoAccountBaseTrade import CryptoAccountBaseTrade
 from trader.lib.struct.Exchange import Exchange
 
-class AccountRobinhoodTrade(AccountBaseTrade):
+class AccountRobinhoodTrade(CryptoAccountBaseTrade):
     def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info

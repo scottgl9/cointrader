@@ -1,5 +1,5 @@
 from trader.account.bittrex.bittrex import Bittrex, API_V2_0
-from trader.account.AccountBase import AccountBase
+from trader.account.CryptoAccountBase import CryptoAccountBase
 from .AccountBittrexInfo import AccountBittrexInfo
 from .AccountBittrexBalance import AccountBittrexBalance
 from .AccountBittrexTrade import AccountBittrexTrade
@@ -17,7 +17,7 @@ import os
 
 #logger = logging.getLogger(__name__)
 
-class AccountBittrex(AccountBase):
+class AccountBittrex(CryptoAccountBase):
     def __init__(self, client=None, simulate=False, live=False, logger=None, simulate_db_filename=None):
         super(AccountBittrex, self).__init__(client, simulate, live, logger, simulate_db_filename)
         self.logger = logger

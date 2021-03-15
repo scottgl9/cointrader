@@ -1,6 +1,6 @@
-from trader.account.AccountBaseMarket import AccountBaseMarket
+from trader.account.CryptoAccountBaseMarket import CryptoAccountBaseMarket
 
-class AccountBittrexMarket(AccountBaseMarket):
+class AccountBittrexMarket(CryptoAccountBaseMarket):
     def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info

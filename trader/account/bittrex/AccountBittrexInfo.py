@@ -1,11 +1,11 @@
 import os
 import json
-from trader.account.AccountBaseInfo import AccountBaseInfo
+from trader.account.CryptoAccountBaseInfo import CryptoAccountBaseInfo
 from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
 from trader.lib.struct.Exchange import Exchange
 
-class AccountBittrexInfo(AccountBaseInfo):
+class AccountBittrexInfo(CryptoAccountBaseInfo):
     def __init__(self, client, simulate=False, logger=None):
         self.client = client
         self.simulate = simulate

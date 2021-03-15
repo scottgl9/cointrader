@@ -1,11 +1,11 @@
-from trader.account.AccountBaseMarket import AccountBaseMarket
+from trader.account.CryptoAccountBaseMarket import CryptoAccountBaseMarket
 from .cbpro import AuthenticatedClient, PublicClient
 from datetime import datetime, timedelta
 import time
 import aniso8601
 import stix.utils.dates
 
-class AccountCoinbaseMarket(AccountBaseMarket):
+class AccountCoinbaseMarket(CryptoAccountBaseMarket):
     def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info

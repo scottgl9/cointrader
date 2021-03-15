@@ -2,7 +2,7 @@ from trader.lib.struct.Order import Order
 from trader.lib.struct.Exchange import Exchange
 
 
-class AccountBase(object):
+class CryptoAccountBase(object):
     def __init__(self, client, simulate=False, live=False, logger=None, simulate_db_filename=None):
         self.logger = logger
         self.simulate_db_filename = simulate_db_filename

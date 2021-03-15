@@ -1,6 +1,6 @@
 # base account class for handling account balances
 
-class AccountBaseBalance(object):
+class CryptoAccountBaseBalance(object):
     def get_account_total_value(self, currency, detailed=False):
         raise NotImplementedError
 
