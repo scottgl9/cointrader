@@ -2,11 +2,10 @@
 import os
 import sys
 import importlib
-from trader.account.binance.AccountBinance import AccountBinance
 from trader.lib.struct.Order import Order
 from trader.lib.struct.Exchange import Exchange
 from trader.OrderHandler import OrderHandler
-from trader.KlinesDB import KlinesDB
+#from trader.KlinesDB import KlinesDB
 from trader.lib.TraderMessageHandler import TraderMessage, TraderMessageHandler
 from datetime import datetime
 import time
@@ -54,23 +53,11 @@ class MultiTrader(object):
         self.strategy_name = self.config.get('strategy')
         self.signal_names = [self.config.get('rt_signals')]
         self.hourly_signal_name = self.config.get('rt_hourly_signal')
-        #self.hourly_mode_signal = self.config.get('hourly_mode_signal')
-        #self.hourly_klines_db_file = self.config.get('hourly_kline_db_file')
-        #self.kdb_path = "{}/{}/{}".format(self.root_path, self.db_path, self.hourly_klines_db_file)
-        #self.use_hourly_klines = self.config.get('rt_use_hourly_klines')
-        #self.symbol_filter_names = self.config.get('rt_symbol_filters').split(',')
         self.hourly_update_handler = None
 
         # sets what currency to use when calculating trade profits
         self.trader_profit_mode = self.config.get('trader_profit_mode')
         self.accnt = accnt
-
-        # if accnt:
-        #     self.accnt = accnt
-        # else:
-        #     self.accnt = AccountBinance(self.client,
-        #                                 simulate=simulate,
-        #                                 logger=logger)
 
         # set trader mode to realtime or hourly
         trader_mode = self.config.get('trader_mode')
@@ -91,44 +78,6 @@ class MultiTrader(object):
 
         self.tickers = None
         self.msg_handler = TraderMessageHandler()
-        #self.kdb = None
-        #self.kdb_table_symbols = []
-        #self.last_hourly_ts = 0
-
-        #hourly_symbols_only = False
-
-        # if self.use_hourly_klines or self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY:
-        #     try:
-        #         self.kdb = KlinesDB(self.accnt, self.kdb_path, self.logger)
-        #         self.logger.info("hourly_klines_handler: loaded {}".format(self.kdb_path))
-        #         #if self.config.option_exists('hourly_symbols_only'):
-        #         #    hourly_symbols_only = self.config.get('hourly_symbols_only')
-        #         self.kdb_table_symbols = self.kdb.table_symbols
-        #         self.latest_hourly_ts = self.kdb.get_latest_db_hourly_ts()
-        #     except IOError:
-        #         self.logger.warning("hourly_klines_handler: Failed to load {}".format(self.kdb_path))
-
-        # # update hourly kline tables on start if running in live mode
-        # if not self.simulate and self.kdb:
-        #     latest_hourly_ts = self.kdb.get_latest_db_hourly_ts()
-        #     hourly_ts = self.accnt.get_hourly_ts(self.accnt.seconds_to_ts(int(time.time())))
-        #     if hourly_ts == latest_hourly_ts:
-        #         self.logger.info("Hourly kline tables up to date in {}...".format(self.kdb_path))
-        #     else:
-        #         self.last_hourly_ts = hourly_ts
-        #         self.logger.info("Updating hourly kline tables in {}...".format(self.kdb_path))
-        #         self.kdb.update_all_tables()
-        #         self.logger.info("Removing outdated hourly kline tables in {}...".format(self.kdb_path))
-        #         self.kdb.remove_outdated_tables()
-
-        # # start thread for hourly kline db updates
-        # if not self.simulate and self.kdb_path:
-        #     if os.path.exists(self.kdb_path):
-        #         from trader.HourlyUpdateHandler import HourlyUpdateHandler
-        #         self.hourly_update_handler = HourlyUpdateHandler(self.accnt, self.kdb_path, self.logger)
-        #         self.hourly_update_handler.start()
-        #     else:
-        #         self.logger.info("Failed to setup hourly updates for {}".format(self.kdb_path))
 
         self.notify = None
         self.current_ts = 0
@@ -140,11 +89,6 @@ class MultiTrader(object):
         self.running = True
         self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger, self.store_trades)
         self.symbol_filter = None
-
-        # if self.accnt.exchange_type == Exchange.EXCHANGE_BINANCE:
-        #     self.symbol_filter = SymbolFilterHandler(accnt=self.accnt, config=self.config, kdb=self.kdb, logger=self.logger)
-        #     for filter_name in self.symbol_filter_names:
-        #         self.symbol_filter.add_filter(filter_name)
 
         sigstr = None
 
@@ -164,20 +108,11 @@ class MultiTrader(object):
                                                                                                      self.strategy_name,
                                                                                                      sigstr,
                                                                                                      self.hourly_signal_name))
-        # elif self.accnt.get_trader_mode() == Exchange.TRADER_MODE_HOURLY:
-        #     self.logger.info("Running MultiTrade {} strategy: {} hourly_mode_signal: {}".format(run_type,
-        #                                                                                         self.strategy_name,
-        #                                                                                         self.hourly_mode_signal))
 
     # close() called when exiting MultiTrader
     def close(self):
-        #if self.kdb:
-        #    self.kdb.close()
         for trade_pair in self.trade_pairs.values():
             trade_pair.close()
-        #if self.hourly_update_handler:
-        #    self.hourly_update_handler.stop()
-        #    self.hourly_update_handler.join(timeout=5)
 
     # create new trade pair handler and select strategy
     def add_trade_pair(self, symbol, price=0):
@@ -274,13 +209,6 @@ class MultiTrader(object):
 
                     # purge trades from TraderDB which have been sold
                     self.purge_trade_db()
-
-        # if apply_filters() returns True, then disable buys for this trader
-        # if self.symbol_filter:
-        #     if self.symbol_filter.apply_filters(kline):
-        #         symbol_trader.filter_buy_disabled = True
-        #     elif symbol_trader.filter_buy_disabled:
-        #         symbol_trader.filter_buy_disabled = False
 
         symbol_trader.run_update(msg)
 
