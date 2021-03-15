@@ -37,7 +37,7 @@ class BinanceTrader:
 
         #simulate = config.get('simulate')
         strategy = config.get('strategy')
-        signal_name = config.get('rt_signals')
+        signal_name = config.get('signals')
 
         config.select_section('binance.live')
 
@@ -303,7 +303,7 @@ if __name__ == '__main__':
         config.set('strategy', results.strategy)
 
     if results.signal_name:
-        config.set('rt_signals', results.signal_name)
+        config.set('signals', results.signal_name)
 
     if results.hourly_signal_name:
         config.set('rt_hourly_signal', results.hourly_signal_name)

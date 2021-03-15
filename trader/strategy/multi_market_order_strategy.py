@@ -23,7 +23,7 @@ class multi_market_order_strategy(StrategyBase):
         trade_sizes = config.get_section_field_options(field='trade_size')
         self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
-        signal_names = [self.config.get('rt_signals')]
+        signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('rt_hourly_signal')
         self.use_hourly_klines = self.config.get('use_hourly_klines')
         self.max_hourly_model_count = int(self.config.get('max_hourly_model_count'))

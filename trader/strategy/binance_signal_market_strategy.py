@@ -29,7 +29,7 @@ class binance_signal_market_strategy(StrategyBase):
             # set signal modes from config
             self.realtime_signals_enabled = True
 
-            signal_names = [self.config.get('rt_signals')]
+            signal_names = [self.config.get('signals')]
 
             rt_hourly_signal_name = self.config.get('rt_hourly_signal')
 

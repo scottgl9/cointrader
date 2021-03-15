@@ -51,25 +51,11 @@ class MultiTrader(object):
         self.db_path = self.config.get('db_path')
         self.store_trades = self.config.get('store_trades')
         self.strategy_name = self.config.get('strategy')
-        self.signal_names = [self.config.get('rt_signals')]
-        self.hourly_signal_name = self.config.get('rt_hourly_signal')
-        self.hourly_update_handler = None
+        self.signal_names = [self.config.get('signals')]
 
         # sets what currency to use when calculating trade profits
         self.trader_profit_mode = self.config.get('trader_profit_mode')
         self.accnt = accnt
-
-        # set trader mode to realtime or hourly
-        trader_mode = self.config.get('trader_mode')
-        if trader_mode == 'realtime':
-            self.accnt.set_trader_mode(Exchange.TRADER_MODE_REALTIME)
-        elif trader_mode == 'hourly':
-            self.accnt.set_trader_mode(Exchange.TRADER_MODE_HOURLY)
-        else:
-            print("Unknown trader mode {}".format(trader_mode))
-            sys.exit(-1)
-
-        self.trader_mode = self.accnt.get_trader_mode()
 
         self.logger.info("Setting trader profit mode to {}".format(self.trader_profit_mode))
         self.accnt.set_trader_profit_mode(self.trader_profit_mode)
@@ -88,7 +74,6 @@ class MultiTrader(object):
         self.stopped = False
         self.running = True
         self.order_handler = OrderHandler(self.accnt, self.msg_handler, self.logger, self.store_trades)
-        self.symbol_filter = None
 
         sigstr = None
 
@@ -104,10 +89,9 @@ class MultiTrader(object):
             self.purge_trade_db()
 
         #if self.accnt.get_trader_mode() == Exchange.TRADER_MODE_REALTIME:
-        self.logger.info("Running MultiTrade {} strategy: {} signal(s): {} hourly signal: {}".format(run_type,
-                                                                                                     self.strategy_name,
-                                                                                                     sigstr,
-                                                                                                     self.hourly_signal_name))
+        self.logger.info("Running MultiTrade {} strategy: {} signal(s): {}".format(run_type,
+                                                                                   self.strategy_name,
+                                                                                   sigstr))
 
     # close() called when exiting MultiTrader
     def close(self):

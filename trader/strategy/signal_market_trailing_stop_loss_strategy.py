@@ -24,7 +24,7 @@ class signal_market_trailing_stop_loss_strategy(StrategyBase):
         trade_sizes = config.get_section_field_options(field='trade_size')
         self.trade_size_handler = fixed_trade_size(self.accnt, asset_info, trade_sizes)
 
-        signal_names = [self.config.get('rt_signals')]
+        signal_names = [self.config.get('signals')]
         hourly_signal_name = self.config.get('rt_hourly_signal')
 
         if signal_names:

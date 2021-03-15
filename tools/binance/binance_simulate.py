@@ -270,14 +270,10 @@ if __name__ == '__main__':
         config.set('strategy', results.strategy)
 
     if results.signal_name:
-        config.set('rt_signals', results.signal_name)
-
-    if results.hourly_signal_name:
-        config.set('rt_hourly_signal', results.hourly_signal_name)
+        config.set('signals', results.signal_name)
 
     strategy = config.get('strategy')
-    signal_name = config.get('rt_signals')
-    hourly_name = config.get('rt_hourly_signal')
+    signal_name = config.get('signals')
     disable_caching = results.disable_caching
 
     if disable_caching:
@@ -308,7 +304,7 @@ if __name__ == '__main__':
 
     trade_cache = {}
 
-    trade_cache_name = "{}-{}".format(signal_name, hourly_name)
+    trade_cache_name = "{}".format(signal_name)
 
     trade_log_path = "{}/{}.log".format(cache_path, trade_cache_name)
     trade_result_path = "{}/{}.txt".format(cache_path, trade_cache_name)
