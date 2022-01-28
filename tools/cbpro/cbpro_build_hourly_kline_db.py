@@ -80,9 +80,6 @@ if __name__ == '__main__':
     for symbol in symbols:
         if symbol.endswith('GBP') or symbol.endswith('EUR'):
             continue
-        # only want bitcoin in this table
-        if not symbol.startswith('BTC') or not symbol.endswith('USD'):
-            continue
         symbol_table_list.append(symbol)
     print(symbol_table_list)
 
