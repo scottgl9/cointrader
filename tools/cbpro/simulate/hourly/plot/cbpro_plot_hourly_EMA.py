@@ -21,14 +21,25 @@ try:
     from trader.indicator.native.EMA import EMA
 except ImportError:
     from trader.indicator.EMA import EMA
+import stix.utils.dates
 
-def simulate(kdb, symbol, start_ts, end_ts):
+def ts_to_iso8601(ts):
+    dt = datetime.fromtimestamp(ts)
+    return stix.utils.dates.serialize_value(dt)
+
+def get_daily_ts(ts):
+    return int(float(ts) / 86400.0) * 86400
+
+def simulate(kdb, symbol, start_ts, end_ts, daily=False):
     msgs = kdb.get_dict_klines(symbol, start_ts, end_ts)
 
     obv = OBV()
     scale = 24
     if start_ts and end_ts:
         scale = 1
+    if daily:
+        scale = 1
+
     ema12 = EMA(12, scale=scale)
     ema26 = EMA(26, scale=scale)
     ema50 = EMA(50, scale=scale)
@@ -39,6 +50,7 @@ def simulate(kdb, symbol, start_ts, end_ts):
     obv_ema12 = EMA(12)
     obv_ema26 = EMA(26)
     obv_ema50 = EMA(50)
+    obv_values = []
     obv_ema12_values = []
     obv_ema26_values = []
     obv_ema50_values = []
@@ -58,6 +70,13 @@ def simulate(kdb, symbol, start_ts, end_ts):
     i=0
     for msg in msgs: #get_rows_as_msgs(c):
         ts = int(msg['ts'])
+
+        # only process daily klines
+        if daily and ts != get_daily_ts(ts):
+            continue
+
+        #print(ts_to_iso8601(ts), ts)
+
         close = float(msg['close'])
         low = float(msg['low'])
         high = float(msg['high'])
@@ -69,6 +88,7 @@ def simulate(kdb, symbol, start_ts, end_ts):
         obv_ema12_values.append(obv_ema12.update(obv_value))
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
+        obv_values.append(obv_value)
 
         ema12_value = ema12.update(close)
         ema12_values.append(ema12_value)
@@ -90,7 +110,7 @@ def simulate(kdb, symbol, start_ts, end_ts):
         high_prices.append(high)
         i += 1
 
-    plt.subplot(211)
+    #plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
 
     fig1, = plt.plot(ema12_values, label='EMA12')
@@ -98,11 +118,13 @@ def simulate(kdb, symbol, start_ts, end_ts):
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    plt.subplot(212)
-    fig21, = plt.plot(obv_ema12_values, label='OBV12')
-    fig22, = plt.plot(obv_ema26_values, label='OBV26')
-    fig23, = plt.plot(obv_ema50_values, label='OBV50')
-    plt.legend(handles=[fig21, fig22, fig23])
+    #plt.subplot(212)
+    #plt.plot(volumes)
+    #plt.plot(obv_values, label="OBV")
+    #fig21, = plt.plot(obv_ema12_values, label='OBV12')
+    #fig22, = plt.plot(obv_ema26_values, label='OBV26')
+    #fig23, = plt.plot(obv_ema50_values, label='OBV50')
+    #plt.legend(handles=[fig21, fig22, fig23])
     plt.show()
 
 # get first timestamp from kline sqlite db
@@ -137,7 +159,7 @@ if __name__ == '__main__':
                         help='filename of hourly kline sqlite db')
 
     parser.add_argument('-s', action='store', dest='symbol',
-                        default='',
+                        default='BTC-USD',
                         help='trade symbol')
 
     parser.add_argument('-l', action='store_true', dest='list_table_names',
@@ -152,6 +174,10 @@ if __name__ == '__main__':
                         default='',
                         help='specify end date in month/day/year format')
 
+    parser.add_argument('--daily', action='store_true', dest='daily',
+                        default=False,
+                        help='Show only daily klines')
+
     results = parser.parse_args()
 
 
@@ -159,6 +185,10 @@ if __name__ == '__main__':
     symbol = results.symbol
     start_ts = 0
     end_ts = 0
+
+    if not os.path.exists(hourly_filename):
+        print("file {} doesn't exist, exiting...".format(hourly_filename))
+        sys.exit(-1)
 
     if results.filename:
         if not os.path.exists(results.filename):
@@ -175,10 +205,6 @@ if __name__ == '__main__':
         start_ts = int(time.mktime(start_dt.timetuple()))
         end_ts = int(time.mktime(end_dt.timetuple()))
 
-    if not os.path.exists(results.hourly_filename):
-        print("file {} doesn't exist, exiting...".format(results.filename))
-        sys.exit(-1)
-
     accnt = AccountCoinbasePro(client=None, simulate=True)
     kdb = KlinesDB(accnt, hourly_filename, None)
     print("Loading {}".format(hourly_filename))
@@ -188,7 +214,7 @@ if __name__ == '__main__':
             print(symbol)
 
     if symbol:
-        simulate(kdb, symbol, start_ts, end_ts)
+        simulate(kdb, symbol, start_ts, end_ts, results.daily)
     else:
         parser.print_help()
     kdb.close()
