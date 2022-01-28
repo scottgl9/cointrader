@@ -5,7 +5,7 @@ from trader.lib.struct.Order import Order
 from trader.lib.struct.OrderUpdate import OrderUpdate
 
 
-class AccountCoinbaseTrade(AccountBaseTrade):
+class AccountCoinbaseTrade(CryptoAccountBaseTrade):
     def __init__(self, client, info, simulate=False, logger=None):
         self.client = client
         self.info = info

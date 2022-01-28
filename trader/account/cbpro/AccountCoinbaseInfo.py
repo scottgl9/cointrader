@@ -6,7 +6,7 @@ from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
 from trader.lib.struct.Exchange import Exchange
 
-class AccountCoinbaseInfo(AccountBaseInfo):
+class AccountCoinbaseInfo(CryptoAccountBaseInfo):
     def __init__(self, client, simulate=False, logger=None):
         self.client = client
         self.simulate = simulate
