@@ -21,6 +21,7 @@ try:
     from trader.indicator.native.EMA import EMA
 except ImportError:
     from trader.indicator.EMA import EMA
+from trader.indicator.SMS import SMS
 import stix.utils.dates
 
 def ts_to_iso8601(ts):
@@ -66,6 +67,8 @@ def simulate(kdb, symbol, start_ts, end_ts, daily=False):
     low_prices = []
     high_prices = []
     volumes = []
+    volumes_24hr = []
+    sms24hr = SMS(24)
 
     i=0
     for msg in msgs: #get_rows_as_msgs(c):
@@ -82,9 +85,11 @@ def simulate(kdb, symbol, start_ts, end_ts, daily=False):
         high = float(msg['high'])
         open = float(msg['open'])
         volume = float(msg['volume'])
-        volumes.append(volume)
+        #volumes.append(volume)
+        volume_24hr = sms24hr.update(volume)
+        volumes_24hr.append(volumes_24hr)
 
-        obv_value = obv.update(close=close, volume=volume)
+        obv_value = obv.update(close=close, volume=volume_24hr)
         obv_ema12_values.append(obv_ema12.update(obv_value))
         obv_ema26_values.append(obv_ema26.update(obv_value))
         obv_ema50_values.append(obv_ema50.update(obv_value))
@@ -110,16 +115,15 @@ def simulate(kdb, symbol, start_ts, end_ts, daily=False):
         high_prices.append(high)
         i += 1
 
-    #plt.subplot(211)
+    plt.subplot(211)
     symprice, = plt.plot(close_prices, label=symbol)
-
     fig1, = plt.plot(ema12_values, label='EMA12')
     fig2, = plt.plot(ema26_values, label='EMA26')
     fig3, = plt.plot(ema50_values, label='EMA50')
     fig4, = plt.plot(ema200_values, label='EMA200')
     plt.legend(handles=[symprice, fig1, fig2, fig3, fig4])
-    #plt.subplot(212)
-    #plt.plot(volumes)
+    plt.subplot(212)
+    plt.plot(volumes_24hr)
     #plt.plot(obv_values, label="OBV")
     #fig21, = plt.plot(obv_ema12_values, label='OBV12')
     #fig22, = plt.plot(obv_ema26_values, label='OBV26')
