@@ -99,6 +99,7 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
                                                    start.isoformat(),
                                                    end.isoformat(),
                                                    granularity=granularity)
+        print(rates)
         return rates[::-1]
 
 
