@@ -69,6 +69,7 @@ def simulate(kdb, symbol, start_ts, end_ts, daily=False):
     volumes = []
     volumes_24hr = []
     sms24hr = SMS(24)
+    timestamps = []
 
     i=0
     for msg in msgs: #get_rows_as_msgs(c):
@@ -77,6 +78,8 @@ def simulate(kdb, symbol, start_ts, end_ts, daily=False):
         # only process daily klines
         if daily and ts != get_daily_ts(ts):
             continue
+
+        timestamps.append(ts)
 
         #print(ts_to_iso8601(ts), ts)
 
