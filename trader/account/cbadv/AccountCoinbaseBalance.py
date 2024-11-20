@@ -4,6 +4,7 @@ from trader.account.CryptoAccountBaseBalance import CryptoAccountBaseBalance
 class AccountCoinbaseBalance(CryptoAccountBaseBalance):
     def __init__(self, client, info, market, simulate=False, logger=None):
         self.client = client
+        print(type(self.client))
         self.info = info
         self.market = market
         self.simulate = simulate

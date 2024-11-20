@@ -1,23 +1,22 @@
 import os
 import json
-from .cbpro import AuthenticatedClient, PublicClient
 from trader.account.CryptoAccountBaseInfo import CryptoAccountBaseInfo
 from trader.lib.struct.Order import Order
 from trader.lib.struct.AssetInfo import AssetInfo
 from trader.lib.struct.Exchange import Exchange
+from coinbase.rest import RESTClient
 
 class AccountCoinbaseInfo(CryptoAccountBaseInfo):
     def __init__(self, client, simulate=False, logger=None):
         self.client = client
         self.simulate = simulate
         self.logger = logger
-        self.exchange_type = Exchange.EXCHANGE_CBPRO
+        self.exchange_type = Exchange.EXCHANGE_CBADV
         self.exchange_name = Exchange.name(self.exchange_type)
         self.exchange_info_file = "{}_info.json".format(self.exchange_name)
         self.info_all_pairs = {}
         self.info_all_assets = {}
         self._exchange_pairs = None
-        self.pc = PublicClient()
         # hourly db column names
         self.hourly_cnames = ['ts', 'low', 'high', 'open', 'close', 'volume']
         self.currencies = ['BTC', 'ETH', 'USDC', 'USD']

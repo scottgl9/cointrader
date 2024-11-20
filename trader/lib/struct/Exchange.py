@@ -10,6 +10,7 @@ class Exchange(object):
     EXCHANGE_KRAKEN = 4
     EXCHANGE_POLONIEX = 5
     EXCHANGE_ROBINHOOD = 6
+    EXCHANGE_CBADV = 7
     # account mode
     ACCOUNT_MODE_UNKNOWN = 0
     ACCOUNT_MODE_CRYPTO = 1

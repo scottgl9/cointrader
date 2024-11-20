@@ -8,7 +8,7 @@ from .AccountCoinbaseInfo import AccountCoinbaseInfo
 from .AccountCoinbaseBalance import AccountCoinbaseBalance
 from .AccountCoinbaseTrade import AccountCoinbaseTrade
 from .AccountCoinbaseMarket import AccountCoinbaseMarket
-from .cbpro import AuthenticatedClient, PublicClient
+from coinbase.rest import RESTBase, RESTClient
 from trader.config import *
 import json
 import os
@@ -18,18 +18,19 @@ import aniso8601
 import stix.utils.dates
 
 
-class AccountCoinbasePro(CryptoAccountBase):
+class AccountCoinbaseAdvanced(CryptoAccountBase):
     def __init__(self, client=None, simulate=False, live=False, logger=None, simulate_db_filename=None):
-        super(AccountCoinbasePro, self).__init__(client, simulate, live, logger, simulate_db_filename)
+        super(AccountCoinbaseAdvanced, self).__init__(client, simulate, live, logger, simulate_db_filename)
         self.logger = logger
         self.simulate = simulate
         self.live = live
         self.simulate_db_filename = simulate_db_filename
-        if client:
+        if client is not None:
             self.client = client
         elif not self.simulate:
-            self.client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
-        self.pc = PublicClient()
+            self.client = RESTClient(api_key=CBADV_KEY, api_secret=CBADV_SECRET)
+        
+        print(type(self.client))
 
         # sub module implementations
         self.info = AccountCoinbaseInfo(client, simulate, logger)

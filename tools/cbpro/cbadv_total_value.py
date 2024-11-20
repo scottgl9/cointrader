@@ -6,16 +6,14 @@ try:
 except ImportError:
     sys.path.append('.')
 
-from trader.account.cbpro.cbpro import AuthenticatedClient
-from trader.account.cbpro.AccountCoinbasePro import AccountCoinbasePro
+from trader.account.cbadv.AccountCoinbaseAdvanced import AccountCoinbaseAdvanced
 from trader.config import *
 
 if __name__ == '__main__':
-    client = AuthenticatedClient(CBPRO_KEY, CBPRO_SECRET, CBPRO_PASS)
-    accnt = AccountCoinbasePro(client=client, simulate=False)
-    #balances = accnt.get_account_balances()
-    #print(balances)
-    print(client.get_fees())
+    accnt = AccountCoinbaseAdvanced(simulate=False)
+    balances = accnt.get_account_balances()
+    print(balances)
+    #print(client.get_fees())
     print("USD Total: {} USD".format(accnt.get_account_total_value('USD')))
     print("BTC Total: {} BTC".format(accnt.get_account_total_value('BTC')))
     #ts = int(datetime.timestamp(datetime.now()))

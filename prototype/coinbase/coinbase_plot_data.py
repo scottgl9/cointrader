@@ -6,11 +6,21 @@ from coinbase.rest import RESTClient
 import time
 from config import CoinbaseConfig as Config
 
+MAX_CANDLES = 350
+
 # pip3 install coinbase-advanced-py
 
-def fetch_historical_data(product_id, granularity='ONE_HOUR'):
+def fetch_historical_data(product_id, granularity='ONE_HOUR', auto_adjust=True):
     # Validate granularity
     allowed_granularities = ['ONE_MINUTE', 'FIVE_MINUTE', 'FIFTEEN_MINUTE', 'ONE_HOUR', 'SIX_HOUR', 'ONE_DAY']
+    granularity_mapping = {
+        'ONE_MINUTE': 60,
+        'FIVE_MINUTE': 300,
+        'FIFTEEN_MINUTE': 900,
+        'ONE_HOUR': 3600,
+        'SIX_HOUR': 21600,
+        'ONE_DAY': 86400
+    }
     if granularity not in allowed_granularities:
         raise ValueError(f"Invalid granularity: {granularity}. Allowed values are {allowed_granularities}.")
 
@@ -21,7 +31,16 @@ def fetch_historical_data(product_id, granularity='ONE_HOUR'):
         #print(client.get_products())
         # Set start to UNIX timestamp 24 hours ago, and end to current timestamp
         end = int(time.time())
-        start = end - 24 * 3600
+        start = end - 48 * 3600
+        # count the number of candles that will be retrieved based on start time, end time, and graularity
+        num_candles = (end - start) // granularity_mapping[granularity]
+
+        # If the number of candles exceeds the maximum allowed, adjust the start time
+        if num_candles > MAX_CANDLES:
+            if auto_adjust:
+                start = end - MAX_CANDLES * granularity_mapping[granularity]
+                num_candles = MAX_CANDLES
+        print(num_candles)
         candles = client.get_candles(product_id, start, end, granularity=granularity)
 
         # get list of candles
@@ -62,7 +81,7 @@ def plot_historical_data(data, title='Historical Data'):
 def main():
     # Define the trading pair and granularity (e.g., 3600 seconds = 1 hour)
     product_id = 'BTC-USD'
-    granularity = 'FIVE_MINUTE'
+    granularity = 'FIFTEEN_MINUTE'
 
     # Fetch historical data
     data = fetch_historical_data(product_id, granularity)

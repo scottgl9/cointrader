@@ -1,5 +1,5 @@
 from trader.account.CryptoAccountBaseMarket import CryptoAccountBaseMarket
-from .cbpro import AuthenticatedClient, PublicClient
+from coinbase.rest import RESTClient
 from datetime import datetime, timedelta
 import time
 import aniso8601
@@ -14,7 +14,6 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
-        self.pc = PublicClient()
 
     def ts_to_iso8601(self, ts):
         dt = datetime.fromtimestamp(ts)
