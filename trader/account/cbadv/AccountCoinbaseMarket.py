@@ -19,13 +19,24 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
         dt = datetime.fromtimestamp(ts)
         return stix.utils.dates.serialize_value(dt)
 
-    def get_ticker(self, symbol=None):
+    def get_all_tickers(self):
+        result = {}
         if not self.simulate:
             products = self.client.get_products().products
             for product in products:
-                if product.product_id == symbol:
-                    return product.price
-            return 0.0
+                result[product.product_id] = product.price
+        else:
+            return self._tickers
+        return result
+
+    def get_ticker(self, symbol=None):
+        if not self.simulate:
+            pairs = self.info.get_exchange_pairs()
+            if symbol in pairs:
+                price = self.client.get_product(symbol).price
+                return price
+            else:
+                return 0.0
             # print(products.products)
             # if symbol in products:
             #     result = products.products[symbol]

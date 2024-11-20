@@ -66,14 +66,20 @@ class AccountCoinbaseBalance(CryptoAccountBaseBalance):
         if not self.simulate:
             self.balances = {}
             result = {}
-            print(self.client.get_accounts())
+            # TODO: add support for USD and USDC
             accounts = self.client.get_accounts().accounts
-            print(self.client.get_portfolios())
+            #print(self.client.get_portfolios())
             #print(self.client.get_portfolio_breakdown())
             #print(self.client.get_payment_method('USD'))
-            print(self.client.get_portfolios("DEFAULT").portfolios)
+            #print(self.client.get_portfolios("DEFAULT").portfolios)
             #print(self.client.get_portfolio_breakdown("DEFAULT").breakdown)
-            print(self.client.get_futures_balance_summary())
+
+            # hack to include USD *FIXME*
+            total_usd_balance = float(self.client.get_futures_balance_summary().balance_summary.total_usd_balance['value'])
+            self.balances['USD'] = { 'total': total_usd_balance,
+                                     'available': total_usd_balance,
+                                     'hold': 0.0}
+            result['USD'] = total_usd_balance
 
             for account in accounts:
                 asset_name = account.currency
@@ -110,7 +116,7 @@ class AccountCoinbaseBalance(CryptoAccountBaseBalance):
                 return self.balances
             result = {}
             for asset, info in self.balances.items():
-                result[asset] = info['balance']
+                result[asset] = info['total']
         return result
 
     def get_balances(self):
@@ -120,27 +126,30 @@ class AccountCoinbaseBalance(CryptoAccountBaseBalance):
         try:
             result = self.balances[asset]
         except KeyError:
-            result = {'balance': 0.0, 'available': 0.0}
+            result = {'total': 0.0, 'available': 0.0, 'hold': 0.0}
         return result
 
     def get_asset_balance_tuple(self, asset):
         result = self.get_asset_balance(asset)
         try:
-            balance = float(result['balance'])
+            total = float(result['total'])
             available = float(result['available'])
+            hold = float(result['hold'])
         except KeyError:
-            balance = 0.0
+            total = 0.0
             available = 0.0
-        if 'balance' not in result or 'available' not in result:
-            return 0.0, 0.0
-        return balance, available
+            hold = 0.0
+        if 'total' not in result or 'available' not in result:
+            return 0.0, 0.0, 0.0
+        return total, available, hold
 
-    def update_asset_balance(self, name, balance, available):
+    def update_asset_balance(self, name, balance, available, hold):
         if self.simulate:
-            if name in self.balances.keys() and balance == 0.0 and available == 0.0:
+            if name in self.balances.keys() and balance == 0.0 and available == 0.0 and hold == 0.0:
                 del self.balances[name]
                 return
             if name not in self.balances.keys():
                 self.balances[name] = {}
-            self.balances[name]['balance'] = balance
+            self.balances[name]['total'] = balance
             self.balances[name]['available'] = available
+            self.balances[name]['hold'] = hold

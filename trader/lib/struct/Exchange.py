@@ -24,8 +24,8 @@ class Exchange(object):
     def name(id):
         if id == Exchange.EXCHANGE_BINANCE:
             return "binance"
-        elif id == Exchange.EXCHANGE_CBPRO:
-            return "cbpro"
+        elif id == Exchange.EXCHANGE_CBADV:
+            return "cbadv"
         elif id == Exchange.EXCHANGE_BITTREX:
             return "bittrex"
         elif id == Exchange.EXCHANGE_KRAKEN:
@@ -40,8 +40,8 @@ class Exchange(object):
     def id(name):
         if name == "binance":
             return Exchange.EXCHANGE_BINANCE
-        elif name == "cbpro":
-            return Exchange.EXCHANGE_CBPRO
+        elif name == "cbadv":
+            return Exchange.EXCHANGE_CBADV
         elif name == "bittrex":
             return Exchange.EXCHANGE_BITTREX
         elif name == "kraken":
