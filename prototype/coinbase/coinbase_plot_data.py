@@ -4,7 +4,14 @@ import json
 import pandas as pd
 from coinbase.rest import RESTClient
 import time
-from config import CoinbaseConfig as Config
+import sys
+try:
+    import trader
+except ImportError:
+    sys.path.append('.')
+
+from trader.account.cbadv.AccountCoinbaseAdvanced import AccountCoinbaseAdvanced
+from trader.config import *
 
 MAX_CANDLES = 350
 
@@ -79,16 +86,20 @@ def plot_historical_data(data, title='Historical Data'):
     plt.show()
 
 def main():
-    # Define the trading pair and granularity (e.g., 3600 seconds = 1 hour)
     product_id = 'BTC-USD'
-    granularity = 'FIFTEEN_MINUTE'
+    accnt = AccountCoinbaseAdvanced(simulate=False)
+    klines = accnt.get_klines(days=1, hours=0, ticker_id=product_id, granularity=3600)
+    klines = json.dumps(klines)
+    print(klines)
+    numeric_columns = ['start', 'low', 'high', 'open', 'close', 'volume']
+    df = pd.read_json(klines, orient='records')
+    #df['start'] = pd.to_datetime(df['start'], unit='s')
 
-    # Fetch historical data
-    data = fetch_historical_data(product_id, granularity)
-    print(data)
+    df[numeric_columns] = df[numeric_columns].astype(float)
+    df.set_index('start', inplace=True)
 
     # Plot historical data
-    plot_historical_data(data, title=f'Historical Data for {product_id}')
+    plot_historical_data(df, title=f'Historical Data for {product_id}')
 
 if __name__ == "__main__":
     main()

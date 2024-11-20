@@ -14,6 +14,14 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
         self._tickers = {}
         self._min_tickers = {}
         self._max_tickers = {}
+        self.granularity_mapping = {
+            60: 'ONE_MINUTE',
+            300: 'FIVE_MINUTE',
+            900: 'FIFTEEN_MINUTE',
+            3600: 'ONE_HOUR',
+            21600: 'SIX_HOUR',
+            86400: 'ONE_DAY',
+        }
 
     def ts_to_iso8601(self, ts):
         dt = datetime.fromtimestamp(ts)
@@ -103,39 +111,35 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
     # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
     # The maximum amount of data returned is 300 candles
     # kline format: [ timestamp, low, high, open, close, volume ]
-    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None):
-        end = datetime.utcnow()
-        start = (end - timedelta(days=days, hours=hours))
-        granularity = 900
-        if days == 0 and hours < 6:
-            granularity = 60
-        elif (days== 0 and hours <= 24) or (days == 1 and hours == 0):
-            granularity = 300
+    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None, granularity=3600):
+        end = datetime.now()
+        start = int((end - timedelta(days=days, hours=hours)).timestamp())
+        end = int(end.timestamp())
 
-        rates = self.pc.get_product_historic_rates(ticker_id,
-                                                   start.isoformat(),
-                                                   end.isoformat(),
-                                                   granularity=granularity)
-        print(rates)
-        return rates[::-1]
-
+        candles = self.client.get_candles(ticker_id, start, end, granularity=self.granularity_mapping[granularity])
+        candles = candles['candles']
+        #candles = [candle.__repr__() for candle in candles]
+        candles = [candle.__dict__ for candle in candles]
+        return candles
 
     def get_hourly_klines(self, symbol, start_ts, end_ts, reverse=False):
+        MAX_CANDLES = 350
+        granularity = self.granularity_mapping[3600]
         result = []
         if not reverse:
             ts1 = start_ts
             ts2 = end_ts
             while ts1 <= end_ts:
                 ts2 = end_ts
-                if (ts2 - ts1) > 3600 * 250:
-                    ts2 = ts1 + 3600 * 250
-                start = self.ts_to_iso8601(ts1)
-                end = self.ts_to_iso8601(ts2)
+                if (ts2 - ts1) > 3600 * MAX_CANDLES:
+                    ts2 = ts1 + 3600 * MAX_CANDLES
+                start = ts1
+                end = ts2
 
-                klines = self.pc.get_product_historic_rates(product_id=symbol,
-                                                            start=start,
-                                                            end=end,
-                                                            granularity=3600)
+                candles = self.client.get_candles(symbol, start, end, granularity=granularity)
+                candles = candles['candles']
+                #candles = [candle.__repr__() for candle in candles]
+                klines = [candle.__dict__ for candle in candles]
                 ts1 = ts2 + 3600
                 if isinstance(klines, list):
                     try:
@@ -151,30 +155,5 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
                         continue
                     print("ERROR get_hourly_klines(): {}".format(klines['message']))
                     return result
-        # else:
-        #     ts1 = start_ts
-        #     ts2 = end_ts
-        #     while ts1 >= start_ts:
-        #         ts1 = start_ts
-        #         if (ts2 - ts1) > 3600 * 250:
-        #             ts1 = ts2 - 3600 * 250
-        #         start = self.ts_to_iso8601(ts1)
-        #         end = self.ts_to_iso8601(ts2)
-        #         klines = self.pc.get_product_historic_rates(product_id=symbol,
-        #                                                     start=start,
-        #                                                     end=end,
-        #                                                     granularity=3600)
-        #         ts1 = ts2 - 3600
-        #         if isinstance(klines, list):
-        #             try:
-        #                 result = reversed(klines) + result
-        #             except TypeError:
-        #                 pass
-        #             time.sleep(1)
-        #         else:
-        #             if klines['message'] == 'NotFound':
-        #                 break
-        #             print("ERROR get_hourly_klines(): {}".format(klines['message']))
-        #             return result
 
         return result

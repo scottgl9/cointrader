@@ -425,7 +425,7 @@ class CryptoAccountBase(object):
     def update_tickers(self, tickers):
         return self.market.update_tickers(tickers)
 
-    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None):
+    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None, granularity=3600):
         return self.market.get_klines(days, hours, mode, ticker_id)
 
     def get_hourly_klines(self, symbol, start_ts, end_ts):

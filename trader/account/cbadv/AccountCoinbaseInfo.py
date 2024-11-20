@@ -118,7 +118,7 @@ class AccountCoinbaseInfo(CryptoAccountBaseInfo):
     # get exchange info from exchange via API
     def get_exchange_info(self):
         pair_info = self.client.get_products().products
-        asset_info = self.client.get_accounts().accounts
+        asset_info = None
         return self.parse_exchange_info(pair_info, asset_info)
 
     def parse_exchange_info(self, pair_info, asset_info):
@@ -193,34 +193,15 @@ class AccountCoinbaseInfo(CryptoAccountBaseInfo):
         if not info:
             return None
 
-        min_qty=info['min_qty']
-
-        try:
-            min_notional=info['minNotional']
-        except KeyError:
-            min_notional = min_qty
-
-        if float(min_qty) < float(min_notional):
-            min_qty = min_notional
-        min_price=info['min_price']
+        min_qty=info['base_min_size']
+        min_price=info['quote_min_size']
         base_step_size=info['base_step_size']
+        base_precision = abs(int('{:e}'.format(float(base_step_size)).split('e')[-1]))
         currency_step_size=info['currency_step_size']
+        currency_precision = abs(int('{:e}'.format(float(currency_step_size)).split('e')[-1]))
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
 
-        try:
-            base_precision = info['base_precision']
-            currency_precision = info['currency_precision']
-        except KeyError:
-            base_precision = 8
-            currency_precision = 8
-
         orderTypes = []
-
-        try:
-            for order_type in info['orderTypes']:
-                orderTypes.append(Order.get_order_msg_type(order_type))
-        except KeyError:
-            pass
 
         result = AssetInfo(base=base,
                            currency=currency,
