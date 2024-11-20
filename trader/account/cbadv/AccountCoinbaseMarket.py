@@ -6,7 +6,7 @@ import aniso8601
 import stix.utils.dates
 
 class AccountCoinbaseMarket(CryptoAccountBaseMarket):
-    def __init__(self, client, info, simulate=False, logger=None):
+    def __init__(self, client: RESTClient, info, simulate=False, logger=None):
         self.client = client
         self.info = info
         self.simulate = simulate
@@ -21,14 +21,21 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
 
     def get_ticker(self, symbol=None):
         if not self.simulate:
-            if symbol:
-                result = self.client.get_product_ticker(product_id=symbol)
-                if result:
-                    try:
-                        price = float(result['price'])
-                    except KeyError:
-                        price = 0.0
-                    return price
+            products = self.client.get_products().products
+            for product in products:
+                if product.product_id == symbol:
+                    return product.price
+            return 0.0
+            # print(products.products)
+            # if symbol in products:
+            #     result = products.products[symbol]
+            #     print(result)
+            #     if result:
+            #         price = float(result.price)
+            #         return price
+            #     else:
+            #         return 0.0
+
             #elif not len(self._tickers):
             #    self._tickers = self.get_all_tickers()
         try:

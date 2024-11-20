@@ -11,6 +11,7 @@ from trader.config import *
 
 if __name__ == '__main__':
     accnt = AccountCoinbaseAdvanced(simulate=False)
+    print("getting account balances")
     balances = accnt.get_account_balances()
     print(balances)
     #print(client.get_fees())

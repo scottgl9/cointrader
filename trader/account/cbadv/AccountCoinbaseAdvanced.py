@@ -28,9 +28,8 @@ class AccountCoinbaseAdvanced(CryptoAccountBase):
         if client is not None:
             self.client = client
         elif not self.simulate:
-            self.client = RESTClient(api_key=CBADV_KEY, api_secret=CBADV_SECRET)
-        
-        print(type(self.client))
+            client = RESTClient(api_key=CBADV_KEY, api_secret=CBADV_SECRET)
+            self.client = client
 
         # sub module implementations
         self.info = AccountCoinbaseInfo(client, simulate, logger)

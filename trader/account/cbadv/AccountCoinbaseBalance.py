@@ -1,10 +1,9 @@
 from trader.account.CryptoAccountBaseBalance import CryptoAccountBaseBalance
-
+from coinbase.rest import RESTBase, RESTClient
 
 class AccountCoinbaseBalance(CryptoAccountBaseBalance):
-    def __init__(self, client, info, market, simulate=False, logger=None):
+    def __init__(self, client: RESTClient, info, market, simulate=False, logger=None):
         self.client = client
-        print(type(self.client))
         self.info = info
         self.market = market
         self.simulate = simulate
@@ -67,21 +66,43 @@ class AccountCoinbaseBalance(CryptoAccountBaseBalance):
         if not self.simulate:
             self.balances = {}
             result = {}
-            accounts = self.client.get_accounts()
-            if 'message' in accounts:
-                if self.logger:
-                    self.logger.info("Error get_account_balances(): {}".format(accounts['message']))
-                else:
-                    print("Error get_account_balances(): {}".format(accounts['message']))
-                return self.balances
+            print(self.client.get_accounts())
+            accounts = self.client.get_accounts().accounts
+            print(self.client.get_portfolios())
+            #print(self.client.get_portfolio_breakdown())
+            #print(self.client.get_payment_method('USD'))
+            print(self.client.get_portfolios("DEFAULT").portfolios)
+            #print(self.client.get_portfolio_breakdown("DEFAULT").breakdown)
+            print(self.client.get_futures_balance_summary())
 
             for account in accounts:
-                asset_name = account['currency']
-                balance = float(account['balance'])
-                available = float(account['available'])
-                hold = float(account['hold'])
-                self.balances[asset_name] = {'balance': balance, 'available': available, 'hold': hold}
-                result[asset_name] = balance
+                asset_name = account.currency
+                available_balance = 0.0
+                hold_balance = 0.0
+
+                if asset_name != account.hold['currency']:
+                    print("Error: asset_name != account.hold.currency")
+                if asset_name != account.available_balance['currency']:
+                    print("Error: asset_name != account.available_balance.currency")
+
+                # skip assets which are not available
+                if not account.ready or not account.active:
+                    continue
+
+                # skip non-crypto assets
+                #if account.type != 'ACCOUNT_TYPE_CRYPTO':
+                #    continue
+
+                available_balance = float(account.available_balance['value'])
+                hold_balance = float(account.hold['value'])
+                total_balance = available_balance + hold_balance
+                
+                self.balances[asset_name] = { 'total': total_balance,
+                                              'available': available_balance,
+                                              'hold': hold_balance}
+
+                result[asset_name] = total_balance
+
             if detailed:
                 return self.balances
         else:
