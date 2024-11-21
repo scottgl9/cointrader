@@ -6,6 +6,7 @@ from trader.lib.struct.AssetInfo import AssetInfo
 from trader.lib.struct.Exchange import Exchange
 from coinbase.rest import RESTClient
 
+
 class AccountCoinbaseInfo(CryptoAccountBaseInfo):
     def __init__(self, client : RESTClient, simulate=False, logger=None):
         self.client = client
@@ -122,29 +123,31 @@ class AccountCoinbaseInfo(CryptoAccountBaseInfo):
         return self.parse_exchange_info(pair_info, asset_info)
 
     def parse_exchange_info(self, pair_info, asset_info):
+        """
+        :type pair_info: list[Product]
+        """
         exchange_info = {}
         pairs = {}
         assets = {}
 
         for info in pair_info:
-            if info.trading_disabled:
-                continue
-            if info.view_only:
-                continue
             symbol = info.product_id
-            pairs[symbol] = {'base_min_size': info.base_min_size,
-                             'quote_min_size': info.quote_min_size,
-                             'base_step_size': info.base_increment,
-                             'currency_step_size': info.quote_increment,
+            base_step_size =  info.base_increment
+            currency_step_size = info.quote_increment
+            base_precision = abs(int('{:e}'.format(float(base_step_size)).split('e')[-1]))
+            currency_precision = abs(int('{:e}'.format(float(currency_step_size)).split('e')[-1]))
+            pairs[symbol] = {'min_qty': info.base_min_size,
+                             'min_price': info.quote_min_size,
+                             'base_step_size': base_step_size,
+                             'currency_step_size': currency_step_size,
+                             'base_precision': base_precision,
+                             'currency_precision': currency_precision
                             }
-        
-        for asset in asset_info:
-            if asset.type != 'ACCOUNT_TYPE_CRYPTO':
-                continue
-            if not asset.active:
-                assets[asset.currency] = {'disabled': True, 'delisted': False }
+            
+            if info.is_disabled or info.trading_disabled or info.view_only:
+                assets[info.base_currency_id] = {'disabled': True, 'delisted': False }
             else:
-                assets[asset.currency] = {'disabled': False, 'delisted': False }
+                assets[info.base_currency_id] = {'disabled': False, 'delisted': False }
 
         self._exchange_pairs = []
 
@@ -193,12 +196,12 @@ class AccountCoinbaseInfo(CryptoAccountBaseInfo):
         if not info:
             return None
 
-        min_qty=info['base_min_size']
-        min_price=info['quote_min_size']
+        min_qty=info['min_qty']
+        min_price=info['min_price']
         base_step_size=info['base_step_size']
-        base_precision = abs(int('{:e}'.format(float(base_step_size)).split('e')[-1]))
+        base_precision = info['base_precision']
         currency_step_size=info['currency_step_size']
-        currency_precision = abs(int('{:e}'.format(float(currency_step_size)).split('e')[-1]))
+        currency_precision = info['currency_precision']
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
 
         orderTypes = []
