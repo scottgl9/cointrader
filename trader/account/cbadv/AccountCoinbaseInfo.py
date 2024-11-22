@@ -110,6 +110,8 @@ class AccountCoinbaseInfo(CryptoAccountBaseInfo):
         if not os.path.exists(self.exchange_info_file):
             info = self.get_exchange_info()
             with open(self.exchange_info_file, 'w') as f:
+                info['pairs'] = dict(sorted(info['pairs'].items()))
+                info['assets'] = dict(sorted(info['assets'].items()))
                 json.dump(info, f, indent=4)
         else:
             info = json.loads(open(self.exchange_info_file).read())
@@ -118,7 +120,7 @@ class AccountCoinbaseInfo(CryptoAccountBaseInfo):
 
     # get exchange info from exchange via API
     def get_exchange_info(self):
-        pair_info = self.client.get_products().products
+        pair_info = self.client.get_products(limit=250).products
         asset_info = None
         return self.parse_exchange_info(pair_info, asset_info)
 
@@ -191,17 +193,17 @@ class AccountCoinbaseInfo(CryptoAccountBaseInfo):
         raise NotImplementedError
 
     # return asset info in AssetInfo class object
-    def get_asset_info(self, symbol=None, base=None, currency=None):
+    def get_asset_info(self, symbol=None, base=None, currency=None) -> AssetInfo:
         info = self.get_asset_info_dict(symbol=symbol, base=base, currency=currency)
         if not info:
             return None
 
-        min_qty=info['min_qty']
-        min_price=info['min_price']
-        base_step_size=info['base_step_size']
-        base_precision = info['base_precision']
-        currency_step_size=info['currency_step_size']
-        currency_precision = info['currency_precision']
+        min_qty=float(info['min_qty'])
+        min_price=float(info['min_price'])
+        base_step_size=float(info['base_step_size'])
+        base_precision = float(info['base_precision'])
+        currency_step_size=float(info['currency_step_size'])
+        currency_precision = float(info['currency_precision'])
         is_currency_pair = self.is_currency_pair(symbol=symbol, base=base, currency=currency)
 
         orderTypes = []

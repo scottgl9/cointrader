@@ -66,8 +66,8 @@ class AccountCoinbaseBalance(CryptoAccountBaseBalance):
         if not self.simulate:
             self.balances = {}
             result = {}
-            # TODO: add support for USD and USDC
-            accounts = self.client.get_accounts().accounts
+            # set limit to 250 to see all accounts, or use cursor
+            accounts = self.client.get_accounts(limit=250).accounts
             #print(self.client.get_portfolios())
             #print(self.client.get_portfolio_breakdown())
             #print(self.client.get_payment_method('USD'))
@@ -75,11 +75,11 @@ class AccountCoinbaseBalance(CryptoAccountBaseBalance):
             #print(self.client.get_portfolio_breakdown("DEFAULT").breakdown)
 
             # hack to include USD *FIXME*
-            total_usd_balance = float(self.client.get_futures_balance_summary().balance_summary.total_usd_balance['value'])
-            self.balances['USD'] = { 'total': total_usd_balance,
-                                     'available': total_usd_balance,
-                                     'hold': 0.0}
-            result['USD'] = total_usd_balance
+            #total_usd_balance = float(self.client.get_futures_balance_summary().balance_summary.total_usd_balance['value'])
+            #self.balances['USD'] = { 'total': total_usd_balance,
+            #                         'available': total_usd_balance,
+            #                         'hold': 0.0}
+            #result['USD'] = total_usd_balance
 
             for account in accounts:
                 asset_name = account.currency
@@ -102,7 +102,11 @@ class AccountCoinbaseBalance(CryptoAccountBaseBalance):
                 available_balance = float(account.available_balance['value'])
                 hold_balance = float(account.hold['value'])
                 total_balance = available_balance + hold_balance
-                
+
+                # skip assets with zero balance
+                if total_balance == 0.0:
+                    continue
+
                 self.balances[asset_name] = { 'total': total_balance,
                                               'available': available_balance,
                                               'hold': hold_balance}

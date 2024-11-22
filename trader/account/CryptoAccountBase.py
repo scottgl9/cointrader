@@ -1,5 +1,7 @@
 from trader.lib.struct.Order import Order
 from trader.lib.struct.Exchange import Exchange
+from trader.lib.struct.AssetInfo import AssetInfo
+import math
 
 
 class CryptoAccountBase(object):
@@ -44,6 +46,10 @@ class CryptoAccountBase(object):
     def get_hourly_column_names(self):
         pass
 
+    def _round_down(self, value, decimals):
+        factor = 10 ** decimals
+        return math.floor(value * factor) / factor
+
     def round_base(self, price, base_increment=0):
         if base_increment:
             try:
@@ -78,7 +84,7 @@ class CryptoAccountBase(object):
             except ValueError:
                 self.logger.warning("round_quantity(): index not found in {}, size={}".format(min_qty, size))
                 return size
-            return round(float(size), precision)
+            return self._round_down(float(size), precision)
         return size
 
     def round_base_symbol(self, symbol, price):
@@ -209,10 +215,10 @@ class CryptoAccountBase(object):
     def get_asset_status(self, name=None):
         return self.info.get_asset_status(name)
 
-    def get_asset_info(self, symbol=None, base=None, currency=None):
+    def get_asset_info(self, symbol=None, base=None, currency=None) -> AssetInfo:
         return self.info.get_asset_info(symbol, base, currency)
 
-    def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None):
+    def get_asset_info_dict(self, symbol=None, base=None, currency=None, field=None) -> dict:
         return self.info.get_asset_info_dict(symbol, base, currency, field)
 
     def is_asset_available(self, name):

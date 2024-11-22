@@ -16,11 +16,14 @@ import time
 from datetime import datetime, timedelta
 import aniso8601
 import stix.utils.dates
+import logging
 
 
 class AccountCoinbaseAdvanced(CryptoAccountBase):
     def __init__(self, client=None, simulate=False, live=False, logger=None, simulate_db_filename=None):
         super(AccountCoinbaseAdvanced, self).__init__(client, simulate, live, logger, simulate_db_filename)
+        if logger is None:
+            logger = logging.getLogger()
         self.logger = logger
         self.simulate = simulate
         self.live = live
