@@ -111,9 +111,9 @@ class AccountCoinbaseMarket(CryptoAccountBaseMarket):
     # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
     # The maximum amount of data returned is 300 candles
     # kline format: [ timestamp, low, high, open, close, volume ]
-    def get_klines(self, days=0, hours=1, mode=None, ticker_id=None, granularity=3600):
+    def get_klines(self, days=0, hours=1, minutes=0, mode=None, ticker_id=None, granularity=3600):
         end = datetime.now()
-        start = int((end - timedelta(days=days, hours=hours)).timestamp())
+        start = int((end - timedelta(days=days, hours=hours, minutes=minutes)).timestamp())
         end = int(end.timestamp())
 
         candles = self.client.get_candles(ticker_id, start, end, granularity=self.granularity_mapping[granularity])

@@ -1,8 +1,10 @@
 from trader.account.CryptoAccountBaseBalance import CryptoAccountBaseBalance
-from coinbase.rest import RESTBase, RESTClient
+from trader.account.cbadv.AccountCoinbaseInfo import AccountCoinbaseInfo
+from trader.account.cbadv.AccountCoinbaseMarket import AccountCoinbaseMarket
+from coinbase.rest import RESTClient
 
 class AccountCoinbaseBalance(CryptoAccountBaseBalance):
-    def __init__(self, client: RESTClient, info, market, simulate=False, logger=None):
+    def __init__(self, client: RESTClient, info: AccountCoinbaseInfo, market: AccountCoinbaseMarket, simulate=False, logger=None):
         self.client = client
         self.info = info
         self.market = market
